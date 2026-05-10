@@ -1,0 +1,37 @@
+---
+import RootLayout from "../layouts/RootLayout.astro";
+import { Wordmark } from "../components/landing/_shared/Wordmark";
+import { useTranslations, getLangFromUrl } from "@/i18n";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const homeHref = lang === "it" ? "/" : `/${lang}/`;
+---
+
+<RootLayout title={`${t.offline.title} · Hair Rich`} noindex>
+  <main class="min-h-[100dvh] bg-black flex items-center justify-center px-6 py-20">
+    <div class="text-center max-w-md">
+      <Wordmark variant="wordmark" size="lg" className="mx-auto mb-12 opacity-70" client:load />
+      <span class="text-display-alt text-3xl text-accent-warm">{t.offline.eyebrow}</span>
+      <h1 class="text-display text-4xl md:text-6xl text-warm-white tracking-tight mt-2 leading-[0.95]">
+        {t.offline.title}
+      </h1>
+      <p class="mt-6 text-warm-white-muted text-base leading-relaxed">{t.offline.body}</p>
+      <button
+        onclick="location.reload()"
+        class="mt-10 inline-flex items-center gap-3 px-7 py-4 border border-warm-white text-warm-white rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold hover:bg-warm-white hover:text-black transition-colors"
+      >
+        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+        </svg>
+        {t.offline.cta}
+      </button>
+      <a
+        href={homeHref}
+        class="mt-4 inline-block text-xs uppercase tracking-[0.3em] text-silver-dark hover:text-warm-white font-body font-semibold transition-colors"
+      >
+        Home
+      </a>
+    </div>
+  </main>
+</RootLayout>

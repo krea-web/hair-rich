@@ -1,0 +1,12 @@
+---
+import RootLayout from "../../layouts/RootLayout.astro";
+import { LoginForm } from "../../components/auth/LoginForm";
+import { useTranslations, getLangFromUrl } from "@/i18n";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<RootLayout title={`${t.auth.login.welcome} · Hair Rich Olbia`}>
+  <LoginForm client:load />
+</RootLayout>

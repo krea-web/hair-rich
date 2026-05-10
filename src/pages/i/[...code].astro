@@ -1,0 +1,12 @@
+---
+import RootLayout from "../../layouts/RootLayout.astro";
+import { ReferralLanding } from "../../components/token/ReferralLanding";
+
+export function getStaticPaths() {
+  return [{ params: { code: undefined } }];
+}
+---
+
+<RootLayout title="Invito · Hair Rich Olbia" noindex={true}>
+  <ReferralLanding client:only="react" />
+</RootLayout>

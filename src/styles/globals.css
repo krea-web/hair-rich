@@ -1,0 +1,220 @@
+@import "tailwindcss";
+@import "./design-tokens.css";
+
+/* ── Tailwind v4 theme extensions ─────────────────────────────────────────── */
+@theme inline {
+  /* Colors */
+  --color-black: var(--black);
+  --color-black-2: var(--black-2);
+  --color-carbon: var(--carbon);
+  --color-carbon-2: var(--carbon-2);
+  --color-silver: var(--silver);
+  --color-silver-mid: var(--silver-mid);
+  --color-silver-dark: var(--silver-dark);
+  --color-warm-white: var(--warm-white);
+  --color-warm-white-muted: var(--warm-white-muted);
+  --color-warm-white-faint: var(--warm-white-faint);
+  --color-accent-warm: var(--accent-warm);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+
+  /* Fonts */
+  --font-display: "Cinzel", serif;
+  --font-display-alt: "Italiana", serif;
+  --font-body: "Manrope", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* Radius */
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-full: var(--radius-full);
+}
+
+/* ── Base ──────────────────────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--black);
+  color: var(--warm-white);
+  font-family: var(--font-body);
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+/* ── Selection ─────────────────────────────────────────────────────────────── */
+::selection {
+  background-color: var(--accent-warm);
+  color: var(--black);
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--black);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--silver-dark);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--silver-mid);
+}
+
+/* ── Grain overlay ─────────────────────────────────────────────────────────── */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+  opacity: 0.06;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='512' height='512' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* ── Vignette ──────────────────────────────────────────────────────────────── */
+.vignette {
+  position: relative;
+}
+
+.vignette::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 50%, var(--black) 100%);
+  opacity: 0.4;
+}
+
+/* ── Hairline dividers ─────────────────────────────────────────────────────── */
+.hairline {
+  border: none;
+  height: 1px;
+  background: var(--line);
+}
+
+.hairline-strong {
+  border: none;
+  height: 1px;
+  background: var(--line-strong);
+}
+
+/* ── iOS safe area ─────────────────────────────────────────────────────────── */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ── Admin overscroll contain ──────────────────────────────────────────────── */
+.overscroll-contain {
+  overscroll-behavior: contain;
+}
+
+/* ── Page transitions ──────────────────────────────────────────────────────── */
+.page-enter {
+  opacity: 0;
+  transform: translateX(12px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity var(--dur-base) var(--ease-soft),
+    transform var(--dur-base) var(--ease-soft);
+}
+
+/* ── Card hover ────────────────────────────────────────────────────────────── */
+.card-hover {
+  transition: background-color var(--dur-fast) var(--ease-soft),
+    transform var(--dur-fast) var(--ease-soft);
+}
+
+.card-hover:hover {
+  background-color: var(--carbon-2);
+  transform: translateY(-2px);
+}
+
+/* ── Image hover ───────────────────────────────────────────────────────────── */
+.img-hover {
+  transition: transform var(--dur-base) var(--ease-cinema);
+}
+
+.img-hover:hover {
+  transform: scale(1.02);
+}
+
+/* ── Reduced motion ────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Focus visible default (a11y) ──────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--accent-warm);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Text balance for headings ─────────────────────────────────────────────── */
+h1, h2, h3 {
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+
+/* ── Hide scrollbar utility ────────────────────────────────────────────────── */
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Typography ────────────────────────────────────────────────────────────── */
+.text-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.text-display-alt {
+  font-family: var(--font-display-alt);
+  letter-spacing: 0.04em;
+  font-style: italic;
+}
+
+.text-mono {
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+}

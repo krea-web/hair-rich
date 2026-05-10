@@ -1,0 +1,8 @@
+---
+import RootLayout from "../layouts/RootLayout.astro";
+import { LoginForm } from "../components/auth/LoginForm";
+---
+
+<RootLayout title="Accedi · Hair Rich Olbia" description="Accedi al tuo profilo Hair Rich Olbia.">
+  <LoginForm client:load />
+</RootLayout>

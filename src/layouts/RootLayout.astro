@@ -1,0 +1,187 @@
+---
+import "../styles/globals.css";
+import { getLangFromUrl, getAlternates, useTranslations, LOCALE_META } from "@/i18n";
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  noindex?: boolean;
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const meta = LOCALE_META[lang];
+
+const defaultTitle =
+  lang === "it"
+    ? "Hair Rich · Barbiere a Olbia"
+    : lang === "en"
+      ? "Hair Rich · Barbershop in Olbia, Sardinia"
+      : lang === "fr"
+        ? "Hair Rich · Barbier à Olbia, Sardaigne"
+        : "Hair Rich · Barbier in Olbia, Sardinien";
+
+const defaultDescription =
+  lang === "it"
+    ? "Hair Rich, barbiere premium a Olbia. Taglio uomo, barba e rituali esclusivi. Prenota il tuo appuntamento online."
+    : lang === "en"
+      ? "Hair Rich, premium barbershop in Olbia, Sardinia. Tailored cuts, beard and exclusive rituals. Book online."
+      : lang === "fr"
+        ? "Hair Rich, barbier premium à Olbia, Sardaigne. Coupes sur mesure, barbe et rituels exclusifs. Réservation en ligne."
+        : "Hair Rich, Premium-Barbier in Olbia, Sardinien. Maßgeschneiderte Schnitte, Bart und exklusive Rituale. Online buchen.";
+
+const {
+  title = defaultTitle,
+  description = defaultDescription,
+  image = `/og-${lang}.png`,
+  noindex = false,
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
+const alternates = getAlternates(Astro.url.pathname, Astro.site!.toString());
+
+// Fallback per OG image: se /og-{lang}.png non esiste useremo /og-image.png
+const ogImageUrl = new URL(image, Astro.site).toString();
+
+const localeKeywords: Record<string, string> = {
+  it: "barbiere Olbia, taglio capelli uomo Olbia, barba Olbia, Hair Rich, barbershop Sardegna",
+  en: "barber Olbia, men's haircut Sardinia, beard trim Olbia, Hair Rich, barbershop Sardinia",
+  fr: "barbier Olbia, coupe homme Sardaigne, barbe Olbia, Hair Rich, barbershop Sardaigne",
+  de: "Barbier Olbia, Herrenhaarschnitt Sardinien, Bart Olbia, Hair Rich, Barbershop Sardinien",
+};
+---
+
+<!doctype html>
+<html lang={meta.bcp47}>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0A0A0A" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <meta name="author" content="Hair Rich" />
+    <meta name="keywords" content={localeKeywords[lang] ?? localeKeywords.it} />
+
+    {/* hreflang per ogni lingua + x-default */}
+    {alternates.map((alt) => (
+      <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+    ))}
+    <link rel="alternate" hreflang="x-default" href={alternates[0]!.href} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={meta.bcp47.replace("-", "_")} />
+    <meta property="og:site_name" content="Hair Rich Olbia" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    {/* Geo (Olbia, Sardegna) */}
+    <meta name="geo.region" content="IT-SS" />
+    <meta name="geo.placename" content="Olbia" />
+    <meta name="geo.position" content="40.9230;9.4980" />
+    <meta name="ICBM" content="40.9230, 9.4980" />
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" href="/apple-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    {/* Preload critici (LCP): primo frame hero + wordmark */}
+    <link rel="preload" as="image" href="/hero-seq/frame_001.webp" type="image/webp" fetchpriority="high" />
+    <link rel="preload" as="image" href="/hairrich-logoesteso.png" type="image/png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Italiana&family=JetBrains+Mono&family=Manrope:wght@300;400;500;600&display=swap"
+    />
+
+    {/* Plausible analytics (lang-aware) — caricato solo se l'utente ha consentito.
+        Gli eventi custom (booking_start, booking_complete, ecc.) si invocano via
+        window.plausible('event_name', { props: {...} }) nei componenti React. */}
+    {import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN && (
+      <script
+        is:inline
+        defer
+        data-domain={import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN}
+        src="https://plausible.io/js/script.tagged-events.outbound-links.js"
+      />
+    )}
+    <script is:inline define:vars={{ lang }}>
+      window.plausible =
+        window.plausible ||
+        function () {
+          (window.plausible.q = window.plausible.q || []).push(arguments);
+        };
+      window.plausible.lang = lang;
+    </script>
+
+    {/* Service Worker registration (PWA) — solo in produzione (https) */}
+    <script is:inline>
+      if ("serviceWorker" in navigator && location.protocol === "https:") {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("/sw.js", { scope: "/" })
+            .catch((err) => console.warn("[Hair Rich] SW registration failed:", err));
+        });
+      }
+    </script>
+
+    {/* Auto-detect lingua: solo prima visita, gentile (banner non redirect aggressivo).
+       Persiste preferenza in localStorage per non rompere navigazione manuale. */}
+    <script is:inline define:vars={{ currentLang: lang }}>
+      (function () {
+        try {
+          var KEY = "hr-locale-pref";
+          var saved = localStorage.getItem(KEY);
+          if (saved) return; // utente ha già scelto
+          var nav = (navigator.language || "it").slice(0, 2);
+          var supported = ["it", "en", "fr", "de"];
+          if (!supported.includes(nav)) return;
+          if (nav === currentLang) {
+            localStorage.setItem(KEY, nav);
+            return;
+          }
+          // Costruisce target path
+          var seg = location.pathname.split("/").filter(Boolean);
+          if (["en", "fr", "de"].includes(seg[0])) seg.shift();
+          var sub = seg.join("/");
+          var target = nav === "it" ? (sub ? "/" + sub : "/") : "/" + nav + (sub ? "/" + sub : "/");
+          // Soft redirect: solo se non hai parametri/hash speciali
+          if (!location.hash && !location.search) {
+            sessionStorage.setItem("hr-lang-suggested", "1");
+            location.replace(target);
+          }
+        } catch (e) {
+          /* fail silently */
+        }
+      })();
+    </script>
+  </head>
+  <body data-lang={lang}>
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-accent-warm focus:text-black focus:px-4 focus:py-2 focus:rounded-[var(--radius-sm)] focus:font-body focus:text-sm focus:font-semibold"
+    >
+      Skip to content
+    </a>
+    <div class="grain-overlay" aria-hidden="true"></div>
+    <div id="main">
+      <slot />
+    </div>
+  </body>
+</html>

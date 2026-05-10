@@ -1,0 +1,17 @@
+---
+import RootLayout from "../../layouts/RootLayout.astro";
+import { ProfiloApp } from "../../components/profilo/ProfiloApp";
+
+export function getStaticPaths() {
+  return [
+    { params: { slug: undefined } },
+    { params: { slug: "appuntamenti" } },
+    { params: { slug: "impostazioni" } },
+    { params: { slug: "referral" } },
+  ];
+}
+---
+
+<RootLayout title="Profilo · Hair Rich Olbia" noindex={true}>
+  <ProfiloApp client:only="react" />
+</RootLayout>

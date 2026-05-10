@@ -1,0 +1,12 @@
+---
+import RootLayout from "../../layouts/RootLayout.astro";
+import { ReviewGate } from "../../components/token/ReviewGate";
+
+export function getStaticPaths() {
+  return [{ params: { token: undefined } }];
+}
+---
+
+<RootLayout title="Recensione · Hair Rich Olbia" noindex={true}>
+  <ReviewGate client:only="react" />
+</RootLayout>

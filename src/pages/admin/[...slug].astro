@@ -1,0 +1,26 @@
+---
+import RootLayout from "../../layouts/RootLayout.astro";
+import { AdminApp } from "../../components/admin/AdminApp";
+
+export function getStaticPaths() {
+  const routes = [
+    undefined,
+    "agenda",
+    "clienti",
+    "ordini",
+    "servizi",
+    "prodotti",
+    "staff",
+    "impostazioni",
+    "marketing",
+    "gamification",
+    "onboarding",
+    "cms",
+  ];
+  return routes.map((slug) => ({ params: { slug } }));
+}
+---
+
+<RootLayout title="Admin · Hair Rich Olbia" noindex={true}>
+  <AdminApp client:only="react" />
+</RootLayout>

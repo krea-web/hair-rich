@@ -1,0 +1,12 @@
+---
+import RootLayout from "../../layouts/RootLayout.astro";
+import LegalPage from "../../components/LegalPage.astro";
+import { useTranslations, getLangFromUrl } from "@/i18n";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<RootLayout title={`${t.legal.cookie.title} · Hair Rich Olbia`}>
+  <LegalPage doc="cookie" />
+</RootLayout>
