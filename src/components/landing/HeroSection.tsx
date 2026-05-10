@@ -1,15 +1,13 @@
 "use client";
 
-import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { Wordmark } from "./_shared/Wordmark";
 import { LangSwitcher } from "./_shared/LangSwitcher";
 import { AvailabilityPulse } from "./_shared/AvailabilityPulse";
 import { BookingPulse } from "./_shared/BookingPulse";
-import { useLang, useT } from "@/i18n/useLang";
+import { useT } from "@/i18n/useLang";
 
-const FRAME_COUNT = 121;
-const framePath = (i: number) => `/hero-seq/frame_${String(i).padStart(3, "0")}.webp`;
+const HERO_PHOTO = "/hero-seq/frame_001.webp";
 
 function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
     const { t } = useT();
@@ -130,7 +128,6 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
                 <AvailabilityPulse variant="ribbon" />
             </motion.div>
 
-            {/* Live social proof (counter) */}
             <motion.div
                 className="mt-7"
                 initial={{ opacity: 0 }}
@@ -172,96 +169,19 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
 }
 
 export function HeroSection() {
-    const sectionRef = useRef<HTMLDivElement>(null);
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [imagesReady, setImagesReady] = useState(false);
-    const imagesRef = useRef<HTMLImageElement[]>([]);
-
-    const { scrollYProgress } = useScroll({
-        target: sectionRef,
-        offset: ["start start", "end end"],
-    });
-
-    const frameIndex = useTransform(scrollYProgress, [0, 0.85], [1, FRAME_COUNT]);
-
-    // Preload frames
-    useEffect(() => {
-        let cancelled = false;
-        const imgs: HTMLImageElement[] = [];
-        let loaded = 0;
-
-        for (let i = 1; i <= FRAME_COUNT; i++) {
-            const img = new Image();
-            const done = () => {
-                if (cancelled) return;
-                loaded++;
-                if (loaded === FRAME_COUNT) {
-                    imagesRef.current = imgs;
-                    setImagesReady(true);
-                    drawFrame(imgs[0]);
-                }
-            };
-            img.onload = done;
-            img.onerror = done;
-            img.src = framePath(i);
-            imgs.push(img);
-        }
-
-        return () => {
-            cancelled = true;
-        };
-    }, []);
-
-    const drawFrame = (img?: HTMLImageElement) => {
-        if (!img || !img.naturalWidth || !canvasRef.current) return;
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const hRatio = canvas.width / img.naturalWidth;
-        const vRatio = canvas.height / img.naturalHeight;
-        const ratio = Math.min(hRatio, vRatio); // contain
-        const w = img.naturalWidth * ratio;
-        const h = img.naturalHeight * ratio;
-        const x = (canvas.width - w) / 2;
-        const y = (canvas.height - h) / 2;
-        ctx.drawImage(img, x, y, w, h);
-    };
-
-    useMotionValueEvent(frameIndex, "change", (latest) => {
-        if (!imagesRef.current.length) return;
-        const idx = Math.min(Math.max(Math.floor(latest) - 1, 0), FRAME_COUNT - 1);
-        drawFrame(imagesRef.current[idx]);
-    });
-
-    useEffect(() => {
-        const resize = () => {
-            const canvas = canvasRef.current;
-            if (!canvas) return;
-            const dpr = Math.min(window.devicePixelRatio || 1, 2);
-            const rect = canvas.getBoundingClientRect();
-            const w = Math.max(1, Math.floor(rect.width * dpr));
-            const h = Math.max(1, Math.floor(rect.height * dpr));
-            if (canvas.width !== w || canvas.height !== h) {
-                canvas.width = w;
-                canvas.height = h;
-            }
-            const idx = Math.min(Math.max(Math.floor(frameIndex.get()) - 1, 0), FRAME_COUNT - 1);
-            drawFrame(imagesRef.current[idx]);
-        };
-        resize();
-        window.addEventListener("resize", resize);
-        return () => window.removeEventListener("resize", resize);
-    }, [imagesReady, frameIndex]);
-
     const { lang, t } = useT();
     const homeHref = lang === "it" ? "/" : `/${lang}/`;
 
     return (
-        <section className="relative bg-black" aria-label="Hero">
-            {/* ── Top header: wordmark a sinistra + nav + lang switcher ─── */}
-            <header className="absolute top-0 left-0 right-0 z-40 grid grid-cols-3 items-center px-6 md:px-12 lg:px-20 pt-5 md:pt-7 pointer-events-none">
+        <section className="relative bg-black overflow-hidden" aria-label="Hero">
+            {/* Navbar — lives inside the hero so it appears naturally as the hero
+               scrolls into view (i.e. exactly at the end of the intro sequence). */}
+            <motion.header
+                className="absolute top-0 left-0 right-0 z-40 grid grid-cols-3 items-center px-6 md:px-12 lg:px-20 pt-5 md:pt-7 pointer-events-none"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+            >
                 <a
                     href={homeHref}
                     className="pointer-events-auto justify-self-start"
@@ -279,91 +199,53 @@ export function HeroSection() {
                 <div className="justify-self-end pointer-events-auto">
                     <LangSwitcher current={lang} variant="navbar" />
                 </div>
-            </header>
+            </motion.header>
 
-            {/* ── Tall scroller with sticky canvas ───────────────────────────── */}
-            <div ref={sectionRef} className="relative h-[200vh] md:h-[220vh]">
-                <div className="sticky top-0 h-[100dvh] overflow-hidden">
-                    <div className="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-8 lg:gap-12 h-full md:px-12 lg:px-20 md:pt-28 md:pb-20">
-                        {/* Text DESKTOP only (mobile shows it after the scroller) */}
-                        <div className="hidden md:flex md:col-span-7 flex-col justify-center">
-                            <HeroTextBlock />
-                        </div>
+            {/* Hero content */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-8 lg:gap-12 px-6 md:px-12 lg:px-20 pt-28 md:pt-32 pb-16 md:pb-20 min-h-[100dvh]">
+                <div className="md:col-span-7 flex flex-col justify-center">
+                    <HeroTextBlock />
+                </div>
 
-                        {/* Canvas wrapper — transparent so the frame floats on the hero bg */}
-                        <div className="relative md:col-span-5 h-[100dvh] md:h-full">
-                            <div className="absolute inset-0 overflow-hidden bg-transparent">
-                                <canvas
-                                    ref={canvasRef}
-                                    className="w-full h-full block"
-                                    aria-hidden="true"
-                                />
-
-                                {/* Loading shimmer (bordered card only while loading) */}
-                                {!imagesReady && (
-                                    <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-carbon to-carbon-2 md:rounded-[var(--radius-md)] flex items-center justify-center">
-                                        <span className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
-                                            Caricamento…
-                                        </span>
-                                    </div>
-                                )}
-
-                                {/* Vignette */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent pointer-events-none" />
-                                <div className="absolute inset-0 hidden md:block bg-gradient-to-l from-transparent via-transparent to-black/30 pointer-events-none" />
-
-                                {/* Mobile wordmark overlay (visible only on mobile, on top of canvas) */}
-                                <div className="md:hidden absolute inset-x-0 top-0 pt-20 px-6 pointer-events-none flex justify-center">
-                                    <Wordmark variant="mark" size="lg" className="opacity-90" animated />
-                                </div>
-
-                                {/* Caption (desktop only) */}
-                                <motion.div
-                                    className="hidden md:block absolute bottom-6 left-6 bg-black/70 backdrop-blur-md border border-line rounded-[var(--radius-md)] p-4 max-w-[220px]"
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.8, delay: 1.6 }}
-                                >
-                                    <span className="text-display-alt text-lg text-accent-warm">Premium</span>
-                                    <p className="text-display text-xs text-warm-white tracking-widest mt-0.5">
-                                        MASTER BARBER
-                                    </p>
-                                </motion.div>
-
-                                {/* Vertical brand mark */}
-                                <span className="hidden md:block absolute right-3 top-6 text-[10px] tracking-[0.5em] uppercase text-silver-dark font-body font-semibold rotate-180 [writing-mode:vertical-rl]">
-                                    EST. 2017
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Scroll indicator */}
+                {/* Static photo (PC only). On mobile the intro sequence already
+                   delivered the visual; we keep the hero text-only for breathing
+                   room. */}
+                <div className="hidden md:block md:col-span-5 relative">
                     <motion.div
-                        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-none"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 1.5 }}
+                        className="sticky top-32 aspect-[4/5] w-full"
+                        initial={{ opacity: 0, scale: 0.96 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1], delay: 0.2 }}
                     >
-                        <div className="flex flex-col items-center gap-2 text-silver-dark">
-                            <span className="text-[10px] tracking-[0.4em] uppercase font-body font-semibold">
-                                <span className="md:hidden">Scorri per scoprire</span>
-                                <span className="hidden md:inline">Scroll</span>
-                            </span>
-                            <motion.div
-                                className="w-px h-10 md:h-12 bg-gradient-to-b from-silver to-transparent"
-                                animate={{ scaleY: [1, 0.3, 1] }}
-                                transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-                                style={{ transformOrigin: "top" }}
-                            />
-                        </div>
+                        <img
+                            src={HERO_PHOTO}
+                            alt="Hair Rich · forbici e rosa, simbolo del barber studio"
+                            className="absolute inset-0 w-full h-full object-contain select-none"
+                            draggable={false}
+                            loading="eager"
+                            decoding="async"
+                        />
+                        {/* Vignette */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent pointer-events-none" />
+
+                        {/* Caption */}
+                        <motion.div
+                            className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-md border border-line rounded-[var(--radius-md)] p-4 max-w-[220px]"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 1.2 }}
+                        >
+                            <span className="text-display-alt text-lg text-accent-warm">Premium</span>
+                            <p className="text-display text-xs text-warm-white tracking-widest mt-0.5">
+                                MASTER BARBER
+                            </p>
+                        </motion.div>
+
+                        <span className="absolute right-1 top-2 text-[10px] tracking-[0.5em] uppercase text-silver-dark font-body font-semibold rotate-180 [writing-mode:vertical-rl]">
+                            EST. 2017
+                        </span>
                     </motion.div>
                 </div>
-            </div>
-
-            {/* ── MOBILE only: text block AFTER frames ───────────────────────── */}
-            <div className="md:hidden px-6 pt-16 pb-20 bg-black relative z-10">
-                <HeroTextBlock />
             </div>
         </section>
     );

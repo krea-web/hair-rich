@@ -17,10 +17,11 @@ const Asterisk = ({ className = "" }: { className?: string }) => (
 );
 
 /**
- * Logo icona separator — crops `/logo-icona.png` to the rose+scissors glyph only
- * (the source PNG also contains the HAIRRICH wordmark in the bottom third, which
- * is why a plain <img> looks visually off-centre inside marquee rows). The
- * cropped glyph is then perfectly centered by the flex parent.
+ * Logo icona separator — crops `/logo-icona.png` (848×736) to the rose+scissors
+ * glyph only. The source PNG bakes the HAIRRICH wordmark into the bottom third,
+ * so we render the full image inside an `overflow:hidden` wrapper sized to the
+ * exact icon sub-rectangle — this preserves the icon's natural width, leaving
+ * no horizontal cropping (which was clipping the scissor blade tips before).
  */
 function LogoSeparator({
     size = 32,
@@ -31,25 +32,34 @@ function LogoSeparator({
     opacity?: number;
     tone?: "silver" | "ink";
 }) {
-    // The PNG (848×736) is laid out as: top ~64% rose+scissors icon, bottom ~36% wordmark.
-    const ICON_FRACTION = 0.64;
-    const visibleAspect = 1.15; // visible width / height of the cropped icon
-    const width = Math.round(size * visibleAspect);
-    const bgHeight = Math.round(size / ICON_FRACTION);
+    const ICON_FRACTION = 0.64; // top 64% of the PNG is the rose+scissors
+    const SOURCE_ASPECT = 848 / 736; // ≈ 1.152
+    // Wrapper aspect = icon sub-rectangle aspect = source / icon-fraction
+    const wrapperAspect = SOURCE_ASPECT / ICON_FRACTION; // ≈ 1.80
+    const width = Math.round(size * wrapperAspect);
+    const fullImageHeight = Math.round(size / ICON_FRACTION);
     return (
         <span
             aria-hidden="true"
-            className="inline-block shrink-0 align-middle select-none pointer-events-none bg-no-repeat"
+            className="inline-block shrink-0 align-middle select-none pointer-events-none overflow-hidden"
             style={{
                 height: `${size}px`,
                 width: `${width}px`,
-                backgroundImage: "url('/logo-icona.png')",
-                backgroundSize: `auto ${bgHeight}px`,
-                backgroundPosition: "center top",
                 opacity,
                 filter: tone === "ink" ? "brightness(0) saturate(100%)" : undefined,
             }}
-        />
+        >
+            <img
+                src="/logo-icona.png"
+                alt=""
+                draggable={false}
+                style={{
+                    width: "100%",
+                    height: `${fullImageHeight}px`,
+                    display: "block",
+                }}
+            />
+        </span>
     );
 }
 
