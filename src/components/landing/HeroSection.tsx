@@ -221,7 +221,7 @@ export function HeroSection() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         const hRatio = canvas.width / img.naturalWidth;
         const vRatio = canvas.height / img.naturalHeight;
-        const ratio = Math.min(hRatio, vRatio) * 0.92; // contain, with a small inset margin
+        const ratio = Math.min(hRatio, vRatio); // contain
         const w = img.naturalWidth * ratio;
         const h = img.naturalHeight * ratio;
         const x = (canvas.width - w) / 2;
@@ -290,18 +290,18 @@ export function HeroSection() {
                             <HeroTextBlock />
                         </div>
 
-                        {/* Canvas wrapper */}
+                        {/* Canvas wrapper — transparent so the frame floats on the hero bg */}
                         <div className="relative md:col-span-5 h-[100dvh] md:h-full">
-                            <div className="absolute inset-0 md:rounded-[var(--radius-md)] overflow-hidden md:border md:border-line bg-black-2">
+                            <div className="absolute inset-0 overflow-hidden bg-transparent">
                                 <canvas
                                     ref={canvasRef}
                                     className="w-full h-full block"
                                     aria-hidden="true"
                                 />
 
-                                {/* Loading shimmer */}
+                                {/* Loading shimmer (bordered card only while loading) */}
                                 {!imagesReady && (
-                                    <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-carbon to-carbon-2 flex items-center justify-center">
+                                    <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-carbon to-carbon-2 md:rounded-[var(--radius-md)] flex items-center justify-center">
                                         <span className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
                                             Caricamento…
                                         </span>
