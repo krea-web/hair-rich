@@ -16,17 +16,39 @@ const Asterisk = ({ className = "" }: { className?: string }) => (
     </svg>
 );
 
-/** Logo icona separator — uses the image's natural aspect ratio; centered via flex parent. */
-function LogoSeparator({ size = 32, opacity = 1 }: { size?: number; opacity?: number }) {
+/**
+ * Logo icona separator — crops `/logo-icona.png` to the rose+scissors glyph only
+ * (the source PNG also contains the HAIRRICH wordmark in the bottom third, which
+ * is why a plain <img> looks visually off-centre inside marquee rows). The
+ * cropped glyph is then perfectly centered by the flex parent.
+ */
+function LogoSeparator({
+    size = 32,
+    opacity = 1,
+    tone = "silver",
+}: {
+    size?: number;
+    opacity?: number;
+    tone?: "silver" | "ink";
+}) {
+    // The PNG (848×736) is laid out as: top ~64% rose+scissors icon, bottom ~36% wordmark.
+    const ICON_FRACTION = 0.64;
+    const visibleAspect = 1.15; // visible width / height of the cropped icon
+    const width = Math.round(size * visibleAspect);
+    const bgHeight = Math.round(size / ICON_FRACTION);
     return (
-        <img
-            src="/logo-icona.png"
-            alt=""
+        <span
             aria-hidden="true"
-            loading="lazy"
-            decoding="async"
-            className="select-none pointer-events-none align-middle shrink-0 block"
-            style={{ height: `${size}px`, width: "auto", opacity }}
+            className="inline-block shrink-0 align-middle select-none pointer-events-none bg-no-repeat"
+            style={{
+                height: `${size}px`,
+                width: `${width}px`,
+                backgroundImage: "url('/logo-icona.png')",
+                backgroundSize: `auto ${bgHeight}px`,
+                backgroundPosition: "center top",
+                opacity,
+                filter: tone === "ink" ? "brightness(0) saturate(100%)" : undefined,
+            }}
         />
     );
 }
@@ -72,40 +94,47 @@ export function MarqueeStrip({
     if (variant === "ribbon") {
         return (
             <div
-                className="relative overflow-hidden border-y border-accent-warm"
+                className="relative overflow-hidden"
                 style={{
                     background:
-                        "linear-gradient(90deg, var(--accent-warm) 0%, #E5BB8A 50%, var(--accent-warm) 100%)",
+                        "linear-gradient(180deg, #B8843D 0%, #D9A663 22%, #F2D49A 50%, #D9A663 78%, #A4702C 100%)",
+                    boxShadow:
+                        "inset 0 1px 0 rgba(255,236,200,0.55), inset 0 -1px 0 rgba(0,0,0,0.32), 0 1px 0 rgba(0,0,0,0.4)",
                 }}
                 aria-hidden="true"
             >
+                {/* subtle horizontal sheen */}
+                <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                        background:
+                            "linear-gradient(90deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0) 18%, rgba(255,255,255,0.14) 50%, rgba(0,0,0,0) 82%, rgba(0,0,0,0.18) 100%)",
+                    }}
+                />
                 <MarqueeTrack
                     items={items}
                     speedSec={speedSec ?? 22}
                     direction="left"
-                    gapClass="gap-6 md:gap-10"
+                    gapClass="gap-7 md:gap-12"
                 >
                     {(item, i) => {
                         const italic = i % 2 === 1;
                         return (
                             <span
                                 key={`${item}-${i}`}
-                                className="inline-flex items-center gap-5 md:gap-8 py-3 text-black"
+                                className="inline-flex items-center gap-6 md:gap-10 py-3.5 md:py-4 leading-none"
+                                style={{ color: "#1a0f04" }}
                             >
                                 {italic ? (
-                                    <span className="text-display-alt text-xl md:text-2xl">
+                                    <span className="text-display-alt text-2xl md:text-3xl leading-none">
                                         {item}
                                     </span>
                                 ) : (
-                                    <span className="text-display text-xs md:text-sm tracking-[0.4em] font-semibold uppercase">
+                                    <span className="text-display text-[11px] md:text-sm tracking-[0.42em] font-semibold uppercase leading-none">
                                         {item}
                                     </span>
                                 )}
-                                {/* Logo icona separator: silver su oro = bronzo, con drop-shadow
-                                   per leggibilità */}
-                                <span className="mix-blend-multiply">
-                                    <LogoSeparator size={40} />
-                                </span>
+                                <LogoSeparator size={28} tone="ink" opacity={0.78} />
                             </span>
                         );
                     }}

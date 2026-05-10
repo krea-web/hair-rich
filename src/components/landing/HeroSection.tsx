@@ -221,7 +221,7 @@ export function HeroSection() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         const hRatio = canvas.width / img.naturalWidth;
         const vRatio = canvas.height / img.naturalHeight;
-        const ratio = Math.max(hRatio, vRatio); // cover
+        const ratio = Math.min(hRatio, vRatio) * 0.92; // contain, with a small inset margin
         const w = img.naturalWidth * ratio;
         const h = img.naturalHeight * ratio;
         const x = (canvas.width - w) / 2;
