@@ -55,6 +55,14 @@ export function IntroSequence() {
         };
     }, []);
 
+    // The source frames are 907×800 with the rose+scissors content ANCHORED
+    // to the right edge (bbox x=209→906 on frame 1). Naive centering pushes
+    // the icon visibly off-centre to the right, so we position by the icon
+    // CONTENT centre — found empirically from frame 1 — and let the empty
+    // left padding spill off-canvas where it harmlessly merges with the
+    // black page background.
+    const ICON_CENTER_X_SRC = 557;
+
     const drawFrame = (img?: HTMLImageElement) => {
         if (!img || !img.naturalWidth || !canvasRef.current) return;
         const canvas = canvasRef.current;
@@ -64,12 +72,23 @@ export function IntroSequence() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         const hRatio = canvas.width / img.naturalWidth;
         const vRatio = canvas.height / img.naturalHeight;
-        // Contain with a comfortable safe area so the subject is never cropped.
-        const ratio = Math.min(hRatio, vRatio) * 0.78;
+        const canvasAspect = canvas.width / canvas.height;
+        const imgAspect = img.naturalWidth / img.naturalHeight;
+        const isPortrait = canvasAspect < imgAspect;
+
+        // Portrait viewports: fit by width and apply a 1.3× presence bump.
+        // The bump only eats into the empty left-side padding (x=0–208 of
+        // the source), never the icon itself, so the scissors feel BIG on
+        // mobile without losing the blade tips.
+        // Landscape viewports: fit by height so the composition fills the
+        // viewport vertically.
+        const ratio = isPortrait ? hRatio * 1.3 : vRatio;
         const w = img.naturalWidth * ratio;
         const h = img.naturalHeight * ratio;
-        const x = (canvas.width - w) / 2;
-        const y = (canvas.height - h) / 2;
+        const x = canvas.width / 2 - ICON_CENTER_X_SRC * ratio;
+        // Top-anchored: the subject visually exits through the very top edge
+        // of the screen as the animation progresses.
+        const y = 0;
         ctx.drawImage(img, x, y, w, h);
     };
 

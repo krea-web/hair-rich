@@ -121,11 +121,11 @@ export function Footer() {
                     {/* Brand */}
                     <div className="col-span-2 md:col-span-1">
                         <img
-                            src="/hairrich-logoesteso.png"
+                            src="/logo-icona.png"
                             alt="Hair Rich"
                             loading="lazy"
                             decoding="async"
-                            className="h-12 w-auto select-none pointer-events-none"
+                            className="h-20 w-auto select-none pointer-events-none -ml-2"
                         />
                         <p className="text-[10px] tracking-[0.3em] uppercase text-accent-warm mt-3 font-body font-semibold">
                             Olbia · Sardegna
