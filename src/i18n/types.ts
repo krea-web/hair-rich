@@ -112,7 +112,16 @@ export interface Dict {
             yearsLabel: string;
             yearsCaption: string;
         };
-        members: Array<{ name: string; role: string; specialties: string }>;
+        members: Array<{
+            name: string;
+            role: string;
+            specialties: string;
+            quote: string;
+            bio: string;
+            tags: string[];
+            yearsLabel: string;
+            yearsCaption: string;
+        }>;
     };
     pricing: {
         eyebrow: string;

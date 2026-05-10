@@ -18,8 +18,8 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
             {withWordmark && (
                 <Wordmark
                     variant="wordmark"
-                    size="2xl"
-                    className="mb-8 -ml-2 md:mb-10 opacity-90 drop-shadow-[0_0_20px_rgba(212,165,116,0.18)]"
+                    size="lg"
+                    className="mb-6 -ml-2 md:mb-10 md:[&>img]:h-36 lg:[&>img]:h-44 opacity-90 drop-shadow-[0_0_20px_rgba(212,165,116,0.18)]"
                     animated
                 />
             )}

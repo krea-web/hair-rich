@@ -19,9 +19,9 @@ export function CartFAB() {
                     whileTap={{ scale: 0.95 }}
                     onClick={open}
                     className="
-            fixed z-[60]
-            bottom-6 left-6
-            md:bottom-6 md:left-auto md:right-6
+            fixed z-[55]
+            bottom-24 right-4
+            md:bottom-6 md:right-6
             flex items-center gap-3
             bg-warm-white text-black
             px-5 py-3

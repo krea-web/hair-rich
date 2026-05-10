@@ -52,7 +52,7 @@ export function GallerySection() {
         <section
             id="galleria"
             aria-label={t.gallery.eyebrow}
-            className="relative py-24 md:py-40 px-6 md:px-12 lg:px-20 bg-black-2 overflow-hidden"
+            className="relative py-16 md:py-32 px-6 md:px-12 lg:px-20 bg-black-2 overflow-hidden"
         >
             <div className="max-w-7xl mx-auto">
                 <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-12 md:mb-16">

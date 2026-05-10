@@ -16,7 +16,7 @@ const Asterisk = ({ className = "" }: { className?: string }) => (
     </svg>
 );
 
-/** Logo icona usato come separatore (animato in rotazione lenta) */
+/** Logo icona separator — uses the image's natural aspect ratio; centered via flex parent. */
 function LogoSeparator({ size = 32, opacity = 1 }: { size?: number; opacity?: number }) {
     return (
         <img
@@ -25,8 +25,8 @@ function LogoSeparator({ size = 32, opacity = 1 }: { size?: number; opacity?: nu
             aria-hidden="true"
             loading="lazy"
             decoding="async"
-            className="select-none pointer-events-none object-contain"
-            style={{ height: `${size}px`, width: `${size}px`, opacity }}
+            className="select-none pointer-events-none align-middle shrink-0 block"
+            style={{ height: `${size}px`, width: "auto", opacity }}
         />
     );
 }

@@ -9,7 +9,18 @@ import { EditorialHeading } from "./_shared/EditorialHeading";
 import { SmartImage } from "./_shared/SmartImage";
 import { useT } from "@/i18n/useLang";
 
-const PRODUCTS = [
+type ProductGroup = "capelli" | "barba";
+
+const PRODUCTS: Array<{
+    id: string;
+    name: string;
+    sub: string;
+    description: string;
+    price: number;
+    category: string;
+    group: ProductGroup;
+    img: string;
+}> = [
     {
         id: "1",
         name: "Pomade Opaca",
@@ -17,16 +28,8 @@ const PRODUCTS = [
         description: "Crema opaca per un look naturale e texturizzato.",
         price: 2500,
         category: "Styling",
+        group: "capelli",
         img: "https://images.unsplash.com/photo-1631730486572-226d1f595b68?q=80&w=900&auto=format&fit=crop",
-    },
-    {
-        id: "2",
-        name: "Olio Barba",
-        sub: "Legno di Cedro",
-        description: "Nutre barba e pelle. Fragranza legnosa e virile.",
-        price: 2800,
-        category: "Barba",
-        img: "https://images.unsplash.com/photo-1583241475880-083f84372725?q=80&w=900&auto=format&fit=crop",
     },
     {
         id: "3",
@@ -35,16 +38,8 @@ const PRODUCTS = [
         description: "Pulisce in profondità, rimuove residui di styling.",
         price: 1800,
         category: "Lavaggio",
+        group: "capelli",
         img: "https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?q=80&w=900&auto=format&fit=crop",
-    },
-    {
-        id: "4",
-        name: "Balsamo Dopobarba",
-        sub: "Lenitivo",
-        description: "Calma le irritazioni post rasatura. Senza alcool.",
-        price: 3200,
-        category: "Rasatura",
-        img: "https://images.unsplash.com/photo-1609097162405-43c0d6b1e1f3?q=80&w=900&auto=format&fit=crop",
     },
     {
         id: "5",
@@ -53,14 +48,75 @@ const PRODUCTS = [
         description: "Look tradizionali effetto bagnato, facile da rimuovere.",
         price: 2400,
         category: "Styling",
+        group: "capelli",
         img: "https://images.unsplash.com/photo-1581618520099-3a7e6b6b65c5?q=80&w=900&auto=format&fit=crop",
     },
+    {
+        id: "6",
+        name: "Maschera Riparatrice",
+        sub: "Cheratina & Argan",
+        description: "Trattamento intensivo settimanale. Ripara, idrata, dona corpo.",
+        price: 2900,
+        category: "Trattamento",
+        group: "capelli",
+        img: "https://images.unsplash.com/photo-1559599101-f09722fb4948?q=80&w=900&auto=format&fit=crop",
+    },
+    {
+        id: "2",
+        name: "Olio Barba",
+        sub: "Legno di Cedro",
+        description: "Nutre barba e pelle. Fragranza legnosa e virile.",
+        price: 2800,
+        category: "Barba",
+        group: "barba",
+        img: "https://images.unsplash.com/photo-1583241475880-083f84372725?q=80&w=900&auto=format&fit=crop",
+    },
+    {
+        id: "4",
+        name: "Balsamo Dopobarba",
+        sub: "Lenitivo",
+        description: "Calma le irritazioni post rasatura. Senza alcool.",
+        price: 3200,
+        category: "Rasatura",
+        group: "barba",
+        img: "https://images.unsplash.com/photo-1609097162405-43c0d6b1e1f3?q=80&w=900&auto=format&fit=crop",
+    },
+    {
+        id: "7",
+        name: "Balsamo Barba",
+        sub: "Modellante",
+        description: "Disciplina e ammorbidisce. Profumo legno+vaniglia.",
+        price: 2600,
+        category: "Barba",
+        group: "barba",
+        img: "https://images.unsplash.com/photo-1626015449974-1b88f2eda40b?q=80&w=900&auto=format&fit=crop",
+    },
+    {
+        id: "8",
+        name: "Sapone da Barba",
+        sub: "Hot Towel Edition",
+        description: "Schiuma cremosa, scivolamento perfetto del rasoio.",
+        price: 2200,
+        category: "Rasatura",
+        group: "barba",
+        img: "https://images.unsplash.com/photo-1626015449974-1b88f2eda40b?q=80&w=900&auto=format&fit=crop",
+    },
 ];
+
+const GROUP_LABELS_BY_LANG: Record<string, { all: string; capelli: string; barba: string }> = {
+    it: { all: "Tutti", capelli: "Capelli", barba: "Barba" },
+    en: { all: "All", capelli: "Hair", barba: "Beard" },
+    fr: { all: "Tous", capelli: "Cheveux", barba: "Barbe" },
+    de: { all: "Alle", capelli: "Haar", barba: "Bart" },
+};
 
 export function ProductsSection() {
     const { addItem } = useCartStore();
     const addToast = useToastStore((s) => s.addToast);
-    const { t } = useT();
+    const { t, lang } = useT();
+    const labels = GROUP_LABELS_BY_LANG[lang] ?? GROUP_LABELS_BY_LANG.it!;
+    const [filter, setFilter] = useState<"all" | ProductGroup>("all");
+    const filteredProducts = filter === "all" ? PRODUCTS : PRODUCTS.filter((p) => p.group === filter);
     const [emblaRef, emblaApi] = useEmblaCarousel({
         align: "start",
         dragFree: true,
@@ -94,11 +150,18 @@ export function ProductsSection() {
         emblaApi.on("scroll", onScroll);
     }, [emblaApi, onSelect, onScroll]);
 
+    // Re-init Embla quando cambia il filtro (rimisura)
+    useEffect(() => {
+        if (!emblaApi) return;
+        emblaApi.reInit();
+        emblaApi.scrollTo(0);
+    }, [emblaApi, filter]);
+
     return (
         <section
             id="prodotti"
             aria-label="Prodotti"
-            className="relative py-24 md:py-40 px-6 md:px-12 lg:px-20 overflow-hidden bg-black-2"
+            className="relative py-16 md:py-32 px-6 md:px-12 lg:px-20 overflow-hidden bg-black-2"
         >
             <div className="max-w-7xl mx-auto">
                 <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-12 md:mb-16">
@@ -140,10 +203,32 @@ export function ProductsSection() {
                     </div>
                 </div>
 
+                {/* Filtro categoria Capelli/Barba */}
+                <div className="flex flex-wrap items-center gap-2 mb-6 md:mb-8" role="tablist" aria-label="Filtra per categoria">
+                    {(["all", "capelli", "barba"] as const).map((g) => (
+                        <button
+                            key={g}
+                            onClick={() => setFilter(g)}
+                            className={`px-4 py-2 text-[10px] uppercase tracking-[0.3em] font-body font-semibold rounded-full border transition-colors ${
+                                filter === g
+                                    ? "bg-warm-white text-black border-warm-white"
+                                    : "border-line text-silver hover:border-silver-mid hover:text-warm-white"
+                            }`}
+                            role="tab"
+                            aria-selected={filter === g}
+                        >
+                            {labels[g]}
+                        </button>
+                    ))}
+                    <span className="ml-auto text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold self-center">
+                        {filteredProducts.length} {filteredProducts.length === 1 ? "prodotto" : "prodotti"}
+                    </span>
+                </div>
+
                 {/* Carousel — overflow-hidden necessario per Embla measurement */}
                 <div className="overflow-hidden -mx-6 md:mx-0" ref={emblaRef}>
                     <div className="flex gap-4 md:gap-6 px-6 md:px-0">
-                        {PRODUCTS.map((p, i) => (
+                        {filteredProducts.map((p, i) => (
                             <motion.article
                                 key={p.id}
                                 className="flex-[0_0_80%] sm:flex-[0_0_45%] md:flex-[0_0_30%] min-w-0"

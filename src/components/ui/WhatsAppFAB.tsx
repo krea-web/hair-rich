@@ -38,7 +38,7 @@ export function WhatsAppFAB() {
 
     return (
         <motion.div
-            className="fixed bottom-24 md:bottom-6 left-4 md:left-6 z-50"
+            className="fixed bottom-24 md:bottom-6 left-4 md:left-6 z-[55]"
             initial={{ opacity: 0, scale: 0.6, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 1.5, ease: [0.34, 1.56, 0.64, 1] }}

@@ -49,7 +49,7 @@ export function PricingSection() {
         <section
             id="prezzi"
             aria-label={t.pricing.titleA + " " + t.pricing.titleB}
-            className="relative py-24 md:py-40 px-6 md:px-12 lg:px-20 bg-black overflow-hidden"
+            className="relative py-16 md:py-32 px-6 md:px-12 lg:px-20 bg-black overflow-hidden"
         >
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16">
                 {/* ── Left aside image + intro ─────────────────────────────── */}

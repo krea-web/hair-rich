@@ -116,7 +116,7 @@ export function BookingPulse({ variant = "both", className = "" }: Props) {
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 16, scale: 0.95 }}
                             transition={{ duration: 0.45, ease: [0.34, 1.56, 0.64, 1] }}
-                            className="fixed bottom-24 md:bottom-6 left-4 md:left-6 z-[55] max-w-[300px] bg-black-2 border border-line rounded-[var(--radius-md)] p-3 pr-9 shadow-[0_15px_40px_-10px_rgba(0,0,0,0.8)] backdrop-blur-md"
+                            className="fixed top-20 md:bottom-24 md:top-auto left-4 md:left-6 z-[54] max-w-[280px] md:max-w-[300px] bg-black-2 border border-line rounded-[var(--radius-md)] p-3 pr-9 shadow-[0_15px_40px_-10px_rgba(0,0,0,0.8)] backdrop-blur-md"
                             role="status"
                             aria-live="polite"
                         >

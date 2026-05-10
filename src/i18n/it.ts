@@ -154,7 +154,17 @@ export const it: Dict = {
             yearsCaption: "anni di mestiere",
         },
         members: [
-            { name: "Luca", role: "Senior Barber", specialties: "Taglio · Barba · Styling" },
+            {
+                name: "Luca",
+                role: "Senior Barber",
+                specialties: "Taglio · Barba · Styling",
+                quote: "Il taglio giusto si vede dopo una settimana, non dopo cinque minuti.",
+                bio:
+                    "Luca è entrato nel team Hair Rich dopo anni in saloni di Roma e Cagliari. Specializzato in tagli moderni, texturizzazioni e barba sartoriale. Mano leggera, ascolto vero, e quel pizzico di ironia che fa volare la seduta.",
+                tags: ["Modern", "Texture", "Beard", "Styling"],
+                yearsLabel: "6+",
+                yearsCaption: "anni di mestiere",
+            },
         ],
     },
     pricing: {

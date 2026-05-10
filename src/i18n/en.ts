@@ -139,7 +139,17 @@ export const en: Dict = {
             yearsCaption: "years on the chair",
         },
         members: [
-            { name: "Luca", role: "Senior Barber", specialties: "Cut · Beard · Styling" },
+            {
+                name: "Luca",
+                role: "Senior Barber",
+                specialties: "Cut · Beard · Styling",
+                quote: "A good cut shows after a week, not after five minutes.",
+                bio:
+                    "Luca joined the Hair Rich team after years in salons in Rome and Cagliari. Specialised in modern cuts, texturing and tailored beard work. Light hand, real listening, and just enough wit to make the chair feel like a privilege.",
+                tags: ["Modern", "Texture", "Beard", "Styling"],
+                yearsLabel: "6+",
+                yearsCaption: "years on the chair",
+            },
         ],
     },
     pricing: {

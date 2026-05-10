@@ -88,7 +88,7 @@ export function ReviewsSection() {
         <section
             id="recensioni"
             aria-label={t.reviews.eyebrow}
-            className="relative py-24 md:py-40 px-6 md:px-12 lg:px-20 overflow-hidden"
+            className="relative py-16 md:py-32 px-6 md:px-12 lg:px-20 overflow-hidden"
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
         >

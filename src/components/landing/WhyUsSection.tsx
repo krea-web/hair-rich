@@ -26,7 +26,7 @@ export function WhyUsSection() {
     return (
         <section
             aria-label={t.whyUs.titleA}
-            className="relative py-24 md:py-40 px-6 md:px-12 lg:px-20 bg-black-2 overflow-hidden"
+            className="relative py-16 md:py-32 px-6 md:px-12 lg:px-20 bg-black-2 overflow-hidden"
         >
             <div className="max-w-7xl mx-auto">
                 <EditorialHeading

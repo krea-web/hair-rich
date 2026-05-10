@@ -139,7 +139,17 @@ export const fr: Dict = {
             yearsCaption: "années de métier",
         },
         members: [
-            { name: "Luca", role: "Senior Barber", specialties: "Coupe · Barbe · Styling" },
+            {
+                name: "Luca",
+                role: "Senior Barber",
+                specialties: "Coupe · Barbe · Styling",
+                quote: "Une bonne coupe se voit après une semaine, pas après cinq minutes.",
+                bio:
+                    "Luca a rejoint l'équipe Hair Rich après plusieurs années dans des salons à Rome et Cagliari. Spécialisé en coupes modernes, texturisation et barbe sur mesure. Main légère, écoute vraie, et juste ce qu'il faut d'humour pour faire de la séance un plaisir.",
+                tags: ["Modern", "Texture", "Beard", "Styling"],
+                yearsLabel: "6+",
+                yearsCaption: "années de métier",
+            },
         ],
     },
     pricing: {

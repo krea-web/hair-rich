@@ -18,7 +18,7 @@ export function ServicesSection() {
         <section
             id="servizi"
             aria-label="Servizi"
-            className="relative py-24 md:py-40 px-6 md:px-12 lg:px-20 bg-black overflow-hidden"
+            className="relative py-16 md:py-32 px-6 md:px-12 lg:px-20 bg-black overflow-hidden"
         >
             <div className="max-w-7xl mx-auto">
                 <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-16 md:mb-24">
