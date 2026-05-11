@@ -94,11 +94,20 @@ const m = marqueeItems[lang];
   <Footer client:visible />
 </main>
 
-<StickyBookCTA client:idle />
-<WhatsAppFAB client:idle />
-<BookingPulse client:idle variant="popup" />
-<CartFAB client:idle />
-<CartDrawer client:idle />
+<div data-intro-hidden style="display: contents">
+  <StickyBookCTA client:idle />
+  <WhatsAppFAB client:idle />
+  <BookingPulse client:idle variant="popup" />
+  <CartFAB client:idle />
+  <CartDrawer client:idle />
+  <CookieBanner client:idle />
+  <InstallPrompt client:idle />
+</div>
 <ToastViewport client:load />
-<CookieBanner client:idle />
-<InstallPrompt client:idle />
+
+<script is:inline>
+  // Set the intro flag synchronously before any FAB hydrates so users
+  // never see them flash in during the intro animation. IntroSequence
+  // clears the attribute once the section is fully scrolled past.
+  document.body.dataset.introActive = "true";
+</script>

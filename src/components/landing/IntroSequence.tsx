@@ -118,6 +118,33 @@ export function IntroSequence() {
         return () => window.removeEventListener("resize", resize);
     }, [imagesReady, frameIndex]);
 
+    // Toggle body[data-intro-active] based on whether the intro section is
+    // still in front of the user. While active, all floating UI is hidden
+    // via the CSS rule on [data-intro-hidden] (see globals.css). Cleared
+    // when the section has fully scrolled past the viewport top.
+    useEffect(() => {
+        document.body.dataset.introActive = "true";
+        const section = sectionRef.current;
+        if (!section) return;
+
+        const onScroll = () => {
+            const rect = section.getBoundingClientRect();
+            // Section is considered "passed" when its bottom edge crosses
+            // the top of the viewport.
+            if (rect.bottom <= 0) {
+                document.body.dataset.introActive = "false";
+            } else {
+                document.body.dataset.introActive = "true";
+            }
+        };
+        onScroll();
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => {
+            window.removeEventListener("scroll", onScroll);
+            delete document.body.dataset.introActive;
+        };
+    }, []);
+
     return (
         <section
             ref={sectionRef}
