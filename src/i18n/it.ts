@@ -337,13 +337,12 @@ export const it: Dict = {
         cta: "@hair_rich_",
     },
     footer: {
-        newsletterEyebrow: "Newsletter",
-        newsletterTitle: "Stay sharp.",
-        newsletterBody:
-            "Una mail al mese: nuovi tagli, anteprime prodotti, eventi privati. Niente spam, mai.",
-        newsletterPlaceholder: "la-tua@email.com",
-        newsletterSubmit: "Iscriviti",
-        newsletterSuccess: "Iscritto. Ti scriviamo presto.",
+        signupEyebrow: "Il club",
+        signupTitle: "Unisciti al club.",
+        signupBody:
+            "Crea il tuo profilo: prenotazioni in un tap, storico tagli, vantaggi riservati e referral.",
+        signupSubmit: "Crea il tuo profilo",
+        signupLogin: "Ho già un account",
         sections: { contact: "Contatti", navigate: "Naviga", hours: "Orari" },
         days: { mon: "Lun", tue: "Mar", wed: "Mer", thu: "Gio", fri: "Ven", sat: "Sab", sun: "Dom" },
         closed: "Chiuso",

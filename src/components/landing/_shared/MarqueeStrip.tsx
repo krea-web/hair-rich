@@ -17,11 +17,10 @@ const Asterisk = ({ className = "" }: { className?: string }) => (
 );
 
 /**
- * Logo separator — renders `/logo-icona.png` (848×736) in full at its
- * natural aspect ratio. The image content (rose+scissors above, HAIRRICH
- * wordmark below) fills 95% of the source bbox vertically, so the visual
- * centre is close enough to the geometric centre that flex `items-center`
- * lines it up correctly with the marquee text on every variant.
+ * Logo separator — renders `/logo-mark.webp`, a tight transparent crop of
+ * the rose+scissors icon with no HAIRRICH wordmark and no padding. Because
+ * the file itself is the icon (and only the icon), flex `items-center`
+ * centres it perfectly inside the marquee row on every variant.
  */
 function LogoSeparator({
     size = 32,
@@ -32,11 +31,11 @@ function LogoSeparator({
     opacity?: number;
     tone?: "silver" | "ink";
 }) {
-    const SOURCE_ASPECT = 848 / 736; // ≈ 1.152
+    const SOURCE_ASPECT = 568 / 615; // ≈ 0.924
     const width = Math.round(size * SOURCE_ASPECT);
     return (
         <img
-            src="/logo-icona.png"
+            src="/logo-mark.webp"
             alt=""
             aria-hidden="true"
             draggable={false}

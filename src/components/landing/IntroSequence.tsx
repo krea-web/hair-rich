@@ -73,13 +73,14 @@ export function IntroSequence() {
         };
     }, []);
 
-    // Source frames are 907×800 with a small noise cluster at (x=906, y=792–799)
-    // that pollutes any whole-frame bbox. Excluding that artifact (and the
-    // bottom 50px where it lives), the real icon spans x=208→735 and y=24→615
-    // — giving an optical centre of (471, 320). Anchoring on this lands the
-    // composition truly at viewport centre on every device.
-    const ICON_CENTER_X_SRC = 471;
-    const ICON_CENTER_Y_SRC = 320;
+    // Source frames are pre-cropped to 568×615 — a tight wrap around the
+    // union bbox of all 103 frames. The pixel-mass-weighted centroid of
+    // frame 1 lands at (292, 312) in the cropped coordinate space. Because
+    // wasted padding is now baked out of the source itself, plain `contain`
+    // scaling already gives the composition genuine presence on every
+    // viewport — the previous portrait presence bump is no longer needed.
+    const ICON_CENTER_X_SRC = 292;
+    const ICON_CENTER_Y_SRC = 312;
 
     const drawFrame = (img?: HTMLImageElement) => {
         if (!img || !img.naturalWidth || !canvasRef.current) return;
@@ -90,17 +91,7 @@ export function IntroSequence() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         const hRatio = canvas.width / img.naturalWidth;
         const vRatio = canvas.height / img.naturalHeight;
-        const canvasAspect = canvas.width / canvas.height;
-        const imgAspect = img.naturalWidth / img.naturalHeight;
-        const isPortrait = canvasAspect < imgAspect;
-
-        // Portrait viewports: fit by width and apply a 1.3× presence bump.
-        // The bump only eats into the empty left-side padding (x=0–208 of
-        // the source), never the icon itself, so the scissors feel BIG on
-        // mobile without losing the blade tips.
-        // Landscape viewports: fit by height so the composition fills the
-        // viewport vertically.
-        const ratio = isPortrait ? hRatio * 1.3 : vRatio;
+        const ratio = Math.min(hRatio, vRatio);
         const w = img.naturalWidth * ratio;
         const h = img.naturalHeight * ratio;
         const x = canvas.width / 2 - ICON_CENTER_X_SRC * ratio;
@@ -168,7 +159,7 @@ export function IntroSequence() {
             aria-label="Intro"
             data-intro-sequence
         >
-            <div className="h-[260vh] md:h-[280vh]">
+            <div className="h-[200vh] md:h-[220vh]">
                 <div className="sticky top-0 h-[100dvh] overflow-hidden bg-black">
                     <canvas
                         ref={canvasRef}

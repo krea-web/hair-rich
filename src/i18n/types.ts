@@ -235,12 +235,11 @@ export interface Dict {
         cta: string;
     };
     footer: {
-        newsletterEyebrow: string;
-        newsletterTitle: string;
-        newsletterBody: string;
-        newsletterPlaceholder: string;
-        newsletterSubmit: string;
-        newsletterSuccess: string;
+        signupEyebrow: string;
+        signupTitle: string;
+        signupBody: string;
+        signupSubmit: string;
+        signupLogin: string;
         sections: { contact: string; navigate: string; hours: string };
         days: { mon: string; tue: string; wed: string; thu: string; fri: string; sat: string; sun: string };
         closed: string;

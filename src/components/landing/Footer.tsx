@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
 import { SITE } from "@/lib/constants";
-import { useToastStore } from "@/lib/store";
 import { useT } from "@/i18n/useLang";
 
 const HOURS_RAW = [
@@ -16,12 +14,9 @@ const HOURS_RAW = [
 ];
 
 export function Footer() {
-    const { t } = useT();
+    const { t, lang } = useT();
     const currentYear = new Date().getFullYear();
-    const addToast = useToastStore((s) => s.addToast);
-    const [email, setEmail] = useState("");
-    const [submitting, setSubmitting] = useState(false);
-    const [done, setDone] = useState(false);
+    const signupHref = lang === "it" ? "/registrazione" : `/${lang}/registrazione`;
 
     const QUICK_LINKS = [
         { href: "#about", label: t.nav.about },
@@ -37,21 +32,6 @@ export function Footer() {
         hours: h.hours === "closed" ? t.footer.closed : h.hours,
     }));
 
-    const onNewsletter = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-            addToast(t.booking.validation.invalidEmail, "error");
-            return;
-        }
-        setSubmitting(true);
-        // Mock: in fase Supabase qui andrà l'insert in tabella newsletter_subscribers
-        await new Promise((r) => setTimeout(r, 700));
-        setSubmitting(false);
-        setDone(true);
-        setEmail("");
-        addToast(t.footer.newsletterSuccess, "success");
-    };
-
     return (
         <footer className="relative border-t border-line bg-black overflow-hidden">
             {/* Big wordmark image faded as watermark */}
@@ -65,55 +45,47 @@ export function Footer() {
             />
 
             <div className="relative max-w-7xl mx-auto px-6 md:px-12 lg:px-20 py-20 md:py-28">
-                {/* Newsletter */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 pb-16 border-b border-line">
+                {/* Join the club — sign-up CTA */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 pb-16 border-b border-line items-end">
                     <div>
-                        <span className="text-display-alt text-3xl text-accent-warm">{t.footer.newsletterEyebrow}</span>
+                        <span className="text-display-alt text-3xl text-accent-warm">
+                            {t.footer.signupEyebrow}
+                        </span>
                         <h2 className="text-display text-3xl md:text-5xl text-warm-white mt-2 leading-[1]">
-                            {t.footer.newsletterTitle}
+                            {t.footer.signupTitle}
                         </h2>
                         <p className="mt-4 text-warm-white-muted text-base max-w-md">
-                            {t.footer.newsletterBody}
+                            {t.footer.signupBody}
                         </p>
                     </div>
-                    <form
-                        className="flex flex-col sm:flex-row gap-3 self-end"
-                        onSubmit={onNewsletter}
-                        aria-label={t.footer.newsletterEyebrow}
-                    >
-                        <label className="sr-only" htmlFor="newsletter-email">Email</label>
-                        <input
-                            id="newsletter-email"
-                            type="email"
-                            required
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            disabled={submitting || done}
-                            placeholder={t.footer.newsletterPlaceholder}
-                            className="flex-1 bg-transparent border-b-2 border-line px-2 py-3 text-warm-white placeholder:text-silver-dark focus:border-accent-warm focus:outline-none transition-colors text-base disabled:opacity-50"
-                        />
-                        <button
-                            type="submit"
-                            disabled={submitting || done}
-                            className="px-7 py-3.5 bg-accent-warm text-black rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold hover:brightness-110 transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2 min-w-[140px]"
+                    <div className="flex flex-col sm:flex-row gap-3 self-end">
+                        <a
+                            href={signupHref}
+                            className="group inline-flex items-center justify-center gap-3 bg-accent-warm text-black px-8 py-4 rounded-full font-body font-semibold text-sm uppercase tracking-[0.2em] hover:brightness-110 active:scale-95 transition-all"
                         >
-                            {submitting ? (
-                                <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" strokeWidth="4" />
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                                </svg>
-                            ) : done ? (
-                                <>
-                                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                    </svg>
-                                    {t.common.success}
-                                </>
-                            ) : (
-                                t.footer.newsletterSubmit
-                            )}
-                        </button>
-                    </form>
+                            <span>{t.footer.signupSubmit}</span>
+                            <svg
+                                viewBox="0 0 24 24"
+                                className="w-4 h-4 transition-transform group-hover:translate-x-1"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                                />
+                            </svg>
+                        </a>
+                        <a
+                            href={lang === "it" ? "/login" : `/${lang}/login`}
+                            className="inline-flex items-center justify-center gap-2 border border-line text-warm-white px-7 py-4 rounded-full font-body font-semibold text-sm uppercase tracking-[0.2em] hover:border-warm-white hover:bg-warm-white/5 transition-colors"
+                        >
+                            {t.footer.signupLogin}
+                        </a>
+                    </div>
                 </div>
 
                 {/* Main columns */}

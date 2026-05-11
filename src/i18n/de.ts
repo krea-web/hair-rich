@@ -326,13 +326,12 @@ export const de: Dict = {
         cta: "@hair_rich_",
     },
     footer: {
-        newsletterEyebrow: "Newsletter",
-        newsletterTitle: "Stay sharp.",
-        newsletterBody:
-            "Eine E-Mail im Monat: neue Schnitte, Produkt-Previews, private Events. Niemals Spam.",
-        newsletterPlaceholder: "deine@email.com",
-        newsletterSubmit: "Abonnieren",
-        newsletterSuccess: "Abonniert. Bis bald.",
+        signupEyebrow: "Der Club",
+        signupTitle: "Werde Teil des Clubs.",
+        signupBody:
+            "Erstelle dein Profil: 1-Klick-Buchung, Schnitt-Historie, Mitglieder-Vorteile und Empfehlungen.",
+        signupSubmit: "Profil erstellen",
+        signupLogin: "Ich habe schon ein Konto",
         sections: { contact: "Kontakte", navigate: "Navigation", hours: "Öffnungszeiten" },
         days: { mon: "Mo", tue: "Di", wed: "Mi", thu: "Do", fri: "Fr", sat: "Sa", sun: "So" },
         closed: "Geschlossen",
