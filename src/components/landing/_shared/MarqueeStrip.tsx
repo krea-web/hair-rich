@@ -17,14 +17,11 @@ const Asterisk = ({ className = "" }: { className?: string }) => (
 );
 
 /**
- * Logo separator — crops `/logo-icona.png` (848×736) to the rose+scissors
- * portion only, hiding the HAIRRICH wordmark baked into the bottom of the
- * source. Cropping is essential here: the full logo is bottom-heavy because
- * of the wordmark, which makes the medallion read as off-centre inside a
- * flex `items-center` row even when it is geometrically centred. The
- * cropped icon is symmetric (rose top, handles bottom), so its visual and
- * geometric centres coincide and the separator looks aligned with the
- * surrounding text on every variant.
+ * Logo separator — renders `/logo-icona.png` (848×736) in full at its
+ * natural aspect ratio. The image content (rose+scissors above, HAIRRICH
+ * wordmark below) fills 95% of the source bbox vertically, so the visual
+ * centre is close enough to the geometric centre that flex `items-center`
+ * lines it up correctly with the marquee text on every variant.
  */
 function LogoSeparator({
     size = 32,
@@ -35,35 +32,22 @@ function LogoSeparator({
     opacity?: number;
     tone?: "silver" | "ink";
 }) {
-    // Top 70% of the source PNG = rose + crossed scissors + handles +
-    // decorative underline. Bottom 30% (HAIRRICH wordmark) is clipped.
-    const ICON_FRACTION = 0.7;
     const SOURCE_ASPECT = 848 / 736; // ≈ 1.152
-    const wrapperAspect = SOURCE_ASPECT / ICON_FRACTION; // ≈ 1.646
-    const width = Math.round(size * wrapperAspect);
-    const fullImageHeight = Math.round(size / ICON_FRACTION);
+    const width = Math.round(size * SOURCE_ASPECT);
     return (
-        <span
+        <img
+            src="/logo-icona.png"
+            alt=""
             aria-hidden="true"
-            className="inline-flex items-start justify-center shrink-0 align-middle select-none pointer-events-none overflow-hidden"
+            draggable={false}
+            className="block shrink-0 select-none pointer-events-none"
             style={{
                 height: `${size}px`,
                 width: `${width}px`,
                 opacity,
                 filter: tone === "ink" ? "brightness(0) saturate(100%)" : undefined,
             }}
-        >
-            <img
-                src="/logo-icona.png"
-                alt=""
-                draggable={false}
-                style={{
-                    width: `${width}px`,
-                    height: `${fullImageHeight}px`,
-                    display: "block",
-                }}
-            />
-        </span>
+        />
     );
 }
 
@@ -148,7 +132,7 @@ export function MarqueeStrip({
                                         {item}
                                     </span>
                                 )}
-                                <LogoSeparator size={28} tone="ink" opacity={0.78} />
+                                <LogoSeparator size={40} tone="ink" opacity={0.85} />
                             </span>
                         );
                     }}
@@ -170,7 +154,7 @@ export function MarqueeStrip({
                                 <span className="text-display-alt text-2xl md:text-4xl text-warm-white">
                                     {item}
                                 </span>
-                                <LogoSeparator size={32} opacity={0.85} />
+                                <LogoSeparator size={48} opacity={0.9} />
                             </span>
                         )}
                     </MarqueeTrack>
@@ -228,7 +212,7 @@ export function MarqueeStrip({
                                     {item}
                                 </span>
                             )}
-                            <LogoSeparator size={44} opacity={0.9} />
+                            <LogoSeparator size={60} opacity={0.95} />
                         </span>
                     );
                 }}
