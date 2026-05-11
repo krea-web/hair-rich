@@ -32,23 +32,18 @@ export function IntroSequence() {
         offset: ["start start", "end end"],
     });
 
-    // Phase 1 — frames animate in the first half of scroll budget.
-    // Phase 2 — welcome word reveals once scissors are gone and holds across
-    //           a generous slice (≈25% of section) so fast scrollers still
-    //           catch it before the hero takes over.
-    const frameIndex = useTransform(scrollYProgress, [0, 0.5], [1, FRAME_COUNT]);
+    // Phase 1 — frames animate in the first half of the scroll budget.
+    // Phase 2 — welcome word reveals once the scissors are gone and holds
+    //           across a generous slice (≈30% of the section) so fast
+    //           scrollers can still catch it before the hero takes over.
+    const frameIndex = useTransform(scrollYProgress, [0, 0.45], [1, FRAME_COUNT]);
     const hintOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
     const welcomeOpacity = useTransform(
         scrollYProgress,
-        [0.55, 0.66, 0.92, 1],
+        [0.48, 0.6, 0.93, 1],
         [0, 1, 1, 0],
     );
-    const welcomeY = useTransform(scrollYProgress, [0.55, 0.66], [28, 0]);
-    const welcomeLetterSpacing = useTransform(
-        scrollYProgress,
-        [0.55, 0.9],
-        ["0.45em", "0.16em"],
-    );
+    const welcomeY = useTransform(scrollYProgress, [0.48, 0.6], [28, 0]);
     const lang = useLang();
 
     useEffect(() => {
@@ -215,13 +210,13 @@ export function IntroSequence() {
                     {/* Phase 2: welcome word fades in at the centre of the
                        black space once the scissors animation completes. */}
                     <motion.div
-                        className="absolute inset-0 flex items-center justify-center pointer-events-none z-10"
+                        className="absolute inset-0 flex items-center justify-center pointer-events-none z-20 px-6"
                         style={{ opacity: welcomeOpacity }}
                         aria-hidden="true"
                     >
                         <motion.span
-                            className="text-display-alt text-warm-white text-5xl md:text-8xl lg:text-9xl"
-                            style={{ y: welcomeY, letterSpacing: welcomeLetterSpacing }}
+                            className="text-display-alt text-warm-white text-6xl md:text-8xl lg:text-9xl tracking-[0.04em] text-center whitespace-nowrap drop-shadow-[0_2px_24px_rgba(212,165,116,0.25)]"
+                            style={{ y: welcomeY, willChange: "transform, opacity" }}
                         >
                             {WELCOME[lang]}
                         </motion.span>

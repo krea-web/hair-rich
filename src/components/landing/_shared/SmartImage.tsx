@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Props {
     src: string;
@@ -28,6 +28,16 @@ export function SmartImage({
     eager = false,
 }: Props) {
     const [loaded, setLoaded] = useState(false);
+    const ref = useRef<HTMLImageElement>(null);
+
+    // Cached images: when the browser already has the asset, the <img> may
+    // finish loading before React attaches the onLoad listener — the event
+    // never fires and the element is stuck at opacity-0 forever. Detect
+    // that case on mount via `complete` + `naturalWidth`.
+    useEffect(() => {
+        const el = ref.current;
+        if (el && el.complete && el.naturalWidth > 0) setLoaded(true);
+    }, [src]);
 
     return (
         <div className={`relative overflow-hidden bg-carbon-2 ${aspect} ${className}`}>
@@ -38,6 +48,7 @@ export function SmartImage({
                 />
             )}
             <img
+                ref={ref}
                 src={src}
                 alt={alt}
                 width={width}
@@ -46,6 +57,7 @@ export function SmartImage({
                 loading={eager ? "eager" : "lazy"}
                 decoding="async"
                 onLoad={() => setLoaded(true)}
+                onError={() => setLoaded(true)}
                 className={`w-full h-full object-cover transition-opacity duration-700 ${loaded ? "opacity-100" : "opacity-0"}`}
             />
         </div>
