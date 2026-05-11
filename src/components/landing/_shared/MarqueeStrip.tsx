@@ -17,11 +17,14 @@ const Asterisk = ({ className = "" }: { className?: string }) => (
 );
 
 /**
- * Logo separator — renders `/logo-icona.png` (848×736) in full, including the
- * HAIRRICH wordmark beneath the rose+scissors. The natural image aspect is
- * preserved so the composition stays balanced inside marquee rows. The flex
- * parent on every variant uses `items-center` so the medallion is vertically
- * centred against the surrounding text.
+ * Logo separator — crops `/logo-icona.png` (848×736) to the rose+scissors
+ * portion only, hiding the HAIRRICH wordmark baked into the bottom of the
+ * source. Cropping is essential here: the full logo is bottom-heavy because
+ * of the wordmark, which makes the medallion read as off-centre inside a
+ * flex `items-center` row even when it is geometrically centred. The
+ * cropped icon is symmetric (rose top, handles bottom), so its visual and
+ * geometric centres coincide and the separator looks aligned with the
+ * surrounding text on every variant.
  */
 function LogoSeparator({
     size = 32,
@@ -32,22 +35,35 @@ function LogoSeparator({
     opacity?: number;
     tone?: "silver" | "ink";
 }) {
+    // Top 70% of the source PNG = rose + crossed scissors + handles +
+    // decorative underline. Bottom 30% (HAIRRICH wordmark) is clipped.
+    const ICON_FRACTION = 0.7;
     const SOURCE_ASPECT = 848 / 736; // ≈ 1.152
-    const width = Math.round(size * SOURCE_ASPECT);
+    const wrapperAspect = SOURCE_ASPECT / ICON_FRACTION; // ≈ 1.646
+    const width = Math.round(size * wrapperAspect);
+    const fullImageHeight = Math.round(size / ICON_FRACTION);
     return (
-        <img
-            src="/logo-icona.png"
-            alt=""
+        <span
             aria-hidden="true"
-            draggable={false}
-            className="inline-block shrink-0 align-middle select-none pointer-events-none"
+            className="inline-flex items-start justify-center shrink-0 align-middle select-none pointer-events-none overflow-hidden"
             style={{
                 height: `${size}px`,
                 width: `${width}px`,
                 opacity,
                 filter: tone === "ink" ? "brightness(0) saturate(100%)" : undefined,
             }}
-        />
+        >
+            <img
+                src="/logo-icona.png"
+                alt=""
+                draggable={false}
+                style={{
+                    width: `${width}px`,
+                    height: `${fullImageHeight}px`,
+                    display: "block",
+                }}
+            />
+        </span>
     );
 }
 
