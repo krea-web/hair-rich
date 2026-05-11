@@ -77,13 +77,13 @@ export function IntroSequence() {
         };
     }, []);
 
-    // The source frames are 907×800 with the rose+scissors content ANCHORED
-    // to the right edge (bbox x=209→906 on frame 1). Naive centering pushes
-    // the icon visibly off-centre to the right, so we position by the icon
-    // CONTENT centre — found empirically from frame 1 — and let the empty
-    // left padding spill off-canvas where it harmlessly merges with the
-    // black page background.
-    const ICON_CENTER_X_SRC = 557;
+    // The source frames are 907×800. The naive bbox centre (557, 411) is
+    // skewed by a thin anti-aliasing artifact on the right edge of every
+    // frame. The pixel-mass-weighted centroid of frame 1 lands at (459, 322)
+    // — that's the actual optical centre of the rose+scissors composition,
+    // and it's what we anchor on so the icon is genuinely centred on screen.
+    const ICON_CENTER_X_SRC = 459;
+    const ICON_CENTER_Y_SRC = 322;
 
     const drawFrame = (img?: HTMLImageElement) => {
         if (!img || !img.naturalWidth || !canvasRef.current) return;
@@ -108,11 +108,6 @@ export function IntroSequence() {
         const w = img.naturalWidth * ratio;
         const h = img.naturalHeight * ratio;
         const x = canvas.width / 2 - ICON_CENTER_X_SRC * ratio;
-        // Centre vertically too — frames are transparent so the (mostly empty)
-        // top/bottom of the source image doesn't add any visible padding.
-        // The internal motion (scissors lifting in the source) reads as the
-        // composition dissolving from the middle of the viewport.
-        const ICON_CENTER_Y_SRC = 411; // y midpoint of frame-1 bbox (26→796)
         const y = canvas.height / 2 - ICON_CENTER_Y_SRC * ratio;
         ctx.drawImage(img, x, y, w, h);
     };
