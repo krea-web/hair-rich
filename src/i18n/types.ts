@@ -234,6 +234,15 @@ export interface Dict {
         titleB: string;
         cta: string;
     };
+    map: {
+        eyebrow: string;
+        titleA: string;
+        titleB: string;
+        intro: string;
+        cta: string;
+        hoursSummary: string;
+        labels: { address: string; hours: string };
+    };
     footer: {
         signupEyebrow: string;
         signupTitle: string;

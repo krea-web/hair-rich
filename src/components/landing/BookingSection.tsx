@@ -56,24 +56,17 @@ export function BookingSection() {
 
                     <div className="mt-12 space-y-6 border-t border-line pt-8">
                         {[
-                            {
-                                k: t.booking.contactLabels.salon,
-                                v: SITE.address,
-                                href: "https://www.google.com/maps/search/?api=1&query=Hair+Rich+Olbia",
-                            },
-                            { k: t.booking.contactLabels.phone, v: SITE.phone, href: `tel:${SITE.phone.replace(/\s/g, "")}` },
-                            { k: t.booking.contactLabels.email, v: SITE.email, href: `mailto:${SITE.email}` },
+                            { k: t.booking.contactLabels.salon, v: SITE.address },
+                            { k: t.booking.contactLabels.phone, v: SITE.phone },
+                            { k: t.booking.contactLabels.email, v: SITE.email },
                         ].map((row) => (
                             <div key={row.k} className="grid grid-cols-[100px_1fr] gap-4 items-baseline">
                                 <span className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
                                     {row.k}
                                 </span>
-                                <a
-                                    href={row.href}
-                                    className="text-warm-white text-sm md:text-base font-body hover:text-accent-warm transition-colors"
-                                >
+                                <span className="text-warm-white text-sm md:text-base font-body">
                                     {row.v}
-                                </a>
+                                </span>
                             </div>
                         ))}
                     </div>

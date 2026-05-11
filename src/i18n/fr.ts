@@ -326,6 +326,16 @@ export const fr: Dict = {
         titleB: "Instagram.",
         cta: "@hair_rich_",
     },
+    map: {
+        eyebrow: "Où nous trouver",
+        titleA: "Au cœur d'",
+        titleB: "Olbia.",
+        intro:
+            "Le studio Hair Rich se trouve au centre d'Olbia, à deux pas du Corso Umberto. Parking à proximité.",
+        cta: "Itinéraire",
+        hoursSummary: "Mar–Sam · 9h00–19h30",
+        labels: { address: "Adresse", hours: "Horaires" },
+    },
     footer: {
         signupEyebrow: "Le Club",
         signupTitle: "Rejoignez le club.",

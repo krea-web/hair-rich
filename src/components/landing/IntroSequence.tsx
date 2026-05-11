@@ -6,7 +6,13 @@ import { useLang } from "@/i18n/useLang";
 import type { Locale } from "@/i18n/types";
 
 const FRAME_COUNT = 103;
-const framePath = (i: number) => `/hero-seq/frame_${String(i).padStart(3, "0")}.webp`;
+// Bump FRAMES_VERSION every time the source webp assets change shape (e.g.
+// after a re-crop). The query string forces stale service-worker caches and
+// browser HTTP caches to revalidate, so the JS positioning math never gets
+// mismatched against an older asset version.
+const FRAMES_VERSION = "v2";
+const framePath = (i: number) =>
+    `/hero-seq/frame_${String(i).padStart(3, "0")}.webp?v=${FRAMES_VERSION}`;
 
 const WELCOME: Record<Locale, string> = {
     it: "Benvenuto",

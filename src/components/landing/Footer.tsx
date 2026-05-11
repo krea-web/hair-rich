@@ -126,18 +126,8 @@ export function Footer() {
                         <address className="not-italic text-sm text-warm-white-muted mt-4 space-y-3 leading-relaxed">
                             <p>{SITE.address}</p>
                             <p>
-                                <a
-                                    href={`tel:${SITE.phone.replace(/\s/g, "")}`}
-                                    className="hover:text-accent-warm transition-colors block"
-                                >
-                                    {SITE.phone}
-                                </a>
-                                <a
-                                    href={`mailto:${SITE.email}`}
-                                    className="hover:text-accent-warm transition-colors block mt-1"
-                                >
-                                    {SITE.email}
-                                </a>
+                                <span className="block">{SITE.phone}</span>
+                                <span className="block mt-1">{SITE.email}</span>
                             </p>
                         </address>
                     </div>

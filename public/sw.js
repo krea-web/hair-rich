@@ -8,7 +8,7 @@
  *
  * Versione cache: cambia il valore di CACHE_NAME quando vuoi invalidare.
  */
-const CACHE_NAME = "hairrich-v2";
+const CACHE_NAME = "hairrich-v3";
 const OFFLINE_URL = "/offline";
 const PRECACHE = [
     "/",
