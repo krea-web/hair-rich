@@ -2,9 +2,18 @@
 
 import { motion, useMotionValueEvent, useScroll, useTransform } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { useLang } from "@/i18n/useLang";
+import type { Locale } from "@/i18n/types";
 
 const FRAME_COUNT = 103;
 const framePath = (i: number) => `/hero-seq/frame_${String(i).padStart(3, "0")}.webp`;
+
+const WELCOME: Record<Locale, string> = {
+    it: "Benvenuto",
+    en: "Welcome",
+    fr: "Bienvenue",
+    de: "Willkommen",
+};
 
 /**
  * Full-viewport scroll-driven intro sequence: the rose+scissors composition
@@ -23,10 +32,23 @@ export function IntroSequence() {
         offset: ["start start", "end end"],
     });
 
-    // Animation completes at 0.92 of progress, last 8% holds the final frame
-    // so the transition into the hero section feels intentional, not abrupt.
-    const frameIndex = useTransform(scrollYProgress, [0, 0.92], [1, FRAME_COUNT]);
+    // Phase 1 — frames animate across the first ~65% of the scroll budget.
+    // Phase 2 — the welcome word fades in once the scissors are gone and
+    //           holds until the hero starts taking over the viewport.
+    const frameIndex = useTransform(scrollYProgress, [0, 0.65], [1, FRAME_COUNT]);
     const hintOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
+    const welcomeOpacity = useTransform(
+        scrollYProgress,
+        [0.7, 0.82, 0.95, 1],
+        [0, 1, 1, 0],
+    );
+    const welcomeY = useTransform(scrollYProgress, [0.7, 0.82], [24, 0]);
+    const welcomeLetterSpacing = useTransform(
+        scrollYProgress,
+        [0.7, 0.95],
+        ["0.4em", "0.18em"],
+    );
+    const lang = useLang();
 
     useEffect(() => {
         let cancelled = false;
@@ -86,9 +108,12 @@ export function IntroSequence() {
         const w = img.naturalWidth * ratio;
         const h = img.naturalHeight * ratio;
         const x = canvas.width / 2 - ICON_CENTER_X_SRC * ratio;
-        // Top-anchored: the subject visually exits through the very top edge
-        // of the screen as the animation progresses.
-        const y = 0;
+        // Centre vertically too — frames are transparent so the (mostly empty)
+        // top/bottom of the source image doesn't add any visible padding.
+        // The internal motion (scissors lifting in the source) reads as the
+        // composition dissolving from the middle of the viewport.
+        const ICON_CENTER_Y_SRC = 411; // y midpoint of frame-1 bbox (26→796)
+        const y = canvas.height / 2 - ICON_CENTER_Y_SRC * ratio;
         ctx.drawImage(img, x, y, w, h);
     };
 
@@ -190,6 +215,21 @@ export function IntroSequence() {
                     <span className="absolute right-3 top-6 text-[10px] tracking-[0.5em] uppercase text-silver-dark font-body font-semibold rotate-180 [writing-mode:vertical-rl]">
                         EST. 2017
                     </span>
+
+                    {/* Phase 2: welcome word fades in at the centre of the
+                       black space once the scissors animation completes. */}
+                    <motion.div
+                        className="absolute inset-0 flex items-center justify-center pointer-events-none z-10"
+                        style={{ opacity: welcomeOpacity }}
+                        aria-hidden="true"
+                    >
+                        <motion.span
+                            className="text-display-alt text-warm-white text-5xl md:text-8xl lg:text-9xl"
+                            style={{ y: welcomeY, letterSpacing: welcomeLetterSpacing }}
+                        >
+                            {WELCOME[lang]}
+                        </motion.span>
+                    </motion.div>
                 </div>
             </div>
         </section>
