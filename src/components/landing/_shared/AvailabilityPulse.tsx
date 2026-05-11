@@ -34,19 +34,19 @@ export function AvailabilityPulse({ variant = "inline", className = "" }: Props)
     if (variant === "ribbon") {
         return (
             <div
-                className={`inline-flex items-center gap-3 px-5 py-2.5 rounded-full border border-accent-warm/40 bg-accent-warm/10 backdrop-blur-md ${className}`}
+                className={`inline-flex items-center gap-2 md:gap-3 px-3 md:px-5 py-2 md:py-2.5 rounded-full border border-accent-warm/40 bg-accent-warm/10 backdrop-blur-md max-w-full ${className}`}
                 role="status"
                 aria-live="polite"
             >
-                <span className="relative flex h-2.5 w-2.5">
+                <span className="relative flex h-2 w-2 md:h-2.5 md:w-2.5 shrink-0">
                     <motion.span
                         className="absolute inline-flex h-full w-full rounded-full bg-accent-warm opacity-50"
                         animate={{ scale: [1, 2, 1], opacity: [0.5, 0, 0.5] }}
                         transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut" }}
                     />
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent-warm" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 md:h-2.5 md:w-2.5 bg-accent-warm" />
                 </span>
-                <span className="text-[11px] md:text-xs uppercase tracking-[0.25em] font-body font-semibold text-warm-white whitespace-nowrap">
+                <span className="text-[9px] md:text-xs uppercase tracking-[0.1em] md:tracking-[0.25em] font-body font-semibold text-warm-white whitespace-nowrap leading-tight">
                     {text}
                 </span>
             </div>

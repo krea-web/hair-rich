@@ -32,21 +32,22 @@ export function IntroSequence() {
         offset: ["start start", "end end"],
     });
 
-    // Phase 1 — frames animate across the first ~65% of the scroll budget.
-    // Phase 2 — the welcome word fades in once the scissors are gone and
-    //           holds until the hero starts taking over the viewport.
-    const frameIndex = useTransform(scrollYProgress, [0, 0.65], [1, FRAME_COUNT]);
+    // Phase 1 — frames animate in the first half of scroll budget.
+    // Phase 2 — welcome word reveals once scissors are gone and holds across
+    //           a generous slice (≈25% of section) so fast scrollers still
+    //           catch it before the hero takes over.
+    const frameIndex = useTransform(scrollYProgress, [0, 0.5], [1, FRAME_COUNT]);
     const hintOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
     const welcomeOpacity = useTransform(
         scrollYProgress,
-        [0.7, 0.82, 0.95, 1],
+        [0.55, 0.66, 0.92, 1],
         [0, 1, 1, 0],
     );
-    const welcomeY = useTransform(scrollYProgress, [0.7, 0.82], [24, 0]);
+    const welcomeY = useTransform(scrollYProgress, [0.55, 0.66], [28, 0]);
     const welcomeLetterSpacing = useTransform(
         scrollYProgress,
-        [0.7, 0.95],
-        ["0.4em", "0.18em"],
+        [0.55, 0.9],
+        ["0.45em", "0.16em"],
     );
     const lang = useLang();
 
@@ -77,13 +78,13 @@ export function IntroSequence() {
         };
     }, []);
 
-    // The source frames are 907×800. The naive bbox centre (557, 411) is
-    // skewed by a thin anti-aliasing artifact on the right edge of every
-    // frame. The pixel-mass-weighted centroid of frame 1 lands at (459, 322)
-    // — that's the actual optical centre of the rose+scissors composition,
-    // and it's what we anchor on so the icon is genuinely centred on screen.
-    const ICON_CENTER_X_SRC = 459;
-    const ICON_CENTER_Y_SRC = 322;
+    // Source frames are 907×800 with a small noise cluster at (x=906, y=792–799)
+    // that pollutes any whole-frame bbox. Excluding that artifact (and the
+    // bottom 50px where it lives), the real icon spans x=208→735 and y=24→615
+    // — giving an optical centre of (471, 320). Anchoring on this lands the
+    // composition truly at viewport centre on every device.
+    const ICON_CENTER_X_SRC = 471;
+    const ICON_CENTER_Y_SRC = 320;
 
     const drawFrame = (img?: HTMLImageElement) => {
         if (!img || !img.naturalWidth || !canvasRef.current) return;
