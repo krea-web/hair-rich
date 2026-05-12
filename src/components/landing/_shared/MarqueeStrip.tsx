@@ -112,7 +112,7 @@ export function MarqueeStrip({
                     items={items}
                     speedSec={speedSec ?? 22}
                     direction="left"
-                    gapClass="gap-7 md:gap-12"
+                    gapClass="gap-6 md:gap-10"
                 >
                     {(item, i) => {
                         const italic = i % 2 === 1;
@@ -147,7 +147,12 @@ export function MarqueeStrip({
                 aria-hidden="true"
             >
                 <div className="space-y-1 md:space-y-2">
-                    <MarqueeTrack items={items} speedSec={speedSec ?? 22} direction="left">
+                    <MarqueeTrack
+                        items={items}
+                        speedSec={speedSec ?? 22}
+                        direction="left"
+                        gapClass="gap-8 md:gap-12"
+                    >
                         {(item, i) => (
                             <span key={`a-${item}-${i}`} className="inline-flex items-center gap-8 md:gap-12">
                                 <span className="text-display-alt text-2xl md:text-4xl text-warm-white">
@@ -162,6 +167,7 @@ export function MarqueeStrip({
                         items={[...items].reverse()}
                         speedSec={(speedSec ?? 22) + 4}
                         direction="right"
+                        gapClass="gap-8 md:gap-12"
                     >
                         {(item, i) => (
                             <span key={`b-${item}-${i}`} className="inline-flex items-center gap-8 md:gap-12">
