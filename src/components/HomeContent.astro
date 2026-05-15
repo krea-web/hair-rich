@@ -6,20 +6,16 @@ import { ManifestoSection } from "./landing/ManifestoSection";
 import { ServicesSection } from "./landing/ServicesSection";
 import { WhyUsSection } from "./landing/WhyUsSection";
 import { TeamSection } from "./landing/TeamSection";
-import { PricingSection } from "./landing/PricingSection";
 import { GallerySection } from "./landing/GallerySection";
-import { TrendsSection } from "./landing/TrendsSection";
 import { ReviewsSection } from "./landing/ReviewsSection";
-import { ProductsSection } from "./landing/ProductsSection";
 import { BookingSection } from "./landing/BookingSection";
-import { InstagramSection } from "./landing/InstagramSection";
 import { MapSection } from "./landing/MapSection";
 import { Footer } from "./landing/Footer";
 import { MarqueeStrip } from "./landing/_shared/MarqueeStrip";
 import { StickyBookCTA } from "./ui/StickyBookCTA";
+import { MobileBottomBar } from "./ui/MobileBottomBar";
 import { CartFAB } from "./shop/CartFAB";
 import { CartDrawer } from "./shop/CartDrawer";
-import { WhatsAppFAB } from "./ui/WhatsAppFAB";
 import { ToastViewport } from "./ui/ToastViewport";
 import { CookieBanner } from "./ui/CookieBanner";
 import { InstallPrompt } from "./ui/InstallPrompt";
@@ -79,32 +75,28 @@ const m = marqueeItems[lang];
 
   <WhyUsSection client:visible />
   <TeamSection client:visible />
-  <PricingSection client:visible />
 
   <MarqueeStrip client:visible variant="duo" items={m.duo} />
 
   <GallerySection client:visible />
-  <TrendsSection client:visible />
   <ReviewsSection client:visible />
-  <ProductsSection client:visible />
 
   <MarqueeStrip client:visible variant="ribbon" items={m.ribbon2} />
 
   <BookingSection client:visible />
-  <InstagramSection client:visible />
   <MapSection client:visible />
   <Footer client:visible />
 </main>
 
 <div data-intro-hidden style="display: contents">
   <StickyBookCTA client:idle />
-  <WhatsAppFAB client:idle />
   <BookingPulse client:idle variant="popup" />
   <CartFAB client:idle />
   <CartDrawer client:idle />
   <CookieBanner client:idle />
   <InstallPrompt client:idle />
 </div>
+<MobileBottomBar client:idle />
 <ToastViewport client:load />
 
 <script is:inline>

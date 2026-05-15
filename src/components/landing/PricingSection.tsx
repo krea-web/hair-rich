@@ -162,7 +162,7 @@ export function PricingSection() {
                             {t.pricing.footnote}
                         </p>
                         <a
-                            href="#booking"
+                            href="/prenota"
                             className="inline-flex items-center gap-3 px-7 py-3.5 bg-warm-white text-black rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold hover:bg-accent-warm transition-colors"
                         >
                             {t.pricing.cta}

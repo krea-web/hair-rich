@@ -111,7 +111,7 @@ export function ManifestoSection() {
                     </motion.ul>
 
                     <motion.a
-                        href="#booking"
+                        href="/prenota"
                         className="inline-flex items-center gap-3 mt-10 text-warm-white border-b border-warm-white pb-2 text-xs uppercase tracking-[0.3em] font-body font-semibold hover:text-accent-warm hover:border-accent-warm transition-colors"
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}

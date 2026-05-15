@@ -80,7 +80,7 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
                 transition={{ duration: 0.8, delay: 0.8 }}
             >
                 <a
-                    href="#booking"
+                    href="/prenota"
                     className="group relative inline-flex items-center gap-3 bg-accent-warm text-black px-8 py-4 rounded-full font-body font-semibold text-sm uppercase tracking-[0.2em] transition-transform hover:scale-[1.02] active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-warm-white"
                 >
                     <span>{t.hero.primaryCta}</span>
@@ -89,7 +89,7 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
                     </svg>
                 </a>
                 <a
-                    href="#servizi"
+                    href="/servizi"
                     className="inline-flex items-center gap-3 border border-line text-warm-white px-8 py-4 rounded-full font-body font-semibold text-sm uppercase tracking-[0.2em] transition-colors hover:border-warm-white hover:bg-warm-white/5"
                 >
                     {t.hero.secondaryCta}
@@ -190,11 +190,11 @@ export function HeroSection() {
                     <Wordmark variant="wordmark" size="sm" className="md:[&>img]:h-12" />
                 </a>
                 <nav className="hidden md:flex items-center justify-center gap-9 text-xs uppercase tracking-[0.3em] font-body font-semibold text-silver pointer-events-auto">
-                    <a href="#about" className="hover:text-warm-white transition-colors">{t.nav.about}</a>
-                    <a href="#servizi" className="hover:text-warm-white transition-colors">{t.nav.services}</a>
-                    <a href="#galleria" className="hover:text-warm-white transition-colors">{t.nav.gallery}</a>
-                    <a href="#prezzi" className="hover:text-warm-white transition-colors">{t.nav.pricing}</a>
-                    <a href="#booking" className="hover:text-warm-white transition-colors">{t.nav.booking}</a>
+                    <a href="/servizi" className="hover:text-warm-white transition-colors">{t.nav.services}</a>
+                    <a href="/lavori" className="hover:text-warm-white transition-colors">{t.nav.gallery}</a>
+                    <a href="/team" className="hover:text-warm-white transition-colors">{t.nav.team}</a>
+                    <a href="/contatti" className="hover:text-warm-white transition-colors">{t.nav.about}</a>
+                    <a href="/prenota" className="hover:text-warm-white transition-colors">{t.nav.booking}</a>
                 </nav>
                 <div className="justify-self-end pointer-events-auto">
                     <LangSwitcher current={lang} variant="navbar" />

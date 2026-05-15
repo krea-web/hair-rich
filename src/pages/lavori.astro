@@ -1,0 +1,36 @@
+---
+import RootLayout from "../layouts/RootLayout.astro";
+import { PageHero } from "../components/landing/_shared/PageHero";
+import { GallerySection } from "../components/landing/GallerySection";
+import { TrendsSection } from "../components/landing/TrendsSection";
+import { InstagramSection } from "../components/landing/InstagramSection";
+import { ReviewsSection } from "../components/landing/ReviewsSection";
+import { Footer } from "../components/landing/Footer";
+import { ToastViewport } from "../components/ui/ToastViewport";
+import { MobileBottomBar } from "../components/ui/MobileBottomBar";
+---
+
+<RootLayout
+  title="I nostri lavori · Hair Rich Olbia"
+  description="Galleria completa di tagli, fade, barbe e styling realizzati da Hair Rich Olbia. Cerca per categoria o lasciati ispirare."
+>
+  <main>
+    <PageHero
+      client:load
+      eyebrow="Portfolio"
+      titleA="I lavori"
+      titleB="del salone"
+      intro="Ogni foto è un cliente vero, uscito dalla nostra postazione. Niente catalogo riciclato da internet: questo è quello che facciamo, tagliato sulle teste degli olbiesi."
+    />
+
+    <GallerySection client:visible />
+    <TrendsSection client:visible />
+    <InstagramSection client:visible />
+    <ReviewsSection client:visible />
+
+    <Footer client:visible />
+  </main>
+
+  <ToastViewport client:load />
+  <MobileBottomBar client:idle />
+</RootLayout>

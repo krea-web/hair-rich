@@ -1,0 +1,90 @@
+---
+import RootLayout from "../layouts/RootLayout.astro";
+import { PageHero } from "../components/landing/_shared/PageHero";
+import { ServicesSection } from "../components/landing/ServicesSection";
+import { PricingSection } from "../components/landing/PricingSection";
+import { WhyUsSection } from "../components/landing/WhyUsSection";
+import { TrendsSection } from "../components/landing/TrendsSection";
+import { ProcessSteps } from "../components/landing/_shared/ProcessSteps";
+import { FAQAccordion } from "../components/landing/_shared/FAQAccordion";
+import { Footer } from "../components/landing/Footer";
+import { ToastViewport } from "../components/ui/ToastViewport";
+import { MobileBottomBar } from "../components/ui/MobileBottomBar";
+
+const RITUALS = [
+  {
+    n: "01",
+    title: "Consulto iniziale",
+    body: "Prima di toccare le forbici, due minuti per capire forma del viso, stile di vita e tempo di manutenzione che puoi dedicare.",
+  },
+  {
+    n: "02",
+    title: "Lavaggio dedicato",
+    body: "Shampoo e maschera scelti sulla base di cuoio capelluto e tipo di capello — sempre incluso, mai un extra.",
+  },
+  {
+    n: "03",
+    title: "Taglio e styling",
+    body: "Forbice, rasoio o macchinetta — la tecnica giusta per il risultato giusto. Finitura con prodotto adatto al tuo styling quotidiano.",
+  },
+];
+
+const FAQ = [
+  {
+    q: "Qual è la differenza tra Fade e Razor Cut?",
+    a: "Il Fade è una sfumatura tecnica fatta con la macchinetta che parte dal rasato e sale gradualmente. Il Razor Cut usa il rasoio per ammorbidire le punte e creare texture: dà movimento naturale, perfetto per capelli medi-lunghi. Spesso si combinano: Fade alla nuca, Razor sopra.",
+  },
+  {
+    q: "Quanto dura un taglio prima di doverlo rifare?",
+    a: "Dipende dallo stile: un Fade pulito sta perfetto 2-3 settimane, un taglio classico medio resiste 4-5 settimane prima di chiedere ritocco. Te lo diciamo sempre durante il consulto.",
+  },
+  {
+    q: "Servizi solo per uomo?",
+    a: "Hair Rich è specializzato sull'uomo e sulla barba. Per styling unisex avanzato lavoriamo su prenotazione dedicata — scrivici e ti diciamo come gestiamo il caso.",
+  },
+  {
+    q: "Avete prodotti in vendita?",
+    a: "Sì, una selezione curata di prodotti che usiamo davvero nel rituale — pomate, oli barba, shampoo specifici. Tutto provato in salone prima di entrare in vendita.",
+  },
+];
+---
+
+<RootLayout
+  title="Servizi e listino · Hair Rich Olbia"
+  description="Taglio classico, fade, razor cut, barba sartoriale e combo. Listino trasparente da €15 a €45. Prenota online da Hair Rich Olbia."
+>
+  <main>
+    <PageHero
+      client:load
+      eyebrow="Servizi"
+      titleA="Rituali"
+      titleB="su misura"
+      intro="Sei servizi pensati per altrettanti momenti diversi della tua routine. Niente menù gonfiato di varianti: solo quello che facciamo davvero, fatto bene."
+    />
+
+    <ServicesSection client:visible />
+
+    <ProcessSteps
+      client:visible
+      eyebrow="Il rituale Hair Rich"
+      title="Tre passaggi, in ogni servizio."
+      steps={RITUALS}
+    />
+
+    <PricingSection client:visible />
+    <WhyUsSection client:visible />
+    <TrendsSection client:visible />
+
+    <FAQAccordion
+      client:visible
+      eyebrow="Domande sui servizi"
+      title="Le più frequenti, una volta per tutte."
+      items={FAQ}
+    />
+
+    <Footer client:visible />
+  </main>
+
+  <ToastViewport client:load />
+  <MobileBottomBar client:idle />
+</RootLayout>

@@ -1,0 +1,61 @@
+---
+import RootLayout from "../layouts/RootLayout.astro";
+import { PageHero } from "../components/landing/_shared/PageHero";
+import { TeamSection } from "../components/landing/TeamSection";
+import { WhyUsSection } from "../components/landing/WhyUsSection";
+import { ProcessSteps } from "../components/landing/_shared/ProcessSteps";
+import { ReviewsSection } from "../components/landing/ReviewsSection";
+import { Footer } from "../components/landing/Footer";
+import { ToastViewport } from "../components/ui/ToastViewport";
+import { MobileBottomBar } from "../components/ui/MobileBottomBar";
+
+const VALUES = [
+  {
+    n: "01",
+    title: "Ascolto",
+    body: "Prima del taglio viene la conversazione. Capire come vivi, cosa fai, quanto tempo dedichi al mattino — tutto entra nel risultato finale.",
+  },
+  {
+    n: "02",
+    title: "Tecnica",
+    body: "Forbice, rasoio, macchinetta, forbice-trama, tex­turizzazione. Ogni strumento serve a un risultato preciso. Non scegliamo per abitudine: scegliamo per il taglio.",
+  },
+  {
+    n: "03",
+    title: "Continuità",
+    body: "Il tuo barber ti conosce. Sa come è andato l'ultimo taglio, sa cosa hai apprezzato e cosa no. È un servizio costruito nel tempo, non una transazione singola.",
+  },
+];
+---
+
+<RootLayout
+  title="Il team · Hair Rich Olbia"
+  description="Federico Asara, Luca e tutto il team di Hair Rich Olbia. Master barber e senior barber sardi, formazione continua, mani sul lavoro dal 2017."
+>
+  <main>
+    <PageHero
+      client:load
+      eyebrow="Il team"
+      titleA="Mani"
+      titleB="che pensano"
+      intro="Hair Rich è il lavoro di un gruppo piccolo, scelto a mano, con cui condividiamo standard e linguaggio. Ognuno arriva da una formazione diversa e porta una sensibilità diversa al rituale."
+    />
+
+    <TeamSection client:visible />
+
+    <ProcessSteps
+      client:visible
+      eyebrow="Cosa ci unisce"
+      title="Tre valori che si vedono in ogni servizio."
+      steps={VALUES}
+    />
+
+    <WhyUsSection client:visible />
+    <ReviewsSection client:visible />
+
+    <Footer client:visible />
+  </main>
+
+  <ToastViewport client:load />
+  <MobileBottomBar client:idle />
+</RootLayout>

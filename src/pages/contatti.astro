@@ -1,0 +1,139 @@
+---
+import RootLayout from "../layouts/RootLayout.astro";
+import { PageHero } from "../components/landing/_shared/PageHero";
+import { ContactForm } from "../components/landing/ContactForm";
+import { MapSection } from "../components/landing/MapSection";
+import { Footer } from "../components/landing/Footer";
+import { ToastViewport } from "../components/ui/ToastViewport";
+import { MobileBottomBar } from "../components/ui/MobileBottomBar";
+import { SITE } from "../lib/constants";
+
+const HOURS = [
+  { day: "Lunedì", value: "Chiuso" },
+  { day: "Martedì", value: "09:00 — 13:00 · 14:30 — 19:30" },
+  { day: "Mercoledì", value: "09:00 — 13:00 · 14:30 — 19:30" },
+  { day: "Giovedì", value: "09:00 — 13:00 · 14:30 — 19:30" },
+  { day: "Venerdì", value: "09:00 — 13:00 · 14:30 — 19:30" },
+  { day: "Sabato", value: "09:00 — 13:00 · 14:30 — 19:30" },
+  { day: "Domenica", value: "Chiuso" },
+];
+
+const phoneHref = "tel:" + SITE.phone.replace(/\s+/g, "");
+const mailHref = "mailto:" + SITE.email;
+const mapsHref =
+  "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(SITE.address);
+---
+
+<RootLayout
+  title="Contatti · Hair Rich Olbia"
+  description="Indirizzo, telefono, email e orari di apertura del barber studio Hair Rich a Olbia. Scrivici per prenotazioni o informazioni."
+>
+  <main>
+    <PageHero
+      client:load
+      eyebrow="Contatti"
+      titleA="Parliamoci"
+      titleB="direttamente"
+      intro="Telefono, messaggio scritto, oppure vienici a trovare in via Regina Elena 33/A. Rispondiamo entro un'ora lavorativa, garantito."
+    />
+
+    <section class="relative py-16 md:py-24 px-6 md:px-12 lg:px-20 bg-black">
+      <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+        {/* ── Info colonna ─────────────────────────────────────────── */}
+        <div class="space-y-10">
+          <div>
+            <span class="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">Recapiti</span>
+            <h2 class="text-display text-3xl md:text-4xl text-warm-white tracking-tight mt-3">
+              Tre modi per parlarci.
+            </h2>
+          </div>
+
+          <ul class="space-y-6">
+            <li class="flex items-start gap-5 border-b border-line pb-6">
+              <div class="w-11 h-11 flex-shrink-0 rounded-full border border-accent-warm/40 bg-accent-warm/5 flex items-center justify-center text-accent-warm">
+                <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.91.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0122 16.92z" />
+                </svg>
+              </div>
+              <div class="flex-1">
+                <span class="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">Telefono</span>
+                <a href={phoneHref} class="block text-warm-white text-xl md:text-2xl font-display mt-1 hover:text-accent-warm transition-colors">
+                  {SITE.phone}
+                </a>
+                <p class="mt-1 text-silver text-sm">Disponibili negli orari di apertura.</p>
+              </div>
+            </li>
+
+            <li class="flex items-start gap-5 border-b border-line pb-6">
+              <div class="w-11 h-11 flex-shrink-0 rounded-full border border-accent-warm/40 bg-accent-warm/5 flex items-center justify-center text-accent-warm">
+                <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                  <polyline stroke-linecap="round" stroke-linejoin="round" points="22,6 12,13 2,6" />
+                </svg>
+              </div>
+              <div class="flex-1">
+                <span class="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">Email</span>
+                <a href={mailHref} class="block text-warm-white text-xl md:text-2xl font-display mt-1 hover:text-accent-warm transition-colors break-all">
+                  {SITE.email}
+                </a>
+                <p class="mt-1 text-silver text-sm">Risposta entro un'ora lavorativa.</p>
+              </div>
+            </li>
+
+            <li class="flex items-start gap-5">
+              <div class="w-11 h-11 flex-shrink-0 rounded-full border border-accent-warm/40 bg-accent-warm/5 flex items-center justify-center text-accent-warm">
+                <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+              </div>
+              <div class="flex-1">
+                <span class="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">Salone</span>
+                <p class="text-warm-white text-xl md:text-2xl font-display mt-1 leading-tight">
+                  Via Regina Elena 33/A<br/>Olbia (SS)
+                </p>
+                <a href={mapsHref} target="_blank" rel="noopener noreferrer" class="mt-2 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-accent-warm font-body font-semibold hover:text-warm-white transition-colors">
+                  Apri in Maps
+                  <svg viewBox="0 0 24 24" class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                  </svg>
+                </a>
+              </div>
+            </li>
+          </ul>
+
+          {/* Orari */}
+          <div class="pt-4">
+            <span class="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">Orari di apertura</span>
+            <ul class="mt-4 divide-y divide-line border-y border-line">
+              {HOURS.map((h) => (
+                <li class={`flex items-center justify-between py-3 ${h.value === "Chiuso" ? "opacity-50" : ""}`}>
+                  <span class="text-[11px] uppercase tracking-[0.25em] text-silver font-body font-semibold">{h.day}</span>
+                  <span class="text-warm-white text-sm font-body">{h.value}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* ── Form colonna ─────────────────────────────────────────── */}
+        <div class="lg:sticky lg:top-24">
+          <div class="mb-6">
+            <span class="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">Scrivici</span>
+            <h2 class="text-display text-3xl md:text-4xl text-warm-white tracking-tight mt-3">
+              Mandaci un messaggio.
+            </h2>
+          </div>
+          <ContactForm client:load />
+        </div>
+      </div>
+    </section>
+
+    <MapSection client:visible />
+
+    <Footer client:visible />
+  </main>
+
+  <ToastViewport client:load />
+  <MobileBottomBar client:idle />
+</RootLayout>

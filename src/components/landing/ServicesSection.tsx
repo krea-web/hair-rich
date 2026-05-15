@@ -66,7 +66,7 @@ export function ServicesSection() {
                             </p>
                         </div>
                         <a
-                            href="#booking"
+                            href="/prenota"
                             className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-warm-white text-black rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold hover:bg-accent-warm transition-colors active:scale-95 self-start md:self-auto whitespace-nowrap"
                         >
                             {t.bundle.cta}
@@ -128,7 +128,7 @@ export function ServicesSection() {
                                     </ul>
 
                                     <a
-                                        href="#booking"
+                                        href="/prenota"
                                         className={`mt-8 inline-flex items-center gap-2 text-xs uppercase tracking-[0.3em] font-semibold border-b pb-1 transition-colors ${highlight ? "border-black hover:text-black/70" : "border-warm-white text-warm-white hover:text-accent-warm hover:border-accent-warm"}`}
                                     >
                                         {t.services.bookFromCard}
