@@ -15,6 +15,46 @@ export function publicStorageUrl(path: string): string {
     return `${SUPABASE_URL}/storage/v1/object/public/portfolio/${path}`;
 }
 
+interface TransformOpts {
+    width?: number;
+    height?: number;
+    quality?: number;
+    format?: "webp" | "origin";
+    resize?: "cover" | "contain" | "fill";
+}
+
+/**
+ * Builds a Supabase Image Transformations URL for the public `portfolio`
+ * bucket. Use this everywhere instead of `publicStorageUrl` for portfolio
+ * images — file delivery drops ~90% on average (a 3MB iPhone JPEG renders
+ * as a ~200KB WebP at width 800).
+ */
+export function portfolioImageUrl(path: string, opts: TransformOpts = {}): string {
+    const params = new URLSearchParams();
+    if (opts.width) params.set("width", String(opts.width));
+    if (opts.height) params.set("height", String(opts.height));
+    if (opts.quality) params.set("quality", String(opts.quality));
+    if (opts.resize) params.set("resize", opts.resize);
+    if (opts.format) params.set("format", opts.format);
+    const qs = params.toString();
+    return `${SUPABASE_URL}/storage/v1/render/image/public/portfolio/${path}${qs ? "?" + qs : ""}`;
+}
+
+/**
+ * Responsive srcset for a portfolio image at 3 widths + WebP. Returns a
+ * srcset string for the `<img srcset>` attribute. Pair with a `sizes`
+ * attribute on the consumer side.
+ */
+export function portfolioImageSrcset(path: string, quality = 78): string {
+    return [480, 800, 1280, 1920]
+        .map(
+            (w) =>
+                `${portfolioImageUrl(path, { width: w, quality, format: "webp" })} ${w}w`
+        )
+        .join(", ");
+}
+
+
 export async function fetchServices(): Promise<Service[]> {
     const supabase = createClient();
     const { data, error } = await supabase

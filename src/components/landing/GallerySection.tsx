@@ -5,11 +5,11 @@ import { useEffect, useMemo, useState } from "react";
 import { EditorialHeading } from "./_shared/EditorialHeading";
 import { SmartImage } from "./_shared/SmartImage";
 import { useT } from "@/i18n/useLang";
-import { fetchPortfolio, publicStorageUrl } from "@/lib/supabase/queries";
+import { fetchPortfolio, portfolioImageUrl, portfolioImageSrcset } from "@/lib/supabase/queries";
 import type { PortfolioImage } from "@/lib/supabase/types";
 
 interface Shot {
-    src: string;
+    path: string;
     alt: string;
     tag: string;
     title: string;
@@ -29,7 +29,7 @@ export function GallerySection() {
                 if (!alive) return;
                 setShots(
                     rows.map((r) => ({
-                        src: publicStorageUrl(r.storage_path),
+                        path: r.storage_path,
                         alt: r.alt_text ?? r.title,
                         tag: r.tag,
                         title: r.title,
@@ -117,7 +117,7 @@ export function GallerySection() {
                             const featured = i === 0;
                             return (
                                 <motion.button
-                                    key={shot.src}
+                                    key={shot.path}
                                     layout
                                     initial={{ opacity: 0, scale: 0.95 }}
                                     animate={{ opacity: 1, scale: 1 }}
@@ -130,7 +130,13 @@ export function GallerySection() {
                                     aria-label={`Apri ${shot.title}`}
                                 >
                                     <div className="absolute inset-0 transition-transform duration-[var(--dur-cinema)] ease-[var(--ease-cinema)] group-hover:scale-[1.06]">
-                                        <SmartImage src={shot.src} alt={shot.alt} className="h-full grayscale-[15%]" />
+                                        <SmartImage
+                                            src={portfolioImageUrl(shot.path, { width: 800, quality: 78, format: "webp" })}
+                                            srcSet={portfolioImageSrcset(shot.path)}
+                                            sizes={featured ? "(min-width: 768px) 50vw, 100vw" : "(min-width: 768px) 25vw, 50vw"}
+                                            alt={shot.alt}
+                                            className="h-full grayscale-[15%]"
+                                        />
                                     </div>
                                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80 group-hover:opacity-95 transition-opacity" />
 
@@ -191,7 +197,14 @@ export function GallerySection() {
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="relative w-full max-h-[85vh] aspect-[4/5] mx-auto">
-                                <SmartImage src={lightbox.src} alt={lightbox.alt} eager className="h-full" />
+                                <SmartImage
+                                    src={portfolioImageUrl(lightbox.path, { width: 1600, quality: 82, format: "webp" })}
+                                    srcSet={portfolioImageSrcset(lightbox.path, 82)}
+                                    sizes="(min-width: 1024px) 80vw, 100vw"
+                                    alt={lightbox.alt}
+                                    eager
+                                    className="h-full"
+                                />
                             </div>
                             <div className="text-center mt-4">
                                 <span className="text-display-alt text-2xl text-accent-warm">{lightbox.tag}</span>

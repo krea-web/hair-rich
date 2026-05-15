@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 interface Props {
     src: string;
     alt: string;
+    srcSet?: string;
     width?: number;
     height?: number;
     className?: string;
@@ -20,6 +21,7 @@ interface Props {
 export function SmartImage({
     src,
     alt,
+    srcSet,
     width,
     height,
     className = "",
@@ -50,12 +52,14 @@ export function SmartImage({
             <img
                 ref={ref}
                 src={src}
+                srcSet={srcSet}
                 alt={alt}
                 width={width}
                 height={height}
                 sizes={sizes}
                 loading={eager ? "eager" : "lazy"}
                 decoding="async"
+                fetchPriority={eager ? "high" : "auto"}
                 onLoad={() => setLoaded(true)}
                 onError={() => setLoaded(true)}
                 className={`w-full h-full object-cover transition-opacity duration-700 ${loaded ? "opacity-100" : "opacity-0"}`}
