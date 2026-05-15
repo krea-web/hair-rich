@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginEmailSchema, loginPhoneSchema, otpSchema } from "@/lib/validation";
+import { createClient } from "@/lib/supabase/client";
 
 type LoginMethod = "email" | "phone";
 type LoginStep = "method" | "input" | "otp";
@@ -14,6 +15,7 @@ export function LoginForm() {
     const [method, setMethod] = useState<LoginMethod>("email");
     const [identifier, setIdentifier] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [authError, setAuthError] = useState<string | null>(null);
 
     const { register: regEmail, handleSubmit: handleEmail, formState: { errors: errEmail } } = useForm({
         resolver: zodResolver(loginEmailSchema),
@@ -29,19 +31,74 @@ export function LoginForm() {
 
     const onSubmitIdentifier = async (data: any) => {
         setIsLoading(true);
+        setAuthError(null);
         const val = method === "email" ? data.email : data.phone;
         setIdentifier(val);
 
-        await new Promise(r => setTimeout(r, 1000));
-        setIsLoading(false);
-        setStep("otp");
+        try {
+            const supabase = createClient();
+            const { error } =
+                method === "email"
+                    ? await supabase.auth.signInWithOtp({
+                          email: val,
+                          options: { shouldCreateUser: true },
+                      })
+                    : await supabase.auth.signInWithOtp({
+                          phone: val,
+                          options: { shouldCreateUser: true },
+                      });
+            if (error) throw error;
+            setStep("otp");
+        } catch (e: any) {
+            setAuthError(e?.message ?? "Errore durante l'invio del codice");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    const onSubmitOtp = async (_data: any) => {
+    const onSubmitOtp = async (data: any) => {
         setIsLoading(true);
-        await new Promise(r => setTimeout(r, 1500));
-        setIsLoading(false);
-        window.location.href = "/profilo";
+        setAuthError(null);
+        try {
+            const supabase = createClient();
+            const { error } =
+                method === "email"
+                    ? await supabase.auth.verifyOtp({
+                          email: identifier,
+                          token: data.code,
+                          type: "email",
+                      })
+                    : await supabase.auth.verifyOtp({
+                          phone: identifier,
+                          token: data.code,
+                          type: "sms",
+                      });
+            if (error) throw error;
+            window.location.href = "/profilo";
+        } catch (e: any) {
+            setAuthError(e?.message ?? "Codice non valido");
+            setIsLoading(false);
+        }
+    };
+
+    const onGoogleSignIn = async () => {
+        setIsLoading(true);
+        setAuthError(null);
+        try {
+            const supabase = createClient();
+            const redirectTo =
+                typeof window !== "undefined"
+                    ? `${window.location.origin}/profilo`
+                    : undefined;
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: "google",
+                options: { redirectTo },
+            });
+            if (error) throw error;
+        } catch (e: any) {
+            setAuthError(e?.message ?? "Errore Google Sign-In");
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -114,7 +171,12 @@ export function LoginForm() {
                                         <div className="flex-grow border-t border-line"></div>
                                     </div>
 
-                                    <button className="w-full flex items-center justify-center gap-3 bg-white text-black font-body font-semibold px-6 py-4 rounded-[var(--radius-md)] hover:bg-white/90 transition-colors">
+                                    <button
+                                        type="button"
+                                        onClick={onGoogleSignIn}
+                                        disabled={isLoading}
+                                        className="w-full flex items-center justify-center gap-3 bg-white text-black font-body font-semibold px-6 py-4 rounded-[var(--radius-md)] hover:bg-white/90 transition-colors disabled:opacity-60"
+                                    >
                                         <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
                                             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
                                             <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
@@ -163,6 +225,7 @@ export function LoginForm() {
                                         />
                                         {method === "email" && errEmail.email && <p className="text-error text-xs mt-2">{String(errEmail.email.message)}</p>}
                                         {method === "phone" && errPhone.phone && <p className="text-error text-xs mt-2">{String(errPhone.phone.message)}</p>}
+                                        {authError && <p className="text-error text-xs mt-2">{authError}</p>}
                                     </div>
 
                                     <button
@@ -215,6 +278,7 @@ export function LoginForm() {
                                             autoFocus
                                         />
                                         {errOtp.code && <p className="text-error text-xs mt-2 text-center">{String(errOtp.code.message)}</p>}
+                                        {authError && <p className="text-error text-xs mt-2 text-center">{authError}</p>}
                                     </div>
 
                                     <button

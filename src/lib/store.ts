@@ -113,6 +113,8 @@ export const useModalStore = create<ModalState>((set) => ({
 }));
 
 /* ── Booking store ─────────────────────────────────────────────────────────── */
+import type { Service, Staff } from "./supabase/types";
+
 export interface BookingState {
     step: number;
     serviceId: string | null;
@@ -123,6 +125,8 @@ export interface BookingState {
     contactPhone: string;
     contactEmail: string;
     notes: string;
+    services: Service[];
+    staff: Staff[];
     setStep: (step: number) => void;
     setService: (id: string) => void;
     setStaff: (id: string | null) => void;
@@ -130,6 +134,7 @@ export interface BookingState {
     setTime: (time: string) => void;
     setContact: (data: { name: string; phone: string; email: string }) => void;
     setNotes: (notes: string) => void;
+    setCatalog: (services: Service[], staff: Staff[]) => void;
     reset: () => void;
 }
 
@@ -143,9 +148,9 @@ export const useBookingStore = create<BookingState>((set) => ({
     contactPhone: "",
     contactEmail: "",
     notes: "",
+    services: [],
+    staff: [],
     setStep: (step) => set({ step: Math.max(0, Math.min(2, step)) }),
-    // I setters NON avanzano più lo step automaticamente:
-    // il nuovo wizard 3-step gestisce le transizioni esplicitamente coi bottoni Continua.
     setService: (id) => set({ serviceId: id }),
     setStaff: (id) => set({ staffId: id }),
     setDate: (date) => set({ date }),
@@ -157,6 +162,7 @@ export const useBookingStore = create<BookingState>((set) => ({
             contactEmail: data.email,
         }),
     setNotes: (notes) => set({ notes }),
+    setCatalog: (services, staff) => set({ services, staff }),
     reset: () =>
         set({
             step: 0,

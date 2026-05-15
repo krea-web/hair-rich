@@ -1,10 +1,12 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { EditorialHeading } from "./_shared/EditorialHeading";
 import { SmartImage } from "./_shared/SmartImage";
 import { useT } from "@/i18n/useLang";
+import { fetchPortfolio, publicStorageUrl } from "@/lib/supabase/queries";
+import type { PortfolioImage } from "@/lib/supabase/types";
 
 interface Shot {
     src: string;
@@ -13,25 +15,39 @@ interface Shot {
     title: string;
 }
 
-const SHOTS: Shot[] = [
-    { src: "https://images.unsplash.com/photo-1605497788044-5a32c7078486?q=80&w=1000&auto=format&fit=crop", alt: "Fade chirurgico", tag: "Fade", title: "Razor Fade" },
-    { src: "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=1000&auto=format&fit=crop", alt: "Lavorazione classica", tag: "Classic", title: "Side Part" },
-    { src: "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?q=80&w=1000&auto=format&fit=crop", alt: "Strumenti e barba", tag: "Beard", title: "Beard Sculpt" },
-    { src: "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?q=80&w=1000&auto=format&fit=crop", alt: "Texture moderna", tag: "Modern", title: "Crop Textured" },
-    { src: "https://images.unsplash.com/photo-1620577314869-4d3a3b8a8d8b?q=80&w=1000&auto=format&fit=crop", alt: "Color uomo", tag: "Color", title: "Salt & Pepper" },
-    { src: "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=1000&auto=format&fit=crop", alt: "Ritratto silver", tag: "Editorial", title: "Editorial #03" },
-    { src: "https://images.unsplash.com/photo-1599351431613-18ef1fdd27e3?q=80&w=1000&auto=format&fit=crop", alt: "Stile contemporaneo", tag: "Modern", title: "Mid Skin Fade" },
-    { src: "https://images.unsplash.com/photo-1582095133179-bfd08e2fc6b3?q=80&w=1000&auto=format&fit=crop", alt: "Mood salone", tag: "Mood", title: "Studio Mood" },
-];
-
-const TAGS = ["Tutti", "Fade", "Classic", "Beard", "Modern", "Color", "Editorial", "Mood"] as const;
-
 export function GallerySection() {
     const { t } = useT();
     const ALL_LABEL = t.gallery.filters.all;
-    const filterTags = [ALL_LABEL, "Fade", "Classic", "Beard", "Modern", "Color", "Editorial", "Mood"];
+    const [shots, setShots] = useState<Shot[]>([]);
     const [filter, setFilter] = useState<string>(ALL_LABEL);
     const [lightbox, setLightbox] = useState<Shot | null>(null);
+
+    useEffect(() => {
+        let alive = true;
+        fetchPortfolio()
+            .then((rows: PortfolioImage[]) => {
+                if (!alive) return;
+                setShots(
+                    rows.map((r) => ({
+                        src: publicStorageUrl(r.storage_path),
+                        alt: r.alt_text ?? r.title,
+                        tag: r.tag,
+                        title: r.title,
+                    }))
+                );
+            })
+            .catch(() => {
+                /* fail silently — gallery rimane vuota se DB irraggiungibile */
+            });
+        return () => {
+            alive = false;
+        };
+    }, []);
+
+    const filterTags = useMemo(() => {
+        const unique = Array.from(new Set(shots.map((s) => s.tag))).sort();
+        return [ALL_LABEL, ...unique];
+    }, [shots, ALL_LABEL]);
 
     useEffect(() => {
         if (!lightbox) return;
@@ -46,7 +62,7 @@ export function GallerySection() {
         };
     }, [lightbox]);
 
-    const filtered = filter === ALL_LABEL ? SHOTS : SHOTS.filter((s) => s.tag === filter);
+    const filtered = filter === ALL_LABEL ? shots : shots.filter((s) => s.tag === filter);
 
     return (
         <section

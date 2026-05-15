@@ -1,0 +1,88 @@
+// Hair Rich · Supabase types (handwritten — keep in sync with migrations)
+
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+
+export type AppointmentStatus = "booked" | "confirmed" | "completed" | "cancelled" | "no_show";
+export type AppointmentSource = "app" | "admin" | "phone" | "walkin" | "widget";
+
+export interface Service {
+    id: string;
+    name: string;
+    slug: string;
+    description: string | null;
+    price_cents: number;
+    duration_min: number;
+    badge: string | null;
+    is_active: boolean;
+    sort_order: number;
+    created_at: string;
+}
+
+export interface Staff {
+    id: string;
+    name: string;
+    slug: string;
+    role: string;
+    bio: string | null;
+    avatar_url: string | null;
+    is_active: boolean;
+    sort_order: number;
+    created_at: string;
+}
+
+export interface Customer {
+    id: string;
+    user_id: string | null;
+    first_name: string;
+    last_name: string | null;
+    email: string | null;
+    phone: string | null;
+    is_guest: boolean;
+    marketing_consent: boolean;
+    birthdate: string | null;
+    notes: string | null;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Appointment {
+    id: string;
+    customer_id: string;
+    staff_id: string | null;
+    chair_id: string | null;
+    start_at: string;
+    end_at: string;
+    status: AppointmentStatus;
+    source: AppointmentSource;
+    notes: string | null;
+    total_cents: number;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface PortfolioImage {
+    id: string;
+    storage_path: string;
+    title: string;
+    tag: string;
+    alt_text: string | null;
+    staff_id: string | null;
+    service_id: string | null;
+    is_featured: boolean;
+    is_active: boolean;
+    sort_order: number;
+    created_at: string;
+}
+
+export interface BookAppointmentResult {
+    appointment_id: string;
+    customer_id: string;
+    start_at: string;
+    end_at: string;
+    total_cents: number;
+}
+
+export interface AvailableSlot {
+    slot_time: string; // HH:MM:SS
+    staff_id: string;
+}

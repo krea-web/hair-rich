@@ -1,33 +1,58 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useBookingStore } from "@/lib/store";
+import { fetchAvailableSlots } from "@/lib/supabase/queries";
+import type { AvailableSlot } from "@/lib/supabase/types";
 
 const today = new Date();
-const dates = Array.from({ length: 14 })
+const dates = Array.from({ length: 21 })
     .map((_, i) => {
         const d = new Date(today);
         d.setDate(today.getDate() + i);
         return d;
     })
+    // Chiuso domenica (0) e lunedì (1)
     .filter((d) => d.getDay() !== 0 && d.getDay() !== 1)
-    .slice(0, 8);
-
-const SLOTS = ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "14:30", "15:00", "15:30", "16:00", "17:00", "17:30", "18:00", "18:30"];
-
-function takenSlotsForDate(d: Date): Set<string> {
-    const seed = d.getDate() + d.getMonth() * 31;
-    const taken = new Set<string>();
-    SLOTS.forEach((s, i) => {
-        if ((seed * 7 + i * 13) % 7 < 3) taken.add(s);
-    });
-    return taken;
-}
+    .slice(0, 12);
 
 export function StepDateTime({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
-    const { date, time, setDate, setTime } = useBookingStore();
+    const { date, time, serviceId, staffId, setDate, setTime } = useBookingStore();
     const [selectedDateStr, setSelectedDateStr] = useState<string | null>(date || null);
+    const [slots, setSlots] = useState<AvailableSlot[]>([]);
+    const [loadingSlots, setLoadingSlots] = useState(false);
+
+    useEffect(() => {
+        if (!selectedDateStr || !serviceId) {
+            setSlots([]);
+            return;
+        }
+        let alive = true;
+        setLoadingSlots(true);
+        fetchAvailableSlots({
+            date: selectedDateStr,
+            serviceId,
+            staffId,
+        })
+            .then((rows) => {
+                if (!alive) return;
+                setSlots(rows);
+                setLoadingSlots(false);
+            })
+            .catch(() => {
+                if (!alive) return;
+                setSlots([]);
+                setLoadingSlots(false);
+            });
+        return () => {
+            alive = false;
+        };
+    }, [selectedDateStr, serviceId, staffId]);
+
+    const uniqueTimes = Array.from(
+        new Set(slots.map((s) => s.slot_time.slice(0, 5)))
+    ).sort();
 
     const handleNext = () => {
         if (selectedDateStr && time) {
@@ -35,8 +60,6 @@ export function StepDateTime({ onNext, onBack }: { onNext: () => void; onBack: (
             onNext();
         }
     };
-
-    const taken = selectedDateStr ? takenSlotsForDate(new Date(selectedDateStr)) : new Set<string>();
 
     return (
         <div className="space-y-8">
@@ -114,43 +137,51 @@ export function StepDateTime({ onNext, onBack }: { onNext: () => void; onBack: (
                         <h4 className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
                             Orario
                         </h4>
-                        {selectedDateStr && (
+                        {selectedDateStr && !loadingSlots && (
                             <span className="text-[10px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold">
-                                {SLOTS.length - taken.size} slot liberi
+                                {uniqueTimes.length} slot liberi
                             </span>
                         )}
                     </div>
 
-                    {selectedDateStr ? (
+                    {!selectedDateStr ? (
+                        <div className="h-32 flex items-center justify-center p-6 bg-black-2 border border-line border-dashed rounded-[var(--radius-md)]">
+                            <span className="text-sm text-silver-dark text-center">
+                                Seleziona un giorno per vedere gli orari.
+                            </span>
+                        </div>
+                    ) : loadingSlots ? (
                         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
-                            {SLOTS.map((s) => {
-                                const isTaken = taken.has(s);
+                            {Array.from({ length: 15 }).map((_, i) => (
+                                <div key={i} className="h-[46px] rounded-[var(--radius-sm)] bg-black-2 border border-line animate-pulse" />
+                            ))}
+                        </div>
+                    ) : uniqueTimes.length === 0 ? (
+                        <div className="h-32 flex items-center justify-center p-6 bg-black-2 border border-line border-dashed rounded-[var(--radius-md)]">
+                            <span className="text-sm text-silver-dark text-center">
+                                Nessuno slot libero per questo giorno. Prova un'altra data.
+                            </span>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+                            {uniqueTimes.map((s) => {
                                 const active = time === s;
                                 return (
                                     <button
                                         key={s}
-                                        disabled={isTaken}
                                         onClick={() => setTime(s)}
                                         className={`relative px-3 py-3 rounded-[var(--radius-sm)] border text-center font-mono text-sm tracking-wider transition-colors ${
-                                            isTaken
-                                                ? "bg-black-2 border-line text-silver-dark/40 line-through cursor-not-allowed"
-                                                : active
-                                                    ? "bg-accent-warm border-accent-warm text-black"
-                                                    : "bg-carbon border-line text-warm-white hover:border-silver-mid"
+                                            active
+                                                ? "bg-accent-warm border-accent-warm text-black"
+                                                : "bg-carbon border-line text-warm-white hover:border-silver-mid"
                                         }`}
                                         aria-pressed={active}
-                                        aria-label={isTaken ? `${s} occupato` : `${s} disponibile`}
+                                        aria-label={`${s} disponibile`}
                                     >
                                         {s}
                                     </button>
                                 );
                             })}
-                        </div>
-                    ) : (
-                        <div className="h-32 flex items-center justify-center p-6 bg-black-2 border border-line border-dashed rounded-[var(--radius-md)]">
-                            <span className="text-sm text-silver-dark text-center">
-                                Seleziona un giorno per vedere gli orari.
-                            </span>
                         </div>
                     )}
                 </div>

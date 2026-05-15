@@ -8,7 +8,7 @@ import { useBookingStore, useToastStore } from "@/lib/store";
 import { bookingContactSchema, type BookingContactData } from "@/lib/validation";
 import { formatPrice } from "@/lib/format";
 import { downloadICS, googleCalendarUrl, outlookCalendarUrl } from "@/lib/calendar";
-import { SERVICES, STAFF } from "./StepServiceStaff";
+import { bookAppointment } from "@/lib/supabase/queries";
 import { SITE } from "@/lib/constants";
 
 export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: () => void }) {
@@ -21,15 +21,18 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
         contactName,
         contactPhone,
         contactEmail,
+        services,
+        staff: staffList,
         setContact,
         setNotes,
     } = useBookingStore();
     const addToast = useToastStore((s) => s.addToast);
     const [submitted, setSubmitted] = useState(false);
     const [submitting, setSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState<string | null>(null);
 
-    const service = SERVICES.find((s) => s.id === serviceId) ?? null;
-    const staff = staffId ? STAFF.find((s) => s.id === staffId) ?? null : null;
+    const service = services.find((s) => s.id === serviceId) ?? null;
+    const staff = staffId ? staffList.find((s) => s.id === staffId) ?? null : null;
 
     const {
         register,
@@ -47,22 +50,52 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
     });
 
     const onSubmit = async (data: BookingContactData) => {
+        if (!serviceId || !date || !time) {
+            setSubmitError("Mancano servizio, data o ora.");
+            return;
+        }
         setSubmitting(true);
-        // Mock async — sostituire con call Edge Function booking-create
-        await new Promise((r) => setTimeout(r, 900));
-        setContact({
-            name: `${data.firstName} ${data.lastName}`,
-            phone: data.phone,
-            email: data.email,
-        });
-        setNotes(data.notes ?? "");
-        setSubmitting(false);
-        setSubmitted(true);
-        addToast("Prenotazione confermata", "success");
-        if (typeof window !== "undefined" && (window as any).plausible) {
-            (window as any).plausible("booking_complete", {
-                props: { service: service?.name, staff: staff?.name ?? "any" },
+        setSubmitError(null);
+
+        // Costruisci start_at in fuso Europe/Rome
+        const startAtISO = new Date(`${date}T${time}:00+02:00`).toISOString();
+
+        try {
+            await bookAppointment({
+                firstName: data.firstName,
+                lastName: data.lastName,
+                phone: data.phone,
+                email: data.email ?? "",
+                serviceId,
+                staffId: staffId ?? null,
+                startAtISO,
+                notes: data.notes ?? "",
             });
+
+            setContact({
+                name: `${data.firstName} ${data.lastName}`,
+                phone: data.phone,
+                email: data.email ?? "",
+            });
+            setNotes(data.notes ?? "");
+            setSubmitted(true);
+            addToast("Prenotazione confermata", "success");
+
+            if (typeof window !== "undefined" && (window as any).plausible) {
+                (window as any).plausible("booking_complete", {
+                    props: { service: service?.name, staff: staff?.name ?? "any" },
+                });
+            }
+        } catch (err: any) {
+            const msg = err?.message ?? "Errore durante la prenotazione";
+            if (msg.includes("Slot non disponibile")) {
+                setSubmitError("Lo slot scelto è stato appena prenotato. Torna indietro e scegline un altro.");
+            } else {
+                setSubmitError(msg);
+            }
+            addToast("Errore nella prenotazione", "error");
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -73,7 +106,7 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
         description: `Prenotazione presso Hair Rich Olbia${staff ? ` con ${staff.name}` : ""}.${notes ? `\n\nNote: ${notes}` : ""}`,
         location: SITE.address,
         start: startDate!,
-        durationMinutes: service?.duration ?? 30,
+        durationMinutes: service?.duration_min ?? 30,
     });
 
     if (submitted) {
@@ -254,6 +287,11 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
                         />
                     </div>
 
+                    {submitError && (
+                        <div className="text-xs text-error bg-error/10 border border-error/30 rounded-[var(--radius-sm)] px-3 py-2">
+                            {submitError}
+                        </div>
+                    )}
                     <button
                         type="submit"
                         disabled={submitting}
@@ -299,14 +337,14 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
                                     : "—"
                             }
                         />
-                        <SummaryRow label="Durata" value={service ? `${service.duration} min` : "—"} />
+                        <SummaryRow label="Durata" value={service ? `${service.duration_min} min` : "—"} />
                     </div>
                     <div className="mt-5 pt-4 border-t border-line flex items-center justify-between">
                         <span className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
                             Totale
                         </span>
                         <span className="text-display text-2xl text-accent-warm tabular-nums">
-                            {service ? formatPrice(service.price) : "—"}
+                            {service ? formatPrice(service.price_cents) : "—"}
                         </span>
                     </div>
                 </aside>
