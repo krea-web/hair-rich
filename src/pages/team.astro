@@ -1,10 +1,11 @@
 ---
 import RootLayout from "../layouts/RootLayout.astro";
+import { SiteHeader } from "../components/ui/SiteHeader";
+import { MobileMenu } from "../components/ui/MobileMenu";
+import { BookingDrawer } from "../components/booking/BookingDrawer";
 import { PageHero } from "../components/landing/_shared/PageHero";
-import { TeamSection } from "../components/landing/TeamSection";
-import { WhyUsSection } from "../components/landing/WhyUsSection";
+import { TeamShowcase } from "../components/landing/TeamShowcase";
 import { ProcessSteps } from "../components/landing/_shared/ProcessSteps";
-import { ReviewsSection } from "../components/landing/ReviewsSection";
 import { Footer } from "../components/landing/Footer";
 import { ToastViewport } from "../components/ui/ToastViewport";
 import { MobileBottomBar } from "../components/ui/MobileBottomBar";
@@ -12,13 +13,13 @@ import { MobileBottomBar } from "../components/ui/MobileBottomBar";
 const VALUES = [
   {
     n: "01",
-    title: "Ascolto",
+    title: "Ascolto prima",
     body: "Prima del taglio viene la conversazione. Capire come vivi, cosa fai, quanto tempo dedichi al mattino — tutto entra nel risultato finale.",
   },
   {
     n: "02",
-    title: "Tecnica",
-    body: "Forbice, rasoio, macchinetta, forbice-trama, tex­turizzazione. Ogni strumento serve a un risultato preciso. Non scegliamo per abitudine: scegliamo per il taglio.",
+    title: "Tecnica vera",
+    body: "Forbice, rasoio, macchinetta, forbice-trama, texturizzazione. Ogni strumento serve a un risultato preciso. Non scegliamo per abitudine: scegliamo per il taglio.",
   },
   {
     n: "03",
@@ -32,16 +33,20 @@ const VALUES = [
   title="Il team · Hair Rich Olbia"
   description="Federico Asara, Luca e tutto il team di Hair Rich Olbia. Master barber e senior barber sardi, formazione continua, mani sul lavoro dal 2017."
 >
+  <SiteHeader client:load />
   <main>
     <PageHero
       client:load
-      eyebrow="Il team"
-      titleA="Mani"
-      titleB="che pensano"
+      eyebrow="Team · Master barber"
+      titleA="Mani che"
+      titleB="pensano insieme"
       intro="Hair Rich è il lavoro di un gruppo piccolo, scelto a mano, con cui condividiamo standard e linguaggio. Ognuno arriva da una formazione diversa e porta una sensibilità diversa al rituale."
+      bgImage="provvisorio/IMG_2143.jpeg"
+      metaLeft="Sul campo · Dal 2017"
+      metaRight="03 / Team"
     />
 
-    <TeamSection client:visible />
+    <TeamShowcase client:visible />
 
     <ProcessSteps
       client:visible
@@ -50,12 +55,11 @@ const VALUES = [
       steps={VALUES}
     />
 
-    <WhyUsSection client:visible />
-    <ReviewsSection client:visible />
-
     <Footer client:visible />
   </main>
 
   <ToastViewport client:load />
   <MobileBottomBar client:idle />
+  <MobileMenu client:idle />
+  <BookingDrawer client:idle />
 </RootLayout>

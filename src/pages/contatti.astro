@@ -1,5 +1,8 @@
 ---
 import RootLayout from "../layouts/RootLayout.astro";
+import { SiteHeader } from "../components/ui/SiteHeader";
+import { MobileMenu } from "../components/ui/MobileMenu";
+import { BookingDrawer } from "../components/booking/BookingDrawer";
 import { PageHero } from "../components/landing/_shared/PageHero";
 import { ContactForm } from "../components/landing/ContactForm";
 import { MapSection } from "../components/landing/MapSection";
@@ -28,13 +31,17 @@ const mapsHref =
   title="Contatti · Hair Rich Olbia"
   description="Indirizzo, telefono, email e orari di apertura del barber studio Hair Rich a Olbia. Scrivici per prenotazioni o informazioni."
 >
+  <SiteHeader client:load />
   <main>
     <PageHero
       client:load
-      eyebrow="Contatti"
+      eyebrow="Contatti · Salone"
       titleA="Parliamoci"
       titleB="direttamente"
       intro="Telefono, messaggio scritto, oppure vienici a trovare in via Regina Elena 33/A. Rispondiamo entro un'ora lavorativa, garantito."
+      bgImage="provvisorio/IMG_2549.jpeg"
+      metaLeft="Risposta · 1h lavorativa"
+      metaRight="05 / Contatti"
     />
 
     <section class="relative py-16 md:py-24 px-6 md:px-12 lg:px-20 bg-black">

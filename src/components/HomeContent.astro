@@ -8,12 +8,12 @@ import { WhyUsSection } from "./landing/WhyUsSection";
 import { TeamSection } from "./landing/TeamSection";
 import { GallerySection } from "./landing/GallerySection";
 import { ReviewsSection } from "./landing/ReviewsSection";
-import { BookingSection } from "./landing/BookingSection";
-import { MapSection } from "./landing/MapSection";
 import { Footer } from "./landing/Footer";
 import { MarqueeStrip } from "./landing/_shared/MarqueeStrip";
 import { StickyBookCTA } from "./ui/StickyBookCTA";
 import { MobileBottomBar } from "./ui/MobileBottomBar";
+import { MobileMenu } from "./ui/MobileMenu";
+import { BookingDrawer } from "./booking/BookingDrawer";
 import { CartFAB } from "./shop/CartFAB";
 import { CartDrawer } from "./shop/CartDrawer";
 import { ToastViewport } from "./ui/ToastViewport";
@@ -83,8 +83,6 @@ const m = marqueeItems[lang];
 
   <MarqueeStrip client:visible variant="ribbon" items={m.ribbon2} />
 
-  <BookingSection client:visible />
-  <MapSection client:visible />
   <Footer client:visible />
 </main>
 
@@ -97,6 +95,8 @@ const m = marqueeItems[lang];
   <InstallPrompt client:idle />
 </div>
 <MobileBottomBar client:idle />
+<MobileMenu client:idle />
+<BookingDrawer client:idle />
 <ToastViewport client:load />
 
 <script is:inline>

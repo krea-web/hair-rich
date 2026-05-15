@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { SITE } from "@/lib/constants";
+import { useBookingDrawer } from "@/lib/store";
 
 const MAPS_URL =
     "https://www.google.com/maps/dir/?api=1&destination=" +
@@ -18,6 +19,7 @@ const PHONE_URL = "tel:" + SITE.phone.replace(/\s+/g, "");
  */
 export function MobileBottomBar() {
     const [hidden, setHidden] = useState(true);
+    const openDrawer = useBookingDrawer((s) => s.open);
 
     useEffect(() => {
         if (typeof window === "undefined") return;
@@ -26,9 +28,7 @@ export function MobileBottomBar() {
             setHidden(true);
             return;
         }
-        // On /prenota la CTA principale è già visibile in pagina
-        const isBookingPage = /\/prenota(\/|$)/.test(path);
-        setHidden(isBookingPage);
+        setHidden(false);
     }, []);
 
     if (hidden) return null;
@@ -41,15 +41,18 @@ export function MobileBottomBar() {
         >
             <div className="pointer-events-auto mx-auto max-w-md px-3 pb-[max(env(safe-area-inset-bottom),12px)] pt-3">
                 <div className="grid grid-cols-3 gap-2 rounded-full bg-black/85 backdrop-blur-xl border border-line shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.8)] p-1.5">
-                    <a
-                        href="/prenota"
+                    <button
+                        onClick={() => {
+                            if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(8);
+                            openDrawer();
+                        }}
                         className="flex items-center justify-center gap-2 py-3 rounded-full bg-accent-warm text-black text-[11px] uppercase tracking-[0.18em] font-body font-semibold active:scale-95 transition-transform"
                     >
                         <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M8 2v3M16 2v3M3 9h18M5 5h14a2 2 0 012 2v13a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z" />
                         </svg>
                         Prenota
-                    </a>
+                    </button>
                     <a
                         href={PHONE_URL}
                         className="flex items-center justify-center gap-2 py-3 rounded-full text-warm-white text-[11px] uppercase tracking-[0.18em] font-body font-semibold border border-line active:scale-95 transition-transform"

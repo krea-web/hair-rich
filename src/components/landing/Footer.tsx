@@ -19,12 +19,11 @@ export function Footer() {
     const signupHref = lang === "it" ? "/registrazione" : `/${lang}/registrazione`;
 
     const QUICK_LINKS = [
-        { href: "#about", label: t.nav.about },
-        { href: "#servizi", label: t.nav.services },
-        { href: "#prezzi", label: t.nav.pricing },
-        { href: "#team", label: t.nav.team },
-        { href: "#galleria", label: t.nav.gallery },
-        { href: "#booking", label: t.nav.booking },
+        { href: "/servizi", label: t.nav.services },
+        { href: "/lavori", label: t.nav.gallery },
+        { href: "/team", label: t.nav.team },
+        { href: "/contatti", label: t.nav.about },
+        { href: "/prenota", label: t.nav.booking },
     ];
 
     const HOURS = HOURS_RAW.map((h) => ({

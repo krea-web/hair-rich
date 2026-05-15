@@ -1,10 +1,11 @@
 ---
 import RootLayout from "../layouts/RootLayout.astro";
+import { SiteHeader } from "../components/ui/SiteHeader";
+import { MobileMenu } from "../components/ui/MobileMenu";
+import { BookingDrawer } from "../components/booking/BookingDrawer";
 import { PageHero } from "../components/landing/_shared/PageHero";
-import { ServicesSection } from "../components/landing/ServicesSection";
-import { PricingSection } from "../components/landing/PricingSection";
-import { WhyUsSection } from "../components/landing/WhyUsSection";
-import { TrendsSection } from "../components/landing/TrendsSection";
+import { ServiceCatalog } from "../components/landing/ServiceCatalog";
+import { StyleQuiz } from "../components/landing/StyleQuiz";
 import { ProcessSteps } from "../components/landing/_shared/ProcessSteps";
 import { FAQAccordion } from "../components/landing/_shared/FAQAccordion";
 import { Footer } from "../components/landing/Footer";
@@ -43,8 +44,8 @@ const FAQ = [
     a: "Hair Rich è specializzato sull'uomo e sulla barba. Per styling unisex avanzato lavoriamo su prenotazione dedicata — scrivici e ti diciamo come gestiamo il caso.",
   },
   {
-    q: "Avete prodotti in vendita?",
-    a: "Sì, una selezione curata di prodotti che usiamo davvero nel rituale — pomate, oli barba, shampoo specifici. Tutto provato in salone prima di entrare in vendita.",
+    q: "Posso modificare un servizio durante l'appuntamento?",
+    a: "Sì, succede spesso. Al consulto iniziale possiamo passare da un Razor Cut a un Fade se la forma del viso lo chiede. Il prezzo viene ricalibrato in modo trasparente prima di iniziare.",
   },
 ];
 ---
@@ -53,27 +54,29 @@ const FAQ = [
   title="Servizi e listino · Hair Rich Olbia"
   description="Taglio classico, fade, razor cut, barba sartoriale e combo. Listino trasparente da €15 a €45. Prenota online da Hair Rich Olbia."
 >
+  <SiteHeader client:load />
   <main>
     <PageHero
       client:load
-      eyebrow="Servizi"
-      titleA="Rituali"
-      titleB="su misura"
-      intro="Sei servizi pensati per altrettanti momenti diversi della tua routine. Niente menù gonfiato di varianti: solo quello che facciamo davvero, fatto bene."
+      eyebrow="Servizi · Rituali · Listino"
+      titleA="Sei rituali"
+      titleB="costruiti sulla testa giusta"
+      intro="Ogni servizio Hair Rich è un protocollo preciso. Sotto trovi la versione lunga di cosa include, quanto dura, e — soprattutto — per chi è pensato."
+      bgImage="provvisorio/IMG_2090.jpeg"
+      metaLeft="Aggiornato · Maggio 2026"
+      metaRight="01 / Catalogo"
     />
 
-    <ServicesSection client:visible />
+    <ServiceCatalog client:visible />
 
     <ProcessSteps
       client:visible
       eyebrow="Il rituale Hair Rich"
-      title="Tre passaggi, in ogni servizio."
+      title="Tre passaggi che attraversano ogni servizio."
       steps={RITUALS}
     />
 
-    <PricingSection client:visible />
-    <WhyUsSection client:visible />
-    <TrendsSection client:visible />
+    <StyleQuiz client:visible />
 
     <FAQAccordion
       client:visible
@@ -87,4 +90,6 @@ const FAQ = [
 
   <ToastViewport client:load />
   <MobileBottomBar client:idle />
+  <MobileMenu client:idle />
+  <BookingDrawer client:idle />
 </RootLayout>

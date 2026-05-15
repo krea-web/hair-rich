@@ -5,6 +5,9 @@ import { Wordmark } from "./_shared/Wordmark";
 import { LangSwitcher } from "./_shared/LangSwitcher";
 import { AvailabilityPulse } from "./_shared/AvailabilityPulse";
 import { BookingPulse } from "./_shared/BookingPulse";
+import { MobileMenuTrigger } from "@/components/ui/MobileMenu";
+import { BookingCtaButton } from "@/components/ui/BookingCtaButton";
+import { NextSlotWidget } from "./NextSlotWidget";
 import { useT } from "@/i18n/useLang";
 
 const HERO_PHOTO = "/hero-seq/frame_001.webp";
@@ -79,15 +82,7 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 0.8 }}
             >
-                <a
-                    href="/prenota"
-                    className="group relative inline-flex items-center gap-3 bg-accent-warm text-black px-8 py-4 rounded-full font-body font-semibold text-sm uppercase tracking-[0.2em] transition-transform hover:scale-[1.02] active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-warm-white"
-                >
-                    <span>{t.hero.primaryCta}</span>
-                    <svg viewBox="0 0 24 24" className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                    </svg>
-                </a>
+                <BookingCtaButton label={t.hero.primaryCta} />
                 <a
                     href="/servizi"
                     className="inline-flex items-center gap-3 border border-line text-warm-white px-8 py-4 rounded-full font-body font-semibold text-sm uppercase tracking-[0.2em] transition-colors hover:border-warm-white hover:bg-warm-white/5"
@@ -95,6 +90,11 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
                     {t.hero.secondaryCta}
                 </a>
             </motion.div>
+
+            {/* Prossimo slot disponibile (live da Supabase) */}
+            <div className="mt-6">
+                <NextSlotWidget />
+            </div>
 
             {/* Trust badges (rating + certified + premium) */}
             <motion.div
@@ -196,8 +196,9 @@ export function HeroSection() {
                     <a href="/contatti" className="hover:text-warm-white transition-colors">{t.nav.about}</a>
                     <a href="/prenota" className="hover:text-warm-white transition-colors">{t.nav.booking}</a>
                 </nav>
-                <div className="justify-self-end pointer-events-auto">
+                <div className="justify-self-end pointer-events-auto flex items-center gap-2">
                     <LangSwitcher current={lang} variant="navbar" />
+                    <MobileMenuTrigger />
                 </div>
             </motion.header>
 

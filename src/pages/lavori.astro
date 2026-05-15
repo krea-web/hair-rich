@@ -1,36 +1,42 @@
 ---
 import RootLayout from "../layouts/RootLayout.astro";
+import { SiteHeader } from "../components/ui/SiteHeader";
+import { MobileMenu } from "../components/ui/MobileMenu";
+import { BookingDrawer } from "../components/booking/BookingDrawer";
 import { PageHero } from "../components/landing/_shared/PageHero";
-import { GallerySection } from "../components/landing/GallerySection";
-import { TrendsSection } from "../components/landing/TrendsSection";
-import { InstagramSection } from "../components/landing/InstagramSection";
-import { ReviewsSection } from "../components/landing/ReviewsSection";
+import { PortfolioGallery } from "../components/landing/PortfolioGallery";
+import { BeforeAfterSlider } from "../components/landing/BeforeAfterSlider";
 import { Footer } from "../components/landing/Footer";
 import { ToastViewport } from "../components/ui/ToastViewport";
 import { MobileBottomBar } from "../components/ui/MobileBottomBar";
 ---
 
 <RootLayout
-  title="I nostri lavori · Hair Rich Olbia"
-  description="Galleria completa di tagli, fade, barbe e styling realizzati da Hair Rich Olbia. Cerca per categoria o lasciati ispirare."
+  title="Portfolio · Hair Rich Olbia"
+  description="Galleria completa di tagli, fade, barbe e styling realizzati da Hair Rich Olbia. Trasformazioni prima/dopo, filtri per categoria, archive editorial."
 >
+  <SiteHeader client:load />
   <main>
     <PageHero
       client:load
-      eyebrow="Portfolio"
-      titleA="I lavori"
-      titleB="del salone"
-      intro="Ogni foto è un cliente vero, uscito dalla nostra postazione. Niente catalogo riciclato da internet: questo è quello che facciamo, tagliato sulle teste degli olbiesi."
+      eyebrow="Portfolio · Lavori"
+      titleA="Tagli che hanno"
+      titleB="camminato fuori da qui"
+      intro="Ogni foto è un cliente vero, fotografato a fine servizio. Niente stock, niente IA, niente catalogo riciclato. Solo quello che facciamo davvero, sulle teste degli olbiesi."
+      bgImage="provvisorio/IMG_2374.jpeg"
+      metaLeft="Archive 2024 — 2026"
+      metaRight="02 / Lavori"
     />
 
-    <GallerySection client:visible />
-    <TrendsSection client:visible />
-    <InstagramSection client:visible />
-    <ReviewsSection client:visible />
+    <PortfolioGallery client:visible />
+
+    <BeforeAfterSlider client:visible />
 
     <Footer client:visible />
   </main>
 
   <ToastViewport client:load />
   <MobileBottomBar client:idle />
+  <MobileMenu client:idle />
+  <BookingDrawer client:idle />
 </RootLayout>

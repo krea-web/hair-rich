@@ -112,6 +112,36 @@ export const useModalStore = create<ModalState>((set) => ({
     closeModal: () => set({ isOpen: false, content: null }),
 }));
 
+/* ── Booking drawer (bottom sheet) ─────────────────────────────────────────── */
+interface BookingDrawerState {
+    isOpen: boolean;
+    open: () => void;
+    close: () => void;
+    setOpen: (open: boolean) => void;
+}
+
+export const useBookingDrawer = create<BookingDrawerState>((set) => ({
+    isOpen: false,
+    open: () => set({ isOpen: true }),
+    close: () => set({ isOpen: false }),
+    setOpen: (open) => set({ isOpen: open }),
+}));
+
+/* ── Mobile menu ───────────────────────────────────────────────────────────── */
+interface MobileMenuState {
+    isOpen: boolean;
+    open: () => void;
+    close: () => void;
+    toggle: () => void;
+}
+
+export const useMobileMenu = create<MobileMenuState>((set) => ({
+    isOpen: false,
+    open: () => set({ isOpen: true }),
+    close: () => set({ isOpen: false }),
+    toggle: () => set((s) => ({ isOpen: !s.isOpen })),
+}));
+
 /* ── Booking store ─────────────────────────────────────────────────────────── */
 import type { Service, Staff } from "./supabase/types";
 
