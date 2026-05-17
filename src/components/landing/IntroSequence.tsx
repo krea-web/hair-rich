@@ -10,7 +10,7 @@ const FRAME_COUNT = 103;
 // after a re-crop). The query string forces stale service-worker caches and
 // browser HTTP caches to revalidate, so the JS positioning math never gets
 // mismatched against an older asset version.
-const FRAMES_VERSION = "v2";
+const FRAMES_VERSION = "v3";
 const framePath = (i: number) =>
     `/hero-seq/frame_${String(i).padStart(3, "0")}.webp?v=${FRAMES_VERSION}`;
 
@@ -28,17 +28,6 @@ const WELCOME_BACK: Record<Locale, string> = {
     de: "Willkommen zurück",
 };
 
-function useIsMobile() {
-    const [isMobile, setIsMobile] = useState(false);
-    useEffect(() => {
-        const mq = window.matchMedia("(max-width: 767px)");
-        const update = () => setIsMobile(mq.matches);
-        update();
-        mq.addEventListener("change", update);
-        return () => mq.removeEventListener("change", update);
-    }, []);
-    return isMobile;
-}
 
 /**
  * Full-viewport scroll-driven intro sequence: the rose+scissors composition
@@ -57,20 +46,20 @@ export function IntroSequence() {
         offset: ["start start", "end end"],
     });
 
-    // Phase 1 — frames animate in the first half of the scroll budget.
-    // Phase 2 — welcome word reveals EARLIER (around 30%) so the moment the
-    //           subject starts leaving the frame, the welcome text fills the
-    //           emerging black space instead of letting it gape.
-    const frameIndex = useTransform(scrollYProgress, [0, 0.45], [1, FRAME_COUNT]);
-    const hintOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
+    // Phase 1 — frames animate in the first ~half of the scroll budget.
+    // Phase 2 — welcome word starts revealing the moment the subject begins
+    //           to leave the upper half of the frame (≈ frame 40, scrollY
+    //           ≈ 0.18). Holds until the very end so the user has a beat
+    //           to register it before the hero takes over.
+    const frameIndex = useTransform(scrollYProgress, [0, 0.55], [1, FRAME_COUNT]);
+    const hintOpacity = useTransform(scrollYProgress, [0, 0.12], [1, 0]);
     const welcomeOpacity = useTransform(
         scrollYProgress,
-        [0.28, 0.42, 0.93, 1],
+        [0.18, 0.35, 0.95, 1],
         [0, 1, 1, 0],
     );
-    const welcomeY = useTransform(scrollYProgress, [0.28, 0.42], [40, 0]);
+    const welcomeY = useTransform(scrollYProgress, [0.18, 0.35], [60, 0]);
     const lang = useLang();
-    const isMobile = useIsMobile();
 
     // Auth detect: choose Benvenuto / Bentornato. Best-effort, defaults to
     // Benvenuto if check fails or session not yet known.
@@ -122,15 +111,14 @@ export function IntroSequence() {
         };
     }, []);
 
-    // Source frames are pre-cropped to 568×615 — a tight wrap around the
-    // union bbox of all 103 frames. The pixel-mass-weighted centroid of
-    // frame 1 lands at (292, 312) in the cropped coordinate space. Because
-    // wasted padding is now baked out of the source itself, plain `contain`
-    // scaling already gives the composition genuine presence on every
-    // viewport — the previous portrait presence bump is no longer needed.
-    const ICON_CENTER_X_SRC = 292;
-    const ICON_CENTER_Y_SRC = 312;
-
+    // Source frames are now per-frame cropped (script: scripts/crop-intro-
+    // frames.mjs). Each frame's natural height varies — it equals the
+    // vertical extent of the subject + a tiny bottom padding. Drawing logic
+    // is therefore the simplest possible: top-anchor each cropped frame at
+    // (0, 0), scaled to fit the canvas width. The result: the subject sits
+    // at the top of the viewport and the black space below shrinks as the
+    // subject rises across frames, leaving room for the welcome word to
+    // breathe in the lower half without fighting an arbitrary void.
     const drawFrame = (img?: HTMLImageElement) => {
         if (!img || !img.naturalWidth || !canvasRef.current) return;
         const canvas = canvasRef.current;
@@ -138,19 +126,10 @@ export function IntroSequence() {
         if (!ctx) return;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const hRatio = canvas.width / img.naturalWidth;
-        const vRatio = canvas.height / img.naturalHeight;
-        const ratio = Math.min(hRatio, vRatio);
-        const w = img.naturalWidth * ratio;
-        const h = img.naturalHeight * ratio;
-        const x = canvas.width / 2 - ICON_CENTER_X_SRC * ratio;
-        // Mobile: anchor higher (subject sits near top, so as it animates
-        // it exits through the top edge of the screen — feels like the
-        // composition is emerging from the liquid-glass navbar). Desktop:
-        // keep classic centered framing.
-        const verticalAnchor = isMobile ? 0.35 : 0.5;
-        const y = canvas.height * verticalAnchor - ICON_CENTER_Y_SRC * ratio;
-        ctx.drawImage(img, x, y, w, h);
+        const scale = canvas.width / img.naturalWidth;
+        const w = canvas.width;
+        const h = img.naturalHeight * scale;
+        ctx.drawImage(img, 0, 0, w, h);
     };
 
     useMotionValueEvent(frameIndex, "change", (latest) => {
@@ -177,9 +156,7 @@ export function IntroSequence() {
         resize();
         window.addEventListener("resize", resize);
         return () => window.removeEventListener("resize", resize);
-        // isMobile change must redraw because verticalAnchor depends on it
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [imagesReady, frameIndex, isMobile]);
+    }, [imagesReady, frameIndex]);
 
     // Toggle body[data-intro-active] based on whether the intro section is
     // still in front of the user. While active, all floating UI is hidden
@@ -224,7 +201,7 @@ export function IntroSequence() {
             aria-label="Intro"
             data-intro-sequence
         >
-            <div className="h-[200vh] md:h-[220vh]">
+            <div className="h-[150vh] md:h-[180vh]">
                 <div className="sticky top-0 h-[100dvh] overflow-hidden bg-black">
                     {/* Skip button — always visible, top-right */}
                     <button
@@ -275,17 +252,17 @@ export function IntroSequence() {
                         EST. 2017
                     </span>
 
-                    {/* Phase 2: welcome word fades in as the subject begins to
-                       leave the frame. On mobile, sits in the lower half (the
-                       subject is anchored higher so the bottom would otherwise
-                       be a black void). On desktop, centered. */}
+                    {/* Phase 2: welcome word fills the lower half of the
+                       viewport — exactly where the cropped frame leaves
+                       black space as the subject rises. Big, centered in
+                       that growing void, holds for a beat. */}
                     <motion.div
-                        className="absolute inset-0 flex items-end md:items-center justify-center pointer-events-none z-20 px-6 pb-[28%] md:pb-0"
+                        className="absolute inset-x-0 bottom-0 top-[42%] flex items-center justify-center pointer-events-none z-20 px-6"
                         style={{ opacity: welcomeOpacity }}
                         aria-hidden="true"
                     >
                         <motion.span
-                            className="text-display-alt text-warm-white text-5xl sm:text-6xl md:text-8xl lg:text-9xl tracking-[0.04em] text-center whitespace-nowrap drop-shadow-[0_2px_24px_rgba(212,165,116,0.25)]"
+                            className="text-display-alt text-warm-white text-6xl sm:text-7xl md:text-8xl lg:text-9xl tracking-[0.04em] text-center whitespace-nowrap drop-shadow-[0_4px_32px_rgba(212,165,116,0.35)]"
                             style={{ y: welcomeY, willChange: "transform, opacity" }}
                         >
                             {welcomeText}

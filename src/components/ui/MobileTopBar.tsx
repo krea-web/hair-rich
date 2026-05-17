@@ -41,7 +41,7 @@ export function MobileTopBar() {
     }, []);
 
     return (
-        <header className="md:hidden relative z-30">
+        <header className="md:hidden fixed top-0 left-0 right-0 z-40">
             <div
                 className="grid grid-cols-[1fr_auto_1fr] items-center px-4 pt-[max(env(safe-area-inset-top,0px),12px)] pb-3"
                 style={{

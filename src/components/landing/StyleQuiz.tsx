@@ -7,23 +7,16 @@ import type { Service } from "@/lib/supabase/types";
 import { useBookingDrawer, useBookingStore } from "@/lib/store";
 import { formatPrice } from "@/lib/format";
 
-type Vibe = "classic" | "modern" | "editorial";
-type Maintenance = "low" | "medium" | "high";
-type WithBeard = "yes" | "no";
+type Context = "office" | "creative" | "outdoor" | "social";
+type Texture = "straight" | "wavy" | "curly" | "thin";
+type Styling = "zero" | "five" | "ten";
+type BeardChoice = "full" | "trim" | "none";
 
 interface QuizAnswers {
-    vibe?: Vibe;
-    maintenance?: Maintenance;
-    beard?: WithBeard;
-}
-
-function pickService(a: QuizAnswers): string {
-    if (a.vibe === "editorial" && a.beard === "yes") return "barba-sartoriale";
-    if (a.vibe === "editorial") return "razor-cut";
-    if (a.beard === "yes") return "taglio-barba";
-    if (a.vibe === "modern" && a.maintenance === "low") return "fade-sfumatura";
-    if (a.vibe === "classic" && a.maintenance === "high") return "taglio-classico";
-    return "fade-sfumatura";
+    context?: Context;
+    texture?: Texture;
+    styling?: Styling;
+    beard?: BeardChoice;
 }
 
 interface QuizOption<V> {
@@ -34,7 +27,7 @@ interface QuizOption<V> {
 }
 
 interface Question {
-    key: "vibe" | "maintenance" | "beard";
+    key: "context" | "texture" | "styling" | "beard";
     prompt: string;
     sub: string;
     options: QuizOption<any>[];
@@ -42,78 +35,145 @@ interface Question {
 
 const QUESTIONS: Question[] = [
     {
-        key: "vibe",
-        prompt: "Quale stile ti rappresenta?",
-        sub: "Scegli l'estetica che senti più tua.",
+        key: "context",
+        prompt: "In quale contesto ti vedono di più?",
+        sub: "L'ambiente che frequenti condiziona il taglio che funziona meglio.",
         options: [
             {
-                value: "classic",
-                label: "Classico",
-                desc: "Pulito, intramontabile, da gentleman",
+                value: "office",
+                label: "Ufficio · formale",
+                desc: "Business, consulenza, sale riunioni",
                 icon: (
                     <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 8c0-3 3-5 7-5s7 2 7 5v8a3 3 0 01-3 3H8a3 3 0 01-3-3V8z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6M9 16h6" />
+                        <rect x="3" y="7" width="18" height="13" rx="2" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 12v4" />
                     </svg>
                 ),
             },
             {
-                value: "modern",
-                label: "Moderno",
-                desc: "Lineare, tecnico, definito",
+                value: "creative",
+                label: "Creativo · casual",
+                desc: "Agenzia, freelance, startup, arte",
                 icon: (
                     <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 12h4l3-9 4 18 3-9h4" />
+                        <circle cx="12" cy="12" r="3" />
+                        <circle cx="12" cy="5" r="1.5" />
+                        <circle cx="19" cy="12" r="1.5" />
+                        <circle cx="12" cy="19" r="1.5" />
+                        <circle cx="5" cy="12" r="1.5" />
                     </svg>
                 ),
             },
             {
-                value: "editorial",
-                label: "Editorial",
-                desc: "Lavorato, naturale, espressivo",
+                value: "outdoor",
+                label: "Sportivo · attivo",
+                desc: "Sport, lavori manuali, all'aperto",
                 icon: (
                     <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 4c4 0 8 4 8 8s4 8 8 8M4 12c4-4 8 0 8 4M12 4c-4 4 0 8 4 8" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 17l5-5 4 4 8-8M14 8h6v6" />
+                    </svg>
+                ),
+            },
+            {
+                value: "social",
+                label: "Pubblico · sociale",
+                desc: "Hospitality, eventi, commerciale",
+                icon: (
+                    <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                        <circle cx="9" cy="9" r="3" />
+                        <circle cx="17" cy="11" r="2.5" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 20c0-3 3-5 6-5s6 2 6 5M14 20c0-2 2-3.5 4-3.5s4 1.5 4 3.5" />
                     </svg>
                 ),
             },
         ],
     },
     {
-        key: "maintenance",
-        prompt: "Quanto tempo dedichi al mattino?",
-        sub: "Più sei sincero, più il rituale sarà calibrato.",
+        key: "texture",
+        prompt: "Che capelli hai?",
+        sub: "Texture diverse chiedono tecniche diverse — non esiste taglio universale.",
         options: [
             {
-                value: "low",
-                label: "Zero o poco",
-                desc: "Lavo e vado, niente prodotto",
+                value: "straight",
+                label: "Lisci",
+                desc: "Cadono dritti, possono sembrare piatti",
                 icon: (
                     <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-                        <circle cx="12" cy="12" r="9" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 7v5l3 2" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 4v16M12 4v16M18 4v16" />
                     </svg>
                 ),
             },
             {
-                value: "medium",
+                value: "wavy",
+                label: "Mossi",
+                desc: "Onda naturale, movimento spontaneo",
+                icon: (
+                    <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 8c2-2 4-2 6 0s4 2 6 0 4-2 6 0M3 16c2-2 4-2 6 0s4 2 6 0 4-2 6 0" />
+                    </svg>
+                ),
+            },
+            {
+                value: "curly",
+                label: "Ricci",
+                desc: "Boccoli, riccio definito",
+                icon: (
+                    <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                        <circle cx="7" cy="8" r="2.5" />
+                        <circle cx="14" cy="6" r="2.5" />
+                        <circle cx="17" cy="13" r="2.5" />
+                        <circle cx="9" cy="16" r="2.5" />
+                    </svg>
+                ),
+            },
+            {
+                value: "thin",
+                label: "Fini / radi",
+                desc: "Sottili, magari diradati sull'attaccatura",
+                icon: (
+                    <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 8h4M11 8h2M17 8h3M4 12h2M9 12h3M16 12h4M4 16h3M10 16h2M15 16h3" />
+                    </svg>
+                ),
+            },
+        ],
+    },
+    {
+        key: "styling",
+        prompt: "Quanto tempo dedichi al mattino al look?",
+        sub: "La risposta sincera, non quella che ti farebbe figura.",
+        options: [
+            {
+                value: "zero",
+                label: "Niente o quasi",
+                desc: "Lavo, asciugo, esco. Niente prodotto.",
+                icon: (
+                    <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 12v-2" />
+                    </svg>
+                ),
+            },
+            {
+                value: "five",
                 label: "5 minuti",
-                desc: "Un po' di cera e via",
+                desc: "Un po' di cera, mani tra i capelli, via.",
                 icon: (
                     <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
                         <circle cx="12" cy="12" r="9" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 7v5l4-2" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 12l4-2" />
                     </svg>
                 ),
             },
             {
-                value: "high",
+                value: "ten",
                 label: "10+ minuti",
-                desc: "Mi piace fare lo styling",
+                desc: "Mi piace fare lo styling, prodotti più di uno.",
                 icon: (
                     <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
                         <circle cx="12" cy="12" r="9" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 7v5l5 3" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 12l5 3" />
                     </svg>
                 ),
             },
@@ -121,26 +181,37 @@ const QUESTIONS: Question[] = [
     },
     {
         key: "beard",
-        prompt: "Includiamo anche la barba?",
-        sub: "Il combo dà continuità stilistica al volto.",
+        prompt: "E la barba?",
+        sub: "Possiamo modellare, rifinire o lasciar perdere — di base.",
         options: [
             {
-                value: "yes",
-                label: "Sì, lavoriamola",
-                desc: "Modellatura completa con rasoio",
+                value: "full",
+                label: "Modellatura completa",
+                desc: "Rasoio classico, oli, lavorazione a tempo",
                 icon: (
                     <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M7 8c2 6 3 9 5 9s3-3 5-9M9 7v3m6-3v3" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M7 6c2 7 3 12 5 12s3-5 5-12M10 5v3m4-3v3" />
                     </svg>
                 ),
             },
             {
-                value: "no",
-                label: "Solo capelli",
-                desc: "Niente barba oggi, grazie",
+                value: "trim",
+                label: "Solo rifinitura",
+                desc: "Pulizia contorni veloce, niente lavorazione",
                 icon: (
                     <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 9c2-4 5-6 7-6s5 2 7 6c1 2 1 4 0 6-1 1-3 1-3 1H8s-2 0-3-1c-1-2-1-4 0-6z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M8 8l-3 4 3 4M16 8l3 4-3 4" />
+                    </svg>
+                ),
+            },
+            {
+                value: "none",
+                label: "Niente barba",
+                desc: "Solo capelli oggi",
+                icon: (
+                    <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                        <circle cx="12" cy="9" r="4" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 20c1-3 4-5 7-5s6 2 7 5" />
                     </svg>
                 ),
             },
@@ -148,22 +219,100 @@ const QUESTIONS: Question[] = [
     },
 ];
 
-const RATIONALE: Record<string, (a: QuizAnswers) => string> = {
-    "barba-sartoriale": () =>
-        "Stile editorial + barba lavorata = il nostro servizio più specifico per chi vuole un volto definito senza compromessi.",
-    "razor-cut": () =>
-        "Lo stile editorial chiede texture naturale. Il rasoio ammorbidisce le punte e crea movimento — perfetto per il tuo brief.",
-    "taglio-barba": (a) =>
-        a.vibe === "classic"
-            ? "Classico con barba = il combo signature. Continuità stilistica tra capelli e volto, un'ora intera dedicata a te."
-            : "Combo completo: capelli + barba in continuità. Risparmi 5€ rispetto al singolo e ottieni un risultato armonico.",
-    "fade-sfumatura": (a) =>
-        a.vibe === "modern"
-            ? "Stile moderno + manutenzione veloce = il Fade è perfetto. Pulito, ridefinito, sta bene per 2-3 settimane senza ritocchi."
-            : "Sfumatura tecnica con macchinetta + rifinitura a rasoio. Il servizio più richiesto perché è quello che cambia di più.",
-    "taglio-classico": () =>
-        "Stile classico + cura nel quotidiano = forbice e tecnica italiana. Niente fronzoli, solo controllo millimetrico.",
-};
+/**
+ * Pick the best-fitting service slug based on the 4 answers. The mapping
+ * is intentionally explicit so a barber can read it, sanity-check it, and
+ * tune it in five minutes if real-world feedback diverges from intuition.
+ */
+function pickService(a: QuizAnswers): string {
+    const wantsBeard = a.beard === "full" || a.beard === "trim";
+
+    // Full beard sartorial wins for editorial + creative contexts with care
+    if (a.beard === "full" && a.context === "creative") return "barba-sartoriale";
+
+    // Combo (taglio + barba) — anyone who wants real beard work + a haircut
+    if (a.beard === "full") return "taglio-barba";
+
+    // Razor cut for creative/social contexts with wavy/curly hair OR
+    // someone who actually styles in the morning
+    if (
+        (a.context === "creative" || a.context === "social") &&
+        (a.texture === "wavy" || a.texture === "curly") &&
+        a.styling !== "zero"
+    ) {
+        return wantsBeard ? "taglio-barba" : "razor-cut";
+    }
+
+    // Fade is the universal workhorse — modern, low-maintenance, defined.
+    // Office + low maintenance, outdoor + any, or thin hair benefits.
+    if (
+        a.context === "office" && a.styling === "zero" ||
+        a.context === "outdoor" ||
+        a.texture === "thin"
+    ) {
+        return wantsBeard ? "taglio-barba" : "fade-sfumatura";
+    }
+
+    // Classic for office contexts with care + straight/wavy hair
+    if (a.context === "office" && (a.texture === "straight" || a.texture === "wavy") && a.styling !== "zero") {
+        return "taglio-classico";
+    }
+
+    // Default: the most flexible service
+    return "fade-sfumatura";
+}
+
+/**
+ * Produce a 1-sentence rationale calibrated to the user's actual answers.
+ * Reads more like a barber-to-client recap than a generic blurb.
+ */
+function buildRationale(serviceSlug: string, a: QuizAnswers): string {
+    const ctx: Record<Context, string> = {
+        office: "lavori in un contesto formale",
+        creative: "ti muovi in un ambiente creativo",
+        outdoor: "stai molto all'aperto / fai sport",
+        social: "lavori a contatto con il pubblico",
+    };
+    const tex: Record<Texture, string> = {
+        straight: "capelli lisci",
+        wavy: "capelli mossi",
+        curly: "capelli ricci",
+        thin: "capelli fini",
+    };
+    const sty: Record<Styling, string> = {
+        zero: "niente styling al mattino",
+        five: "cinque minuti di styling",
+        ten: "ti piace fare lo styling con calma",
+    };
+    const beardCue: Record<BeardChoice, string> = {
+        full: " + barba lavorata",
+        trim: " + rifinitura barba",
+        none: "",
+    };
+
+    const ctxPart = a.context ? ctx[a.context] : "";
+    const texPart = a.texture ? tex[a.texture] : "";
+    const styPart = a.styling ? sty[a.styling] : "";
+    const beardPart = a.beard ? beardCue[a.beard] : "";
+
+    const profile = [ctxPart, texPart, styPart].filter(Boolean).join(" · ");
+
+    const recipe: Record<string, string> = {
+        "fade-sfumatura":
+            "Il Fade è il rituale più flessibile: sfumatura tecnica + rifinitura a rasoio. Pulito 2-3 settimane senza ritocchi, niente prodotti necessari.",
+        "razor-cut":
+            "Il Razor Cut lavora a rasoio le punte per creare movimento naturale. Texture viva, niente forme rigide — perfetto se hai una mossa di partenza da assecondare.",
+        "taglio-classico":
+            "Il Taglio Classico è scuola italiana a forbice: controllo millimetrico, niente fronzoli. Forma pulita che resta pulita.",
+        "taglio-barba":
+            "Il combo Taglio + Barba dà continuità stilistica al volto e risparmi 5€ rispetto al singolo. Un'ora intera dedicata.",
+        "barba-sartoriale":
+            "La Barba Sartoriale lavora a rasoio classico i contorni e finisce con olio scelto sul tuo tipo di pelle. È dove si fa la differenza nei millimetri.",
+    };
+
+    const why = recipe[serviceSlug] ?? "";
+    return `${profile}${beardPart}. ${why}`;
+}
 
 export function StyleQuiz() {
     const [step, setStep] = useState(0);
@@ -176,14 +325,14 @@ export function StyleQuiz() {
         fetchServices().then(setServices).catch(() => undefined);
     }, []);
 
-    const handleAnswer = (key: "vibe" | "maintenance" | "beard", value: any) => {
+    const handleAnswer = (key: keyof QuizAnswers, value: any) => {
         const next = { ...answers, [key]: value };
         setAnswers(next);
         if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(8);
         if (step < QUESTIONS.length - 1) {
-            setTimeout(() => setStep((s) => s + 1), 240);
+            setTimeout(() => setStep((s) => s + 1), 220);
         } else {
-            setTimeout(() => setStep(QUESTIONS.length), 240);
+            setTimeout(() => setStep(QUESTIONS.length), 220);
         }
     };
 
@@ -192,10 +341,9 @@ export function StyleQuiz() {
         setStep(0);
     };
 
-    const result =
-        Object.keys(answers).length === QUESTIONS.length
-            ? services.find((s) => s.slug === pickService(answers))
-            : null;
+    const slug = Object.keys(answers).length === QUESTIONS.length ? pickService(answers) : null;
+    const result = slug ? services.find((s) => s.slug === slug) : null;
+    const rationale = slug ? buildRationale(slug, answers) : "";
 
     const handleBookResult = () => {
         if (result) {
@@ -206,7 +354,6 @@ export function StyleQuiz() {
 
     return (
         <section className="relative py-20 md:py-32 px-6 md:px-12 lg:px-20 bg-black overflow-hidden">
-            {/* Editorial backdrop */}
             <div
                 aria-hidden="true"
                 className="absolute -top-20 left-1/2 -translate-x-1/2 text-display-alt text-[40vw] md:text-[22vw] text-warm-white/[0.018] leading-none pointer-events-none select-none whitespace-nowrap"
@@ -217,30 +364,31 @@ export function StyleQuiz() {
             <div className="relative max-w-3xl mx-auto">
                 <div className="text-center mb-10 md:mb-16">
                     <span className="text-[10px] uppercase tracking-[0.5em] text-accent-warm font-body font-semibold">
-                        Consulto · 60 secondi
+                        Consulto · 90 secondi
                     </span>
                     <h2 className="text-display text-4xl md:text-6xl text-warm-white tracking-tight mt-4 leading-[1.05]">
                         Costruiamo<br />
                         <em className="text-display-alt not-italic text-silver">il tuo rituale.</em>
                     </h2>
                     <p className="mt-5 text-warm-white-muted text-base md:text-lg leading-relaxed max-w-xl mx-auto">
-                        Tre domande, una raccomandazione tagliata su misura. Senza listino, senza
-                        sceglier al buio: ti diciamo noi qual è il rituale che fa per te.
+                        Quattro domande sul tuo contesto, capelli e abitudini. Alla fine ti diciamo
+                        quale dei nostri sei rituali è davvero calibrato su di te — con la
+                        spiegazione del perché.
                     </p>
                 </div>
 
                 {/* Progress dots */}
                 {step < QUESTIONS.length && (
-                    <div className="flex items-center justify-center gap-2 mb-12">
+                    <div className="flex items-center justify-center gap-2 mb-10 md:mb-12">
                         {QUESTIONS.map((_, i) => (
                             <span
                                 key={i}
                                 className={`h-1 rounded-full transition-all duration-500 ${
                                     i < step
-                                        ? "w-8 bg-accent-warm"
+                                        ? "w-7 bg-accent-warm"
                                         : i === step
-                                            ? "w-14 bg-accent-warm"
-                                            : "w-8 bg-line"
+                                            ? "w-12 bg-accent-warm"
+                                            : "w-7 bg-line"
                                 }`}
                                 aria-hidden="true"
                             />
@@ -261,15 +409,15 @@ export function StyleQuiz() {
                                 <span className="text-[10px] uppercase tracking-[0.4em] text-silver-dark font-body font-semibold">
                                     Domanda {step + 1} di {QUESTIONS.length}
                                 </span>
-                                <h3 className="text-display text-2xl md:text-4xl text-warm-white tracking-tight mt-3">
+                                <h3 className="text-display text-2xl md:text-4xl text-warm-white tracking-tight mt-3 leading-tight">
                                     {QUESTIONS[step]!.prompt}
                                 </h3>
-                                <p className="mt-2 text-warm-white-muted text-sm md:text-base">
+                                <p className="mt-2 text-warm-white-muted text-sm md:text-base max-w-md mx-auto">
                                     {QUESTIONS[step]!.sub}
                                 </p>
                             </div>
 
-                            <div className="space-y-3">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 {QUESTIONS[step]!.options.map((opt, idx) => {
                                     const active =
                                         (answers as any)[QUESTIONS[step]!.key] === opt.value;
@@ -278,18 +426,18 @@ export function StyleQuiz() {
                                             key={opt.value}
                                             initial={{ opacity: 0, x: 20 }}
                                             animate={{ opacity: 1, x: 0 }}
-                                            transition={{ duration: 0.3, delay: idx * 0.07 }}
+                                            transition={{ duration: 0.3, delay: idx * 0.05 }}
                                             onClick={() =>
                                                 handleAnswer(QUESTIONS[step]!.key, opt.value)
                                             }
-                                            className={`w-full text-left p-5 md:p-6 rounded-[var(--radius-md)] border-2 transition-all flex items-center gap-4 md:gap-5 ${
+                                            className={`w-full text-left p-4 md:p-5 rounded-[var(--radius-md)] border-2 transition-all flex items-center gap-4 min-h-[80px] ${
                                                 active
                                                     ? "bg-accent-warm/10 border-accent-warm shadow-[0_8px_30px_-12px_rgba(212,165,116,0.4)]"
                                                     : "bg-black-2 border-line hover:bg-carbon hover:border-silver-mid"
                                             }`}
                                         >
                                             <div
-                                                className={`flex-shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-colors ${
+                                                className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center transition-colors ${
                                                     active
                                                         ? "bg-accent-warm text-black"
                                                         : "bg-black border border-line text-silver"
@@ -297,28 +445,14 @@ export function StyleQuiz() {
                                             >
                                                 {opt.icon}
                                             </div>
-                                            <div className="flex-1">
-                                                <span className="font-body font-semibold text-warm-white text-lg md:text-xl block">
+                                            <div className="flex-1 min-w-0">
+                                                <span className="font-body font-semibold text-warm-white text-base md:text-lg block leading-tight">
                                                     {opt.label}
                                                 </span>
-                                                <span className="text-warm-white-muted text-sm">
+                                                <span className="text-warm-white-muted text-xs md:text-sm leading-snug">
                                                     {opt.desc}
                                                 </span>
                                             </div>
-                                            <span
-                                                className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                                                    active
-                                                        ? "border-accent-warm bg-accent-warm"
-                                                        : "border-line"
-                                                }`}
-                                                aria-hidden="true"
-                                            >
-                                                {active && (
-                                                    <svg viewBox="0 0 24 24" className="w-3 h-3 text-black" fill="none" stroke="currentColor" strokeWidth="3.5">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                                    </svg>
-                                                )}
-                                            </span>
                                         </motion.button>
                                     );
                                 })}
@@ -334,9 +468,7 @@ export function StyleQuiz() {
                             exit={{ opacity: 0, scale: 0.94 }}
                             transition={{ duration: 0.6, ease: [0.34, 1.56, 0.64, 1] }}
                         >
-                            {/* Sartorial result card */}
                             <div className="relative overflow-hidden bg-gradient-to-br from-carbon via-black to-black border border-accent-warm/40 rounded-[var(--radius-md)] p-6 md:p-10">
-                                {/* Glow accent */}
                                 <div
                                     aria-hidden="true"
                                     className="absolute -top-32 -right-32 w-64 h-64 rounded-full bg-accent-warm/15 blur-3xl pointer-events-none"
@@ -351,12 +483,11 @@ export function StyleQuiz() {
                                         {result.name}
                                     </h3>
 
-                                    {/* Rationale — "perché questo" */}
+                                    {/* Sintesi profilo + perché */}
                                     <p className="mt-5 text-warm-white-muted text-base md:text-lg leading-relaxed max-w-xl">
-                                        {(RATIONALE[result.slug] ?? (() => result.description ?? ""))(answers)}
+                                        {rationale}
                                     </p>
 
-                                    {/* Sartorial price line — non "listino" ma "per te" */}
                                     <div className="mt-8 md:mt-10 pt-6 border-t border-line grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                                         <div>
                                             <span className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
