@@ -21,6 +21,25 @@ const WELCOME: Record<Locale, string> = {
     de: "Willkommen",
 };
 
+const WELCOME_BACK: Record<Locale, string> = {
+    it: "Bentornato",
+    en: "Welcome back",
+    fr: "Bon retour",
+    de: "Willkommen zurück",
+};
+
+function useIsMobile() {
+    const [isMobile, setIsMobile] = useState(false);
+    useEffect(() => {
+        const mq = window.matchMedia("(max-width: 767px)");
+        const update = () => setIsMobile(mq.matches);
+        update();
+        mq.addEventListener("change", update);
+        return () => mq.removeEventListener("change", update);
+    }, []);
+    return isMobile;
+}
+
 /**
  * Full-viewport scroll-driven intro sequence: the rose+scissors composition
  * lifts away as the user scrolls through 103 webp frames. Sits before
@@ -39,18 +58,42 @@ export function IntroSequence() {
     });
 
     // Phase 1 — frames animate in the first half of the scroll budget.
-    // Phase 2 — welcome word reveals once the scissors are gone and holds
-    //           across a generous slice (≈30% of the section) so fast
-    //           scrollers can still catch it before the hero takes over.
+    // Phase 2 — welcome word reveals EARLIER (around 30%) so the moment the
+    //           subject starts leaving the frame, the welcome text fills the
+    //           emerging black space instead of letting it gape.
     const frameIndex = useTransform(scrollYProgress, [0, 0.45], [1, FRAME_COUNT]);
     const hintOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
     const welcomeOpacity = useTransform(
         scrollYProgress,
-        [0.48, 0.6, 0.93, 1],
+        [0.28, 0.42, 0.93, 1],
         [0, 1, 1, 0],
     );
-    const welcomeY = useTransform(scrollYProgress, [0.48, 0.6], [28, 0]);
+    const welcomeY = useTransform(scrollYProgress, [0.28, 0.42], [40, 0]);
     const lang = useLang();
+    const isMobile = useIsMobile();
+
+    // Auth detect: choose Benvenuto / Bentornato. Best-effort, defaults to
+    // Benvenuto if check fails or session not yet known.
+    const [isReturning, setIsReturning] = useState(false);
+    useEffect(() => {
+        let alive = true;
+        (async () => {
+            try {
+                const { createClient } = await import("@/lib/supabase/client");
+                const supabase = createClient();
+                const { data } = await supabase.auth.getSession();
+                if (!alive) return;
+                setIsReturning(!!data.session);
+            } catch {
+                /* keep default */
+            }
+        })();
+        return () => {
+            alive = false;
+        };
+    }, []);
+
+    const welcomeText = isReturning ? WELCOME_BACK[lang] : WELCOME[lang];
 
     useEffect(() => {
         let cancelled = false;
@@ -101,7 +144,12 @@ export function IntroSequence() {
         const w = img.naturalWidth * ratio;
         const h = img.naturalHeight * ratio;
         const x = canvas.width / 2 - ICON_CENTER_X_SRC * ratio;
-        const y = canvas.height / 2 - ICON_CENTER_Y_SRC * ratio;
+        // Mobile: anchor higher (subject sits near top, so as it animates
+        // it exits through the top edge of the screen — feels like the
+        // composition is emerging from the liquid-glass navbar). Desktop:
+        // keep classic centered framing.
+        const verticalAnchor = isMobile ? 0.35 : 0.5;
+        const y = canvas.height * verticalAnchor - ICON_CENTER_Y_SRC * ratio;
         ctx.drawImage(img, x, y, w, h);
     };
 
@@ -129,7 +177,9 @@ export function IntroSequence() {
         resize();
         window.addEventListener("resize", resize);
         return () => window.removeEventListener("resize", resize);
-    }, [imagesReady, frameIndex]);
+        // isMobile change must redraw because verticalAnchor depends on it
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [imagesReady, frameIndex, isMobile]);
 
     // Toggle body[data-intro-active] based on whether the intro section is
     // still in front of the user. While active, all floating UI is hidden
@@ -225,18 +275,20 @@ export function IntroSequence() {
                         EST. 2017
                     </span>
 
-                    {/* Phase 2: welcome word fades in at the centre of the
-                       black space once the scissors animation completes. */}
+                    {/* Phase 2: welcome word fades in as the subject begins to
+                       leave the frame. On mobile, sits in the lower half (the
+                       subject is anchored higher so the bottom would otherwise
+                       be a black void). On desktop, centered. */}
                     <motion.div
-                        className="absolute inset-0 flex items-center justify-center pointer-events-none z-20 px-6"
+                        className="absolute inset-0 flex items-end md:items-center justify-center pointer-events-none z-20 px-6 pb-[28%] md:pb-0"
                         style={{ opacity: welcomeOpacity }}
                         aria-hidden="true"
                     >
                         <motion.span
-                            className="text-display-alt text-warm-white text-6xl md:text-8xl lg:text-9xl tracking-[0.04em] text-center whitespace-nowrap drop-shadow-[0_2px_24px_rgba(212,165,116,0.25)]"
+                            className="text-display-alt text-warm-white text-5xl sm:text-6xl md:text-8xl lg:text-9xl tracking-[0.04em] text-center whitespace-nowrap drop-shadow-[0_2px_24px_rgba(212,165,116,0.25)]"
                             style={{ y: welcomeY, willChange: "transform, opacity" }}
                         >
-                            {WELCOME[lang]}
+                            {welcomeText}
                         </motion.span>
                     </motion.div>
                 </div>

@@ -11,6 +11,7 @@ import { ReviewsSection } from "./landing/ReviewsSection";
 import { Footer } from "./landing/Footer";
 import { MarqueeStrip } from "./landing/_shared/MarqueeStrip";
 import { SiteHeader } from "./ui/SiteHeader";
+import { MobileTopBar } from "./ui/MobileTopBar";
 import { MobileBottomBar } from "./ui/MobileBottomBar";
 import { MobileMenu } from "./ui/MobileMenu";
 import { BookingDrawer } from "./booking/BookingDrawer";
@@ -51,6 +52,7 @@ const m = marqueeItems[lang];
 ---
 
 <SiteHeader client:load />
+<MobileTopBar client:load />
 <main>
   <IntroSequence client:load />
   <HeroSection client:load />

@@ -1,6 +1,7 @@
 ---
 import RootLayout from "../layouts/RootLayout.astro";
 import { SiteHeader } from "../components/ui/SiteHeader";
+import { MobileTopBar } from "../components/ui/MobileTopBar";
 import { MobileMenu } from "../components/ui/MobileMenu";
 import { BookingDrawer } from "../components/booking/BookingDrawer";
 import { PageHero } from "../components/landing/_shared/PageHero";
@@ -34,6 +35,7 @@ const VALUES = [
   description="Federico Asara, Luca e tutto il team di Hair Rich Olbia. Master barber e senior barber sardi, formazione continua, mani sul lavoro dal 2017."
 >
   <SiteHeader client:load />
+  <MobileTopBar client:load />
   <main>
     <PageHero
       client:load

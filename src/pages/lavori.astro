@@ -1,6 +1,7 @@
 ---
 import RootLayout from "../layouts/RootLayout.astro";
 import { SiteHeader } from "../components/ui/SiteHeader";
+import { MobileTopBar } from "../components/ui/MobileTopBar";
 import { MobileMenu } from "../components/ui/MobileMenu";
 import { BookingDrawer } from "../components/booking/BookingDrawer";
 import { PageHero } from "../components/landing/_shared/PageHero";
@@ -16,6 +17,7 @@ import { MobileBottomBar } from "../components/ui/MobileBottomBar";
   description="Galleria completa di tagli, fade, barbe e styling realizzati da Hair Rich Olbia. Trasformazioni prima/dopo, filtri per categoria, archive editorial."
 >
   <SiteHeader client:load />
+  <MobileTopBar client:load />
   <main>
     <PageHero
       client:load

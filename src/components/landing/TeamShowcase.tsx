@@ -6,11 +6,18 @@ import { fetchStaff } from "@/lib/supabase/queries";
 import type { Staff } from "@/lib/supabase/types";
 import { useBookingDrawer, useBookingStore } from "@/lib/store";
 
+interface QA {
+    q: string;
+    a: string;
+}
+
 interface EnrichedStaff extends Staff {
     yearsActive: string;
     expertise: string[];
     quote: string;
     fullBio: string;
+    qa: QA[];
+    signature: string; // un campo per "Il mio cavallo di battaglia"
 }
 
 const STAFF_ENRICHMENT: Record<string, Omit<EnrichedStaff, keyof Staff>> = {
@@ -19,14 +26,52 @@ const STAFF_ENRICHMENT: Record<string, Omit<EnrichedStaff, keyof Staff>> = {
         expertise: ["Fade chirurgico", "Editorial cuts", "Razor cut", "Consulenza forma viso"],
         quote: "Un taglio non si esegue, si costruisce. Prima sulla persona, poi sui capelli.",
         fullBio:
-            "Federico è il fondatore di Hair Rich. Ha aperto il salone nel 2017 dopo dieci anni passati tra Milano, Londra e i set editorial italiani. La sua specialità è il fade chirurgico e il razor cut su capelli medi — ma quello che lo distingue è il consulto iniziale: prima di toccare le forbici dedica sempre due minuti a capire chi hai davanti, come vivi, che tempo dedichi al mattino. Quel dialogo è la parte più importante del servizio.",
+            "Federico è il fondatore di Hair Rich. Ha aperto il salone nel 2017 dopo dieci anni passati tra Milano, Londra e i set editorial italiani. La sua specialità è il fade chirurgico e il razor cut su capelli medi — ma quello che lo distingue è il consulto iniziale: prima di toccare le forbici dedica sempre due minuti a capire chi hai davanti, come vivi, che tempo dedichi al mattino.",
+        signature: "Razor cut con fade graduato",
+        qa: [
+            {
+                q: "Il taglio che fai meglio?",
+                a: "Il razor cut su capelli medi-lunghi con fade graduato alla nuca. È dove la mia formazione editorial italiana si sposa con la tecnica britannica di sfumatura.",
+            },
+            {
+                q: "L'errore che vedi più spesso?",
+                a: "Clienti che chiedono uno stile vedendolo su qualcun altro senza considerare la forma del proprio viso. Il consulto iniziale serve esattamente a evitare questa trappola.",
+            },
+            {
+                q: "Il tuo tool preferito?",
+                a: "Le forbici Joewell Convex 5.5\" — le uso da 12 anni, una taglia perfetta per il razor cut. Sono tarate sulla mia mano.",
+            },
+            {
+                q: "Un consiglio dopo il taglio?",
+                a: "Investi in una sola pomata buona invece di cinque mediocri. La qualità del prodotto fa il 30% del risultato finale al mattino.",
+            },
+        ],
     },
     luca: {
         yearsActive: "Dal 2019",
         expertise: ["Barba sartoriale", "Rasoio classico", "Skin fade", "Modellatura sopracciglia"],
         quote: "Sulla barba si fa la differenza nei millimetri, non nei centimetri.",
         fullBio:
-            "Luca è il nostro specialista barba e rasoio. Formato a Roma alla scuola Mascotte, in Hair Rich dal 2019. La modellatura barba è la sua cifra: lavora a rasoio classico per i contorni, forbice-trama per la rifinitura, e finisce con un olio scelto sulla base del tuo tipo di pelle. È anche il barber più richiesto per i tagli scuola classica italiana — chi cerca il pompadour, il side part, il lavoro a forbice pulito chiede lui.",
+            "Luca è il nostro specialista barba e rasoio. Formato a Roma alla scuola Mascotte, in Hair Rich dal 2019. La modellatura barba è la sua cifra: lavora a rasoio classico per i contorni, forbice-trama per la rifinitura, e finisce con un olio scelto sulla base del tuo tipo di pelle.",
+        signature: "Barba sartoriale a rasoio classico",
+        qa: [
+            {
+                q: "Cosa rende una barba 'sartoriale'?",
+                a: "La precisione del contorno e l'armonia con la forma del viso, non la lunghezza. Lavoriamo i millimetri sul collo, sulle gote e sotto lo zigomo — quel triangolo è dove si gioca tutto.",
+            },
+            {
+                q: "Rasoio classico o macchinetta?",
+                a: "Per i contorni sempre rasoio: la macchinetta lascia una linea piatta, il rasoio crea un bordo vivo. Per la lunghezza dipende dal tipo di barba, ma forbice-trama nove volte su dieci.",
+            },
+            {
+                q: "Un cliente con problemi di pelle?",
+                a: "Pre-shave oil sempre, asciugamano tiepido (non bollente), rasoio in una sola passata nel verso del pelo. Olio post a base di jojoba per chi ha pelle sensibile.",
+            },
+            {
+                q: "Il taglio classico più sottovalutato?",
+                a: "Il side part italiano. Lo chiedono in pochi ma sta bene praticamente a tutti gli ovali e quadri. Forbice pulita, scriminatura netta, finitura con cera leggera.",
+            },
+        ],
     },
 };
 
@@ -49,6 +94,8 @@ export function TeamShowcase() {
                             expertise: [],
                             quote: "",
                             fullBio: r.bio ?? "",
+                            qa: [],
+                            signature: "",
                         }),
                     }))
                 );
@@ -162,6 +209,17 @@ export function TeamShowcase() {
                                         </div>
                                     )}
 
+                                    {member.signature && (
+                                        <div className="mt-7 inline-flex items-center gap-3 px-4 py-2.5 border border-accent-warm/30 bg-accent-warm/5 rounded-full">
+                                            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-accent-warm" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118L2.06 10.1c-.783-.57-.38-1.81.588-1.81h4.915a1 1 0 00.95-.69l1.519-4.674z" />
+                                            </svg>
+                                            <span className="text-[10px] uppercase tracking-[0.3em] text-accent-warm font-body font-semibold">
+                                                Signature · {member.signature}
+                                            </span>
+                                        </div>
+                                    )}
+
                                     <button
                                         onClick={() => handleBookWith(member.id)}
                                         className="mt-8 inline-flex items-center gap-3 px-7 py-3.5 bg-accent-warm text-black rounded-full text-[11px] uppercase tracking-[0.25em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform"
@@ -171,6 +229,26 @@ export function TeamShowcase() {
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                                         </svg>
                                     </button>
+
+                                    {member.qa.length > 0 && (
+                                        <div className="mt-12 pt-8 border-t border-line">
+                                            <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
+                                                Quattro domande a {member.name.split(" ")[0]}
+                                            </span>
+                                            <dl className="mt-6 space-y-6">
+                                                {member.qa.map((item, idx) => (
+                                                    <div key={idx} className="border-l-2 border-accent-warm/40 pl-5 py-1">
+                                                        <dt className="text-warm-white text-sm md:text-base font-body font-semibold">
+                                                            {item.q}
+                                                        </dt>
+                                                        <dd className="mt-2 text-warm-white-muted text-sm md:text-base leading-relaxed">
+                                                            {item.a}
+                                                        </dd>
+                                                    </div>
+                                                ))}
+                                            </dl>
+                                        </div>
+                                    )}
                                 </div>
                             </motion.article>
                         ))}

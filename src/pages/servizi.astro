@@ -1,6 +1,7 @@
 ---
 import RootLayout from "../layouts/RootLayout.astro";
 import { SiteHeader } from "../components/ui/SiteHeader";
+import { MobileTopBar } from "../components/ui/MobileTopBar";
 import { MobileMenu } from "../components/ui/MobileMenu";
 import { BookingDrawer } from "../components/booking/BookingDrawer";
 import { PageHero } from "../components/landing/_shared/PageHero";
@@ -55,19 +56,20 @@ const FAQ = [
   description="Taglio classico, fade, razor cut, barba sartoriale e combo. Listino trasparente da €15 a €45. Prenota online da Hair Rich Olbia."
 >
   <SiteHeader client:load />
+  <MobileTopBar client:load />
   <main>
     <PageHero
       client:load
-      eyebrow="Servizi · Rituali · Listino"
-      titleA="Sei rituali"
-      titleB="costruiti sulla testa giusta"
-      intro="Ogni servizio Hair Rich è un protocollo preciso. Sotto trovi la versione lunga di cosa include, quanto dura, e — soprattutto — per chi è pensato."
+      eyebrow="Servizi · Consulto · Rituali"
+      titleA="Niente listino."
+      titleB="Solo rituale tuo."
+      intro="Tre domande, sessanta secondi, e ti diciamo qual è il rituale calibrato sulla tua testa. Il prezzo arriva alla fine: non lo scegli al buio."
       bgImage="provvisorio/IMG_2090.jpeg"
-      metaLeft="Aggiornato · Maggio 2026"
-      metaRight="01 / Catalogo"
+      metaLeft="Consulto · 60 secondi"
+      metaRight="01 / Trova il tuo"
     />
 
-    <ServiceCatalog client:visible />
+    <StyleQuiz client:load />
 
     <ProcessSteps
       client:idle
@@ -76,7 +78,7 @@ const FAQ = [
       steps={RITUALS}
     />
 
-    <StyleQuiz client:visible />
+    <ServiceCatalog client:visible />
 
     <FAQAccordion
       client:idle

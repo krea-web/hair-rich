@@ -1,6 +1,7 @@
 ---
 import RootLayout from "../layouts/RootLayout.astro";
 import { SiteHeader } from "../components/ui/SiteHeader";
+import { MobileTopBar } from "../components/ui/MobileTopBar";
 import { MobileMenu } from "../components/ui/MobileMenu";
 import { BookingDrawer } from "../components/booking/BookingDrawer";
 import { PageHero } from "../components/landing/_shared/PageHero";
@@ -32,6 +33,7 @@ const mapsHref =
   description="Indirizzo, telefono, email e orari di apertura del barber studio Hair Rich a Olbia. Scrivici per prenotazioni o informazioni."
 >
   <SiteHeader client:load />
+  <MobileTopBar client:load />
   <main>
     <PageHero
       client:load
