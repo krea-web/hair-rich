@@ -5,12 +5,12 @@ import { useEffect, useRef, useState } from "react";
 import { useLang } from "@/i18n/useLang";
 import type { Locale } from "@/i18n/types";
 
-const FRAME_COUNT = 103;
+const FRAME_COUNT = 102;
 // Bump FRAMES_VERSION every time the source webp assets change shape (e.g.
 // after a re-crop). The query string forces stale service-worker caches and
 // browser HTTP caches to revalidate, so the JS positioning math never gets
 // mismatched against an older asset version.
-const FRAMES_VERSION = "v3";
+const FRAMES_VERSION = "v4";
 const framePath = (i: number) =>
     `/hero-seq/frame_${String(i).padStart(3, "0")}.webp?v=${FRAMES_VERSION}`;
 
@@ -51,14 +51,14 @@ export function IntroSequence() {
     //           section ends, so when the user scrolls past, the welcome
     //           is the last thing visible and the hero slides in
     //           immediately behind it — no black tail.
-    const frameIndex = useTransform(scrollYProgress, [0, 0.55], [1, FRAME_COUNT]);
-    const hintOpacity = useTransform(scrollYProgress, [0, 0.12], [1, 0]);
+    const frameIndex = useTransform(scrollYProgress, [0, 0.60], [1, FRAME_COUNT]);
+    const hintOpacity = useTransform(scrollYProgress, [0, 0.10], [1, 0]);
     const welcomeOpacity = useTransform(
         scrollYProgress,
-        [0.18, 0.35, 1],
+        [0.25, 0.50, 1],
         [0, 1, 1],
     );
-    const welcomeY = useTransform(scrollYProgress, [0.18, 0.35], [60, 0]);
+    const welcomeY = useTransform(scrollYProgress, [0.25, 0.50], [50, 0]);
     const lang = useLang();
 
     // Auth detect: choose Benvenuto / Bentornato. Best-effort, defaults to
@@ -201,7 +201,7 @@ export function IntroSequence() {
             aria-label="Intro"
             data-intro-sequence
         >
-            <div className="h-[130vh] md:h-[150vh]">
+            <div className="h-[110vh] md:h-[120vh]">
                 <div className="sticky top-0 h-[100dvh] overflow-hidden bg-black">
                     {/* Skip button — always visible, top-right */}
                     <button
