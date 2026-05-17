@@ -2,10 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Wordmark } from "./_shared/Wordmark";
-import { LangSwitcher } from "./_shared/LangSwitcher";
 import { AvailabilityPulse } from "./_shared/AvailabilityPulse";
-import { BookingPulse } from "./_shared/BookingPulse";
-import { MobileMenuTrigger } from "@/components/ui/MobileMenu";
 import { BookingCtaButton } from "@/components/ui/BookingCtaButton";
 import { NextSlotWidget } from "./NextSlotWidget";
 import { useT } from "@/i18n/useLang";
@@ -128,16 +125,6 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
                 <AvailabilityPulse variant="ribbon" />
             </motion.div>
 
-            <motion.div
-                className="mt-7"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 1.2 }}
-            >
-                <BookingPulse variant="counter" />
-            </motion.div>
-
             <motion.dl
                 className="mt-12 grid grid-cols-3 gap-8 max-w-md"
                 initial={{ opacity: 0 }}
@@ -169,38 +156,10 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
 }
 
 export function HeroSection() {
-    const { lang, t } = useT();
-    const homeHref = lang === "it" ? "/" : `/${lang}/`;
-
     return (
         <section className="relative bg-black overflow-hidden" aria-label="Hero">
-            {/* Navbar — lives inside the hero so it appears naturally as the hero
-               scrolls into view (i.e. exactly at the end of the intro sequence). */}
-            <motion.header
-                className="absolute top-0 left-0 right-0 z-40 grid grid-cols-3 items-center px-6 md:px-12 lg:px-20 pt-5 md:pt-7 pointer-events-none"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
-            >
-                <a
-                    href={homeHref}
-                    className="pointer-events-auto justify-self-start"
-                    aria-label="Hair Rich · home"
-                >
-                    <Wordmark variant="wordmark" size="sm" className="md:[&>img]:h-12" />
-                </a>
-                <nav className="hidden md:flex items-center justify-center gap-9 text-xs uppercase tracking-[0.3em] font-body font-semibold text-silver pointer-events-auto">
-                    <a href="/servizi" className="hover:text-warm-white transition-colors">{t.nav.services}</a>
-                    <a href="/lavori" className="hover:text-warm-white transition-colors">{t.nav.gallery}</a>
-                    <a href="/team" className="hover:text-warm-white transition-colors">{t.nav.team}</a>
-                    <a href="/contatti" className="hover:text-warm-white transition-colors">{t.nav.about}</a>
-                    <a href="/prenota" className="hover:text-warm-white transition-colors">{t.nav.booking}</a>
-                </nav>
-                <div className="justify-self-end pointer-events-auto flex items-center gap-2">
-                    <LangSwitcher current={lang} variant="navbar" />
-                    <MobileMenuTrigger />
-                </div>
-            </motion.header>
+            {/* Nav globale: vive in SiteHeader (fisso, persistente) — non più
+               dentro l'hero. */}
 
             {/* Hero content */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-8 lg:gap-12 px-6 md:px-12 lg:px-20 pt-28 md:pt-32 pb-16 md:pb-20 min-h-[100dvh]">

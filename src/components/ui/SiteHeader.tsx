@@ -39,6 +39,7 @@ export function SiteHeader() {
         <motion.header
             style={{ backgroundColor: bg }}
             className="fixed top-0 left-0 right-0 z-40 backdrop-blur-md"
+            data-intro-hidden
         >
             <motion.div
                 style={{ opacity: borderOpacity }}

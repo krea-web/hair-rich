@@ -27,7 +27,33 @@ const WELCOME: Record<Locale, string> = {
  * HeroSection. The subject is rendered with `contain` (no cropping) plus a
  * subtle inset margin so the composition is well framed on every viewport.
  */
+const INTRO_SEEN_KEY = "hr-intro-seen";
+
+function hasSeenIntro(): boolean {
+    if (typeof window === "undefined") return false;
+    try {
+        return localStorage.getItem(INTRO_SEEN_KEY) === "1";
+    } catch {
+        return false;
+    }
+}
+
 export function IntroSequence() {
+    // Skip intro per i ritorni: la prima visita la vede, poi flag permanente.
+    // useState lazy init in modo che SSR renderizzi la sequence e l'hydration
+    // client la rimuova subito senza un flash percepibile.
+    const [skip] = useState<boolean>(() => hasSeenIntro());
+
+    // Quando skip è true: pulisco subito `data-intro-active` (settato dal
+    // synchronous script in RootLayout/HomeContent) così SiteHeader e i FAB
+    // sono immediatamente visibili.
+    useEffect(() => {
+        if (!skip) return;
+        if (typeof document !== "undefined") {
+            document.body.dataset.introActive = "false";
+        }
+    }, [skip]);
+
     const sectionRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [imagesReady, setImagesReady] = useState(false);
@@ -134,18 +160,23 @@ export function IntroSequence() {
     // Toggle body[data-intro-active] based on whether the intro section is
     // still in front of the user. While active, all floating UI is hidden
     // via the CSS rule on [data-intro-hidden] (see globals.css). Cleared
-    // when the section has fully scrolled past the viewport top.
+    // when the section has fully scrolled past the viewport top, and a
+    // permanent flag is stored so future visits skip the intro entirely.
     useEffect(() => {
+        if (skip) return; // niente intro questa volta
         document.body.dataset.introActive = "true";
         const section = sectionRef.current;
         if (!section) return;
 
         const onScroll = () => {
             const rect = section.getBoundingClientRect();
-            // Section is considered "passed" when its bottom edge crosses
-            // the top of the viewport.
             if (rect.bottom <= 0) {
                 document.body.dataset.introActive = "false";
+                try {
+                    localStorage.setItem(INTRO_SEEN_KEY, "1");
+                } catch {
+                    /* ignore */
+                }
             } else {
                 document.body.dataset.introActive = "true";
             }
@@ -156,7 +187,9 @@ export function IntroSequence() {
             window.removeEventListener("scroll", onScroll);
             delete document.body.dataset.introActive;
         };
-    }, []);
+    }, [skip]);
+
+    if (skip) return null;
 
     return (
         <section

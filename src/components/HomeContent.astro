@@ -10,16 +10,13 @@ import { GallerySection } from "./landing/GallerySection";
 import { ReviewsSection } from "./landing/ReviewsSection";
 import { Footer } from "./landing/Footer";
 import { MarqueeStrip } from "./landing/_shared/MarqueeStrip";
-import { StickyBookCTA } from "./ui/StickyBookCTA";
+import { SiteHeader } from "./ui/SiteHeader";
 import { MobileBottomBar } from "./ui/MobileBottomBar";
 import { MobileMenu } from "./ui/MobileMenu";
 import { BookingDrawer } from "./booking/BookingDrawer";
-import { CartFAB } from "./shop/CartFAB";
-import { CartDrawer } from "./shop/CartDrawer";
 import { ToastViewport } from "./ui/ToastViewport";
 import { CookieBanner } from "./ui/CookieBanner";
 import { InstallPrompt } from "./ui/InstallPrompt";
-import { BookingPulse } from "./landing/_shared/BookingPulse";
 import type { Locale } from "@/i18n";
 
 interface Props {
@@ -31,29 +28,21 @@ const { lang } = Astro.props;
 // Marquee items lang-aware (passati come props ai componenti React).
 // Le sezioni internamente leggono la lingua da `document.body.dataset.lang`
 // via il custom hook `useLang()` (introdotto nella Wave 1.6).
-const marqueeItems: Record<Locale, { headline: string[]; ribbon1: string[]; duo: string[]; ribbon2: string[] }> = {
+const marqueeItems: Record<Locale, { headline: string[]; ribbon2: string[] }> = {
   it: {
     headline: ["TAGLIO", "Barba", "RITUALI", "Styling", "OLBIA", "Sardegna"],
-    ribbon1: ["Prenota online", "Risposta in 1h", "Master barber", "Dal 2017"],
-    duo: ["Editorial cuts", "Sartorial barber", "Slow ritual", "Hair Rich"],
     ribbon2: ["Book now", "Via Regina Elena 33/A", "0789 1891049", "@hair_rich_"],
   },
   en: {
     headline: ["CUT", "Beard", "RITUALS", "Styling", "OLBIA", "Sardinia"],
-    ribbon1: ["Book online", "Reply in 1h", "Master barber", "Since 2017"],
-    duo: ["Editorial cuts", "Sartorial barber", "Slow ritual", "Hair Rich"],
     ribbon2: ["Book now", "Via Regina Elena 33/A", "+39 0789 1891049", "@hair_rich_"],
   },
   fr: {
     headline: ["COUPE", "Barbe", "RITUELS", "Styling", "OLBIA", "Sardaigne"],
-    ribbon1: ["Réserver en ligne", "Réponse en 1h", "Master barber", "Depuis 2017"],
-    duo: ["Editorial cuts", "Sartorial barber", "Slow ritual", "Hair Rich"],
     ribbon2: ["Réservez", "Via Regina Elena 33/A", "+39 0789 1891049", "@hair_rich_"],
   },
   de: {
     headline: ["SCHNITT", "Bart", "RITUALE", "Styling", "OLBIA", "Sardinien"],
-    ribbon1: ["Online buchen", "Antwort in 1h", "Master Barber", "Seit 2017"],
-    duo: ["Editorial cuts", "Sartorial barber", "Slow ritual", "Hair Rich"],
     ribbon2: ["Jetzt buchen", "Via Regina Elena 33/A", "+39 0789 1891049", "@hair_rich_"],
   },
 };
@@ -61,6 +50,7 @@ const marqueeItems: Record<Locale, { headline: string[]; ribbon1: string[]; duo:
 const m = marqueeItems[lang];
 ---
 
+<SiteHeader client:load />
 <main>
   <IntroSequence client:load />
   <HeroSection client:load />
@@ -70,14 +60,8 @@ const m = marqueeItems[lang];
 
   <ManifestoSection client:visible />
   <ServicesSection client:visible />
-
-  <MarqueeStrip client:visible variant="ribbon" items={m.ribbon1} />
-
   <WhyUsSection client:visible />
   <TeamSection client:visible />
-
-  <MarqueeStrip client:visible variant="duo" items={m.duo} />
-
   <GallerySection client:visible />
   <ReviewsSection client:visible />
 
@@ -87,10 +71,6 @@ const m = marqueeItems[lang];
 </main>
 
 <div data-intro-hidden style="display: contents">
-  <StickyBookCTA client:idle />
-  <BookingPulse client:idle variant="popup" />
-  <CartFAB client:idle />
-  <CartDrawer client:idle />
   <CookieBanner client:idle />
   <InstallPrompt client:idle />
 </div>
@@ -100,8 +80,16 @@ const m = marqueeItems[lang];
 <ToastViewport client:load />
 
 <script is:inline>
-  // Set the intro flag synchronously before any FAB hydrates so users
-  // never see them flash in during the intro animation. IntroSequence
-  // clears the attribute once the section is fully scrolled past.
-  document.body.dataset.introActive = "true";
+  // Skip intro flag setting if utente già vista l'intro (localStorage).
+  // Altrimenti settiamo sincrono prima dell'hydration così gli island
+  // idle non flashano dentro all'intro.
+  try {
+    if (localStorage.getItem("hr-intro-seen") === "1") {
+      document.body.dataset.introActive = "false";
+    } else {
+      document.body.dataset.introActive = "true";
+    }
+  } catch {
+    document.body.dataset.introActive = "true";
+  }
 </script>
