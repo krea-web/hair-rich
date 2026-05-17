@@ -53,12 +53,6 @@ export function IntroSequence() {
     //           immediately behind it — no black tail.
     const frameIndex = useTransform(scrollYProgress, [0, 0.60], [1, FRAME_COUNT]);
     const hintOpacity = useTransform(scrollYProgress, [0, 0.10], [1, 0]);
-    const welcomeOpacity = useTransform(
-        scrollYProgress,
-        [0.25, 0.50, 1],
-        [0, 1, 1],
-    );
-    const welcomeY = useTransform(scrollYProgress, [0.25, 0.50], [50, 0]);
     const lang = useLang();
 
     // Auth detect: choose Benvenuto / Bentornato. Best-effort, defaults to
@@ -203,10 +197,10 @@ export function IntroSequence() {
         >
             <div className="h-[110vh] md:h-[120vh]">
                 <div className="sticky top-0 h-[100dvh] overflow-hidden bg-black">
-                    {/* Skip button — always visible, top-right */}
+                    {/* Skip button — desktop only (mobile users just scroll past). */}
                     <button
                         onClick={handleSkip}
-                        className="absolute top-5 right-5 md:top-7 md:right-7 z-30 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/50 backdrop-blur-md border border-line text-warm-white text-[10px] uppercase tracking-[0.3em] font-body font-semibold hover:bg-warm-white hover:text-black transition-colors active:scale-95"
+                        className="hidden md:inline-flex absolute top-24 right-7 z-30 items-center gap-2 px-4 py-2 rounded-full bg-black/50 backdrop-blur-md border border-line text-warm-white text-[10px] uppercase tracking-[0.3em] font-body font-semibold hover:bg-warm-white hover:text-black transition-colors active:scale-95"
                         aria-label="Salta intro"
                     >
                         Salta
@@ -215,11 +209,16 @@ export function IntroSequence() {
                         </svg>
                     </button>
 
-                    <canvas
-                        ref={canvasRef}
-                        className="w-full h-full block"
-                        aria-hidden="true"
-                    />
+                    {/* Inner padded wrapper: pushes the canvas (and the welcome
+                       overlay) below the fixed navbar so frame 1 is never
+                       clipped behind it. */}
+                    <div className="absolute inset-0 pt-[68px] md:pt-[80px]">
+                        <canvas
+                            ref={canvasRef}
+                            className="w-full h-full block"
+                            aria-hidden="true"
+                        />
+                    </div>
 
                     {!imagesReady && (
                         <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-carbon to-carbon-2 flex items-center justify-center">
@@ -248,25 +247,25 @@ export function IntroSequence() {
                         </div>
                     </motion.div>
 
-                    <span className="absolute right-3 top-6 text-[10px] tracking-[0.5em] uppercase text-silver-dark font-body font-semibold rotate-180 [writing-mode:vertical-rl]">
+                    <span className="hidden md:inline absolute right-3 top-24 text-[10px] tracking-[0.5em] uppercase text-silver-dark font-body font-semibold rotate-180 [writing-mode:vertical-rl]">
                         EST. 2017
                     </span>
 
-                    {/* Phase 2: welcome word fills the lower half of the
-                       viewport — exactly where the cropped frame leaves
-                       black space as the subject rises. Big, centered in
-                       that growing void, holds for a beat. */}
+                    {/* Welcome word — visible from mount (no scroll required).
+                       Sits in the lower portion of the visible area so it
+                       doesn't fight with the subject which lives at the top
+                       just below the navbar. Stays at full opacity until the
+                       intro section scrolls away. */}
                     <motion.div
-                        className="absolute inset-x-0 bottom-0 top-[42%] flex items-center justify-center pointer-events-none z-20 px-6"
-                        style={{ opacity: welcomeOpacity }}
+                        className="absolute inset-x-0 bottom-[15%] flex items-center justify-center pointer-events-none z-20 px-6"
+                        initial={{ opacity: 0, y: 40 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 1.2, delay: 0.9, ease: [0.25, 0.1, 0.25, 1] }}
                         aria-hidden="true"
                     >
-                        <motion.span
-                            className="text-display-alt text-warm-white text-6xl sm:text-7xl md:text-8xl lg:text-9xl tracking-[0.04em] text-center whitespace-nowrap drop-shadow-[0_4px_32px_rgba(212,165,116,0.35)]"
-                            style={{ y: welcomeY, willChange: "transform, opacity" }}
-                        >
+                        <span className="text-display-alt text-warm-white text-7xl sm:text-8xl md:text-9xl lg:text-[12rem] tracking-[0.02em] text-center whitespace-nowrap leading-none drop-shadow-[0_4px_40px_rgba(212,165,116,0.45)]">
                             {welcomeText}
-                        </motion.span>
+                        </span>
                     </motion.div>
                 </div>
             </div>
