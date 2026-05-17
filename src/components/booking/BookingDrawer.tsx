@@ -20,7 +20,14 @@ export function BookingDrawer() {
         <Drawer.Root open={isOpen} onOpenChange={setOpen} shouldScaleBackground>
             <Drawer.Portal>
                 <Drawer.Overlay className="fixed inset-0 z-[90] bg-black/70 backdrop-blur-sm" />
-                <Drawer.Content className="fixed bottom-0 left-0 right-0 z-[91] mt-24 flex h-[92dvh] flex-col rounded-t-[28px] bg-black-2 border-t border-line outline-none">
+                <Drawer.Content
+                    className="fixed bottom-0 left-0 right-0 z-[91] mt-24 flex flex-col rounded-t-[28px] bg-black-2 border-t border-line outline-none"
+                    style={{
+                        height: "92dvh",
+                        maxHeight: "calc(100dvh - env(safe-area-inset-top, 0px) - 12px)",
+                        paddingTop: "env(safe-area-inset-top, 0px)",
+                    }}
+                >
                     {/* Handle */}
                     <div className="mx-auto mt-3 h-1.5 w-12 rounded-full bg-line" aria-hidden="true" />
 
@@ -47,7 +54,12 @@ export function BookingDrawer() {
                     </div>
 
                     {/* Scrollable wizard */}
-                    <div className="flex-1 overflow-y-auto px-6 md:px-8 pb-8 pt-4">
+                    <div
+                        className="flex-1 overflow-y-auto px-6 md:px-8 pt-4"
+                        style={{
+                            paddingBottom: "max(env(safe-area-inset-bottom, 16px), 16px)",
+                        }}
+                    >
                         <BookingWizard />
                     </div>
                 </Drawer.Content>

@@ -17,13 +17,13 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
                 <Wordmark
                     variant="wordmark"
                     size="lg"
-                    className="mb-6 -ml-2 md:mb-10 md:[&>img]:h-36 lg:[&>img]:h-44 opacity-90 drop-shadow-[0_0_20px_rgba(212,165,116,0.18)]"
+                    className="mb-4 -ml-2 md:mb-10 [&>img]:h-16 md:[&>img]:h-36 lg:[&>img]:h-44 opacity-90 drop-shadow-[0_0_20px_rgba(212,165,116,0.18)]"
                     animated
                 />
             )}
 
             <motion.span
-                className="text-display-alt text-3xl md:text-4xl text-accent-warm mb-2"
+                className="text-display-alt text-2xl md:text-4xl text-accent-warm mb-2"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -62,7 +62,7 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
             </motion.h1>
 
             <motion.p
-                className="mt-8 max-w-md text-warm-white-muted text-base md:text-lg leading-relaxed font-body"
+                className="mt-6 md:mt-8 max-w-md text-warm-white-muted text-sm md:text-lg leading-relaxed font-body"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -73,29 +73,36 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
             </motion.p>
 
             <motion.div
-                className="mt-10 flex flex-wrap gap-4"
+                className="mt-7 md:mt-10 flex flex-wrap items-center gap-4 md:gap-5"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 0.8 }}
             >
                 <BookingCtaButton label={t.hero.primaryCta} />
+                {/* Secondary inline link su mobile (no button), bordo su desktop */}
                 <a
                     href="/servizi"
-                    className="inline-flex items-center gap-3 border border-line text-warm-white px-8 py-4 rounded-full font-body font-semibold text-sm uppercase tracking-[0.2em] transition-colors hover:border-warm-white hover:bg-warm-white/5"
+                    className="hidden md:inline-flex items-center gap-3 border border-line text-warm-white px-8 py-4 rounded-full font-body font-semibold text-sm uppercase tracking-[0.2em] transition-colors hover:border-warm-white hover:bg-warm-white/5"
+                >
+                    {t.hero.secondaryCta}
+                </a>
+                <a
+                    href="/servizi"
+                    className="md:hidden inline-flex items-center gap-2 text-silver underline underline-offset-4 text-xs uppercase tracking-[0.25em] font-body font-semibold"
                 >
                     {t.hero.secondaryCta}
                 </a>
             </motion.div>
 
             {/* Prossimo slot disponibile (live da Supabase) */}
-            <div className="mt-6">
+            <div className="mt-5 md:mt-6">
                 <NextSlotWidget />
             </div>
 
-            {/* Trust badges (rating + certified + premium) */}
+            {/* Trust badges (rating + certified + premium) — hidden mobile */}
             <motion.div
-                className="mt-12 flex flex-wrap items-center gap-3"
+                className="hidden md:flex mt-12 flex-wrap items-center gap-3"
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -126,7 +133,7 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
             </motion.div>
 
             <motion.dl
-                className="mt-12 grid grid-cols-3 gap-8 max-w-md"
+                className="hidden md:grid mt-12 grid-cols-3 gap-8 max-w-md"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
@@ -162,7 +169,7 @@ export function HeroSection() {
                dentro l'hero. */}
 
             {/* Hero content */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-8 lg:gap-12 px-6 md:px-12 lg:px-20 pt-28 md:pt-32 pb-16 md:pb-20 min-h-[100dvh]">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-8 lg:gap-12 px-6 md:px-12 lg:px-20 pt-20 md:pt-32 pb-12 md:pb-20 min-h-[70dvh] md:min-h-[100dvh]">
                 <div className="md:col-span-7 flex flex-col justify-center">
                     <HeroTextBlock />
                 </div>

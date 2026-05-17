@@ -147,13 +147,13 @@ export function BookingWizard() {
                             key={s.id}
                             onClick={() => i < stepIdx && setStep(i)}
                             disabled={i > stepIdx}
-                            className={`flex-1 flex flex-col items-center gap-2 group ${i <= stepIdx ? "cursor-pointer" : "cursor-not-allowed"}`}
+                            className={`flex-1 flex flex-col items-center gap-2 group min-h-[44px] ${i <= stepIdx ? "cursor-pointer" : "cursor-not-allowed"}`}
                             role="listitem"
                             aria-current={active ? "step" : undefined}
                         >
                             <div className="flex items-center w-full gap-2">
                                 <div
-                                    className={`flex-shrink-0 w-7 h-7 rounded-full border flex items-center justify-center text-[11px] font-body font-semibold transition-colors ${
+                                    className={`flex-shrink-0 w-8 h-8 md:w-7 md:h-7 rounded-full border flex items-center justify-center text-xs font-body font-semibold transition-colors ${
                                         active
                                             ? "bg-accent-warm border-accent-warm text-black"
                                             : done
@@ -178,7 +178,7 @@ export function BookingWizard() {
                                 )}
                             </div>
                             <span
-                                className={`text-[9px] md:text-[10px] uppercase tracking-[0.2em] font-body font-semibold w-full text-left ${
+                                className={`text-[11px] md:text-xs uppercase tracking-[0.18em] font-body font-semibold w-full text-left leading-tight ${
                                     active ? "text-warm-white" : done ? "text-silver" : "text-silver-dark"
                                 }`}
                             >

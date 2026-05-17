@@ -106,22 +106,22 @@ export function NextSlotWidget() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
             onClick={handleQuickBook}
-            className="group inline-flex items-center gap-3 md:gap-4 pl-2 pr-5 py-2 bg-black/40 backdrop-blur-md border border-accent-warm/30 rounded-full hover:border-accent-warm transition-colors"
+            className="group inline-flex max-w-full items-center gap-2 md:gap-4 pl-1.5 md:pl-2 pr-4 md:pr-5 py-2 bg-black/40 backdrop-blur-md border border-accent-warm/30 rounded-full hover:border-accent-warm transition-colors"
             aria-label={`Prenota lo slot del ${next.dayLabel} alle ${next.time} con ${next.staffName}`}
         >
             <span
-                className="flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full bg-accent-warm text-black flex-shrink-0"
+                className="flex items-center justify-center w-7 h-7 md:w-9 md:h-9 rounded-full bg-accent-warm text-black flex-shrink-0"
                 aria-hidden="true"
             >
-                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8L11 17l-4-4-6 6" />
                 </svg>
             </span>
-            <span className="flex flex-col items-start">
-                <span className="text-[9px] uppercase tracking-[0.3em] text-accent-warm font-body font-semibold">
-                    Prossimo slot libero
+            <span className="flex flex-col items-start min-w-0">
+                <span className="text-[9px] uppercase tracking-[0.25em] text-accent-warm font-body font-semibold whitespace-nowrap">
+                    Prossimo slot
                 </span>
-                <span className="text-warm-white text-sm md:text-base font-body font-semibold leading-tight">
+                <span className="text-warm-white text-xs md:text-base font-body font-semibold leading-tight whitespace-nowrap truncate">
                     {next.dayLabel} · {next.time}
                 </span>
             </span>

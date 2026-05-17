@@ -1,82 +1,170 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { SITE } from "@/lib/constants";
 import { useBookingDrawer } from "@/lib/store";
 
-const MAPS_URL =
-    "https://www.google.com/maps/dir/?api=1&destination=" +
-    encodeURIComponent(SITE.address);
-const PHONE_URL = "tel:" + SITE.phone.replace(/\s+/g, "");
+interface Tab {
+    href?: string;
+    label: string;
+    icon: React.ReactNode;
+    primary?: boolean;
+    action?: "drawer";
+}
+
+const TABS: Tab[] = [
+    {
+        href: "/",
+        label: "Home",
+        icon: (
+            <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3v-7h6v7h3a1 1 0 001-1V10" />
+            </svg>
+        ),
+    },
+    {
+        href: "/servizi",
+        label: "Servizi",
+        icon: (
+            <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9.5 14.5L4 20m11-11l5-5M14.5 14.5L20 20M4 4l5.5 5.5" />
+                <circle cx="6" cy="6" r="2" />
+                <circle cx="18" cy="18" r="2" />
+                <circle cx="6" cy="18" r="2" />
+                <circle cx="18" cy="6" r="2" />
+            </svg>
+        ),
+    },
+    {
+        label: "Prenota",
+        action: "drawer",
+        primary: true,
+        icon: (
+            <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8 2v3M16 2v3M3 9h18M5 5h14a2 2 0 012 2v13a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z" />
+            </svg>
+        ),
+    },
+    {
+        href: "/lavori",
+        label: "Lavori",
+        icon: (
+            <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <circle cx="8.5" cy="8.5" r="1.5" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 15l-5-5L5 21" />
+            </svg>
+        ),
+    },
+    {
+        href: "/team",
+        label: "Team",
+        icon: (
+            <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+            </svg>
+        ),
+    },
+];
 
 /**
- * Bottom bar persistente mobile — sempre visibile, 3 azioni primarie:
- * Prenota, Chiama, Indicazioni. Si nasconde:
- *  · su breakpoint md+ (la nav header copre il ruolo)
- *  · durante l'IntroSequence (data-intro-active sul body)
- *  · sulle pagine admin/profilo (auto-gestite dal componente padre)
- *  · quando l'utente è già su /prenota (l'azione è on-page)
+ * Primary mobile navigation bar — 5 tabs (Home / Servizi / Prenota center /
+ * Lavori / Team). The center "Prenota" tab is visually elevated and opens
+ * the BookingDrawer instead of navigating. Phone + Maps shortcuts now live
+ * inside the MobileMenu hamburger (secondary actions).
  */
 export function MobileBottomBar() {
+    const [path, setPath] = useState<string>("");
     const [hidden, setHidden] = useState(true);
     const openDrawer = useBookingDrawer((s) => s.open);
 
     useEffect(() => {
         if (typeof window === "undefined") return;
-        const path = window.location.pathname;
-        if (path.startsWith("/admin") || path.startsWith("/profilo")) {
+        const p = window.location.pathname;
+        if (p.startsWith("/admin") || p.startsWith("/profilo")) {
             setHidden(true);
             return;
         }
+        setPath(p);
         setHidden(false);
     }, []);
 
     if (hidden) return null;
 
+    const isActive = (href?: string) => {
+        if (!href) return false;
+        if (href === "/") return path === "/" || path === "";
+        return path === href || path.startsWith(href + "/");
+    };
+
+    const handleTabClick = (tab: Tab) => {
+        if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(6);
+        if (tab.action === "drawer") {
+            openDrawer();
+            return;
+        }
+        if (tab.href) {
+            window.location.href = tab.href;
+        }
+    };
+
     return (
-        <div
-            className="fixed bottom-0 left-0 right-0 z-50 md:hidden pointer-events-none"
-            aria-label="Azioni rapide"
+        <nav
+            className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
+            aria-label="Navigazione principale"
             data-intro-hidden
         >
-            <div className="pointer-events-auto mx-auto max-w-md px-3 pb-[max(env(safe-area-inset-bottom),12px)] pt-3">
-                <div className="grid grid-cols-3 gap-2 rounded-full bg-black/85 backdrop-blur-xl border border-line shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.8)] p-1.5">
-                    <button
-                        onClick={() => {
-                            if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(8);
-                            openDrawer();
-                        }}
-                        className="flex items-center justify-center gap-2 py-3 rounded-full bg-accent-warm text-black text-[11px] uppercase tracking-[0.18em] font-body font-semibold active:scale-95 transition-transform"
-                    >
-                        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M8 2v3M16 2v3M3 9h18M5 5h14a2 2 0 012 2v13a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z" />
-                        </svg>
-                        Prenota
-                    </button>
-                    <a
-                        href={PHONE_URL}
-                        className="flex items-center justify-center gap-2 py-3 rounded-full text-warm-white text-[11px] uppercase tracking-[0.18em] font-body font-semibold border border-line active:scale-95 transition-transform"
-                        aria-label={`Chiama ${SITE.phone}`}
-                    >
-                        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.91.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0122 16.92z" />
-                        </svg>
-                        Chiama
-                    </a>
-                    <a
-                        href={MAPS_URL}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2 py-3 rounded-full text-warm-white text-[11px] uppercase tracking-[0.18em] font-body font-semibold border border-line active:scale-95 transition-transform"
-                    >
-                        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" />
-                            <circle cx="12" cy="10" r="3" />
-                        </svg>
-                        Mappa
-                    </a>
-                </div>
+            <div className="pointer-events-auto bg-black/90 backdrop-blur-xl border-t border-line pb-[max(env(safe-area-inset-bottom),8px)] pt-2">
+                <ul className="grid grid-cols-5 items-end gap-0 px-2 max-w-md mx-auto">
+                    {TABS.map((tab) => {
+                        const active = isActive(tab.href);
+                        if (tab.primary) {
+                            return (
+                                <li key={tab.label} className="flex justify-center -mt-6">
+                                    <button
+                                        onClick={() => handleTabClick(tab)}
+                                        className="flex flex-col items-center gap-1 active:scale-95 transition-transform"
+                                        aria-label={tab.label}
+                                    >
+                                        <span className="flex items-center justify-center w-14 h-14 rounded-full bg-accent-warm text-black shadow-[0_8px_24px_-4px_rgba(212,165,116,0.55)] ring-4 ring-black">
+                                            {tab.icon}
+                                        </span>
+                                        <span className="text-[9px] uppercase tracking-[0.2em] text-accent-warm font-body font-semibold">
+                                            {tab.label}
+                                        </span>
+                                    </button>
+                                </li>
+                            );
+                        }
+                        return (
+                            <li key={tab.label}>
+                                <button
+                                    onClick={() => handleTabClick(tab)}
+                                    className={`w-full min-h-[52px] flex flex-col items-center justify-center gap-1 transition-colors active:scale-95 ${
+                                        active ? "text-warm-white" : "text-silver-dark hover:text-warm-white"
+                                    }`}
+                                    aria-current={active ? "page" : undefined}
+                                    aria-label={tab.label}
+                                >
+                                    <span className="relative">
+                                        {tab.icon}
+                                        {active && (
+                                            <span
+                                                aria-hidden="true"
+                                                className="absolute -top-2 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-accent-warm"
+                                            />
+                                        )}
+                                    </span>
+                                    <span className="text-[9px] uppercase tracking-[0.2em] font-body font-semibold">
+                                        {tab.label}
+                                    </span>
+                                </button>
+                            </li>
+                        );
+                    })}
+                </ul>
             </div>
-        </div>
+        </nav>
     );
 }

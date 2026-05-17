@@ -98,8 +98,8 @@ export function PortfolioGallery() {
                         </p>
                     </div>
 
-                    {/* Filter chips con preview foto */}
-                    <div className="flex flex-wrap gap-2 md:gap-3">
+                    {/* Filter chips con preview foto — scroll orizzontale mobile, wrap su desktop */}
+                    <div className="flex flex-nowrap overflow-x-auto gap-2 md:flex-wrap md:gap-3 -mx-6 px-6 md:mx-0 md:px-0 scrollbar-hide [&::-webkit-scrollbar]:hidden">
                         {tags.map((tag) => {
                             const preview = tagPreview(tag);
                             const active = filter === tag;
@@ -110,7 +110,7 @@ export function PortfolioGallery() {
                                         setFilter(tag);
                                         setVisibleCount(12);
                                     }}
-                                    className={`group inline-flex items-center gap-3 pl-1 pr-5 py-1 rounded-full border transition-all ${
+                                    className={`group inline-flex flex-shrink-0 items-center gap-3 pl-1 pr-5 py-1 rounded-full border transition-all ${
                                         active
                                             ? "bg-warm-white border-warm-white text-black"
                                             : "border-line text-silver hover:border-silver-mid hover:text-warm-white"
@@ -273,12 +273,23 @@ export function PortfolioGallery() {
                         )}
 
                         <motion.div
-                            className="max-w-5xl w-full max-h-[85vh] flex flex-col items-center"
+                            className="max-w-5xl w-full max-h-[85vh] flex flex-col items-center touch-pan-y"
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.95 }}
                             onClick={(e) => e.stopPropagation()}
                             key={filtered[lightboxIdx].path}
+                            drag="x"
+                            dragConstraints={{ left: 0, right: 0 }}
+                            dragElastic={0.25}
+                            onDragEnd={(_, info) => {
+                                const threshold = 80;
+                                if (info.offset.x < -threshold && lightboxIdx < filtered.length - 1) {
+                                    setLightboxIdx(lightboxIdx + 1);
+                                } else if (info.offset.x > threshold && lightboxIdx > 0) {
+                                    setLightboxIdx(lightboxIdx - 1);
+                                }
+                            }}
                         >
                             <div className="relative w-full max-h-[80vh] aspect-[4/5] mx-auto">
                                 <SmartImage

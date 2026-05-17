@@ -234,7 +234,9 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
                             </label>
                             <input
                                 {...register("firstName")}
-                                className="mt-1.5 w-full bg-black-2 border border-line rounded-[var(--radius-sm)] px-4 py-3 text-warm-white placeholder:text-silver-dark focus:border-accent-warm focus:outline-none transition-colors"
+                                autoComplete="given-name"
+                                autoCapitalize="words"
+                                className="mt-1.5 w-full bg-black-2 border border-line rounded-[var(--radius-sm)] px-4 py-3.5 md:py-3 text-base md:text-sm text-warm-white placeholder:text-silver-dark focus:border-accent-warm focus:outline-none transition-colors"
                                 placeholder="Mario"
                             />
                             {errors.firstName && <p className="text-error text-xs mt-1">{errors.firstName.message}</p>}
@@ -245,7 +247,9 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
                             </label>
                             <input
                                 {...register("lastName")}
-                                className="mt-1.5 w-full bg-black-2 border border-line rounded-[var(--radius-sm)] px-4 py-3 text-warm-white placeholder:text-silver-dark focus:border-accent-warm focus:outline-none transition-colors"
+                                autoComplete="family-name"
+                                autoCapitalize="words"
+                                className="mt-1.5 w-full bg-black-2 border border-line rounded-[var(--radius-sm)] px-4 py-3.5 md:py-3 text-base md:text-sm text-warm-white placeholder:text-silver-dark focus:border-accent-warm focus:outline-none transition-colors"
                                 placeholder="Rossi"
                             />
                             {errors.lastName && <p className="text-error text-xs mt-1">{errors.lastName.message}</p>}
@@ -258,7 +262,9 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
                         <input
                             {...register("phone")}
                             type="tel"
-                            className="mt-1.5 w-full bg-black-2 border border-line rounded-[var(--radius-sm)] px-4 py-3 text-warm-white placeholder:text-silver-dark focus:border-accent-warm focus:outline-none transition-colors"
+                            inputMode="tel"
+                            autoComplete="tel"
+                            className="mt-1.5 w-full bg-black-2 border border-line rounded-[var(--radius-sm)] px-4 py-3.5 md:py-3 text-base md:text-sm text-warm-white placeholder:text-silver-dark focus:border-accent-warm focus:outline-none transition-colors"
                             placeholder="+39 333 1234567"
                         />
                         {errors.phone && <p className="text-error text-xs mt-1">{errors.phone.message}</p>}
@@ -270,7 +276,10 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
                         <input
                             {...register("email")}
                             type="email"
-                            className="mt-1.5 w-full bg-black-2 border border-line rounded-[var(--radius-sm)] px-4 py-3 text-warm-white placeholder:text-silver-dark focus:border-accent-warm focus:outline-none transition-colors"
+                            inputMode="email"
+                            autoComplete="email"
+                            autoCapitalize="off"
+                            className="mt-1.5 w-full bg-black-2 border border-line rounded-[var(--radius-sm)] px-4 py-3.5 md:py-3 text-base md:text-sm text-warm-white placeholder:text-silver-dark focus:border-accent-warm focus:outline-none transition-colors"
                             placeholder="mario@email.com"
                         />
                         {errors.email && <p className="text-error text-xs mt-1">{errors.email.message}</p>}

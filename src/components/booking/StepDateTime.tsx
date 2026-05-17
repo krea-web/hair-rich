@@ -163,14 +163,19 @@ export function StepDateTime({ onNext, onBack }: { onNext: () => void; onBack: (
                             </span>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
                             {uniqueTimes.map((s) => {
                                 const active = time === s;
                                 return (
                                     <button
                                         key={s}
-                                        onClick={() => setTime(s)}
-                                        className={`relative px-3 py-3 rounded-[var(--radius-sm)] border text-center font-mono text-sm tracking-wider transition-colors ${
+                                        onClick={() => {
+                                            if (typeof navigator !== "undefined" && navigator.vibrate) {
+                                                navigator.vibrate(6);
+                                            }
+                                            setTime(s);
+                                        }}
+                                        className={`relative px-3 py-4 md:py-3 rounded-[var(--radius-sm)] border text-center font-mono text-base md:text-sm tracking-wider transition-colors min-h-[48px] ${
                                             active
                                                 ? "bg-accent-warm border-accent-warm text-black"
                                                 : "bg-carbon border-line text-warm-white hover:border-silver-mid"

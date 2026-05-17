@@ -55,12 +55,12 @@ export function PageHero({
             {/* Editorial wordmark on the watermark layer */}
             <div
                 aria-hidden="true"
-                className="absolute -top-16 -left-6 text-display-alt text-[28vw] md:text-[18vw] text-warm-white/[0.025] leading-none pointer-events-none select-none"
+                className="absolute -top-12 md:-top-16 -left-4 md:-left-6 text-display-alt text-[16vw] md:text-[18vw] text-warm-white/[0.025] leading-none pointer-events-none select-none"
             >
                 {titleA}
             </div>
 
-            <div className="relative max-w-7xl mx-auto px-6 md:px-12 lg:px-20 pt-32 md:pt-44 pb-14 md:pb-24 min-h-[75vh] md:min-h-[85vh] flex flex-col justify-end">
+            <div className="relative max-w-7xl mx-auto px-6 md:px-12 lg:px-20 pt-24 md:pt-44 pb-10 md:pb-24 min-h-[55vh] md:min-h-[85vh] flex flex-col justify-end">
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -69,7 +69,7 @@ export function PageHero({
                     <span className="text-[10px] md:text-xs uppercase tracking-[0.5em] text-accent-warm font-body font-semibold">
                         {eyebrow}
                     </span>
-                    <h1 className="text-display text-5xl sm:text-6xl md:text-8xl lg:text-9xl text-warm-white tracking-tight mt-4 md:mt-6 leading-[0.95]">
+                    <h1 className="text-display text-4xl sm:text-5xl md:text-8xl lg:text-9xl text-warm-white tracking-tight mt-3 md:mt-6 leading-[0.95]">
                         {titleA}
                         {titleB && (
                             <>

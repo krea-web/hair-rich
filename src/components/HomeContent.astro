@@ -54,20 +54,20 @@ const m = marqueeItems[lang];
 <main>
   <IntroSequence client:load />
   <HeroSection client:load />
-  <StatsBanner client:visible />
+  <StatsBanner client:idle />
 
-  <MarqueeStrip client:visible variant="headline" items={m.headline} />
+  <MarqueeStrip client:idle variant="headline" items={m.headline} />
 
-  <ManifestoSection client:visible />
+  <ManifestoSection client:idle />
   <ServicesSection client:visible />
-  <WhyUsSection client:visible />
+  <WhyUsSection client:idle />
   <TeamSection client:visible />
   <GallerySection client:visible />
-  <ReviewsSection client:visible />
+  <ReviewsSection client:idle />
 
-  <MarqueeStrip client:visible variant="ribbon" items={m.ribbon2} />
+  <MarqueeStrip client:idle variant="ribbon" items={m.ribbon2} />
 
-  <Footer client:visible />
+  <Footer client:idle />
 </main>
 
 <div data-intro-hidden style="display: contents">
@@ -80,16 +80,9 @@ const m = marqueeItems[lang];
 <ToastViewport client:load />
 
 <script is:inline>
-  // Skip intro flag setting if utente già vista l'intro (localStorage).
-  // Altrimenti settiamo sincrono prima dell'hydration così gli island
-  // idle non flashano dentro all'intro.
-  try {
-    if (localStorage.getItem("hr-intro-seen") === "1") {
-      document.body.dataset.introActive = "false";
-    } else {
-      document.body.dataset.introActive = "true";
-    }
-  } catch {
-    document.body.dataset.introActive = "true";
-  }
+  // Sync: settiamo `data-intro-active` prima dell'hydration così gli
+  // island idle (SiteHeader, CookieBanner...) restano nascosti durante
+  // l'intro animation. IntroSequence togglerà su "false" quando la
+  // sezione esce dal viewport o l'utente clicca Skip.
+  document.body.dataset.introActive = "true";
 </script>

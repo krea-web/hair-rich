@@ -95,27 +95,27 @@ const FAQ = [
     <BookingSection client:visible />
 
     <ProcessSteps
-      client:visible
+      client:idle
       eyebrow="Come funziona"
       title="Dal click alla postazione, senza attriti."
       steps={STEPS}
     />
 
     <ProcessSteps
-      client:visible
+      client:idle
       eyebrow="Politiche"
       title="Trasparenza prima del taglio."
       steps={POLICIES}
     />
 
     <FAQAccordion
-      client:visible
+      client:idle
       eyebrow="Domande frequenti"
       title="Tutto quello che devi sapere prima di venire."
       items={FAQ}
     />
 
-    <Footer client:visible />
+    <Footer client:idle />
   </main>
 
   <ToastViewport client:load />

@@ -70,7 +70,7 @@ const FAQ = [
     <ServiceCatalog client:visible />
 
     <ProcessSteps
-      client:visible
+      client:idle
       eyebrow="Il rituale Hair Rich"
       title="Tre passaggi che attraversano ogni servizio."
       steps={RITUALS}
@@ -79,13 +79,13 @@ const FAQ = [
     <StyleQuiz client:visible />
 
     <FAQAccordion
-      client:visible
+      client:idle
       eyebrow="Domande sui servizi"
       title="Le più frequenti, una volta per tutte."
       items={FAQ}
     />
 
-    <Footer client:visible />
+    <Footer client:idle />
   </main>
 
   <ToastViewport client:load />

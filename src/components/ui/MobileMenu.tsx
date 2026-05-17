@@ -78,7 +78,7 @@ export function MobileMenu() {
                                     <a
                                         href={link.href}
                                         onClick={close}
-                                        className="block py-4 text-display text-4xl text-warm-white tracking-tight hover:text-accent-warm transition-colors border-b border-line/40"
+                                        className="block py-4 text-display text-3xl md:text-4xl text-warm-white tracking-tight hover:text-accent-warm transition-colors border-b border-line/40"
                                     >
                                         {t.nav[link.key]}
                                     </a>
