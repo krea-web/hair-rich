@@ -47,16 +47,16 @@ export function IntroSequence() {
     });
 
     // Phase 1 — frames animate in the first ~half of the scroll budget.
-    // Phase 2 — welcome word starts revealing the moment the subject begins
-    //           to leave the upper half of the frame (≈ frame 40, scrollY
-    //           ≈ 0.18). Holds until the very end so the user has a beat
-    //           to register it before the hero takes over.
+    // Phase 2 — welcome word reveals at scrollY 0.18 and STAYS until the
+    //           section ends, so when the user scrolls past, the welcome
+    //           is the last thing visible and the hero slides in
+    //           immediately behind it — no black tail.
     const frameIndex = useTransform(scrollYProgress, [0, 0.55], [1, FRAME_COUNT]);
     const hintOpacity = useTransform(scrollYProgress, [0, 0.12], [1, 0]);
     const welcomeOpacity = useTransform(
         scrollYProgress,
-        [0.18, 0.35, 0.95, 1],
-        [0, 1, 1, 0],
+        [0.18, 0.35, 1],
+        [0, 1, 1],
     );
     const welcomeY = useTransform(scrollYProgress, [0.18, 0.35], [60, 0]);
     const lang = useLang();
@@ -201,7 +201,7 @@ export function IntroSequence() {
             aria-label="Intro"
             data-intro-sequence
         >
-            <div className="h-[150vh] md:h-[180vh]">
+            <div className="h-[130vh] md:h-[150vh]">
                 <div className="sticky top-0 h-[100dvh] overflow-hidden bg-black">
                     {/* Skip button — always visible, top-right */}
                     <button
