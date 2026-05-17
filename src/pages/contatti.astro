@@ -6,6 +6,7 @@ import { MobileMenu } from "../components/ui/MobileMenu";
 import { BookingDrawer } from "../components/booking/BookingDrawer";
 import { PageHero } from "../components/landing/_shared/PageHero";
 import { ContactForm } from "../components/landing/ContactForm";
+import { GettingHere } from "../components/landing/GettingHere";
 import { MapSection } from "../components/landing/MapSection";
 import { Footer } from "../components/landing/Footer";
 import { ToastViewport } from "../components/ui/ToastViewport";
@@ -137,6 +138,8 @@ const mapsHref =
         </div>
       </div>
     </section>
+
+    <GettingHere client:idle />
 
     <MapSection client:idle />
 

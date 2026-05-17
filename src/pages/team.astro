@@ -6,6 +6,7 @@ import { MobileMenu } from "../components/ui/MobileMenu";
 import { BookingDrawer } from "../components/booking/BookingDrawer";
 import { PageHero } from "../components/landing/_shared/PageHero";
 import { TeamShowcase } from "../components/landing/TeamShowcase";
+import { SalonDay } from "../components/landing/SalonDay";
 import { ProcessSteps } from "../components/landing/_shared/ProcessSteps";
 import { Footer } from "../components/landing/Footer";
 import { ToastViewport } from "../components/ui/ToastViewport";
@@ -49,6 +50,8 @@ const VALUES = [
     />
 
     <TeamShowcase client:visible />
+
+    <SalonDay client:idle />
 
     <ProcessSteps
       client:idle

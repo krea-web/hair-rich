@@ -2,87 +2,60 @@
 
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { fetchServices } from "@/lib/supabase/queries";
+import { fetchServices, portfolioImageUrl, portfolioImageSrcset } from "@/lib/supabase/queries";
 import type { Service } from "@/lib/supabase/types";
 import { formatPrice } from "@/lib/format";
 import { useBookingDrawer, useBookingStore } from "@/lib/store";
+import { SmartImage } from "./_shared/SmartImage";
 
-interface EnrichedService extends Service {
-    longDescription: string;
-    includes: string[];
+interface ServiceEnrichment {
+    poetic: string;
+    persona: string;
+    tools: string[];
+    coverImage: string; // storage_path in portfolio bucket
 }
 
-const SERVICE_ENRICHMENT: Record<string, { longDescription: string; includes: string[] }> = {
+const ENRICHMENT: Record<string, ServiceEnrichment> = {
     "taglio-classico": {
-        longDescription:
-            "Per chi ha già il proprio stile e vuole solo che venga eseguito al millimetro. Forbice, tecnica, controllo. Trent'anni di scuola italiana del taglio, applicata sulla tua testa con la stessa cura che mettiamo nei tagli editorial.",
-        includes: [
-            "Consulto iniziale di 2 minuti",
-            "Shampoo professionale e massaggio cuoio capelluto",
-            "Taglio a forbice + rifinitura",
-            "Styling finale con prodotto adatto",
-            "Spazzolata a manopola finale",
-        ],
+        poetic: "Forbice, controllo, niente fronzoli. La scuola italiana al millimetro.",
+        persona: "Per chi sa cosa vuole e lo vuole eseguito bene.",
+        tools: ["Forbice Joewell 5.5\"", "Shampoo dedicato", "Spazzolata finale"],
+        coverImage: "provvisorio/IMG_1200.jpeg",
     },
     "fade-sfumatura": {
-        longDescription:
-            "La sfumatura chirurgica che ridefinisce il volto. Macchinetta su tre lunghezze diverse, rifinitura a rasoio sulle aree critiche. È il servizio più richiesto perché è quello in cui si vede di più la differenza tra un barber qualunque e uno di Hair Rich.",
-        includes: [
-            "Consulto + studio della forma del viso",
-            "Shampoo + maschera mineralizzante",
-            "Fade tecnico con 3 lunghezze graduate",
-            "Rifinitura a rasoio su tempie e nuca",
-            "Styling con pomata o cera a scelta",
-        ],
+        poetic: "Tre lunghezze graduate, transizione invisibile, contorni a rasoio.",
+        persona: "Per chi vuole un risultato che si nota — anche se non sa come si chiama.",
+        tools: ["Macchinetta · 3 lunghezze", "Rasoio per contorni", "Pomata finale"],
+        coverImage: "provvisorio/IMG_2090.jpeg",
     },
     "razor-cut": {
-        longDescription:
-            "Lavorazione completa con rasoio per dare movimento, texture e leggerezza al capello. Tecnica usata sui set editoriali — il risultato è naturale, non costruito, ma sotto c'è una mappa precisa di asportazioni millimetriche.",
-        includes: [
-            "Consulto sulla direzione naturale del capello",
-            "Shampoo nutriente",
-            "Razor cut a mano libera",
-            "Texturizzazione con forbice-trama",
-            "Asciugatura morbida e styling finale",
-        ],
+        poetic: "Rasoio sulle punte, texture viva, niente forme rigide.",
+        persona: "Per chi ha capelli che chiedono movimento, non struttura.",
+        tools: ["Rasoio a mano libera", "Forbice-trama", "Asciugatura morbida"],
+        coverImage: "provvisorio/IMG_1208.jpeg",
     },
     "barba-sartoriale": {
-        longDescription:
-            "La barba come elemento sartoriale del volto, non come ricrescita da gestire. Modellatura ad asciugamano caldo, lavorazione a rasoio e finitura con olio personalizzato sulla base del tuo tipo di pelle.",
-        includes: [
-            "Asciugamano caldo pre-trattamento",
-            "Pre-shave oil e schiuma artigianale",
-            "Rasatura/modellatura a rasoio classico",
-            "Rifinitura forbice sui contorni",
-            "Olio post-shave specifico per la tua pelle",
-        ],
+        poetic: "Asciugamano caldo, rasoio classico, olio sulla pelle.",
+        persona: "Per chi cura il volto come un capo d'abbigliamento.",
+        tools: ["Asciugamano caldo", "Rasoio classico", "Olio post-shave"],
+        coverImage: "provvisorio/IMG_2143.jpeg",
     },
     "taglio-barba": {
-        longDescription:
-            "Il combo signature di Hair Rich. Un'ora intera per uscire trasformato: taglio personalizzato + modellatura barba completa, con una pausa relax in mezzo. Risparmi 5€ rispetto al singolo e ottieni continuità stilistica tra capelli e barba.",
-        includes: [
-            "Tutto quello che è incluso nel taglio scelto",
-            "Tutto quello che è incluso nella barba sartoriale",
-            "Pausa relax di 5 minuti con bevanda calda",
-            "Continuità stilistica tra capelli e barba",
-            "Foto del risultato finale (su richiesta)",
-        ],
+        poetic: "Un'ora intera. Capelli e barba in continuità, niente dettaglio lasciato indietro.",
+        persona: "Per chi viene da noi una volta al mese e vuole tutto.",
+        tools: ["Tutto il taglio classico", "Tutta la barba sartoriale", "Pausa relax"],
+        coverImage: "provvisorio/IMG_2374.jpeg",
     },
     "taglio-domicilio": {
-        longDescription:
-            "Hair Rich a casa tua, in ufficio, in albergo, in barca. Stesso rigore, stessi strumenti, stesso master barber — solo che ci spostiamo noi. Pensato per chi viaggia, per occasioni speciali (matrimoni, eventi) e per la nostra clientela VIP.",
-        includes: [
-            "Sopralluogo telefonico 24h prima",
-            "Trasferta in tutta Olbia inclusa",
-            "Stessa attrezzatura del salone",
-            "Servizio completo come in salone",
-            "Aftercare check via messaggio nei 7 giorni",
-        ],
+        poetic: "Veniamo noi. Stessa attrezzatura, stessa cura. A casa, in albergo, in barca.",
+        persona: "Per chi viaggia, per occasioni speciali, per la clientela VIP.",
+        tools: ["Sopralluogo 24h prima", "Setup completo", "Aftercare via messaggio"],
+        coverImage: "provvisorio/IMG_2549.jpeg",
     },
 };
 
 export function ServiceCatalog() {
-    const [services, setServices] = useState<EnrichedService[]>([]);
+    const [services, setServices] = useState<Service[]>([]);
     const [loading, setLoading] = useState(true);
     const openDrawer = useBookingDrawer((s) => s.open);
     const setService = useBookingStore((s) => s.setService);
@@ -92,15 +65,7 @@ export function ServiceCatalog() {
         fetchServices()
             .then((rows) => {
                 if (!alive) return;
-                setServices(
-                    rows.map((r) => ({
-                        ...r,
-                        ...(SERVICE_ENRICHMENT[r.slug] ?? {
-                            longDescription: r.description ?? "",
-                            includes: [],
-                        }),
-                    }))
-                );
+                setServices(rows);
                 setLoading(false);
             })
             .catch(() => setLoading(false));
@@ -115,105 +80,138 @@ export function ServiceCatalog() {
     };
 
     return (
-        <section className="relative py-20 md:py-32 px-6 md:px-12 lg:px-20 bg-black overflow-hidden">
-            <div className="max-w-7xl mx-auto">
-                <div className="mb-16 md:mb-24 max-w-3xl">
-                    <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
-                        Catalogo completo
+        <section className="relative bg-black overflow-hidden">
+            {/* Section intro */}
+            <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 pt-20 md:pt-28 pb-12 md:pb-16">
+                <div className="max-w-2xl">
+                    <span className="text-[10px] uppercase tracking-[0.5em] text-accent-warm font-body font-semibold">
+                        Tutti i rituali · 06
                     </span>
-                    <h2 className="text-display text-4xl md:text-6xl text-warm-white tracking-tight mt-3 leading-[1.05]">
-                        Sei servizi, niente menu gonfiato di varianti.
+                    <h2 className="text-display text-3xl md:text-5xl text-warm-white tracking-tight mt-4 leading-[1.05]">
+                        Esplora ogni rituale.
                     </h2>
-                    <p className="mt-5 text-warm-white-muted text-base md:text-lg leading-relaxed">
-                        Ognuno con una sua identità precisa, un suo perché. Sotto trovi la versione lunga di
-                        ogni rituale: cosa include davvero, quanto dura, e per chi è fatto.
+                    <p className="mt-4 text-warm-white-muted text-base md:text-lg leading-relaxed">
+                        Sei servizi, sei filosofie diverse. Ogni rituale ha la sua tecnica,
+                        i suoi tempi, la sua persona di riferimento.
                     </p>
                 </div>
+            </div>
 
-                {loading ? (
-                    <div className="space-y-12">
-                        {Array.from({ length: 3 }).map((_, i) => (
-                            <div key={i} className="h-72 bg-black-2 border border-line rounded-[var(--radius-md)] animate-pulse" />
-                        ))}
-                    </div>
-                ) : (
-                    <ol className="space-y-px bg-line border-y border-line">
-                        {services.map((s, i) => (
-                            <motion.li
+            {loading ? (
+                <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 pb-20 space-y-8">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                        <div key={i} className="h-[480px] bg-black-2 border border-line rounded-[var(--radius-md)] animate-pulse" />
+                    ))}
+                </div>
+            ) : (
+                <div className="border-t border-line">
+                    {services.map((s, i) => {
+                        const enrich = ENRICHMENT[s.slug];
+                        const reverse = i % 2 === 1;
+                        return (
+                            <motion.article
                                 key={s.id}
-                                initial={{ opacity: 0, y: 30 }}
+                                initial={{ opacity: 0, y: 50 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true, margin: "-80px" }}
-                                transition={{ duration: 0.6, delay: (i % 3) * 0.08 }}
-                                className="relative bg-black"
+                                transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+                                className="relative border-b border-line"
                             >
-                                <div className="grid grid-cols-1 lg:grid-cols-[120px_1fr_300px] gap-6 lg:gap-12 py-10 md:py-14 px-2 md:px-4">
-                                    {/* Number */}
-                                    <div>
-                                        <span className="text-display-alt text-6xl md:text-7xl text-accent-warm/80 leading-none">
-                                            {String(i + 1).padStart(2, "0")}
-                                        </span>
-                                    </div>
+                                <div className={`grid grid-cols-1 md:grid-cols-12 ${reverse ? "md:[direction:rtl]" : ""}`}>
+                                    {/* Photo column */}
+                                    <div className="md:col-span-7 relative overflow-hidden md:[direction:ltr]">
+                                        <div className="relative aspect-[4/3] md:aspect-auto md:h-[640px]">
+                                            {enrich?.coverImage && (
+                                                <SmartImage
+                                                    src={portfolioImageUrl(enrich.coverImage, { width: 1200, quality: 80, format: "webp" })}
+                                                    srcSet={portfolioImageSrcset(enrich.coverImage, 80)}
+                                                    sizes="(min-width: 768px) 58vw, 100vw"
+                                                    alt={s.name}
+                                                    className="h-full grayscale-[10%]"
+                                                />
+                                            )}
+                                            {/* Gradient ramp */}
+                                            <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-black/70 via-black/10 to-transparent pointer-events-none" />
 
-                                    {/* Body */}
-                                    <div>
-                                        <div className="flex items-baseline gap-4 flex-wrap">
-                                            <h3 className="text-display text-2xl md:text-4xl text-warm-white tracking-tight">
-                                                {s.name}
-                                            </h3>
-                                            {s.badge && (
-                                                <span className="inline-flex px-3 py-1 bg-accent-warm/15 text-accent-warm text-[10px] uppercase tracking-[0.25em] font-body font-bold rounded-full">
-                                                    {s.badge}
+                                            {/* Numero rituale top-left */}
+                                            <div className="absolute top-5 left-5 md:top-8 md:left-8 flex items-baseline gap-3 text-warm-white">
+                                                <span className="text-display-alt text-4xl md:text-6xl leading-none text-accent-warm">
+                                                    {String(i + 1).padStart(2, "0")}
                                                 </span>
+                                                <span className="text-[9px] uppercase tracking-[0.4em] font-body font-semibold opacity-70">
+                                                    Rituale
+                                                </span>
+                                            </div>
+
+                                            {s.badge && (
+                                                <div className="absolute top-5 right-5 md:top-8 md:right-8 inline-flex items-center px-3 py-1.5 bg-accent-warm text-black text-[9px] uppercase tracking-[0.3em] font-body font-bold rounded-full">
+                                                    {s.badge}
+                                                </div>
                                             )}
                                         </div>
+                                    </div>
 
-                                        <p className="mt-4 text-warm-white-muted text-sm md:text-base leading-relaxed max-w-2xl">
-                                            {s.longDescription}
-                                        </p>
+                                    {/* Body column */}
+                                    <div className="md:col-span-5 md:[direction:ltr] flex flex-col justify-center px-6 md:px-10 lg:px-14 py-10 md:py-12 bg-black">
+                                        <h3 className="text-display text-3xl md:text-5xl text-warm-white tracking-tight leading-[1.05]">
+                                            {s.name}
+                                        </h3>
 
-                                        {s.includes.length > 0 && (
+                                        {enrich?.poetic && (
+                                            <p className="mt-4 text-display-alt text-lg md:text-2xl text-silver italic leading-snug">
+                                                {enrich.poetic}
+                                            </p>
+                                        )}
+
+                                        {enrich?.persona && (
+                                            <div className="mt-6 pl-4 border-l-2 border-accent-warm/40">
+                                                <span className="text-[10px] uppercase tracking-[0.35em] text-accent-warm font-body font-semibold">
+                                                    Per chi
+                                                </span>
+                                                <p className="mt-1 text-warm-white-muted text-sm md:text-base leading-relaxed">
+                                                    {enrich.persona}
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        {enrich?.tools && enrich.tools.length > 0 && (
                                             <div className="mt-6">
                                                 <span className="text-[10px] uppercase tracking-[0.35em] text-silver-dark font-body font-semibold">
-                                                    Cosa include
+                                                    Strumenti
                                                 </span>
-                                                <ul className="mt-3 space-y-2 max-w-xl">
-                                                    {s.includes.map((inc, idx) => (
-                                                        <li key={idx} className="flex items-start gap-3 text-sm text-warm-white-muted">
-                                                            <span
-                                                                aria-hidden="true"
-                                                                className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-accent-warm mt-2"
-                                                            />
-                                                            <span>{inc}</span>
+                                                <ul className="mt-3 flex flex-wrap gap-2">
+                                                    {enrich.tools.map((t) => (
+                                                        <li
+                                                            key={t}
+                                                            className="inline-flex items-center px-3 py-1.5 rounded-full border border-line text-warm-white-muted text-xs font-body"
+                                                        >
+                                                            {t}
                                                         </li>
                                                     ))}
                                                 </ul>
                                             </div>
                                         )}
-                                    </div>
 
-                                    {/* Pricing card */}
-                                    <div className="lg:sticky lg:top-32 self-start">
-                                        <div className="bg-gradient-to-br from-carbon to-black-2 border border-accent-warm/25 rounded-[var(--radius-md)] p-6">
-                                            <div className="flex items-baseline justify-between gap-3 pb-4 border-b border-line">
+                                        {/* Pricing + CTA row */}
+                                        <div className="mt-8 pt-6 border-t border-line flex items-center justify-between gap-4">
+                                            <div>
                                                 <span className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
-                                                    Prezzo
+                                                    Da
                                                 </span>
-                                                <span className="text-display text-3xl md:text-4xl text-accent-warm tabular-nums">
-                                                    {formatPrice(s.price_cents)}
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center justify-between gap-3 py-4 border-b border-line text-sm">
-                                                <span className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
-                                                    Durata
-                                                </span>
-                                                <span className="text-warm-white font-body">{s.duration_min} min</span>
+                                                <div className="flex items-baseline gap-3 mt-1">
+                                                    <span className="text-display text-3xl md:text-4xl text-accent-warm tabular-nums">
+                                                        {formatPrice(s.price_cents)}
+                                                    </span>
+                                                    <span className="text-warm-white-muted text-sm">
+                                                        · {s.duration_min} min
+                                                    </span>
+                                                </div>
                                             </div>
                                             <button
                                                 onClick={() => handleBook(s.id)}
-                                                className="mt-5 w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-accent-warm text-black rounded-full text-[11px] uppercase tracking-[0.25em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform"
+                                                className="inline-flex items-center gap-2 px-5 py-3 bg-accent-warm text-black rounded-full text-[11px] uppercase tracking-[0.25em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform whitespace-nowrap"
                                             >
-                                                Prenota questo
+                                                Prenota
                                                 <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5">
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                                                 </svg>
@@ -221,11 +219,11 @@ export function ServiceCatalog() {
                                         </div>
                                     </div>
                                 </div>
-                            </motion.li>
-                        ))}
-                    </ol>
-                )}
-            </div>
+                            </motion.article>
+                        );
+                    })}
+                </div>
+            )}
         </section>
     );
 }

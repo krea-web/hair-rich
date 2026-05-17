@@ -7,6 +7,7 @@ import { BookingDrawer } from "../components/booking/BookingDrawer";
 import { PageHero } from "../components/landing/_shared/PageHero";
 import { BookingSection } from "../components/landing/BookingSection";
 import { ProcessSteps } from "../components/landing/_shared/ProcessSteps";
+import { BookingReassurance } from "../components/landing/BookingReassurance";
 import { FAQAccordion } from "../components/landing/_shared/FAQAccordion";
 import { Footer } from "../components/landing/Footer";
 import { ToastViewport } from "../components/ui/ToastViewport";
@@ -27,24 +28,6 @@ const STEPS = [
     n: "03",
     title: "Conferma in 30 secondi",
     body: "Nome, telefono ed email. Nessun pagamento richiesto online: si salda in salone post-servizio.",
-  },
-];
-
-const POLICIES = [
-  {
-    n: "01",
-    title: "Cancellazione gratuita",
-    body: "Fino a 2 ore prima dell'appuntamento, senza alcun costo. Sotto le 2 ore ti chiediamo di telefonarci direttamente.",
-  },
-  {
-    n: "02",
-    title: "Pagamento in salone",
-    body: "Nessuna carta richiesta per prenotare. Si salda al termine del servizio: contanti, bancomat, Visa, Mastercard, Maestro, Amex.",
-  },
-  {
-    n: "03",
-    title: "Promemoria automatico",
-    body: "Ricevi un'email di conferma immediata e un promemoria 24 ore prima dell'appuntamento — così non te lo dimentichi.",
   },
 ];
 
@@ -103,12 +86,7 @@ const FAQ = [
       steps={STEPS}
     />
 
-    <ProcessSteps
-      client:idle
-      eyebrow="Politiche"
-      title="Trasparenza prima del taglio."
-      steps={POLICIES}
-    />
+    <BookingReassurance client:idle />
 
     <FAQAccordion
       client:idle
