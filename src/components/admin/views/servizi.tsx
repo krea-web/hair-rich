@@ -1,74 +1,362 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { formatPrice } from "@/lib/format";
+import { useToastStore } from "@/lib/store";
 
-const MOCK_SERVICES = [
-    { id: "1", name: "Taglio Uomo", category: "taglio", price: 2000, duration: 30, active: true },
-    { id: "2", name: "Barba", category: "barba", price: 1500, duration: 30, active: true },
-    { id: "3", name: "Taglio + Barba", category: "combo", price: 3000, duration: 60, active: true },
-    { id: "4", name: "Trattamento Viso VIP", category: "altro", price: 2500, duration: 20, active: false },
-];
+interface ServiceRow {
+    id: string;
+    slug: string;
+    name: string;
+    description: string | null;
+    price_cents: number;
+    duration_min: number;
+    badge: string | null;
+    is_active: boolean;
+    sort_order: number;
+}
 
 export default function AdminServiziPage() {
+    const [services, setServices] = useState<ServiceRow[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [search, setSearch] = useState("");
+    const [savingId, setSavingId] = useState<string | null>(null);
+    const addToast = useToastStore((s) => s.addToast);
+
+    const load = useCallback(async () => {
+        setLoading(true);
+        try {
+            const supabase = createClient();
+            const { data, error } = await supabase
+                .from("services")
+                .select("*")
+                .order("sort_order");
+            if (error) throw error;
+            setServices((data ?? []) as ServiceRow[]);
+        } catch (e: any) {
+            addToast(`Errore: ${e?.message ?? "?"}`, "error");
+        } finally {
+            setLoading(false);
+        }
+    }, [addToast]);
+
+    useEffect(() => {
+        load();
+    }, [load]);
+
+    const updateField = async (id: string, patch: Partial<ServiceRow>) => {
+        setSavingId(id);
+        const supabase = createClient();
+        const { error } = await supabase.from("services").update(patch).eq("id", id);
+        setSavingId(null);
+        if (error) {
+            addToast(`Errore: ${error.message}`, "error");
+            return false;
+        }
+        setServices((rows) => rows.map((r) => (r.id === id ? { ...r, ...patch } : r)));
+        return true;
+    };
+
+    const filtered = useMemo(() => {
+        const q = search.trim().toLowerCase();
+        if (!q) return services;
+        return services.filter(
+            (s) =>
+                s.name.toLowerCase().includes(q) || (s.badge ?? "").toLowerCase().includes(q)
+        );
+    }, [services, search]);
+
     return (
-        <div className="p-6 md:p-10 max-w-6xl mx-auto space-y-8 h-full flex flex-col">
-            {/* ── Header ───────────────────────────────────────── */}
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0">
-                <div>
-                    <h1 className="text-display text-4xl text-warm-white">Servizi Offerti</h1>
-                    <p className="text-silver-dark text-sm mt-1">Configura il tuo menu, regola i prezzi e i tempi per i booking slot.</p>
-                </div>
-                <button className="px-4 py-2 bg-accent-warm text-black rounded-[var(--radius-sm)] text-xs uppercase tracking-wider font-bold hover:brightness-110 transition-all shrink-0">
-                    + Nuovo Servizio
-                </button>
+        <div className="p-6 md:p-10 max-w-6xl mx-auto space-y-8">
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+                <span className="text-display-alt text-2xl text-accent-warm">Listino</span>
+                <h1 className="text-display text-4xl md:text-5xl text-warm-white tracking-tight mt-1 leading-[0.95]">
+                    Servizi.
+                </h1>
+                <p className="mt-3 text-warm-white-muted text-base max-w-2xl">
+                    I rituali offerti in salone. Tocca prezzo, durata o badge per modificarli
+                    inline. Toggle "Attivo" li nasconde dal sito senza eliminarli.
+                </p>
             </motion.div>
 
-            {/* ── DataTable ────────────────────────────────────── */}
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="flex-1 bg-[#111111] border border-line rounded-[var(--radius-md)] overflow-hidden flex flex-col">
-                <div className="overflow-x-auto flex-1">
-                    <table className="w-full text-left text-sm whitespace-nowrap">
-                        <thead className="bg-carbon/50 text-xs uppercase tracking-widest text-silver-dark font-semibold border-b border-line sticky top-0 z-10 backdrop-blur">
-                            <tr>
-                                <th className="px-6 py-4 font-normal">Nome Servizio</th>
-                                <th className="px-6 py-4 font-normal">Categoria</th>
-                                <th className="px-6 py-4 font-normal">Prezzo</th>
-                                <th className="px-6 py-4 font-normal">Durata (min)</th>
-                                <th className="px-6 py-4 font-normal">Stato</th>
-                                <th className="px-6 py-4 font-normal text-right">Azioni</th>
+            <div className="flex flex-wrap gap-3 items-center">
+                <input
+                    type="search"
+                    placeholder="Cerca per nome…"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="flex-1 min-w-[200px] bg-carbon border border-line rounded-full px-4 py-2 text-sm text-warm-white placeholder:text-silver-dark focus:border-accent-warm focus:outline-none transition-colors"
+                />
+                <span className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
+                    {filtered.length} su {services.length}
+                </span>
+            </div>
+
+            {loading && (
+                <div className="space-y-3">
+                    {[0, 1, 2].map((i) => (
+                        <div key={i} className="h-16 bg-carbon border border-line rounded-[var(--radius-md)] animate-pulse" />
+                    ))}
+                </div>
+            )}
+
+            {!loading && (
+                <div className="overflow-x-auto rounded-[var(--radius-md)] border border-line">
+                    <table className="w-full text-sm">
+                        <thead>
+                            <tr className="bg-carbon text-[10px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold">
+                                <th className="text-left p-3 font-semibold">Servizio</th>
+                                <th className="text-left p-3 font-semibold hidden md:table-cell">Badge</th>
+                                <th className="text-right p-3 font-semibold">Prezzo</th>
+                                <th className="text-right p-3 font-semibold">Durata</th>
+                                <th className="text-center p-3 font-semibold">Attivo</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-line">
-                            {MOCK_SERVICES.map(svc => (
-                                <tr key={svc.id} className={`hover:bg-carbon-2 transition-colors group cursor-pointer ${!svc.active && 'opacity-60 grayscale'}`}>
-                                    <td className="px-6 py-4">
-                                        <span className="font-body font-semibold text-warm-white">{svc.name}</span>
-                                    </td>
-                                    <td className="px-6 py-4 text-silver">
-                                        <span className="px-2 py-1 bg-black-2 border border-line rounded text-[10px] uppercase tracking-wider">
-                                            {svc.category}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 text-accent-warm font-mono">{svc.price / 100},00 €</td>
-                                    <td className="px-6 py-4 text-silver flex items-center gap-2">
-                                        <svg viewBox="0 0 24 24" className="w-4 h-4 text-silver-dark" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                                        {svc.duration}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        {svc.active ? (
-                                            <span className="w-2 h-2 rounded-full bg-success inline-block shadow-[0_0_8px_rgba(0,255,0,0.5)]"></span>
-                                        ) : (
-                                            <span className="w-2 h-2 rounded-full bg-error inline-block"></span>
-                                        )}
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <button className="text-silver hover:text-warm-white transition-colors p-2 text-xs uppercase tracking-widest">Modifica</button>
-                                    </td>
-                                </tr>
-                            ))}
+                        <tbody>
+                            {filtered.map((s) => {
+                                const saving = savingId === s.id;
+                                return (
+                                    <tr
+                                        key={s.id}
+                                        className={`border-t border-line/60 transition-colors hover:bg-carbon/60 ${
+                                            !s.is_active ? "opacity-50" : ""
+                                        }`}
+                                    >
+                                        <td className="p-3">
+                                            <div className="font-body text-warm-white">{s.name}</div>
+                                            {s.description && (
+                                                <div className="text-xs text-silver-dark mt-0.5 line-clamp-1 max-w-md">
+                                                    {s.description}
+                                                </div>
+                                            )}
+                                        </td>
+                                        <td className="p-3 hidden md:table-cell">
+                                            <BadgeCell
+                                                value={s.badge}
+                                                disabled={saving}
+                                                onSave={(v) => updateField(s.id, { badge: v })}
+                                            />
+                                        </td>
+                                        <td className="p-3 text-right">
+                                            <PriceCell
+                                                value={s.price_cents}
+                                                disabled={saving}
+                                                onSave={(cents) => updateField(s.id, { price_cents: cents })}
+                                            />
+                                        </td>
+                                        <td className="p-3 text-right">
+                                            <DurationCell
+                                                value={s.duration_min}
+                                                disabled={saving}
+                                                onSave={(n) => updateField(s.id, { duration_min: n })}
+                                            />
+                                        </td>
+                                        <td className="p-3 text-center">
+                                            <button
+                                                role="switch"
+                                                aria-checked={s.is_active}
+                                                onClick={() => updateField(s.id, { is_active: !s.is_active })}
+                                                disabled={saving}
+                                                className={`relative inline-flex h-6 w-11 rounded-full transition-colors ${
+                                                    s.is_active ? "bg-accent-warm" : "bg-line"
+                                                } disabled:opacity-50`}
+                                            >
+                                                <span
+                                                    className={`absolute top-0.5 w-5 h-5 rounded-full bg-black transition-transform ${
+                                                        s.is_active ? "translate-x-5" : "translate-x-0.5"
+                                                    }`}
+                                                />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>
-            </motion.div>
+            )}
         </div>
+    );
+}
+
+// ─── Inline editable cells ─────────────────────────────────────────
+
+function PriceCell({
+    value,
+    onSave,
+    disabled,
+}: {
+    value: number;
+    onSave: (cents: number) => Promise<boolean> | boolean;
+    disabled?: boolean;
+}) {
+    const [editing, setEditing] = useState(false);
+    const [draft, setDraft] = useState(() => (value / 100).toFixed(2));
+
+    useEffect(() => {
+        setDraft((value / 100).toFixed(2));
+    }, [value]);
+
+    if (!editing) {
+        return (
+            <button
+                onClick={() => !disabled && setEditing(true)}
+                className="text-accent-warm font-display tabular-nums hover:underline"
+            >
+                {formatPrice(value)}
+            </button>
+        );
+    }
+
+    const commit = () => {
+        const parsed = parseFloat(draft.replace(",", "."));
+        if (!Number.isFinite(parsed) || parsed < 0) {
+            setDraft((value / 100).toFixed(2));
+            setEditing(false);
+            return;
+        }
+        onSave(Math.round(parsed * 100));
+        setEditing(false);
+    };
+
+    return (
+        <input
+            type="number"
+            step="0.01"
+            min="0"
+            value={draft}
+            autoFocus
+            onChange={(e) => setDraft(e.target.value)}
+            onBlur={commit}
+            onKeyDown={(e) => {
+                if (e.key === "Enter") commit();
+                if (e.key === "Escape") {
+                    setDraft((value / 100).toFixed(2));
+                    setEditing(false);
+                }
+            }}
+            className="w-20 bg-black-2 border border-line rounded-md px-2 py-1 text-right text-accent-warm font-mono"
+        />
+    );
+}
+
+function DurationCell({
+    value,
+    onSave,
+    disabled,
+}: {
+    value: number;
+    onSave: (n: number) => Promise<boolean> | boolean;
+    disabled?: boolean;
+}) {
+    const [editing, setEditing] = useState(false);
+    const [draft, setDraft] = useState(String(value));
+
+    useEffect(() => {
+        setDraft(String(value));
+    }, [value]);
+
+    if (!editing) {
+        return (
+            <button
+                onClick={() => !disabled && setEditing(true)}
+                className="text-warm-white tabular-nums font-mono hover:underline"
+            >
+                {value} min
+            </button>
+        );
+    }
+
+    const commit = () => {
+        const parsed = parseInt(draft, 10);
+        if (!Number.isFinite(parsed) || parsed <= 0) {
+            setDraft(String(value));
+            setEditing(false);
+            return;
+        }
+        onSave(parsed);
+        setEditing(false);
+    };
+
+    return (
+        <input
+            type="number"
+            min="5"
+            step="5"
+            value={draft}
+            autoFocus
+            onChange={(e) => setDraft(e.target.value)}
+            onBlur={commit}
+            onKeyDown={(e) => {
+                if (e.key === "Enter") commit();
+                if (e.key === "Escape") {
+                    setDraft(String(value));
+                    setEditing(false);
+                }
+            }}
+            className="w-16 bg-black-2 border border-line rounded-md px-2 py-1 text-right text-warm-white font-mono"
+        />
+    );
+}
+
+function BadgeCell({
+    value,
+    onSave,
+    disabled,
+}: {
+    value: string | null;
+    onSave: (v: string | null) => Promise<boolean> | boolean;
+    disabled?: boolean;
+}) {
+    const [editing, setEditing] = useState(false);
+    const [draft, setDraft] = useState(value ?? "");
+
+    useEffect(() => {
+        setDraft(value ?? "");
+    }, [value]);
+
+    if (!editing) {
+        return value ? (
+            <button
+                onClick={() => !disabled && setEditing(true)}
+                className="inline-flex px-2 py-1 bg-accent-warm/15 text-accent-warm text-[10px] uppercase tracking-[0.25em] font-body font-semibold rounded-full hover:bg-accent-warm/25 transition-colors"
+            >
+                {value}
+            </button>
+        ) : (
+            <button
+                onClick={() => !disabled && setEditing(true)}
+                className="text-silver-dark text-xs italic hover:text-warm-white transition-colors"
+            >
+                + aggiungi badge
+            </button>
+        );
+    }
+
+    const commit = () => {
+        const v = draft.trim();
+        onSave(v === "" ? null : v);
+        setEditing(false);
+    };
+
+    return (
+        <input
+            type="text"
+            value={draft}
+            autoFocus
+            placeholder="Es. Più scelto"
+            onChange={(e) => setDraft(e.target.value)}
+            onBlur={commit}
+            onKeyDown={(e) => {
+                if (e.key === "Enter") commit();
+                if (e.key === "Escape") {
+                    setDraft(value ?? "");
+                    setEditing(false);
+                }
+            }}
+            className="w-40 bg-black-2 border border-line rounded-md px-2 py-1 text-warm-white text-sm"
+        />
     );
 }
