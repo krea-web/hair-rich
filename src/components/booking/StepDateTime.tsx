@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useBookingStore } from "@/lib/store";
-import { fetchAvailableSlots } from "@/lib/supabase/queries";
+import { fetchAvailableSlots, fetchDayDensity } from "@/lib/supabase/queries";
 import type { AvailableSlot } from "@/lib/supabase/types";
 
 const today = new Date();
@@ -53,6 +53,32 @@ export function StepDateTime({ onNext, onBack }: { onNext: () => void; onBack: (
     const uniqueTimes = Array.from(
         new Set(slots.map((s) => s.slot_time.slice(0, 5)))
     ).sort();
+
+    // Fetch density map for each candidate day so we can hint at which days
+    // are quiet vs busy before the user taps. One RPC per day, called in
+    // parallel and cached in state for the wizard session.
+    const [density, setDensity] = useState<Record<string, number>>({});
+    useEffect(() => {
+        if (!serviceId) return;
+        let alive = true;
+        Promise.all(
+            dates.map(async (d) => {
+                const ds = d.toISOString().split("T")[0]!;
+                try {
+                    const v = await fetchDayDensity(ds, serviceId);
+                    return [ds, v] as const;
+                } catch {
+                    return [ds, 0] as const;
+                }
+            })
+        ).then((pairs) => {
+            if (!alive) return;
+            setDensity(Object.fromEntries(pairs));
+        });
+        return () => {
+            alive = false;
+        };
+    }, [serviceId]);
 
     const handleNext = () => {
         if (selectedDateStr && time) {
@@ -118,6 +144,48 @@ export function StepDateTime({ onNext, onBack }: { onNext: () => void; onBack: (
                                                 {new Intl.DateTimeFormat("it-IT", { month: "short" }).format(d)}
                                             </span>
                                         </div>
+                                        {/* Density dots — 4 cells filled by `density[dayStr]` ratio.
+                                            Visible inline so the user spots quiet days instantly. */}
+                                        {density[dayStr] !== undefined && (
+                                            <div
+                                                className="mt-2 flex items-center gap-1"
+                                                aria-label={
+                                                    density[dayStr]! < 0.25
+                                                        ? "Giorno libero"
+                                                        : density[dayStr]! < 0.6
+                                                            ? "Mezzo pieno"
+                                                            : density[dayStr]! < 0.9
+                                                                ? "Quasi pieno"
+                                                                : "Pieno"
+                                                }
+                                            >
+                                                {[0, 1, 2, 3].map((idx) => {
+                                                    const filled = Math.round(density[dayStr]! * 4) > idx;
+                                                    return (
+                                                        <span
+                                                            key={idx}
+                                                            aria-hidden="true"
+                                                            className={`w-1 h-1 rounded-full ${
+                                                                filled
+                                                                    ? density[dayStr]! < 0.6
+                                                                        ? "bg-accent-warm/70"
+                                                                        : "bg-silver-dark"
+                                                                    : "bg-line"
+                                                            }`}
+                                                        />
+                                                    );
+                                                })}
+                                                <span className="text-[8px] uppercase tracking-[0.2em] text-silver-dark font-body font-semibold ml-1">
+                                                    {density[dayStr]! < 0.25
+                                                        ? "libero"
+                                                        : density[dayStr]! < 0.6
+                                                            ? "ok"
+                                                            : density[dayStr]! < 0.9
+                                                                ? "denso"
+                                                                : "pieno"}
+                                                </span>
+                                            </div>
+                                        )}
                                     </div>
                                     {active && (
                                         <span className="w-5 h-5 rounded-full bg-accent-warm text-black flex items-center justify-center" aria-hidden="true">

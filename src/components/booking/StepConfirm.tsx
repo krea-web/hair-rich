@@ -8,7 +8,7 @@ import { useBookingStore, useToastStore } from "@/lib/store";
 import { bookingContactSchema, type BookingContactData } from "@/lib/validation";
 import { formatPrice } from "@/lib/format";
 import { downloadICS, googleCalendarUrl, outlookCalendarUrl } from "@/lib/calendar";
-import { bookAppointment } from "@/lib/supabase/queries";
+import { bookAppointment, uploadReferenceImage } from "@/lib/supabase/queries";
 import { SITE } from "@/lib/constants";
 
 export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: () => void }) {
@@ -31,6 +31,26 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
     const [submitting, setSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
     const [isFirstVisit, setIsFirstVisit] = useState(false);
+    const [referenceFiles, setReferenceFiles] = useState<File[]>([]);
+    const [referencePreviews, setReferencePreviews] = useState<string[]>([]);
+    const MAX_REFERENCES = 3;
+
+    const handleAddReferences = (files: FileList | null) => {
+        if (!files || files.length === 0) return;
+        const incoming = Array.from(files).slice(0, MAX_REFERENCES - referenceFiles.length);
+        const newPreviews = incoming.map((f) => URL.createObjectURL(f));
+        setReferenceFiles((prev) => [...prev, ...incoming]);
+        setReferencePreviews((prev) => [...prev, ...newPreviews]);
+    };
+
+    const handleRemoveReference = (i: number) => {
+        setReferenceFiles((prev) => prev.filter((_, idx) => idx !== i));
+        setReferencePreviews((prev) => {
+            const removed = prev[i];
+            if (removed) URL.revokeObjectURL(removed);
+            return prev.filter((_, idx) => idx !== i);
+        });
+    };
 
     const service = services.find((s) => s.id === serviceId) ?? null;
     const staff = staffId ? staffList.find((s) => s.id === staffId) ?? null : null;
@@ -62,6 +82,18 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
         const startAtISO = new Date(`${date}T${time}:00+02:00`).toISOString();
 
         try {
+            // Upload reference photos in parallel, ignore individual failures
+            // so a single failed upload doesn't block the booking itself.
+            const refPaths: string[] = [];
+            if (referenceFiles.length > 0) {
+                const settled = await Promise.allSettled(
+                    referenceFiles.map((f) => uploadReferenceImage(f))
+                );
+                for (const r of settled) {
+                    if (r.status === "fulfilled") refPaths.push(r.value);
+                }
+            }
+
             await bookAppointment({
                 firstName: data.firstName,
                 lastName: data.lastName,
@@ -72,6 +104,7 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
                 startAtISO,
                 notes: data.notes ?? "",
                 isFirstVisit,
+                referenceImagePaths: refPaths,
             });
 
             setContact({
@@ -294,8 +327,67 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
                             {...register("notes")}
                             rows={3}
                             className="mt-1.5 w-full bg-black-2 border border-line rounded-[var(--radius-sm)] px-4 py-3 text-warm-white placeholder:text-silver-dark focus:border-accent-warm focus:outline-none transition-colors resize-none"
-                            placeholder="Allergie, richieste particolari, foto reference…"
+                            placeholder="Allergie, richieste particolari…"
                         />
+                    </div>
+
+                    {/* Foto reference upload — fino a 3, accede direttamente alla
+                       fotocamera del telefono via capture="environment" */}
+                    <div>
+                        <label className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
+                            Foto del taglio che vuoi <span className="text-silver-dark">(opzionale · max 3)</span>
+                        </label>
+                        <p className="mt-1 text-[11px] text-warm-white-muted leading-snug">
+                            Una foto di reference vale dieci minuti di consulto. Il barber la vede prima del tuo arrivo.
+                        </p>
+
+                        {referencePreviews.length > 0 && (
+                            <div className="mt-3 grid grid-cols-3 gap-2">
+                                {referencePreviews.map((src, i) => (
+                                    <div
+                                        key={i}
+                                        className="relative aspect-[4/5] rounded-[var(--radius-sm)] overflow-hidden border border-line group"
+                                    >
+                                        <img
+                                            src={src}
+                                            alt={`Reference ${i + 1}`}
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => handleRemoveReference(i)}
+                                            className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/80 text-warm-white flex items-center justify-center text-xs active:scale-95 hover:bg-error transition-colors"
+                                            aria-label="Rimuovi"
+                                        >
+                                            <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="3">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {referenceFiles.length < MAX_REFERENCES && (
+                            <label className="mt-3 inline-flex items-center gap-3 px-4 py-3 bg-black-2 border border-dashed border-line rounded-[var(--radius-sm)] text-warm-white text-sm font-body cursor-pointer hover:border-accent-warm transition-colors active:scale-[0.99]">
+                                <svg viewBox="0 0 24 24" className="w-5 h-5 text-accent-warm" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" />
+                                    <circle cx="12" cy="13" r="4" />
+                                </svg>
+                                <span>{referenceFiles.length === 0 ? "Aggiungi foto" : "Aggiungi altra foto"}</span>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    capture="environment"
+                                    multiple
+                                    className="sr-only"
+                                    onChange={(e) => {
+                                        handleAddReferences(e.target.files);
+                                        e.target.value = "";
+                                    }}
+                                />
+                            </label>
+                        )}
                     </div>
 
                     {/* First-visit toggle — the barber sees this flag in the admin

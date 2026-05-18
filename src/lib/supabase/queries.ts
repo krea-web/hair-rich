@@ -88,6 +88,17 @@ export async function fetchPortfolio(): Promise<PortfolioImage[]> {
     return (data ?? []) as PortfolioImage[];
 }
 
+export async function fetchDayDensity(date: string, serviceId: string): Promise<number> {
+    const supabase = createClient();
+    const { data, error } = await supabase.rpc("fn_day_density", {
+        p_date: date,
+        p_service_id: serviceId,
+    });
+    if (error) throw error;
+    const n = typeof data === "number" ? data : Number(data);
+    return Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : 0;
+}
+
 export async function fetchAvailableSlots(params: {
     date: string;
     serviceId: string;
@@ -116,6 +127,7 @@ export interface BookAppointmentInput {
     notes?: string;
     marketingConsent?: boolean;
     isFirstVisit?: boolean;
+    referenceImagePaths?: string[];
 }
 
 export async function bookAppointment(input: BookAppointmentInput): Promise<BookAppointmentResult> {
@@ -131,9 +143,32 @@ export async function bookAppointment(input: BookAppointmentInput): Promise<Book
         p_notes: input.notes ?? null,
         p_marketing_consent: input.marketingConsent ?? false,
         p_is_first_visit: input.isFirstVisit ?? false,
+        p_reference_image_paths: input.referenceImagePaths ?? [],
     });
     if (error) throw error;
     return data as BookAppointmentResult;
+}
+
+/**
+ * Upload a reference photo to the private client-references bucket. Returns
+ * the storage path on success. Used by the booking wizard to attach photos
+ * of the desired haircut/style to the appointment before submitting.
+ */
+export async function uploadReferenceImage(file: File): Promise<string> {
+    const supabase = createClient();
+    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const safeExt = ["jpg", "jpeg", "png", "webp", "heic"].includes(ext) ? ext : "jpg";
+    // Random path per file — no collision worries even within a single submission
+    const path = `pending/${crypto.randomUUID()}.${safeExt}`;
+    const { error } = await supabase.storage
+        .from("client-references")
+        .upload(path, file, {
+            cacheControl: "3600",
+            upsert: false,
+            contentType: file.type || `image/${safeExt}`,
+        });
+    if (error) throw error;
+    return path;
 }
 
 export async function fetchMyAppointments(): Promise<Appointment[]> {

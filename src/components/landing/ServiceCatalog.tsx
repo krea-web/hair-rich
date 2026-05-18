@@ -1,9 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { fetchServices, portfolioImageUrl, portfolioImageSrcset } from "@/lib/supabase/queries";
-import type { Service } from "@/lib/supabase/types";
+import { fetchAvailableSlots, fetchServices, portfolioImageUrl, portfolioImageSrcset } from "@/lib/supabase/queries";
+import type { AvailableSlot, Service } from "@/lib/supabase/types";
 import { formatPrice } from "@/lib/format";
 import { useBookingDrawer, useBookingStore } from "@/lib/store";
 import { SmartImage } from "./_shared/SmartImage";
@@ -77,6 +77,11 @@ export function ServiceCatalog() {
     const handleBook = (serviceId: string) => {
         setService(serviceId);
         openDrawer();
+    };
+
+    const [expandedId, setExpandedId] = useState<string | null>(null);
+    const toggleExpand = (id: string) => {
+        setExpandedId((cur) => (cur === id ? null : id));
     };
 
     return (
@@ -208,15 +213,33 @@ export function ServiceCatalog() {
                                                 </div>
                                             </div>
                                             <button
-                                                onClick={() => handleBook(s.id)}
+                                                onClick={() => toggleExpand(s.id)}
                                                 className="inline-flex items-center gap-2 px-5 py-3 bg-accent-warm text-black rounded-full text-[11px] uppercase tracking-[0.25em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform whitespace-nowrap"
+                                                aria-expanded={expandedId === s.id}
                                             >
-                                                Prenota
-                                                <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                {expandedId === s.id ? "Chiudi" : "Prenota"}
+                                                <svg viewBox="0 0 24 24" className={`w-3.5 h-3.5 transition-transform ${expandedId === s.id ? "rotate-90" : ""}`} fill="none" stroke="currentColor" strokeWidth="2.5">
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                                                 </svg>
                                             </button>
                                         </div>
+
+                                        {/* Inline quick-book: next 3 available slots fetched on expand */}
+                                        <AnimatePresence>
+                                            {expandedId === s.id && (
+                                                <InlineQuickBook
+                                                    serviceId={s.id}
+                                                    onSlotPick={(date, time) => {
+                                                        useBookingStore.getState().setService(s.id);
+                                                        useBookingStore.getState().setDate(date);
+                                                        useBookingStore.getState().setTime(time);
+                                                        useBookingStore.getState().setStep(2);
+                                                        openDrawer();
+                                                    }}
+                                                    onFullWizard={() => handleBook(s.id)}
+                                                />
+                                            )}
+                                        </AnimatePresence>
                                     </div>
                                 </div>
                             </motion.article>
@@ -225,5 +248,124 @@ export function ServiceCatalog() {
                 </div>
             )}
         </section>
+    );
+}
+
+interface InlineQuickBookProps {
+    serviceId: string;
+    onSlotPick: (date: string, time: string) => void;
+    onFullWizard: () => void;
+}
+
+interface QuickSlot {
+    date: string;
+    time: string;
+    dayLabel: string;
+}
+
+/**
+ * Scans the next 14 days, picks the first 3 slots available. Rendered
+ * inside an AnimatePresence so the height transitions smoothly. Tapping a
+ * slot pre-fills the booking store (service + date + time) and jumps the
+ * drawer straight to the Confirm step.
+ */
+function InlineQuickBook({ serviceId, onSlotPick, onFullWizard }: InlineQuickBookProps) {
+    const [slots, setSlots] = useState<QuickSlot[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        let alive = true;
+        (async () => {
+            const out: QuickSlot[] = [];
+            try {
+                for (let i = 0; i < 14 && out.length < 3; i++) {
+                    const d = new Date();
+                    d.setDate(d.getDate() + i);
+                    if (d.getDay() === 0 || d.getDay() === 1) continue;
+                    const dateStr = d.toISOString().split("T")[0]!;
+                    const rows: AvailableSlot[] = await fetchAvailableSlots({
+                        date: dateStr,
+                        serviceId,
+                    });
+                    const uniqueTimes = Array.from(
+                        new Set(rows.map((r) => r.slot_time.slice(0, 5)))
+                    ).sort();
+                    for (const t of uniqueTimes) {
+                        if (out.length >= 3) break;
+                        out.push({
+                            date: dateStr,
+                            time: t,
+                            dayLabel: d.toLocaleDateString("it-IT", {
+                                weekday: "short",
+                                day: "numeric",
+                                month: "short",
+                            }),
+                        });
+                    }
+                }
+            } catch {
+                /* ignore */
+            }
+            if (alive) {
+                setSlots(out);
+                setLoading(false);
+            }
+        })();
+        return () => {
+            alive = false;
+        };
+    }, [serviceId]);
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
+            className="overflow-hidden"
+        >
+            <div className="mt-6 pt-6 border-t border-line">
+                <span className="text-[10px] uppercase tracking-[0.35em] text-accent-warm font-body font-semibold">
+                    Prossimi 3 slot disponibili
+                </span>
+                {loading ? (
+                    <div className="mt-3 flex gap-2">
+                        {[0, 1, 2].map((i) => (
+                            <div key={i} className="h-16 flex-1 bg-black-2 border border-line rounded-[var(--radius-sm)] animate-pulse" />
+                        ))}
+                    </div>
+                ) : slots.length === 0 ? (
+                    <p className="mt-3 text-warm-white-muted text-sm">
+                        Nessuno slot libero nei prossimi 14 giorni. Tocca <button onClick={onFullWizard} className="underline text-accent-warm">scegli giorno e barber</button> per esplorare l'agenda completa.
+                    </p>
+                ) : (
+                    <>
+                        <div className="mt-3 grid grid-cols-3 gap-2">
+                            {slots.map((s) => (
+                                <button
+                                    key={`${s.date}-${s.time}`}
+                                    onClick={() => onSlotPick(s.date, s.time)}
+                                    className="flex flex-col items-start gap-1 p-3 bg-black-2 border border-line rounded-[var(--radius-sm)] hover:border-accent-warm hover:bg-accent-warm/5 transition-colors active:scale-95"
+                                >
+                                    <span className="text-[9px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold">
+                                        {s.dayLabel}
+                                    </span>
+                                    <span className="text-warm-white text-base font-mono tabular-nums">
+                                        {s.time}
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
+                        <button
+                            type="button"
+                            onClick={onFullWizard}
+                            className="mt-4 text-[10px] uppercase tracking-[0.3em] text-silver hover:text-warm-white font-body font-semibold transition-colors"
+                        >
+                            Oppure scegli giorno e barber →
+                        </button>
+                    </>
+                )}
+            </div>
+        </motion.div>
     );
 }
