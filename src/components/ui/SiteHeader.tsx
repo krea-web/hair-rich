@@ -12,6 +12,7 @@ const LINKS = [
     { href: "/servizi", key: "services" as const },
     { href: "/lavori", key: "gallery" as const },
     { href: "/team", key: "team" as const },
+    { href: "/prodotti", key: "products" as const },
     { href: "/contatti", key: "about" as const },
 ];
 

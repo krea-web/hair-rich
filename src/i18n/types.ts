@@ -25,6 +25,7 @@ export interface Dict {
         pricing: string;
         booking: string;
         team: string;
+        products: string;
         home: string;
         bookCta: string;
     };

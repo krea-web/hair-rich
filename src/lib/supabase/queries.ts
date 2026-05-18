@@ -7,6 +7,9 @@ import type {
     BookAppointmentResult,
     AvailableSlot,
     Appointment,
+    Product,
+    ProductCategory,
+    CreateOrderResult,
 } from "./types";
 
 const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL as string;
@@ -255,4 +258,45 @@ export async function fetchAppointmentPhotos(
         ...r,
         signed_url: signedByPath.get(r.storage_path) ?? "",
     }));
+}
+
+export async function fetchProducts(category?: ProductCategory): Promise<Product[]> {
+    const supabase = createClient();
+    let q = supabase
+        .from("products")
+        .select("*")
+        .eq("is_active", true)
+        .order("sort_order");
+    if (category) q = q.eq("category", category);
+    const { data, error } = await q;
+    if (error) throw error;
+    return (data ?? []) as Product[];
+}
+
+export interface CartLine {
+    product_id: string;
+    quantity: number;
+}
+
+export interface CreateOrderInput {
+    firstName: string;
+    lastName: string;
+    phone: string;
+    email: string;
+    notes?: string;
+    items: CartLine[];
+}
+
+export async function createOrder(input: CreateOrderInput): Promise<CreateOrderResult> {
+    const supabase = createClient();
+    const { data, error } = await supabase.rpc("fn_create_order", {
+        p_first_name: input.firstName,
+        p_last_name: input.lastName,
+        p_phone: input.phone,
+        p_email: input.email ?? "",
+        p_items: input.items,
+        p_notes: input.notes ?? null,
+    });
+    if (error) throw error;
+    return data as CreateOrderResult;
 }

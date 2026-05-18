@@ -1,0 +1,74 @@
+---
+import RootLayout from "../layouts/RootLayout.astro";
+import { SiteHeader } from "../components/ui/SiteHeader";
+import { MobileTopBar } from "../components/ui/MobileTopBar";
+import { MobileMenu } from "../components/ui/MobileMenu";
+import { BookingDrawer } from "../components/booking/BookingDrawer";
+import { StickySlotPeek } from "../components/landing/StickySlotPeek";
+import { PageHero } from "../components/landing/_shared/PageHero";
+import { ProductCatalog } from "../components/landing/ProductCatalog";
+import { FAQAccordion } from "../components/landing/_shared/FAQAccordion";
+import { Footer } from "../components/landing/Footer";
+import { ToastViewport } from "../components/ui/ToastViewport";
+import { MobileBottomBar } from "../components/ui/MobileBottomBar";
+import { CartFAB } from "../components/shop/CartFAB";
+import { CartDrawer } from "../components/shop/CartDrawer";
+
+const FAQ = [
+  {
+    q: "Posso pagare online?",
+    a: "No, per scelta. Si prenotano i prodotti online e si pagano in salone al ritiro — contanti, bancomat o carte. È il modo in cui ci piace gestire un piccolo retail: senza intermediari di pagamento e con un saluto in più al cliente.",
+  },
+  {
+    q: "Quanto tempo ho per ritirare?",
+    a: "Sette giorni dall'ordine. Riceverai un codice corto (es. \"7HZ3K9\") che mostri al barber e in due secondi prendiamo i prodotti dal magazzino. Se non puoi entro la settimana scrivici, lo teniamo in caldo.",
+  },
+  {
+    q: "Posso provare un prodotto prima di acquistarlo?",
+    a: "Sì, in salone abbiamo i tester aperti per pomate, cere e oli. Passa, ti facciamo provare la texture in mano. Non vendiamo niente al buio.",
+  },
+  {
+    q: "Cosa succede se un prodotto non mi convince?",
+    a: "Hai 14 giorni per cambiarlo o ottenere un buono di pari valore. Lo sostituiamo direttamente in salone — nessun reso da spedire.",
+  },
+];
+---
+
+<RootLayout
+  title="Prodotti · Hair Rich Olbia"
+  description="Pomate, cere, oli barba, strumenti e accessori selezionati da Hair Rich Olbia. Prenoti online, paghi e ritiri in salone."
+>
+  <SiteHeader client:load />
+  <MobileTopBar client:load />
+  <main>
+    <PageHero
+      client:load
+      eyebrow="Shop · Ritiro in salone"
+      titleA="Prodotti scelti"
+      titleB="con le nostre mani"
+      intro="Le pomate, gli oli e gli strumenti che usiamo davvero in salone — selezionati uno per uno. Prenoti online, paghi e ritiri quando passi."
+      bgImage="provvisorio/IMG_2493.jpeg"
+      metaLeft="Ritiro entro 7 giorni"
+      metaRight="06 / Prodotti"
+    />
+
+    <ProductCatalog client:visible />
+
+    <FAQAccordion
+      client:idle
+      eyebrow="Come funziona"
+      title="Pagamento e ritiro, semplice."
+      items={FAQ}
+    />
+
+    <Footer client:idle />
+  </main>
+
+  <ToastViewport client:load />
+  <MobileBottomBar client:idle />
+  <MobileMenu client:idle />
+  <BookingDrawer client:idle />
+  <StickySlotPeek client:idle />
+  <CartFAB client:idle />
+  <CartDrawer client:idle />
+</RootLayout>

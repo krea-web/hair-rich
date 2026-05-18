@@ -8,6 +8,7 @@ export const it: Dict = {
         pricing: "Listino",
         booking: "Prenota",
         team: "Team",
+        products: "Prodotti",
         home: "Home",
         bookCta: "Prenota Ora",
     },

@@ -86,3 +86,31 @@ export interface AvailableSlot {
     slot_time: string; // HH:MM:SS
     staff_id: string;
 }
+
+export type ProductCategory = "hair" | "beard" | "shave" | "tools" | "other";
+
+export interface Product {
+    id: string;
+    slug: string;
+    name: string;
+    brand: string | null;
+    category: ProductCategory;
+    description: string | null;
+    price_cents: number;
+    stock: number;
+    image_path: string | null;
+    badge: string | null;
+    is_active: boolean;
+    sort_order: number;
+    created_at: string;
+    updated_at: string;
+}
+
+export type OrderStatus = "pending" | "ready" | "picked_up" | "cancelled" | "expired";
+
+export interface CreateOrderResult {
+    order_id: string;
+    short_code: string;
+    total_cents: number;
+    pickup_deadline: string;
+}

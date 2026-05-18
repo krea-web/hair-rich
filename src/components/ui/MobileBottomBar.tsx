@@ -56,13 +56,13 @@ const TABS: Tab[] = [
         ),
     },
     {
-        href: "/team",
-        label: "Team",
+        href: "/prodotti",
+        label: "Shop",
         icon: (
             <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 6h18" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16 10a4 4 0 0 1-8 0" />
             </svg>
         ),
     },
@@ -70,9 +70,9 @@ const TABS: Tab[] = [
 
 /**
  * Primary mobile navigation bar — 5 tabs (Home / Servizi / Prenota center /
- * Lavori / Team). The center "Prenota" tab is visually elevated and opens
- * the BookingDrawer instead of navigating. Phone + Maps shortcuts now live
- * inside the MobileMenu hamburger (secondary actions).
+ * Lavori / Shop). The center "Prenota" tab is visually elevated and opens
+ * the BookingDrawer instead of navigating. Team lives in MobileMenu now
+ * (less frequented than the shop), Phone + Maps shortcuts also there.
  */
 export function MobileBottomBar() {
     const [path, setPath] = useState<string>("");
