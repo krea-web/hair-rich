@@ -213,7 +213,10 @@ export function Footer() {
             </div>
 
             {/* ── BLOCK 4 · BOTTOM BAR ────────────────────────────────────────── */}
-            <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 py-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            {/* pb extra on mobile so the legal links clear the fixed
+               MobileBottomBar (≈70-80px including safe-area). Desktop
+               keeps the normal padding since no bar there. */}
+            <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 pt-7 pb-[calc(env(safe-area-inset-bottom,0px)+96px)] md:pb-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <p className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
                     © {currentYear} Hair Rich Olbia · P.IVA 0000000000
                 </p>

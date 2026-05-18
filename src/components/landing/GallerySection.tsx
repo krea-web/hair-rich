@@ -110,11 +110,12 @@ export function GallerySection() {
                     ))}
                 </motion.div>
 
-                {/* ── Masonry-ish grid ──────────────────────────────────────── */}
-                <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[200px] md:auto-rows-[260px] gap-3 md:gap-4">
+                {/* Uniform 4:5 grid — same aspect as the original iPhone
+                   portrait shots, so the cells display the photos at their
+                   natural framing instead of cropping subjects. */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                     <AnimatePresence mode="popLayout">
                         {filtered.map((shot, i) => {
-                            const featured = i === 0;
                             return (
                                 <motion.button
                                     key={shot.path}
@@ -124,18 +125,16 @@ export function GallerySection() {
                                     exit={{ opacity: 0, scale: 0.95 }}
                                     transition={{ duration: 0.5, delay: i * 0.05 }}
                                     onClick={() => setLightbox(shot)}
-                                    className={`group relative overflow-hidden rounded-[var(--radius-md)] border border-line focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-warm ${
-                                        featured ? "col-span-2 row-span-2" : i % 5 === 0 ? "row-span-2" : ""
-                                    }`}
+                                    className="group relative overflow-hidden rounded-[var(--radius-md)] border border-line aspect-[4/5] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-warm"
                                     aria-label={`Apri ${shot.title}`}
                                 >
-                                    <div className="absolute inset-0 transition-transform duration-[var(--dur-cinema)] ease-[var(--ease-cinema)] group-hover:scale-[1.06]">
+                                    <div className="absolute inset-0 transition-transform duration-[var(--dur-cinema)] ease-[var(--ease-cinema)] group-hover:scale-[1.04]">
                                         <SmartImage
-                                            src={portfolioImageUrl(shot.path, { width: 800, quality: 78, format: "webp" })}
-                                            srcSet={portfolioImageSrcset(shot.path)}
-                                            sizes={featured ? "(min-width: 768px) 50vw, 100vw" : "(min-width: 768px) 25vw, 50vw"}
+                                            src={portfolioImageUrl(shot.path, { width: 800, quality: 80, format: "webp" })}
+                                            srcSet={portfolioImageSrcset(shot.path, 80)}
+                                            sizes="(min-width: 768px) 25vw, 50vw"
                                             alt={shot.alt}
-                                            className="h-full grayscale-[15%]"
+                                            className="h-full"
                                         />
                                     </div>
                                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80 group-hover:opacity-95 transition-opacity" />

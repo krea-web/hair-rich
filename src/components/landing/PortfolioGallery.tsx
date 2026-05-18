@@ -137,20 +137,16 @@ export function PortfolioGallery() {
                     </div>
                 </div>
 
-                {/* Asymmetric editorial grid */}
+                {/* Uniform 4:5 grid — matches the natural aspect of iPhone-shot
+                   portrait photos, so the subject is never cropped by tile
+                   geometry. 2 col mobile, 3 col md, 4 col lg. */}
                 <AnimatePresence mode="popLayout">
                     <motion.div
                         key={filter}
                         layout
-                        className="grid grid-cols-2 md:grid-cols-6 auto-rows-[140px] md:auto-rows-[180px] gap-3 md:gap-4"
+                        className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4"
                     >
                         {visible.map((shot, i) => {
-                            // Pattern: ogni 7 immagini, uno è tall (row-span-2), uno è wide (col-span-2)
-                            const mod = i % 7;
-                            const tall = mod === 1 || mod === 5;
-                            const wide = mod === 3;
-                            const featured = i === 0;
-
                             return (
                                 <motion.button
                                     key={shot.path}
@@ -160,28 +156,14 @@ export function PortfolioGallery() {
                                     exit={{ opacity: 0, scale: 0.95 }}
                                     transition={{ duration: 0.4, delay: (i % 12) * 0.04 }}
                                     onClick={() => setLightboxIdx(filtered.indexOf(shot))}
-                                    className={`group relative overflow-hidden rounded-[var(--radius-md)] border border-line focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-warm ${
-                                        featured
-                                            ? "col-span-2 md:col-span-3 row-span-2"
-                                            : tall
-                                                ? "row-span-2"
-                                                : wide
-                                                    ? "col-span-2"
-                                                    : ""
-                                    }`}
+                                    className="group relative overflow-hidden rounded-[var(--radius-md)] border border-line aspect-[4/5] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-warm"
                                     aria-label={`Apri ${shot.title}`}
                                 >
-                                    <div className="absolute inset-0 transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:scale-[1.08]">
+                                    <div className="absolute inset-0 transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:scale-[1.04]">
                                         <SmartImage
-                                            src={portfolioImageUrl(shot.path, { width: 800, quality: 78, format: "webp" })}
-                                            srcSet={portfolioImageSrcset(shot.path)}
-                                            sizes={
-                                                featured
-                                                    ? "(min-width: 768px) 50vw, 100vw"
-                                                    : wide
-                                                        ? "(min-width: 768px) 33vw, 100vw"
-                                                        : "(min-width: 768px) 16vw, 50vw"
-                                            }
+                                            src={portfolioImageUrl(shot.path, { width: 800, quality: 80, format: "webp" })}
+                                            srcSet={portfolioImageSrcset(shot.path, 80)}
+                                            sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
                                             alt={shot.alt}
                                             className="h-full"
                                         />
