@@ -115,6 +115,7 @@ export interface BookAppointmentInput {
     startAtISO: string;
     notes?: string;
     marketingConsent?: boolean;
+    isFirstVisit?: boolean;
 }
 
 export async function bookAppointment(input: BookAppointmentInput): Promise<BookAppointmentResult> {
@@ -129,6 +130,7 @@ export async function bookAppointment(input: BookAppointmentInput): Promise<Book
         p_start_at: input.startAtISO,
         p_notes: input.notes ?? null,
         p_marketing_consent: input.marketingConsent ?? false,
+        p_is_first_visit: input.isFirstVisit ?? false,
     });
     if (error) throw error;
     return data as BookAppointmentResult;

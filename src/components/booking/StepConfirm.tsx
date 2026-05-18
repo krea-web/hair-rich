@@ -30,6 +30,7 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
     const [submitted, setSubmitted] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
+    const [isFirstVisit, setIsFirstVisit] = useState(false);
 
     const service = services.find((s) => s.id === serviceId) ?? null;
     const staff = staffId ? staffList.find((s) => s.id === staffId) ?? null : null;
@@ -70,6 +71,7 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
                 staffId: staffId ?? null,
                 startAtISO,
                 notes: data.notes ?? "",
+                isFirstVisit,
             });
 
             setContact({
@@ -295,6 +297,45 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
                             placeholder="Allergie, richieste particolari, foto reference…"
                         />
                     </div>
+
+                    {/* First-visit toggle — the barber sees this flag in the admin
+                       agenda and dedicates extra consult time + post-cut photo */}
+                    <label
+                        className={`flex items-start gap-3 cursor-pointer select-none px-4 py-3.5 rounded-[var(--radius-sm)] border transition-colors ${
+                            isFirstVisit
+                                ? "bg-accent-warm/10 border-accent-warm"
+                                : "bg-black-2 border-line hover:border-silver-mid"
+                        }`}
+                    >
+                        <input
+                            type="checkbox"
+                            checked={isFirstVisit}
+                            onChange={(e) => setIsFirstVisit(e.target.checked)}
+                            className="sr-only"
+                        />
+                        <span
+                            aria-hidden="true"
+                            className={`flex-shrink-0 mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                                isFirstVisit
+                                    ? "bg-accent-warm border-accent-warm"
+                                    : "border-line"
+                            }`}
+                        >
+                            {isFirstVisit && (
+                                <svg viewBox="0 0 24 24" className="w-3 h-3 text-black" fill="none" stroke="currentColor" strokeWidth="3.5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                            )}
+                        </span>
+                        <span className="flex-1">
+                            <span className="block text-sm text-warm-white font-body font-semibold">
+                                È il mio primo appuntamento da voi
+                            </span>
+                            <span className="block text-xs text-warm-white-muted mt-0.5 leading-snug">
+                                Il barber dedicherà più tempo al consulto iniziale.
+                            </span>
+                        </span>
+                    </label>
 
                     {submitError && (
                         <div className="text-xs text-error bg-error/10 border border-error/30 rounded-[var(--radius-sm)] px-3 py-2">

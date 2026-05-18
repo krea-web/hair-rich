@@ -8,6 +8,7 @@ import {
     portfolioImageUrl,
 } from "@/lib/supabase/queries";
 import type { PortfolioImage } from "@/lib/supabase/types";
+import { usePersistedState } from "@/lib/usePersistedState";
 import { SmartImage } from "./_shared/SmartImage";
 
 interface Shot {
@@ -27,7 +28,7 @@ interface Shot {
  */
 export function PortfolioGallery() {
     const [shots, setShots] = useState<Shot[]>([]);
-    const [filter, setFilter] = useState<string>("Tutti");
+    const [filter, setFilter] = usePersistedState<string>("hr-portfolio-filter", "Tutti");
     const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
     const [visibleCount, setVisibleCount] = useState(12);
 

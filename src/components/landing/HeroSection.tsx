@@ -5,6 +5,7 @@ import { Wordmark } from "./_shared/Wordmark";
 import { AvailabilityPulse } from "./_shared/AvailabilityPulse";
 import { BookingCtaButton } from "@/components/ui/BookingCtaButton";
 import { NextSlotWidget } from "./NextSlotWidget";
+import { OpenNowBadge } from "./_shared/OpenNowBadge";
 import { useT } from "@/i18n/useLang";
 
 const HERO_PHOTO = "/hero-seq/frame_001.webp";
@@ -96,8 +97,9 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
             </motion.div>
 
             {/* Prossimo slot disponibile (live da Supabase) */}
-            <div className="mt-5 md:mt-6">
+            <div className="mt-5 md:mt-6 flex flex-wrap items-center gap-3">
                 <NextSlotWidget />
+                <OpenNowBadge />
             </div>
 
             {/* Trust badges (rating + certified + premium) — hidden mobile */}

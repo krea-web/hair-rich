@@ -7,6 +7,7 @@ import { SmartImage } from "./_shared/SmartImage";
 import { useT } from "@/i18n/useLang";
 import { fetchPortfolio, portfolioImageUrl, portfolioImageSrcset } from "@/lib/supabase/queries";
 import type { PortfolioImage } from "@/lib/supabase/types";
+import { usePersistedState } from "@/lib/usePersistedState";
 
 interface Shot {
     path: string;
@@ -19,7 +20,7 @@ export function GallerySection() {
     const { t } = useT();
     const ALL_LABEL = t.gallery.filters.all;
     const [shots, setShots] = useState<Shot[]>([]);
-    const [filter, setFilter] = useState<string>(ALL_LABEL);
+    const [filter, setFilter] = usePersistedState<string>("hr-home-gallery-filter", ALL_LABEL);
     const [lightbox, setLightbox] = useState<Shot | null>(null);
 
     useEffect(() => {

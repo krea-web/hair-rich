@@ -1,6 +1,8 @@
 ---
 import RootLayout from "../../layouts/RootLayout.astro";
 import { ProfiloApp } from "../../components/profilo/ProfiloApp";
+import { BookingDrawer } from "../../components/booking/BookingDrawer";
+import { ToastViewport } from "../../components/ui/ToastViewport";
 
 export function getStaticPaths() {
   return [
@@ -14,4 +16,6 @@ export function getStaticPaths() {
 
 <RootLayout title="Profilo · Hair Rich Olbia" noindex={true}>
   <ProfiloApp client:only="react" />
+  <BookingDrawer client:idle />
+  <ToastViewport client:load />
 </RootLayout>

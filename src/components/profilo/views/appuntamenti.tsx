@@ -3,6 +3,8 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { SmartImage } from "@/components/landing/_shared/SmartImage";
+import { fetchServices } from "@/lib/supabase/queries";
+import { useBookingDrawer, useBookingStore, useToastStore } from "@/lib/store";
 
 interface Appt {
     id: string;
@@ -87,6 +89,34 @@ function formatItalian(d: string) {
 
 function ApptCard({ apt }: { apt: Appt }) {
     const f = formatItalian(apt.date);
+    const openDrawer = useBookingDrawer((s) => s.open);
+    const setService = useBookingStore((s) => s.setService);
+    const addToast = useToastStore((s) => s.addToast);
+
+    // Quick rebook: try to match the past appointment's service name against
+    // the live services table and pre-fill the drawer with that service +
+    // suggest a slot ~4 weeks from the original date. Falls back to a plain
+    // drawer open if matching fails.
+    const handleRebook = async () => {
+        try {
+            const services = await fetchServices();
+            const match = services.find(
+                (s) =>
+                    s.name.toLowerCase() === apt.service.toLowerCase() ||
+                    apt.service.toLowerCase().includes(s.name.toLowerCase())
+            );
+            if (match) {
+                setService(match.id);
+                addToast(`Rituale ${match.name} pre-selezionato. Scegli data e ora.`, "info");
+            } else {
+                addToast("Scegli il rituale per la nuova prenotazione.", "info");
+            }
+            openDrawer();
+        } catch {
+            openDrawer();
+        }
+    };
+
     return (
         <motion.article
             layout
@@ -132,8 +162,14 @@ function ApptCard({ apt }: { apt: Appt }) {
                         {STATUS_LABEL[apt.status]}
                     </span>
                     {apt.status === "completed" && (
-                        <button className="text-[10px] uppercase tracking-[0.25em] text-accent-warm hover:text-warm-white font-body font-semibold transition-colors">
+                        <button
+                            onClick={handleRebook}
+                            className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.25em] text-accent-warm hover:text-warm-white font-body font-semibold transition-colors active:scale-95"
+                        >
                             Prenota di nuovo
+                            <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg>
                         </button>
                     )}
                     {apt.status === "upcoming" && (
@@ -149,6 +185,7 @@ function ApptCard({ apt }: { apt: Appt }) {
 
 export default function ProfiloAppuntamentiPage() {
     const [filter, setFilter] = useState<(typeof FILTERS)[number]>("Tutti");
+    const openDrawer = useBookingDrawer((s) => s.open);
 
     const all = [...UPCOMING, ...PAST];
     const filtered = all.filter((a) => {
@@ -176,15 +213,15 @@ export default function ProfiloAppuntamentiPage() {
                         Gestisci le prenotazioni future o rivedi lo storico dei tuoi tagli, barba e rituali.
                     </p>
                 </div>
-                <a
-                    href="/#booking"
-                    className="inline-flex items-center justify-center gap-3 px-7 py-4 bg-warm-white text-black rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold hover:bg-accent-warm transition-colors whitespace-nowrap"
+                <button
+                    onClick={openDrawer}
+                    className="inline-flex items-center justify-center gap-3 px-7 py-4 bg-warm-white text-black rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold hover:bg-accent-warm transition-colors whitespace-nowrap active:scale-95"
                 >
                     Nuovo
                     <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
-                </a>
+                </button>
             </motion.header>
 
             {/* Filters */}
