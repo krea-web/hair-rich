@@ -145,3 +145,50 @@ export async function fetchMyAppointments(): Promise<Appointment[]> {
     if (error) throw error;
     return (data ?? []) as Appointment[];
 }
+
+export interface AppointmentPhoto {
+    id: string;
+    appointment_id: string;
+    storage_path: string;
+    caption: string | null;
+    sort_order: number;
+    created_at: string;
+    signed_url: string;
+}
+
+/**
+ * Fetch all photos linked to the given appointments + signed URLs (the
+ * `appointment-photos` bucket is private, so direct public URLs would 403).
+ * Signed URLs valid for 1h.
+ */
+export async function fetchAppointmentPhotos(
+    appointmentIds: string[]
+): Promise<AppointmentPhoto[]> {
+    if (appointmentIds.length === 0) return [];
+    const supabase = createClient();
+    const { data, error } = await supabase
+        .from("appointment_photos")
+        .select("*")
+        .in("appointment_id", appointmentIds)
+        .order("sort_order");
+    if (error) throw error;
+    const rows = (data ?? []) as Omit<AppointmentPhoto, "signed_url">[];
+
+    // Batch-sign all storage paths in one round-trip
+    const paths = rows.map((r) => r.storage_path);
+    if (paths.length === 0) return [];
+    const { data: signedData, error: signErr } = await supabase
+        .storage
+        .from("appointment-photos")
+        .createSignedUrls(paths, 60 * 60); // 1h
+    if (signErr) throw signErr;
+    const signedByPath = new Map<string, string>();
+    (signedData ?? []).forEach((s) => {
+        if (s.path && s.signedUrl) signedByPath.set(s.path, s.signedUrl);
+    });
+
+    return rows.map((r) => ({
+        ...r,
+        signed_url: signedByPath.get(r.storage_path) ?? "",
+    }));
+}

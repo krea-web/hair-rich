@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { formatPrice } from "@/lib/format";
 import { SmartImage } from "@/components/landing/_shared/SmartImage";
 import { handleClientLink } from "@/lib/clientRouter";
+import { BirthdayBanner } from "../_shared/BirthdayBanner";
+import { LoyaltyProgress } from "../_shared/LoyaltyProgress";
 
 const NEXT_APPT = {
     date: { day: "24", weekday: "Gio", month: "Mag" },
@@ -50,6 +52,12 @@ export default function ProfiloDashboardPage() {
                     </svg>
                 </a>
             </motion.div>
+
+            {/* ── Birthday banner (shown only in birthday month) ───────── */}
+            <div className="mt-8 md:mt-10 space-y-4 md:space-y-5">
+                <BirthdayBanner />
+                <LoyaltyProgress />
+            </div>
 
             {/* ── KPI strip ──────────────────────────────────────────────── */}
             <motion.div

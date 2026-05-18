@@ -5,6 +5,7 @@ import { useState } from "react";
 import { SmartImage } from "@/components/landing/_shared/SmartImage";
 import { fetchServices } from "@/lib/supabase/queries";
 import { useBookingDrawer, useBookingStore, useToastStore } from "@/lib/store";
+import { AppointmentPhotos } from "../_shared/AppointmentPhotos";
 
 interface Appt {
     id: string;
@@ -179,6 +180,15 @@ function ApptCard({ apt }: { apt: Appt }) {
                     )}
                 </div>
             </div>
+
+            {/* Photo memory: shown only on completed appointments and only if
+                the barber has uploaded any photos via admin. Self-hides when
+                no photos exist so older legacy appointments stay clean. */}
+            {apt.status === "completed" && (
+                <div className="px-5 md:px-6 pb-5">
+                    <AppointmentPhotos appointmentId={apt.id} />
+                </div>
+            )}
         </motion.article>
     );
 }
