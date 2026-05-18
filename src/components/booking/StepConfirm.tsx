@@ -10,6 +10,8 @@ import { formatPrice } from "@/lib/format";
 import { downloadICS, googleCalendarUrl, outlookCalendarUrl } from "@/lib/calendar";
 import { bookAppointment, uploadReferenceImage } from "@/lib/supabase/queries";
 import { SITE } from "@/lib/constants";
+import { ConfettiBurst } from "./ConfettiBurst";
+import { renderBookingShareImage, shareBookingImage } from "@/lib/bookingShareImage";
 
 export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: () => void }) {
     const {
@@ -145,32 +147,71 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
     });
 
     if (submitted) {
+        const handleShare = async () => {
+            if (!startDate || !service) return;
+            const dateLabel = new Intl.DateTimeFormat("it-IT", {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+            }).format(startDate);
+            const timeLabel = new Intl.DateTimeFormat("it-IT", {
+                hour: "2-digit",
+                minute: "2-digit",
+            }).format(startDate);
+            const file = await renderBookingShareImage({
+                serviceName: service.name,
+                dateLabel,
+                timeLabel,
+                staffName: staff?.name ?? null,
+            });
+            if (!file) {
+                addToast("Generazione immagine fallita", "error");
+                return;
+            }
+            const shared = await shareBookingImage(
+                file,
+                `Prenotato da Hair Rich Olbia · ${dateLabel} alle ${timeLabel}`
+            );
+            if (!shared) {
+                addToast("Immagine scaricata: ora condividila come storia", "info");
+            }
+        };
+
         return (
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="text-center space-y-8 py-6"
+                className="relative text-center space-y-8 py-6 overflow-visible"
             >
+                {/* Confetti — fires once on mount, ~1.5s. Absolutely positioned
+                   so it overlays the check ring without affecting layout. */}
+                <ConfettiBurst />
+
+                {/* Big rotating check */}
                 <motion.div
-                    initial={{ scale: 0.6, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.6, ease: [0.34, 1.56, 0.64, 1] }}
-                    className="mx-auto w-20 h-20 rounded-full bg-success/15 border border-success/40 flex items-center justify-center"
+                    initial={{ scale: 0, opacity: 0, rotate: -180 }}
+                    animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                    transition={{ duration: 0.8, ease: [0.34, 1.56, 0.64, 1], delay: 0.1 }}
+                    className="relative mx-auto w-24 h-24 rounded-full bg-gradient-to-br from-accent-warm to-accent-warm-dark border-2 border-accent-warm flex items-center justify-center shadow-[0_8px_40px_-8px_rgba(212,165,116,0.6)]"
                 >
-                    <svg viewBox="0 0 24 24" className="w-10 h-10 text-success" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <svg viewBox="0 0 24 24" className="w-12 h-12 text-black" fill="none" stroke="currentColor" strokeWidth="3">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                 </motion.div>
-                <div>
-                    <span className="text-display-alt text-2xl text-accent-warm">Confermato</span>
-                    <h3 className="text-display text-3xl md:text-4xl text-warm-white tracking-tight mt-1">
+                <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5, duration: 0.6 }}
+                >
+                    <span className="text-display-alt text-2xl text-accent-warm">Ci vediamo presto</span>
+                    <h3 className="text-display text-3xl md:text-5xl text-warm-white tracking-tight mt-1 leading-[1.05]">
                         Prenotazione confermata
                     </h3>
                     <p className="mt-3 text-warm-white-muted text-sm md:text-base leading-relaxed max-w-md mx-auto">
-                        Ti aspettiamo in salone. Riceverai un promemoria 24h prima via SMS e WhatsApp.
+                        Ti aspettiamo in salone. Riceverai un promemoria 24h prima via email.
                     </p>
-                </div>
+                </motion.div>
 
                 {startDate && (
                     <div className="inline-flex flex-col items-center gap-1 px-6 py-4 bg-carbon border border-line rounded-[var(--radius-md)]">
@@ -191,6 +232,25 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
                         )}
                     </div>
                 )}
+
+                {/* Share image — generates a 1080x1920 PNG with the booking
+                   details and opens the native share sheet (or falls back to
+                   download). Lets users post the booking to their IG story. */}
+                <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7, duration: 0.6 }}
+                >
+                    <button
+                        onClick={handleShare}
+                        className="inline-flex items-center gap-3 px-6 py-3 border-2 border-accent-warm/60 text-accent-warm bg-accent-warm/5 rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold hover:bg-accent-warm hover:text-black transition-colors active:scale-95"
+                    >
+                        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor" aria-hidden="true">
+                            <path d="M7.5 2C4.46 2 2 4.46 2 7.5v9C2 19.54 4.46 22 7.5 22h9c3.04 0 5.5-2.46 5.5-5.5v-9C22 4.46 19.54 2 16.5 2h-9zm9 18h-9c-1.93 0-3.5-1.57-3.5-3.5v-9C4 5.57 5.57 4 7.5 4h9C18.43 4 20 5.57 20 7.5v9c0 1.93-1.57 3.5-3.5 3.5zM12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 8c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3zm5.5-8.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                        </svg>
+                        Condividi su Instagram
+                    </button>
+                </motion.div>
 
                 <div>
                     <h4 className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold mb-3">

@@ -7,6 +7,7 @@ import { BookingDrawer } from "../components/booking/BookingDrawer";
 import { StickySlotPeek } from "../components/landing/StickySlotPeek";
 import { PageHero } from "../components/landing/_shared/PageHero";
 import { ServiceCatalog } from "../components/landing/ServiceCatalog";
+import { ServiceStories } from "../components/landing/ServiceStories";
 import { StyleQuiz } from "../components/landing/StyleQuiz";
 import { ProcessSteps } from "../components/landing/_shared/ProcessSteps";
 import { FAQAccordion } from "../components/landing/_shared/FAQAccordion";
@@ -71,6 +72,8 @@ const FAQ = [
     />
 
     <StyleQuiz client:load />
+
+    <ServiceStories client:visible />
 
     <ProcessSteps
       client:idle

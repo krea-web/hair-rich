@@ -160,7 +160,10 @@ export function PortfolioGallery() {
                                     className="group relative overflow-hidden rounded-[var(--radius-md)] border border-line aspect-[4/5] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-warm"
                                     aria-label={`Apri ${shot.title}`}
                                 >
-                                    <div className="absolute inset-0 transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:scale-[1.04]">
+                                    <motion.div
+                                        layoutId={`pgrid-${shot.path}`}
+                                        className="absolute inset-0 transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:scale-[1.04]"
+                                    >
                                         <SmartImage
                                             src={portfolioImageUrl(shot.path, { width: 800, quality: 80, format: "webp" })}
                                             srcSet={portfolioImageSrcset(shot.path, 80)}
@@ -168,7 +171,7 @@ export function PortfolioGallery() {
                                             alt={shot.alt}
                                             className="h-full"
                                         />
-                                    </div>
+                                    </motion.div>
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent" />
 
                                     <div className="absolute top-3 left-3">
@@ -274,7 +277,10 @@ export function PortfolioGallery() {
                                 }
                             }}
                         >
-                            <div className="relative w-full max-h-[80vh] aspect-[4/5] mx-auto">
+                            <motion.div
+                                layoutId={`pgrid-${filtered[lightboxIdx].path}`}
+                                className="relative w-full max-h-[80vh] aspect-[4/5] mx-auto"
+                            >
                                 <SmartImage
                                     src={portfolioImageUrl(filtered[lightboxIdx].path, { width: 1600, quality: 82, format: "webp" })}
                                     srcSet={portfolioImageSrcset(filtered[lightboxIdx].path, 82)}
@@ -283,7 +289,7 @@ export function PortfolioGallery() {
                                     eager
                                     className="h-full"
                                 />
-                            </div>
+                            </motion.div>
                             <div className="text-center mt-4">
                                 <span className="text-[10px] uppercase tracking-[0.3em] text-accent-warm font-body font-semibold">
                                     {filtered[lightboxIdx].tag} · {lightboxIdx + 1} / {filtered.length}
