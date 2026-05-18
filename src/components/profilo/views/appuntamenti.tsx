@@ -1,82 +1,62 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
-import { SmartImage } from "@/components/landing/_shared/SmartImage";
-import { fetchServices } from "@/lib/supabase/queries";
+import { useEffect, useState } from "react";
+import { fetchMyAppointmentsWithDetails, fetchServices, type AppointmentWithDetails } from "@/lib/supabase/queries";
 import { useBookingDrawer, useBookingStore, useToastStore } from "@/lib/store";
+import { formatPrice } from "@/lib/format";
 import { AppointmentPhotos } from "../_shared/AppointmentPhotos";
 
-interface Appt {
+type DisplayStatus = "upcoming" | "completed" | "cancelled";
+
+interface DisplayAppt {
     id: string;
     date: string;
-    service: string;
-    staff: string;
-    staffImg: string;
-    status: "upcoming" | "completed" | "cancelled";
-    price: number;
+    serviceName: string;
+    serviceId: string | null;
+    staffName: string;
+    staffId: string | null;
+    staffInitial: string;
+    status: DisplayStatus;
+    priceCents: number;
     duration: number;
 }
 
-const UPCOMING: Appt[] = [
-    {
-        id: "u1",
-        date: "2026-05-24T15:30:00Z",
-        service: "Taglio + Barba",
-        staff: "Marco",
-        staffImg: "https://images.unsplash.com/photo-1599351431613-18ef1fdd27e3?q=80&w=200&auto=format&fit=crop",
-        status: "upcoming",
-        price: 3000,
-        duration: 60,
-    },
-];
-
-const PAST: Appt[] = [
-    {
-        id: "p1",
-        date: "2024-09-12T10:00:00Z",
-        service: "Taglio + Barba",
-        staff: "Marco",
-        staffImg: "https://images.unsplash.com/photo-1599351431613-18ef1fdd27e3?q=80&w=200&auto=format&fit=crop",
-        status: "completed",
-        price: 3000,
-        duration: 60,
-    },
-    {
-        id: "p2",
-        date: "2024-08-05T15:30:00Z",
-        service: "Razor Fade",
-        staff: "Luca",
-        staffImg: "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=200&auto=format&fit=crop",
-        status: "completed",
-        price: 2500,
-        duration: 45,
-    },
-    {
-        id: "p3",
-        date: "2024-07-20T09:00:00Z",
-        service: "Barba",
-        staff: "Marco",
-        staffImg: "https://images.unsplash.com/photo-1599351431613-18ef1fdd27e3?q=80&w=200&auto=format&fit=crop",
-        status: "cancelled",
-        price: 1500,
-        duration: 30,
-    },
-];
-
 const FILTERS = ["Tutti", "Confermati", "Completati", "Annullati"] as const;
 
-const STATUS_LABEL: Record<Appt["status"], string> = {
+const STATUS_LABEL: Record<DisplayStatus, string> = {
     upcoming: "Confermato",
     completed: "Completato",
     cancelled: "Annullato",
 };
 
-const STATUS_CLASS: Record<Appt["status"], string> = {
+const STATUS_CLASS: Record<DisplayStatus, string> = {
     upcoming: "bg-success/15 text-success border-success/30",
     completed: "bg-warm-white-faint text-silver border-line",
     cancelled: "bg-error/10 text-error border-error/30",
 };
+
+function mapStatus(s: string): DisplayStatus {
+    if (s === "completed") return "completed";
+    if (s === "cancelled" || s === "no_show") return "cancelled";
+    return "upcoming"; // booked / confirmed
+}
+
+function toDisplay(row: AppointmentWithDetails): DisplayAppt {
+    const firstService = row.services[0];
+    return {
+        id: row.id,
+        date: row.start_at,
+        serviceName: firstService?.name ?? "Rituale",
+        serviceId: firstService?.id ?? null,
+        staffName: row.staff?.name ?? "Prima disponibilità",
+        staffId: row.staff?.id ?? null,
+        staffInitial: (row.staff?.name ?? "?").charAt(0),
+        status: mapStatus(row.status),
+        priceCents: row.total_cents,
+        duration: firstService?.duration_min ?? 30,
+    };
+}
 
 function formatItalian(d: string) {
     const date = new Date(d);
@@ -88,34 +68,31 @@ function formatItalian(d: string) {
     };
 }
 
-function ApptCard({ apt }: { apt: Appt }) {
+function ApptCard({ apt }: { apt: DisplayAppt }) {
     const f = formatItalian(apt.date);
     const openDrawer = useBookingDrawer((s) => s.open);
     const setService = useBookingStore((s) => s.setService);
+    const setStaff = useBookingStore((s) => s.setStaff);
     const addToast = useToastStore((s) => s.addToast);
 
-    // Quick rebook: try to match the past appointment's service name against
-    // the live services table and pre-fill the drawer with that service +
-    // suggest a slot ~4 weeks from the original date. Falls back to a plain
-    // drawer open if matching fails.
     const handleRebook = async () => {
         try {
-            const services = await fetchServices();
-            const match = services.find(
-                (s) =>
-                    s.name.toLowerCase() === apt.service.toLowerCase() ||
-                    apt.service.toLowerCase().includes(s.name.toLowerCase())
-            );
-            if (match) {
-                setService(match.id);
-                addToast(`Rituale ${match.name} pre-selezionato. Scegli data e ora.`, "info");
+            if (apt.serviceId) {
+                setService(apt.serviceId);
             } else {
-                addToast("Scegli il rituale per la nuova prenotazione.", "info");
+                // Fall back to fuzzy match if the service id wasn't joined
+                const services = await fetchServices();
+                const match = services.find((s) =>
+                    s.name.toLowerCase() === apt.serviceName.toLowerCase()
+                );
+                if (match) setService(match.id);
             }
-            openDrawer();
+            if (apt.staffId) setStaff(apt.staffId);
+            addToast(`${apt.serviceName} pre-selezionato`, "info");
         } catch {
-            openDrawer();
+            /* still open drawer */
         }
+        openDrawer();
     };
 
     return (
@@ -127,7 +104,6 @@ function ApptCard({ apt }: { apt: Appt }) {
             className="group relative bg-carbon border border-line hover:border-silver-dark transition-colors rounded-[var(--radius-lg)] overflow-hidden"
         >
             <div className="grid grid-cols-[auto_1fr_auto] gap-4 md:gap-6 items-center p-5 md:p-6">
-                {/* Date */}
                 <div className="flex flex-col items-center justify-center w-16 md:w-20 h-16 md:h-20 bg-black-2 border border-line rounded-[var(--radius-md)] shrink-0">
                     <span className="text-[9px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold">
                         {f.weekday}
@@ -140,22 +116,27 @@ function ApptCard({ apt }: { apt: Appt }) {
                     </span>
                 </div>
 
-                {/* Service info */}
                 <div className="min-w-0">
                     <h3 className="text-display text-lg md:text-xl text-warm-white tracking-tight truncate">
-                        {apt.service}
+                        {apt.serviceName}
                     </h3>
                     <div className="mt-2 flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full overflow-hidden border border-line">
-                            <SmartImage src={apt.staffImg} alt={apt.staff} className="h-full" />
+                        <div className="w-6 h-6 rounded-full overflow-hidden border border-line bg-gradient-to-br from-accent-warm/40 to-warning/40 flex items-center justify-center">
+                            <span className="text-[10px] font-display text-warm-white">
+                                {apt.staffInitial}
+                            </span>
                         </div>
                         <span className="text-silver-dark text-xs uppercase tracking-[0.2em] font-body font-semibold truncate">
-                            {apt.staff} · {f.time} · {apt.duration}'
+                            {apt.staffName} · {f.time} · {apt.duration}'
                         </span>
                     </div>
+                    {apt.priceCents > 0 && (
+                        <span className="block mt-1 text-[10px] text-silver-dark font-body">
+                            {formatPrice(apt.priceCents)}
+                        </span>
+                    )}
                 </div>
 
-                {/* Status + action */}
                 <div className="flex flex-col items-end gap-2">
                     <span
                         className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[9px] md:text-[10px] uppercase tracking-[0.25em] font-body font-semibold ${STATUS_CLASS[apt.status]}`}
@@ -173,17 +154,10 @@ function ApptCard({ apt }: { apt: Appt }) {
                             </svg>
                         </button>
                     )}
-                    {apt.status === "upcoming" && (
-                        <button className="text-[10px] uppercase tracking-[0.25em] text-silver hover:text-warm-white font-body font-semibold transition-colors">
-                            Modifica
-                        </button>
-                    )}
                 </div>
             </div>
 
-            {/* Photo memory: shown only on completed appointments and only if
-                the barber has uploaded any photos via admin. Self-hides when
-                no photos exist so older legacy appointments stay clean. */}
+            {/* Photo memory: per-appointment strip, self-hides when empty */}
             {apt.status === "completed" && (
                 <div className="px-5 md:px-6 pb-5">
                     <AppointmentPhotos appointmentId={apt.id} />
@@ -195,10 +169,38 @@ function ApptCard({ apt }: { apt: Appt }) {
 
 export default function ProfiloAppuntamentiPage() {
     const [filter, setFilter] = useState<(typeof FILTERS)[number]>("Tutti");
+    const [items, setItems] = useState<DisplayAppt[]>([]);
+    const [loading, setLoading] = useState(true);
     const openDrawer = useBookingDrawer((s) => s.open);
 
-    const all = [...UPCOMING, ...PAST];
-    const filtered = all.filter((a) => {
+    useEffect(() => {
+        let alive = true;
+        fetchMyAppointmentsWithDetails()
+            .then((rows) => {
+                if (!alive) return;
+                setItems(rows.map(toDisplay));
+                setLoading(false);
+            })
+            .catch(() => {
+                if (alive) setLoading(false);
+            });
+        return () => {
+            alive = false;
+        };
+    }, []);
+
+    const now = Date.now();
+    const upcoming = items.filter(
+        (a) => a.status === "upcoming" && new Date(a.date).getTime() > now
+    );
+    const history = items.filter(
+        (a) =>
+            a.status === "completed" ||
+            a.status === "cancelled" ||
+            (a.status === "upcoming" && new Date(a.date).getTime() <= now)
+    );
+
+    const filtered = items.filter((a) => {
         if (filter === "Tutti") return true;
         if (filter === "Confermati") return a.status === "upcoming";
         if (filter === "Completati") return a.status === "completed";
@@ -234,7 +236,6 @@ export default function ProfiloAppuntamentiPage() {
                 </button>
             </motion.header>
 
-            {/* Filters */}
             <motion.div
                 className="mt-10 flex flex-wrap gap-2"
                 initial={{ opacity: 0 }}
@@ -260,39 +261,69 @@ export default function ProfiloAppuntamentiPage() {
                 </span>
             </motion.div>
 
-            {/* Lists */}
-            {filter === "Tutti" || filter === "Confermati" ? (
-                <section className="mt-10">
-                    <h2 className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold mb-4 ml-1">
-                        Futuri
-                    </h2>
-                    <div className="space-y-3">
-                        {UPCOMING.length === 0 || filter === "Confermati" && UPCOMING.length === 0 ? (
-                            <p className="text-warm-white-muted text-sm p-6 bg-carbon border border-line rounded-[var(--radius-md)]">
-                                Nessun appuntamento futuro. Prenota il tuo prossimo rituale.
-                            </p>
-                        ) : (
-                            UPCOMING.map((a) => <ApptCard key={a.id} apt={a} />)
-                        )}
-                    </div>
-                </section>
-            ) : null}
+            {loading && (
+                <div className="mt-10 space-y-3">
+                    {[0, 1, 2].map((i) => (
+                        <div key={i} className="h-28 bg-carbon border border-line rounded-[var(--radius-lg)] animate-pulse" />
+                    ))}
+                </div>
+            )}
 
-            {filter !== "Confermati" && (
-                <section className="mt-12">
-                    <h2 className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold mb-4 ml-1">
-                        Storico
-                    </h2>
-                    <div className="space-y-3">
-                        {filtered.filter((a) => a.status !== "upcoming").length === 0 ? (
-                            <p className="text-warm-white-muted text-sm p-6 bg-carbon border border-line rounded-[var(--radius-md)]">
-                                Nessun appuntamento in questa categoria.
-                            </p>
-                        ) : (
-                            filtered.filter((a) => a.status !== "upcoming").map((a) => <ApptCard key={a.id} apt={a} />)
-                        )}
-                    </div>
-                </section>
+            {!loading && items.length === 0 && (
+                <div className="mt-10 p-10 bg-carbon border border-line border-dashed rounded-[var(--radius-md)] text-center">
+                    <p className="text-warm-white text-lg font-body font-semibold">
+                        Ancora nessuna prenotazione.
+                    </p>
+                    <p className="mt-2 text-warm-white-muted text-sm max-w-md mx-auto">
+                        Quando avrai il primo appuntamento, lo trovi qui. Riceverai un promemoria 24h prima e potrai rivedere foto e dettagli post-servizio.
+                    </p>
+                    <button
+                        onClick={openDrawer}
+                        className="mt-6 inline-flex items-center justify-center gap-3 px-7 py-3.5 bg-accent-warm text-black rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform"
+                    >
+                        Prenota il primo
+                        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                        </svg>
+                    </button>
+                </div>
+            )}
+
+            {!loading && items.length > 0 && (
+                <>
+                    {(filter === "Tutti" || filter === "Confermati") && upcoming.length > 0 && (
+                        <section className="mt-10">
+                            <h2 className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold mb-4 ml-1">
+                                Futuri
+                            </h2>
+                            <div className="space-y-3">
+                                {upcoming.map((a) => (
+                                    <ApptCard key={a.id} apt={a} />
+                                ))}
+                            </div>
+                        </section>
+                    )}
+
+                    {filter !== "Confermati" && history.length > 0 && (
+                        <section className="mt-12">
+                            <h2 className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold mb-4 ml-1">
+                                Storico
+                            </h2>
+                            <div className="space-y-3">
+                                {history
+                                    .filter((a) => {
+                                        if (filter === "Tutti") return true;
+                                        if (filter === "Completati") return a.status === "completed";
+                                        if (filter === "Annullati") return a.status === "cancelled";
+                                        return true;
+                                    })
+                                    .map((a) => (
+                                        <ApptCard key={a.id} apt={a} />
+                                    ))}
+                            </div>
+                        </section>
+                    )}
+                </>
             )}
         </div>
     );

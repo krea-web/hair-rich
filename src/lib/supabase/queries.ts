@@ -181,6 +181,35 @@ export async function fetchMyAppointments(): Promise<Appointment[]> {
     return (data ?? []) as Appointment[];
 }
 
+export interface AppointmentWithDetails extends Appointment {
+    staff: { id: string; name: string; role: string; avatar_url: string | null } | null;
+    services: { id: string; name: string; slug: string; duration_min: number; price_cents: number }[];
+}
+
+/**
+ * Same as fetchMyAppointments but joins the staff row and the
+ * appointment_services → services list. RLS on appointments already
+ * scopes the results to the current customer.
+ */
+export async function fetchMyAppointmentsWithDetails(): Promise<AppointmentWithDetails[]> {
+    const supabase = createClient();
+    const { data, error } = await supabase
+        .from("appointments")
+        .select(
+            `*,
+            staff:staff_id ( id, name, role, avatar_url ),
+            appointment_services ( service:service_id ( id, name, slug, duration_min, price_cents ) )`
+        )
+        .order("start_at", { ascending: false });
+    if (error) throw error;
+    return (data ?? []).map((row: any) => ({
+        ...row,
+        services: (row.appointment_services ?? [])
+            .map((as: any) => as.service)
+            .filter(Boolean),
+    })) as AppointmentWithDetails[];
+}
+
 export interface AppointmentPhoto {
     id: string;
     appointment_id: string;

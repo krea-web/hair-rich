@@ -9,6 +9,7 @@ const MAIN_MENU = [
     { href: "/admin/agenda", label: "Agenda", icon: "svg-calendar" },
     { href: "/admin/clienti", label: "Clienti", icon: "svg-users" },
     { href: "/admin/ordini", label: "Ordini & Cassa", icon: "svg-wallet" },
+    { href: "/admin/foto-risultati", label: "Foto risultato", icon: "svg-camera" },
 ];
 
 const SETTINGS_MENU = [
@@ -58,6 +59,13 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                         <polyline points="21 8 21 21 3 21 3 8" />
                         <rect x="1" y="3" width="22" height="5" />
                         <line x1="10" y1="12" x2="14" y2="12" />
+                    </svg>
+                );
+            case "svg-camera":
+                return (
+                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" />
+                        <circle cx="12" cy="13" r="4" />
                     </svg>
                 );
         }

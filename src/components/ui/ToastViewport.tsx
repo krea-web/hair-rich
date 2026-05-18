@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import type { ReactElement } from "react";
 import { useToastStore } from "@/lib/store";
 
 const COLORS: Record<string, string> = {
@@ -9,7 +10,7 @@ const COLORS: Record<string, string> = {
     info: "border-line bg-black-2",
 };
 
-const ICONS: Record<string, JSX.Element> = {
+const ICONS: Record<string, ReactElement> = {
     success: (
         <svg viewBox="0 0 24 24" className="w-4 h-4 text-success" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />

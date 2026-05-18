@@ -16,6 +16,7 @@ import AdminMarketingPage from "./views/marketing";
 import AdminGamificationPage from "./views/gamification";
 import AdminOnboardingPage from "./views/onboarding";
 import AdminCmsPage from "./views/cms";
+import AdminFotoRisultatiPage from "./views/foto-risultati";
 
 function pickView(pathname: string) {
     const p = pathname.replace(/\/$/, "");
@@ -44,6 +45,8 @@ function pickView(pathname: string) {
             return <AdminOnboardingPage />;
         case "/admin/cms":
             return <AdminCmsPage />;
+        case "/admin/foto-risultati":
+            return <AdminFotoRisultatiPage />;
         default:
             return (
                 <div className="p-12 text-center text-silver">
