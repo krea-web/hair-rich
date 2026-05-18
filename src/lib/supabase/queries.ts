@@ -10,6 +10,7 @@ import type {
     Product,
     ProductCategory,
     CreateOrderResult,
+    SalonSettings,
 } from "./types";
 
 const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL as string;
@@ -299,4 +300,16 @@ export async function createOrder(input: CreateOrderInput): Promise<CreateOrderR
     });
     if (error) throw error;
     return data as CreateOrderResult;
+}
+
+/** Singleton salon settings row (brand info + booking policy). */
+export async function fetchSalonSettings(): Promise<SalonSettings | null> {
+    const supabase = createClient();
+    const { data, error } = await supabase
+        .from("salon_settings")
+        .select("*")
+        .limit(1)
+        .maybeSingle();
+    if (error) throw error;
+    return (data as SalonSettings) ?? null;
 }

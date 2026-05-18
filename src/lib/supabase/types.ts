@@ -114,3 +114,23 @@ export interface CreateOrderResult {
     total_cents: number;
     pickup_deadline: string;
 }
+
+export interface SalonSettings {
+    id: string;
+    display_name: string;
+    phone: string | null;
+    whatsapp: string | null;
+    email: string | null;
+    address: string | null;
+    city: string | null;
+    province: string | null;
+    postal_code: string | null;
+    lat: number | null;
+    lng: number | null;
+    booking_lead_time_min: number;
+    booking_lead_time_max_days: number;
+    cancel_min_hours: number;
+    no_show_threshold: number;
+    slot_step_min: number;
+    updated_at: string;
+}

@@ -1,54 +1,178 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useCallback, useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { useToastStore } from "@/lib/store";
+
+interface CmsBlock {
+    key: string;
+    label: string;
+    value: string;
+    kind: "text" | "markdown" | "json";
+    updated_at: string;
+}
 
 export default function AdminCmsPage() {
+    const [blocks, setBlocks] = useState<CmsBlock[]>([]);
+    const [drafts, setDrafts] = useState<Record<string, string>>({});
+    const [loading, setLoading] = useState(true);
+    const [savingKey, setSavingKey] = useState<string | null>(null);
+    const addToast = useToastStore((s) => s.addToast);
+
+    const load = useCallback(async () => {
+        setLoading(true);
+        try {
+            const supabase = createClient();
+            const { data, error } = await supabase
+                .from("cms_blocks")
+                .select("*")
+                .order("key", { ascending: true });
+            if (error) throw error;
+            const rows = (data ?? []) as CmsBlock[];
+            setBlocks(rows);
+            const next: Record<string, string> = {};
+            for (const r of rows) next[r.key] = r.value;
+            setDrafts(next);
+        } catch (e: any) {
+            addToast(`Errore: ${e?.message ?? "?"}`, "error");
+        } finally {
+            setLoading(false);
+        }
+    }, [addToast]);
+
+    useEffect(() => {
+        load();
+    }, [load]);
+
+    const save = async (block: CmsBlock) => {
+        const value = drafts[block.key] ?? "";
+        if (block.kind === "json") {
+            try {
+                JSON.parse(value);
+            } catch (e: any) {
+                addToast(`JSON non valido: ${e.message}`, "error");
+                return;
+            }
+        }
+        setSavingKey(block.key);
+        try {
+            const supabase = createClient();
+            const { error } = await supabase
+                .from("cms_blocks")
+                .update({ value })
+                .eq("key", block.key);
+            if (error) throw error;
+            setBlocks((bs) =>
+                bs.map((b) => (b.key === block.key ? { ...b, value, updated_at: new Date().toISOString() } : b))
+            );
+            addToast("Blocco salvato", "success");
+        } catch (e: any) {
+            addToast(`Errore: ${e?.message ?? "?"}`, "error");
+        } finally {
+            setSavingKey(null);
+        }
+    };
+
+    const isDirty = (b: CmsBlock) => (drafts[b.key] ?? "") !== b.value;
+
     return (
-        <div className="p-6 md:p-10 max-w-6xl mx-auto space-y-8 h-full flex flex-col">
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0">
-                <div>
-                    <h1 className="text-display text-4xl text-warm-white">CMS Landing Page</h1>
-                    <p className="text-silver-dark text-sm mt-1">Aggiorna i testi della tua landing page pubblica. (Supporta TipTap)</p>
-                </div>
+        <div className="p-6 md:p-10 max-w-5xl mx-auto space-y-8">
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+                <span className="text-display-alt text-2xl text-accent-warm">Copy</span>
+                <h1 className="text-display text-4xl md:text-5xl text-warm-white tracking-tight mt-1 leading-[0.95]">
+                    Testi del sito.
+                </h1>
+                <p className="mt-3 text-warm-white-muted text-base max-w-2xl">
+                    Manifesto, tagline, FAQ. Le modifiche entrano in linea al prossimo deploy del
+                    sito pubblico (build statico).
+                </p>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="space-y-6 flex-1">
-
-                <div className="bg-[#111111] border border-line rounded-[var(--radius-md)] p-0 overflow-hidden flex flex-col h-full min-h-[500px]">
-                    <div className="p-4 border-b border-line bg-carbon/50 flex gap-4 overflow-x-auto">
-                        {["Sezione Manifesto", "Footer", "Comunicazioni FAQ", "Orari & Contatti"].map((tab, i) => (
-                            <button key={tab} className={`px-4 py-2 text-sm font-semibold rounded-[var(--radius-sm)] transition-colors whitespace-nowrap ${i === 0 ? 'bg-carbon-2 text-warm-white border border-line' : 'text-silver hover:text-warm-white'}`}>
-                                {tab}
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* Mock TipTap Editor */}
-                    <div className="p-4 border-b border-line flex gap-2 bg-black-2">
-                        <button className="w-8 h-8 rounded hover:bg-carbon flex items-center justify-center font-serif font-bold text-warm-white">B</button>
-                        <button className="w-8 h-8 rounded hover:bg-carbon flex items-center justify-center font-serif italic text-warm-white">I</button>
-                        <button className="w-8 h-8 rounded hover:bg-carbon flex items-center justify-center font-serif underline text-warm-white">U</button>
-                        <div className="w-px h-6 bg-line self-center mx-2"></div>
-                        <button className="px-2 h-8 rounded hover:bg-carbon flex items-center justify-center text-xs font-semibold uppercase text-warm-white text-silver tracking-widest">H1</button>
-                        <button className="px-2 h-8 rounded hover:bg-carbon flex items-center justify-center text-xs font-semibold uppercase text-warm-white text-silver tracking-widest">H2</button>
-                        <div className="w-px h-6 bg-line self-center mx-2"></div>
-                        <button className="p-2 h-8 rounded hover:bg-carbon flex items-center justify-center text-silver"><svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg></button>
-                    </div>
-
-                    <div className="flex-1 p-6 bg-carbon/20 relative">
-                        <textarea
-                            className="w-full h-full bg-transparent text-warm-white resize-none outline-none font-body text-lg leading-relaxed placeholder:text-silver-dark"
-                            defaultValue={"Entrare da Hair Rich significa immergersi in un\'esperienza editoriale.\n\nNon siamo solo barbiere, siamo curatori della tua immagine.\nFatto su misura per gentlemen moderni."}
+            {loading ? (
+                <div className="space-y-3">
+                    {[0, 1, 2, 3].map((i) => (
+                        <div
+                            key={i}
+                            className="h-32 bg-carbon border border-line rounded-[var(--radius-md)] animate-pulse"
                         />
-                        <div className="absolute bottom-6 right-6">
-                            <button className="px-6 py-3 bg-accent-warm text-black font-bold uppercase tracking-widest rounded-[var(--radius-sm)] hover:brightness-110 transition-colors shadow-lg shadow-accent-warm/20">
-                                Salva Bozza
-                            </button>
-                        </div>
-                    </div>
+                    ))}
                 </div>
+            ) : blocks.length === 0 ? (
+                <p className="p-10 bg-carbon border border-line border-dashed rounded-[var(--radius-md)] text-center text-warm-white-muted">
+                    Nessun blocco CMS configurato.
+                </p>
+            ) : (
+                <ul className="space-y-4">
+                    {blocks.map((b) => {
+                        const draft = drafts[b.key] ?? "";
+                        const dirty = isDirty(b);
+                        const isLong = b.kind !== "text" || draft.length > 80;
+                        return (
+                            <li
+                                key={b.key}
+                                className="bg-carbon border border-line rounded-[var(--radius-md)] p-5 space-y-3"
+                            >
+                                <div className="flex items-start justify-between gap-3">
+                                    <div>
+                                        <h3 className="text-warm-white font-body font-semibold">{b.label}</h3>
+                                        <p className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body mt-1">
+                                            <code>{b.key}</code> · {b.kind}
+                                        </p>
+                                    </div>
+                                    {dirty && (
+                                        <span className="text-[10px] uppercase tracking-[0.3em] text-accent-warm font-body font-semibold">
+                                            · modificato
+                                        </span>
+                                    )}
+                                </div>
 
-            </motion.div>
+                                {isLong ? (
+                                    <textarea
+                                        value={draft}
+                                        onChange={(e) =>
+                                            setDrafts((d) => ({ ...d, [b.key]: e.target.value }))
+                                        }
+                                        rows={b.kind === "json" ? 8 : 4}
+                                        className={`w-full bg-black-2 border border-line rounded-md px-3 py-2 text-warm-white text-sm leading-relaxed resize-none ${
+                                            b.kind === "json" ? "font-mono" : ""
+                                        }`}
+                                    />
+                                ) : (
+                                    <input
+                                        value={draft}
+                                        onChange={(e) =>
+                                            setDrafts((d) => ({ ...d, [b.key]: e.target.value }))
+                                        }
+                                        className="w-full bg-black-2 border border-line rounded-md px-3 py-2 text-warm-white"
+                                    />
+                                )}
+
+                                <div className="flex justify-end gap-2">
+                                    {dirty && (
+                                        <button
+                                            onClick={() =>
+                                                setDrafts((d) => ({ ...d, [b.key]: b.value }))
+                                            }
+                                            disabled={savingKey === b.key}
+                                            className="px-3 py-1.5 text-[10px] uppercase tracking-[0.25em] text-silver border border-line rounded-full hover:bg-carbon-2 transition-colors"
+                                        >
+                                            Annulla
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={() => save(b)}
+                                        disabled={!dirty || savingKey === b.key}
+                                        className="px-4 py-1.5 text-[10px] uppercase tracking-[0.25em] bg-accent-warm text-black font-body font-semibold rounded-full hover:bg-accent-warm/90 transition-colors disabled:opacity-40"
+                                    >
+                                        {savingKey === b.key ? "Salvataggio…" : "Salva"}
+                                    </button>
+                                </div>
+                            </li>
+                        );
+                    })}
+                </ul>
+            )}
         </div>
     );
 }

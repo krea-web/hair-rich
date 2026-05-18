@@ -19,6 +19,9 @@ const SETTINGS_MENU = [
     { href: "/admin/prodotti", label: "Prodotti" },
     { href: "/admin/staff", label: "Staff" },
     { href: "/admin/orari", label: "Orari staff" },
+    { href: "/admin/marketing", label: "Recensioni" },
+    { href: "/admin/gamification", label: "Coupon & sconti" },
+    { href: "/admin/cms", label: "Testi del sito" },
     { href: "/admin/impostazioni", label: "Impostazioni Salone" },
 ];
 
