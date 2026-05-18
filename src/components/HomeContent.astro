@@ -13,7 +13,6 @@ import { MarqueeStrip } from "./landing/_shared/MarqueeStrip";
 import { SiteHeader } from "./ui/SiteHeader";
 import { MobileTopBar } from "./ui/MobileTopBar";
 import { MobileBottomBar } from "./ui/MobileBottomBar";
-import { MobileMenu } from "./ui/MobileMenu";
 import { BookingDrawer } from "./booking/BookingDrawer";
 import { ToastViewport } from "./ui/ToastViewport";
 import { CookieBanner } from "./ui/CookieBanner";
@@ -77,7 +76,6 @@ const m = marqueeItems[lang];
   <InstallPrompt client:idle />
 </div>
 <MobileBottomBar client:idle />
-<MobileMenu client:idle />
 <BookingDrawer client:idle />
 <ToastViewport client:load />
 

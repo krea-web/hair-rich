@@ -13,11 +13,13 @@ interface Tab {
 
 const TABS: Tab[] = [
     {
-        href: "/",
-        label: "Home",
+        href: "/team",
+        label: "Team",
         icon: (
             <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3v-7h6v7h3a1 1 0 001-1V10" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
             </svg>
         ),
     },
@@ -69,10 +71,10 @@ const TABS: Tab[] = [
 ];
 
 /**
- * Primary mobile navigation bar — 5 tabs (Home / Servizi / Prenota center /
+ * Primary mobile navigation bar — 5 tabs (Team / Servizi / Prenota center /
  * Lavori / Shop). The center "Prenota" tab is visually elevated and opens
- * the BookingDrawer instead of navigating. Team lives in MobileMenu now
- * (less frequented than the shop), Phone + Maps shortcuts also there.
+ * the BookingDrawer instead of navigating. Home lives on the wordmark in
+ * MobileTopBar.
  */
 export function MobileBottomBar() {
     const [path, setPath] = useState<string>("");

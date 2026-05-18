@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { Wordmark } from "@/components/landing/_shared/Wordmark";
 import { LangSwitcher } from "@/components/landing/_shared/LangSwitcher";
-import { useMobileMenu } from "@/lib/store";
 import { useT } from "@/i18n/useLang";
 
 /**
@@ -14,13 +13,12 @@ import { useT } from "@/i18n/useLang";
  * Layout:
  *  [        Hairrich extended logo (centered)        ] [profile] [lang]
  *
- * Hamburger removed: the bottom 5-tab nav (MobileBottomBar) is now the
- * primary navigation on mobile.
+ * Hamburger removed: the bottom 5-tab nav (MobileBottomBar) is the primary
+ * navigation on mobile, and tapping the wordmark goes to home.
  */
 export function MobileTopBar() {
     const { lang } = useT();
     const [profileHref, setProfileHref] = useState("/login");
-    const openMenu = useMobileMenu((s) => s.open);
 
     // Best-effort auth check: if there's a Supabase session, link straight
     // to /profilo, otherwise /login. Avoid SSR access.
@@ -65,7 +63,7 @@ export function MobileTopBar() {
                     <Wordmark variant="wordmark" size="sm" className="[&>img]:h-7" />
                 </a>
 
-                {/* Right group: profile + lang + menu */}
+                {/* Right group: profile + lang */}
                 <div className="justify-self-end flex items-center gap-1.5">
                     <a
                         href={profileHref}
@@ -83,24 +81,6 @@ export function MobileTopBar() {
                         </svg>
                     </a>
                     <LangSwitcher current={lang} variant="navbar" />
-                    {/* Menu trigger — opens MobileMenu which contains Team +
-                       Contatti + all secondary nav. Without this the team
-                       page becomes unreachable on mobile once Team is out of
-                       the bottom bar. */}
-                    <button
-                        onClick={openMenu}
-                        aria-label="Apri menu"
-                        className="inline-flex items-center justify-center w-9 h-9 rounded-full text-warm-white active:scale-95 transition-transform"
-                        style={{
-                            background: "rgba(255,255,255,0.06)",
-                            boxShadow:
-                                "inset 0 1px 0 rgba(255,255,255,0.12), 0 1px 2px rgba(0,0,0,0.3)",
-                        }}
-                    >
-                        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
                 </div>
             </div>
         </header>

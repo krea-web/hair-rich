@@ -2,7 +2,6 @@
 import RootLayout from "../layouts/RootLayout.astro";
 import { SiteHeader } from "../components/ui/SiteHeader";
 import { MobileTopBar } from "../components/ui/MobileTopBar";
-import { MobileMenu } from "../components/ui/MobileMenu";
 import { BookingDrawer } from "../components/booking/BookingDrawer";
 import { StickySlotPeek } from "../components/landing/StickySlotPeek";
 import { PageHero } from "../components/landing/_shared/PageHero";
@@ -96,7 +95,6 @@ const FAQ = [
 
   <ToastViewport client:load />
   <MobileBottomBar client:idle />
-  <MobileMenu client:idle />
   <BookingDrawer client:idle />
   <StickySlotPeek client:idle />
 </RootLayout>
