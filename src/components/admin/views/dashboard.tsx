@@ -25,6 +25,18 @@ interface UpcomingAppt {
     status: string;
 }
 
+interface AtRiskCustomer {
+    customer_id: string;
+    first_name: string;
+    last_name: string | null;
+    phone: string | null;
+    email: string | null;
+    completed_count: number;
+    last_visit_at: string | null;
+    days_since_last: number;
+    lifetime_value_cents: number;
+}
+
 function startOfToday(): Date {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
@@ -40,6 +52,7 @@ function endOfToday(): Date {
 export default function AdminDashboardPage() {
     const [stats, setStats] = useState<Stats | null>(null);
     const [next, setNext] = useState<UpcomingAppt[]>([]);
+    const [atRisk, setAtRisk] = useState<AtRiskCustomer[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -122,6 +135,13 @@ export default function AdminDashboardPage() {
                         status: a.status,
                     }));
                 setNext(upcoming);
+
+                // At-risk customers (parallel fire-and-forget — non-blocking)
+                supabase
+                    .rpc("fn_customers_at_risk", { p_min_visits: 2, p_days_silent: 90 })
+                    .then(({ data }) => {
+                        if (alive && Array.isArray(data)) setAtRisk(data as AtRiskCustomer[]);
+                    });
             } catch {
                 /* swallow */
             } finally {
@@ -334,6 +354,50 @@ export default function AdminDashboardPage() {
                                 className="mt-4 inline-block text-[10px] uppercase tracking-[0.3em] text-error font-body font-semibold hover:text-error/80 transition-colors"
                             >
                                 Riassortisci →
+                            </a>
+                        </div>
+                    )}
+
+                    {atRisk.length > 0 && (
+                        <div className="bg-accent-warm/10 border border-accent-warm/30 rounded-[var(--radius-md)] p-6">
+                            <h2 className="text-xs uppercase font-semibold text-accent-warm tracking-widest mb-1 flex items-center gap-2">
+                                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
+                                </svg>
+                                Da richiamare · {atRisk.length}
+                            </h2>
+                            <p className="text-[11px] text-warm-white-muted mb-3 leading-snug">
+                                Clienti abituali silenti da oltre 90 giorni e senza appuntamenti in agenda.
+                            </p>
+                            <ul className="space-y-3 text-sm">
+                                {atRisk.slice(0, 5).map((c) => {
+                                    const name = `${c.first_name}${c.last_name ? " " + c.last_name : ""}`;
+                                    return (
+                                        <li key={c.customer_id} className="flex items-start justify-between gap-2">
+                                            <div className="min-w-0">
+                                                <div className="text-warm-white font-medium truncate">{name}</div>
+                                                <div className="text-[10px] text-silver-dark tabular-nums">
+                                                    {c.days_since_last}g · {c.completed_count} visite · {formatPrice(c.lifetime_value_cents)}
+                                                </div>
+                                            </div>
+                                            {c.phone && (
+                                                <a
+                                                    href={`tel:${c.phone.replace(/\s+/g, "")}`}
+                                                    className="shrink-0 px-2 py-1 text-[9px] uppercase tracking-[0.25em] text-accent-warm border border-accent-warm/40 rounded-full hover:bg-accent-warm/15 transition-colors"
+                                                >
+                                                    Chiama
+                                                </a>
+                                            )}
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                            <a
+                                href="/admin/clienti"
+                                onClick={handleClientLink}
+                                className="mt-4 inline-block text-[10px] uppercase tracking-[0.3em] text-accent-warm font-body font-semibold hover:text-accent-warm/80 transition-colors"
+                            >
+                                Vedi tutti →
                             </a>
                         </div>
                     )}

@@ -20,6 +20,7 @@ import AdminCmsPage from "./views/cms";
 import AdminFotoRisultatiPage from "./views/foto-risultati";
 import AdminChiusurePage from "./views/chiusure";
 import AdminOrariPage from "./views/orari";
+import AdminStatistichePage from "./views/statistiche";
 
 function pickView(pathname: string) {
     const p = pathname.replace(/\/$/, "");
@@ -54,6 +55,8 @@ function pickView(pathname: string) {
             return <AdminChiusurePage />;
         case "/admin/orari":
             return <AdminOrariPage />;
+        case "/admin/statistiche":
+            return <AdminStatistichePage />;
         default:
             return (
                 <div className="p-12 text-center text-silver">

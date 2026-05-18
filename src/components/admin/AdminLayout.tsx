@@ -9,6 +9,7 @@ const MAIN_MENU = [
     { href: "/admin", label: "Dashboard", icon: "svg-dash" },
     { href: "/admin/agenda", label: "Agenda", icon: "svg-calendar" },
     { href: "/admin/chiusure", label: "Chiusure & ferie", icon: "svg-pause" },
+    { href: "/admin/statistiche", label: "Statistiche", icon: "svg-chart" },
     { href: "/admin/clienti", label: "Clienti", icon: "svg-users" },
     { href: "/admin/ordini", label: "Ordini & Cassa", icon: "svg-wallet" },
     { href: "/admin/foto-risultati", label: "Foto risultato", icon: "svg-camera" },
@@ -86,6 +87,15 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                     <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
                         <rect x="6" y="4" width="4" height="16" rx="1" />
                         <rect x="14" y="4" width="4" height="16" rx="1" />
+                    </svg>
+                );
+            case "svg-chart":
+                return (
+                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
+                        <line x1="3" y1="20" x2="21" y2="20" />
+                        <rect x="5" y="12" width="3" height="8" />
+                        <rect x="10" y="6" width="3" height="14" />
+                        <rect x="15" y="9" width="3" height="11" />
                     </svg>
                 );
         }

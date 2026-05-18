@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { formatPrice } from "@/lib/format";
 import { useToastStore } from "@/lib/store";
+import { downloadCsv, todayStamp } from "@/lib/csv";
 
 type OrderStatus = "pending" | "ready" | "picked_up" | "cancelled" | "expired";
 
@@ -149,7 +150,7 @@ export default function AdminOrdiniPage() {
             </motion.div>
 
             {/* Filters */}
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 items-center">
                 {FILTERS.map((f) => {
                     const active = filter === f.key;
                     const count = counts[f.key] ?? 0;
@@ -171,6 +172,30 @@ export default function AdminOrdiniPage() {
                         </button>
                     );
                 })}
+                <button
+                    onClick={() =>
+                        downloadCsv({
+                            filename: `ordini-${todayStamp()}`,
+                            rows: filtered,
+                            columns: [
+                                { key: "short_code", label: "Codice" },
+                                { key: "status", label: "Stato" },
+                                { key: "customer_first_name", label: "Nome cliente" },
+                                { key: "customer_last_name", label: "Cognome cliente" },
+                                { key: "customer_phone", label: "Telefono" },
+                                { key: "customer_email", label: "Email" },
+                                { key: "total_cents", label: "Totale EUR", get: (r) => (r.total_cents / 100).toFixed(2) },
+                                { key: "items", label: "Articoli", get: (r) => r.items.map((i) => `${i.quantity}x ${i.product_name}`).join("; ") },
+                                { key: "pickup_deadline", label: "Scadenza ritiro" },
+                                { key: "created_at", label: "Creato il" },
+                                { key: "notes", label: "Note" },
+                            ],
+                        })
+                    }
+                    className="ml-auto px-3 py-2 text-[10px] uppercase tracking-[0.25em] text-silver border border-line rounded-full hover:bg-carbon-2 transition-colors"
+                >
+                    Export CSV
+                </button>
             </div>
 
             {loading && (

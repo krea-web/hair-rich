@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { formatPrice } from "@/lib/format";
 import { useToastStore } from "@/lib/store";
+import { downloadCsv, todayStamp } from "@/lib/csv";
 
 interface CustomerRow {
     id: string;
@@ -170,6 +171,30 @@ export default function AdminClientiPage() {
                         </button>
                     ))}
                 </div>
+                <button
+                    onClick={() =>
+                        downloadCsv({
+                            filename: `clienti-${todayStamp()}`,
+                            rows: filtered,
+                            columns: [
+                                { key: "first_name", label: "Nome" },
+                                { key: "last_name", label: "Cognome" },
+                                { key: "email", label: "Email" },
+                                { key: "phone", label: "Telefono" },
+                                { key: "is_guest", label: "Guest", get: (r) => (r.is_guest ? "Sì" : "No") },
+                                { key: "birthdate", label: "Compleanno" },
+                                { key: "completed_count", label: "Visite completate" },
+                                { key: "lifetime_value_cents", label: "Lifetime value EUR", get: (r) => (r.lifetime_value_cents / 100).toFixed(2) },
+                                { key: "last_visit_at", label: "Ultima visita" },
+                                { key: "created_at", label: "Cliente dal" },
+                                { key: "notes", label: "Note" },
+                            ],
+                        })
+                    }
+                    className="px-3 py-1.5 text-[10px] uppercase tracking-[0.25em] text-silver border border-line rounded-full hover:bg-carbon-2 transition-colors"
+                >
+                    Export CSV
+                </button>
             </div>
 
             {loading && (
