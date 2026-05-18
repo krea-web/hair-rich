@@ -17,10 +17,11 @@ const Asterisk = ({ className = "" }: { className?: string }) => (
 );
 
 /**
- * Logo separator — renders `/logo-mark.webp`, a tight transparent crop of
- * the rose+scissors icon with no HAIRRICH wordmark and no padding. Because
- * the file itself is the icon (and only the icon), flex `items-center`
- * centres it perfectly inside the marquee row on every variant.
+ * Logo separator — renders `/logo-mark.webp`, a 1:1 square canvas with the
+ * rose+scissors icon perfectly centered inside it (no asymmetric whitespace).
+ * Because the canvas is square and the icon is centred in it, flex
+ * `items-center` places the visual centre of the icon on the row's baseline,
+ * and equal flex gaps on either side put it exactly between adjacent words.
  */
 function LogoSeparator({
     size = 32,
@@ -31,18 +32,16 @@ function LogoSeparator({
     opacity?: number;
     tone?: "silver" | "ink";
 }) {
-    const SOURCE_ASPECT = 568 / 615; // ≈ 0.924
-    const width = Math.round(size * SOURCE_ASPECT);
     return (
         <img
-            src="/logo-mark.webp"
+            src="/logo-mark.webp?v=2"
             alt=""
             aria-hidden="true"
             draggable={false}
             className="block shrink-0 select-none pointer-events-none"
             style={{
                 height: `${size}px`,
-                width: `${width}px`,
+                width: `${size}px`,
                 opacity,
                 filter: tone === "ink" ? "brightness(0) saturate(100%)" : undefined,
             }}
