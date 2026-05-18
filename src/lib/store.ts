@@ -142,6 +142,19 @@ export const useMobileMenu = create<MobileMenuState>((set) => ({
     toggle: () => set((s) => ({ isOpen: !s.isOpen })),
 }));
 
+/* ── Admin live bookings (unseen counter) ──────────────────────────────────── */
+interface AdminNotifyState {
+    newBookingsCount: number;
+    bump: (n?: number) => void;
+    markSeen: () => void;
+}
+
+export const useAdminNotifyStore = create<AdminNotifyState>((set) => ({
+    newBookingsCount: 0,
+    bump: (n = 1) => set((s) => ({ newBookingsCount: s.newBookingsCount + n })),
+    markSeen: () => set({ newBookingsCount: 0 }),
+}));
+
 /* ── Booking store ─────────────────────────────────────────────────────────── */
 import type { Service, Staff } from "./supabase/types";
 

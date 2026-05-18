@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useClientPath, handleClientLink } from "@/lib/clientRouter";
+import { useAdminNotifyStore } from "@/lib/store";
 
 const MAIN_MENU = [
     { href: "/admin", label: "Dashboard", icon: "svg-dash" },
     { href: "/admin/agenda", label: "Agenda", icon: "svg-calendar" },
+    { href: "/admin/chiusure", label: "Chiusure & ferie", icon: "svg-pause" },
     { href: "/admin/clienti", label: "Clienti", icon: "svg-users" },
     { href: "/admin/ordini", label: "Ordini & Cassa", icon: "svg-wallet" },
     { href: "/admin/foto-risultati", label: "Foto risultato", icon: "svg-camera" },
@@ -16,12 +18,20 @@ const SETTINGS_MENU = [
     { href: "/admin/servizi", label: "Servizi" },
     { href: "/admin/prodotti", label: "Prodotti" },
     { href: "/admin/staff", label: "Staff" },
+    { href: "/admin/orari", label: "Orari staff" },
     { href: "/admin/impostazioni", label: "Impostazioni Salone" },
 ];
 
 export function AdminLayout({ children }: { children: ReactNode }) {
     const pathname = useClientPath();
     const [isSidebarOpen, setSidebarOpen] = useState(false);
+    const newBookingsCount = useAdminNotifyStore((s) => s.newBookingsCount);
+    const markSeen = useAdminNotifyStore((s) => s.markSeen);
+
+    useEffect(() => {
+        // Visiting the agenda clears the unseen-new-bookings counter.
+        if (pathname === "/admin/agenda" && newBookingsCount > 0) markSeen();
+    }, [pathname, newBookingsCount, markSeen]);
 
     const renderIcon = (type: string) => {
         switch (type) {
@@ -66,6 +76,13 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                     <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" />
                         <circle cx="12" cy="13" r="4" />
+                    </svg>
+                );
+            case "svg-pause":
+                return (
+                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="6" y="4" width="4" height="16" rx="1" />
+                        <rect x="14" y="4" width="4" height="16" rx="1" />
                     </svg>
                 );
         }
@@ -116,6 +133,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                                 <nav className="space-y-0.5">
                                     {MAIN_MENU.map((item) => {
                                         const active = pathname === item.href;
+                                        const showBadge = item.href === "/admin/agenda" && newBookingsCount > 0;
                                         return (
                                             <a
                                                 key={item.href}
@@ -124,7 +142,12 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                                                 className={`flex flex-row items-center gap-3 px-3 py-1.5 rounded-[var(--radius-sm)] text-sm transition-colors ${active ? "bg-carbon text-warm-white font-medium" : "text-silver hover:bg-carbon-2"}`}
                                             >
                                                 <span className={active ? "text-warm-white" : "text-silver-dark"}>{renderIcon(item.icon)}</span>
-                                                {item.label}
+                                                <span className="flex-1">{item.label}</span>
+                                                {showBadge && (
+                                                    <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1.5 rounded-full bg-accent-warm text-black text-[10px] font-body font-semibold tabular-nums">
+                                                        {newBookingsCount > 9 ? "9+" : newBookingsCount}
+                                                    </span>
+                                                )}
                                             </a>
                                         );
                                     })}

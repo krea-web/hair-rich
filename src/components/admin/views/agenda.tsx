@@ -2,6 +2,15 @@
 
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
+import {
+    DndContext,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    useDraggable,
+    useDroppable,
+    type DragEndEvent,
+} from "@dnd-kit/core";
 import { createClient } from "@/lib/supabase/client";
 import { fetchStaff } from "@/lib/supabase/queries";
 import type { Staff } from "@/lib/supabase/types";
@@ -56,6 +65,55 @@ function formatDayHeading(d: Date): string {
 
 function isoDate(d: Date): string {
     return d.toISOString().split("T")[0]!;
+}
+
+function makeDropId(hour: string, staffId: string): string {
+    return `slot:${hour}|${staffId}`;
+}
+
+function parseDropId(id: string): { hour: string; staffId: string } | null {
+    if (!id.startsWith("slot:")) return null;
+    const [hour, staffId] = id.slice(5).split("|");
+    if (!hour || !staffId) return null;
+    return { hour, staffId };
+}
+
+function DroppableCell({ hour, staffId }: { hour: string; staffId: string }) {
+    const { isOver, setNodeRef } = useDroppable({ id: makeDropId(hour, staffId) });
+    return (
+        <div
+            ref={setNodeRef}
+            className={`flex-1 border-r border-line/50 transition-colors ${
+                isOver ? "bg-accent-warm/15" : ""
+            }`}
+        />
+    );
+}
+
+function DraggableWrapper({
+    id,
+    children,
+    style,
+    className,
+}: {
+    id: string;
+    children: React.ReactNode;
+    style: React.CSSProperties;
+    className: string;
+}) {
+    const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id });
+    const dragStyle: React.CSSProperties = {
+        ...style,
+        transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+        zIndex: isDragging ? 50 : 10,
+        opacity: isDragging ? 0.85 : 1,
+        cursor: isDragging ? "grabbing" : "grab",
+    };
+    return (
+        <div ref={setNodeRef} style={dragStyle} className={className} {...attributes} {...listeners}>
+            {children}
+        </div>
+    );
 }
 
 export default function AdminAgendaPage() {
@@ -132,6 +190,58 @@ export default function AdminAgendaPage() {
         load();
     };
 
+    const sensors = useSensors(
+        useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+    );
+
+    const handleDragEnd = async (event: DragEndEvent) => {
+        const apptId = String(event.active.id);
+        const target = event.over ? parseDropId(String(event.over.id)) : null;
+        if (!target) return;
+        const appt = appts.find((a) => a.id === apptId);
+        if (!appt) return;
+
+        const [hh, mm] = target.hour.split(":").map((n) => parseInt(n, 10));
+        const newStart = new Date(currentDate);
+        newStart.setHours(hh!, mm ?? 0, 0, 0);
+        const startISO = newStart.toISOString();
+
+        // No-op if dropped on its current slot+staff
+        if (
+            appt.startISO === startISO &&
+            appt.staffId === target.staffId
+        ) {
+            return;
+        }
+
+        // Optimistic update: compute new end by preserving duration
+        const durationMs =
+            new Date(appt.endISO).getTime() - new Date(appt.startISO).getTime();
+        const newEndISO = new Date(newStart.getTime() + durationMs).toISOString();
+        const prev = appts;
+        setAppts((rs) =>
+            rs.map((a) =>
+                a.id === apptId
+                    ? { ...a, startISO, endISO: newEndISO, staffId: target.staffId }
+                    : a
+            )
+        );
+
+        try {
+            const supabase = createClient();
+            const { error } = await supabase.rpc("fn_admin_reschedule_appointment", {
+                p_id: apptId,
+                p_start_at: startISO,
+                p_staff_id: target.staffId,
+            });
+            if (error) throw error;
+            addToast("Appuntamento spostato", "success");
+        } catch (e: any) {
+            setAppts(prev);
+            addToast(`Errore: ${e?.message ?? "?"}`, "error");
+        }
+    };
+
     const goPrev = () => {
         setCurrentDate((d) => {
             const n = new Date(d);
@@ -203,6 +313,7 @@ export default function AdminAgendaPage() {
             </div>
 
             {/* Grid */}
+            <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
             <div className="flex-1 overflow-auto bg-[#111111] relative">
                 <div className="min-w-[800px] h-full flex flex-col">
                     <div className="flex border-b border-line sticky top-0 bg-[#111111] z-20 shadow-sm">
@@ -230,7 +341,7 @@ export default function AdminAgendaPage() {
                                     <span className="text-xs text-silver-dark font-mono">{hour}</span>
                                 </div>
                                 {staff.map((s) => (
-                                    <div key={s.id} className="flex-1 border-r border-line/50" />
+                                    <DroppableCell key={s.id} hour={hour} staffId={s.id} />
                                 ))}
                             </div>
                         ))}
@@ -274,11 +385,11 @@ export default function AdminAgendaPage() {
                                 }
 
                                 return (
-                                    <motion.div
+                                    <DraggableWrapper
                                         key={ev.id}
-                                        initial={{ opacity: 0, scale: 0.95 }}
-                                        animate={{ opacity: 1, scale: 1 }}
+                                        id={ev.id}
                                         style={{
+                                            position: "absolute",
                                             top: `${top}px`,
                                             height: `${height - 4}px`,
                                             left: `calc(5rem + ${colIdx * (100 / colCount)}%)`,
@@ -286,7 +397,7 @@ export default function AdminAgendaPage() {
                                             marginTop: "2px",
                                             marginLeft: "6px",
                                         }}
-                                        className={`absolute z-10 px-3 py-2 rounded shadow-md cursor-pointer overflow-hidden group ${statusClasses(ev.status)}`}
+                                        className={`px-3 py-2 rounded shadow-md overflow-hidden group ${statusClasses(ev.status)}`}
                                     >
                                         <div className="flex items-start justify-between gap-2">
                                             <p className="text-xs font-semibold leading-tight line-clamp-2 flex-1">
@@ -303,10 +414,10 @@ export default function AdminAgendaPage() {
                                             {ev.customerPhone && <span className="ml-2">· {ev.customerPhone}</span>}
                                         </p>
 
-                                        {/* Status quick actions on hover (desktop) or always on mobile */}
                                         {ev.status !== "completed" && ev.status !== "cancelled" && ev.status !== "no_show" && (
                                             <div className="mt-1.5 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <button
+                                                    onPointerDown={(e) => e.stopPropagation()}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         changeStatus(ev.id, "completed");
@@ -316,6 +427,7 @@ export default function AdminAgendaPage() {
                                                     Completa
                                                 </button>
                                                 <button
+                                                    onPointerDown={(e) => e.stopPropagation()}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         changeStatus(ev.id, "cancelled");
@@ -326,7 +438,7 @@ export default function AdminAgendaPage() {
                                                 </button>
                                             </div>
                                         )}
-                                    </motion.div>
+                                    </DraggableWrapper>
                                 );
                             })}
 
@@ -348,6 +460,7 @@ export default function AdminAgendaPage() {
                     </div>
                 </div>
             </div>
+            </DndContext>
         </div>
     );
 }

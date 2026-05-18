@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useClientPath } from "@/lib/clientRouter";
+import { useAdminLiveBookings } from "@/hooks/useAdminLiveBookings";
 import { AdminLayout } from "./AdminLayout";
 
 import AdminDashboardPage from "./views/dashboard";
@@ -17,6 +18,8 @@ import AdminGamificationPage from "./views/gamification";
 import AdminOnboardingPage from "./views/onboarding";
 import AdminCmsPage from "./views/cms";
 import AdminFotoRisultatiPage from "./views/foto-risultati";
+import AdminChiusurePage from "./views/chiusure";
+import AdminOrariPage from "./views/orari";
 
 function pickView(pathname: string) {
     const p = pathname.replace(/\/$/, "");
@@ -47,6 +50,10 @@ function pickView(pathname: string) {
             return <AdminCmsPage />;
         case "/admin/foto-risultati":
             return <AdminFotoRisultatiPage />;
+        case "/admin/chiusure":
+            return <AdminChiusurePage />;
+        case "/admin/orari":
+            return <AdminOrariPage />;
         default:
             return (
                 <div className="p-12 text-center text-silver">
@@ -60,6 +67,7 @@ function pickView(pathname: string) {
 export function AdminApp() {
     const pathname = useClientPath();
     const [ready, setReady] = useState(false);
+    useAdminLiveBookings();
 
     useEffect(() => {
         let cancelled = false;
