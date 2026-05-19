@@ -42,8 +42,8 @@ export function RegisterForm() {
                     </p>
                 </div>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="bg-carbon border border-line rounded-[var(--radius-lg)] p-8 space-y-6">
-                    <div className="grid grid-cols-2 gap-4">
+                <form onSubmit={handleSubmit(onSubmit)} className="bg-carbon border border-line rounded-[var(--radius-lg)] p-6 md:p-8 space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-xs uppercase tracking-widest text-silver-dark mb-2">Nome</label>
                             <input

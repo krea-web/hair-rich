@@ -107,7 +107,7 @@ export default function AdminServiziPage() {
                     placeholder="Cerca per nome…"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="flex-1 min-w-[200px] bg-carbon border border-line rounded-full px-4 py-2 text-sm text-warm-white placeholder:text-silver-dark focus:border-accent-warm focus:outline-none transition-colors"
+                    className="w-full md:flex-1 md:w-auto md:min-w-[200px] bg-carbon border border-line rounded-full px-4 py-2 text-sm text-warm-white placeholder:text-silver-dark focus:border-accent-warm focus:outline-none transition-colors"
                 />
                 <span className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
                     {filtered.length} su {services.length}

@@ -34,7 +34,7 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
             </motion.span>
 
             <motion.h1
-                className="text-display text-warm-white leading-[0.85] tracking-tight"
+                className="text-display text-warm-white leading-[0.95] md:leading-[0.85] tracking-tight"
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true }}
@@ -46,7 +46,7 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
                 {["BARBER", "STUDIO"].map((word, i) => (
                     <motion.span
                         key={word}
-                        className="block text-[14vw] md:text-[8.5vw] lg:text-[7.5vw]"
+                        className="block text-[13vw] md:text-[8.5vw] lg:text-[7.5vw]"
                         variants={{
                             hidden: { opacity: 0, y: 60, clipPath: "inset(100% 0 0 0)" },
                             visible: {

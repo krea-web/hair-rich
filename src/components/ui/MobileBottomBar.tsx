@@ -132,7 +132,7 @@ export function MobileBottomBar() {
                                         <span className="flex items-center justify-center w-14 h-14 rounded-full bg-accent-warm text-black shadow-[0_8px_24px_-4px_rgba(212,165,116,0.55)] ring-4 ring-black">
                                             {tab.icon}
                                         </span>
-                                        <span className="text-[9px] uppercase tracking-[0.2em] text-accent-warm font-body font-semibold">
+                                        <span className="text-[10px] uppercase tracking-[0.2em] text-accent-warm font-body font-semibold">
                                             {tab.label}
                                         </span>
                                     </button>
@@ -143,7 +143,7 @@ export function MobileBottomBar() {
                             <li key={tab.label}>
                                 <button
                                     onClick={() => handleTabClick(tab)}
-                                    className={`w-full min-h-[52px] flex flex-col items-center justify-center gap-1 transition-colors active:scale-95 ${
+                                    className={`w-full min-h-[56px] flex flex-col items-center justify-center gap-1 transition-colors active:scale-95 ${
                                         active ? "text-warm-white" : "text-silver-dark hover:text-warm-white"
                                     }`}
                                     aria-current={active ? "page" : undefined}
@@ -158,7 +158,7 @@ export function MobileBottomBar() {
                                             />
                                         )}
                                     </span>
-                                    <span className="text-[9px] uppercase tracking-[0.2em] font-body font-semibold">
+                                    <span className="text-[10px] uppercase tracking-[0.2em] font-body font-semibold">
                                         {tab.label}
                                     </span>
                                 </button>

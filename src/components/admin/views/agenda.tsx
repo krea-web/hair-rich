@@ -429,7 +429,7 @@ export default function AdminAgendaPage() {
                                         </p>
 
                                         {ev.status !== "completed" && ev.status !== "cancelled" && ev.status !== "no_show" && (
-                                            <div className="mt-1.5 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div className="mt-1.5 flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                                                 <button
                                                     onPointerDown={(e) => e.stopPropagation()}
                                                     onClick={(e) => {

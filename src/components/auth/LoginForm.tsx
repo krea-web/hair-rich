@@ -148,7 +148,7 @@ export function LoginForm() {
                                 <div className="space-y-4">
                                     <button
                                         onClick={() => { setMethod("email"); setStep("input"); }}
-                                        className="w-full relative group overflow-hidden bg-carbon hover:bg-carbon-2 border border-line rounded-[var(--radius-md)] px-6 py-5 flex items-center justify-between transition-all duration-300"
+                                        className="w-full relative group overflow-hidden bg-carbon hover:bg-carbon-2 border border-line rounded-[var(--radius-md)] px-4 py-4 md:px-6 md:py-5 flex items-center justify-between transition-all duration-300"
                                     >
                                         <span className="font-body text-warm-white font-semibold">Continua con Email</span>
                                         <svg viewBox="0 0 24 24" className="w-5 h-5 text-silver group-hover:text-warm-white group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -157,7 +157,7 @@ export function LoginForm() {
                                     </button>
                                     <button
                                         onClick={() => { setMethod("phone"); setStep("input"); }}
-                                        className="w-full relative group overflow-hidden bg-carbon hover:bg-carbon-2 border border-line rounded-[var(--radius-md)] px-6 py-5 flex items-center justify-between transition-all duration-300"
+                                        className="w-full relative group overflow-hidden bg-carbon hover:bg-carbon-2 border border-line rounded-[var(--radius-md)] px-4 py-4 md:px-6 md:py-5 flex items-center justify-between transition-all duration-300"
                                     >
                                         <span className="font-body text-warm-white font-semibold">Continua con Telefono</span>
                                         <svg viewBox="0 0 24 24" className="w-5 h-5 text-silver group-hover:text-warm-white group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="1.5">
