@@ -31,18 +31,19 @@ export function FeaturedWork({ image, badge, title, subtitle, body, meta }: Prop
                     transition={{ duration: 0.7 }}
                     className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-end"
                 >
-                    {/* Photo */}
+                    {/* Photo — natural aspect, no crop. The card grows to the
+                        image's intrinsic ratio so the subject is preserved. */}
                     <div className="lg:col-span-7 relative">
-                        <div className="relative aspect-[4/5] rounded-[var(--radius-md)] overflow-hidden border border-line">
+                        <div className="relative rounded-[var(--radius-md)] overflow-hidden border border-line">
                             <SmartImage
                                 src={portfolioImageUrl(image, { width: 1400, quality: 82, format: "webp" })}
                                 srcSet={portfolioImageSrcset(image, 82)}
                                 sizes="(min-width: 1024px) 58vw, 100vw"
                                 alt={title}
-                                className="h-full"
                                 eager
+                                natural
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
 
                             {badge && (
                                 <div className="absolute top-5 left-5 inline-flex items-center gap-2 px-3 py-1.5 bg-black/70 backdrop-blur-md border border-accent-warm/40 rounded-full">

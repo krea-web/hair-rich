@@ -111,10 +111,10 @@ export function GallerySection() {
                     ))}
                 </motion.div>
 
-                {/* Uniform 4:5 grid — same aspect as the original iPhone
-                   portrait shots, so the cells display the photos at their
-                   natural framing instead of cropping subjects. */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                {/* Masonry columns — photos render at natural aspect, no crop.
+                   2 col mobile, 4 col desktop. CSS columns balance heights
+                   across the row freely. */}
+                <div className="columns-2 md:columns-4 gap-3 md:gap-4 [column-fill:_balance]">
                     <AnimatePresence mode="popLayout">
                         {filtered.map((shot, i) => {
                             return (
@@ -126,19 +126,19 @@ export function GallerySection() {
                                     exit={{ opacity: 0, scale: 0.95 }}
                                     transition={{ duration: 0.5, delay: i * 0.05 }}
                                     onClick={() => setLightbox(shot)}
-                                    className="group relative overflow-hidden rounded-[var(--radius-md)] border border-line aspect-[4/5] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-warm"
+                                    className="group relative overflow-hidden rounded-[var(--radius-md)] border border-line block w-full mb-3 md:mb-4 break-inside-avoid focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-warm"
                                     aria-label={`Apri ${shot.title}`}
                                 >
-                                    <div className="absolute inset-0 transition-transform duration-[var(--dur-cinema)] ease-[var(--ease-cinema)] group-hover:scale-[1.04]">
+                                    <div className="transition-transform duration-[var(--dur-cinema)] ease-[var(--ease-cinema)] group-hover:scale-[1.04]">
                                         <SmartImage
                                             src={portfolioImageUrl(shot.path, { width: 800, quality: 80, format: "webp" })}
                                             srcSet={portfolioImageSrcset(shot.path, 80)}
                                             sizes="(min-width: 768px) 25vw, 50vw"
                                             alt={shot.alt}
-                                            className="h-full"
+                                            natural
                                         />
                                     </div>
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80 group-hover:opacity-95 transition-opacity" />
+                                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/0 to-transparent opacity-90 group-hover:opacity-100 transition-opacity" />
 
                                     <div className="absolute top-3 left-3">
                                         <span className="text-[9px] uppercase tracking-[0.3em] bg-black/60 backdrop-blur-md text-warm-white px-2.5 py-1 rounded-full border border-line">
@@ -146,11 +146,11 @@ export function GallerySection() {
                                         </span>
                                     </div>
 
-                                    <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
-                                        <span className="text-display text-base md:text-lg text-warm-white tracking-tight">
+                                    <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-2">
+                                        <span className="text-display text-base md:text-lg text-warm-white tracking-tight truncate">
                                             {shot.title}
                                         </span>
-                                        <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-warm-white text-black w-8 h-8 rounded-full flex items-center justify-center">
+                                        <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-warm-white text-black w-8 h-8 rounded-full flex items-center justify-center shrink-0">
                                             <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" />
                                             </svg>
@@ -196,14 +196,15 @@ export function GallerySection() {
                             exit={{ opacity: 0, scale: 0.95 }}
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <div className="relative w-full max-h-[85vh] aspect-[4/5] mx-auto">
+                            <div className="relative mx-auto max-w-3xl max-h-[85vh] flex items-center justify-center">
                                 <SmartImage
                                     src={portfolioImageUrl(lightbox.path, { width: 1600, quality: 82, format: "webp" })}
                                     srcSet={portfolioImageSrcset(lightbox.path, 82)}
                                     sizes="(min-width: 1024px) 80vw, 100vw"
                                     alt={lightbox.alt}
                                     eager
-                                    className="h-full"
+                                    natural
+                                    className="max-h-[85vh] w-auto"
                                 />
                             </div>
                             <div className="text-center mt-4">

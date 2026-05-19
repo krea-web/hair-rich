@@ -138,14 +138,15 @@ export function PortfolioGallery() {
                     </div>
                 </div>
 
-                {/* Uniform 4:5 grid — matches the natural aspect of iPhone-shot
-                   portrait photos, so the subject is never cropped by tile
-                   geometry. 2 col mobile, 3 col md, 4 col lg. */}
+                {/* Masonry columns — each photo renders at its natural aspect
+                   ratio with no crop. CSS columns flows shorter/taller cards
+                   freely while keeping tight horizontal gutters. 2 col
+                   mobile, 3 col md, 4 col lg. */}
                 <AnimatePresence mode="popLayout">
                     <motion.div
                         key={filter}
                         layout
-                        className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4"
+                        className="columns-2 md:columns-3 lg:columns-4 gap-3 md:gap-4 [column-fill:_balance]"
                     >
                         {visible.map((shot, i) => {
                             return (
@@ -157,22 +158,22 @@ export function PortfolioGallery() {
                                     exit={{ opacity: 0, scale: 0.95 }}
                                     transition={{ duration: 0.4, delay: (i % 12) * 0.04 }}
                                     onClick={() => setLightboxIdx(filtered.indexOf(shot))}
-                                    className="group relative overflow-hidden rounded-[var(--radius-md)] border border-line aspect-[4/5] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-warm"
+                                    className="group relative overflow-hidden rounded-[var(--radius-md)] border border-line block w-full mb-3 md:mb-4 break-inside-avoid focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-warm"
                                     aria-label={`Apri ${shot.title}`}
                                 >
                                     <motion.div
                                         layoutId={`pgrid-${shot.path}`}
-                                        className="absolute inset-0 transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:scale-[1.04]"
+                                        className="transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:scale-[1.04]"
                                     >
                                         <SmartImage
                                             src={portfolioImageUrl(shot.path, { width: 800, quality: 80, format: "webp" })}
                                             srcSet={portfolioImageSrcset(shot.path, 80)}
                                             sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
                                             alt={shot.alt}
-                                            className="h-full"
+                                            natural
                                         />
                                     </motion.div>
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent" />
+                                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/0 to-transparent" />
 
                                     <div className="absolute top-3 left-3">
                                         <span className="text-[9px] uppercase tracking-[0.3em] bg-black/60 backdrop-blur-md text-warm-white px-2.5 py-1 rounded-full border border-line">
@@ -279,7 +280,7 @@ export function PortfolioGallery() {
                         >
                             <motion.div
                                 layoutId={`pgrid-${filtered[lightboxIdx].path}`}
-                                className="relative w-full max-h-[80vh] aspect-[4/5] mx-auto"
+                                className="relative mx-auto max-w-3xl max-h-[80vh] flex items-center justify-center"
                             >
                                 <SmartImage
                                     src={portfolioImageUrl(filtered[lightboxIdx].path, { width: 1600, quality: 82, format: "webp" })}
@@ -287,7 +288,8 @@ export function PortfolioGallery() {
                                     sizes="(min-width: 1024px) 80vw, 100vw"
                                     alt={filtered[lightboxIdx].alt}
                                     eager
-                                    className="h-full"
+                                    natural
+                                    className="max-h-[80vh] w-auto"
                                 />
                             </motion.div>
                             <div className="text-center mt-4">
