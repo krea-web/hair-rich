@@ -278,7 +278,7 @@ export const fr: Dict = {
         titleA: "Votre",
         titleB: "style.",
         intro:
-            "Choisissez service, barber et créneau. Quelques étapes, zéro attente au téléphone. Confirmation par WhatsApp.",
+            "Choisissez service, barber et créneau. Quelques étapes, zéro attente au téléphone. Confirmation immédiate.",
         contactLabels: { salon: "Salon", phone: "Téléphone", email: "Email" },
         responseHint: "Réponse sous 1h aux horaires d'ouverture",
         steps: { serviceStaff: "Service & Barber", dateTime: "Date & heure", confirm: "Confirmer" },
@@ -467,7 +467,7 @@ export const fr: Dict = {
             toggles: [
                 {
                     label: "Marketing & promos",
-                    description: "Recevez offres, avant-premières produits et nouveautés par email/WhatsApp",
+                    description: "Recevez offres, avant-premières produits et nouveautés par email",
                 },
                 {
                     label: "Rappels de rendez-vous",
@@ -497,7 +497,6 @@ export const fr: Dict = {
             codeEyebrow: "Votre code de parrainage",
             copyLink: "Copier le lien",
             copied: "Copié",
-            whatsapp: "WhatsApp",
             stats: { friends: "Amis invités", credits: "Crédits gagnés" },
             howEyebrow: "How it works",
             howTitle: "Comment ça marche",
@@ -505,7 +504,7 @@ export const fr: Dict = {
                 {
                     n: "01",
                     title: "Partagez le code",
-                    body: "Envoyez votre code ou lien aux amis, par WhatsApp ou email.",
+                    body: "Envoyez votre code ou lien aux amis, par email ou message.",
                 },
                 {
                     n: "02",

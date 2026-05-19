@@ -98,7 +98,7 @@ export default function ProfiloImpostazioniPage() {
                 <div className="bg-carbon border border-line rounded-[var(--radius-lg)] overflow-hidden divide-y divide-line">
                     <Toggle
                         label="Marketing e promozioni"
-                        description="Ricevi sconti, anteprime nuovi prodotti e novità via email/WhatsApp"
+                        description="Ricevi sconti, anteprime nuovi prodotti e novità via email"
                         defaultChecked
                     />
                     <Toggle

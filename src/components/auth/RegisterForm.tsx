@@ -111,7 +111,7 @@ export function RegisterForm() {
                             </div>
                         </div>
                         <div className="text-sm text-silver-dark leading-tight group-hover:text-silver transition-colors">
-                            Acconsento all'invio di promemoria, sconti speciali e comunicazioni di servizio via Email/WhatsApp (puoi disattivarlo dal profilo).
+                            Acconsento all'invio di promemoria, sconti speciali e comunicazioni di servizio via email (puoi disattivarlo dal profilo).
                         </div>
                     </label>
 

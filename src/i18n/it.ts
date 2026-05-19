@@ -289,7 +289,7 @@ export const it: Dict = {
         titleA: "Il tuo",
         titleB: "stile.",
         intro:
-            "Scegli servizio, barber e momento. Pochi step, zero attese al telefono. Ti confermiamo via WhatsApp.",
+            "Scegli servizio, barber e momento. Pochi step, zero attese al telefono. Conferma immediata.",
         contactLabels: { salon: "Salone", phone: "Telefono", email: "Email" },
         responseHint: "Risposta entro 1 ora negli orari di apertura",
         steps: { serviceStaff: "Servizio & Barber", dateTime: "Data e Ora", confirm: "Conferma" },
@@ -484,7 +484,7 @@ export const it: Dict = {
             toggles: [
                 {
                     label: "Marketing e promozioni",
-                    description: "Ricevi sconti, anteprime nuovi prodotti e novità via email/WhatsApp",
+                    description: "Ricevi sconti, anteprime nuovi prodotti e novità via email",
                 },
                 {
                     label: "Promemoria appuntamenti",
@@ -517,7 +517,6 @@ export const it: Dict = {
             codeEyebrow: "Il tuo codice invito",
             copyLink: "Copia link",
             copied: "Copiato",
-            whatsapp: "WhatsApp",
             stats: { friends: "Amici invitati", credits: "Crediti guadagnati" },
             howEyebrow: "How it works",
             howTitle: "Come funziona",
@@ -525,7 +524,7 @@ export const it: Dict = {
                 {
                     n: "01",
                     title: "Condividi il codice",
-                    body: "Manda il tuo codice o il link agli amici, via WhatsApp o email.",
+                    body: "Manda il tuo codice o il link agli amici via email o messaggio.",
                 },
                 {
                     n: "02",

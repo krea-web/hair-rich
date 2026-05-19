@@ -386,7 +386,6 @@ export interface Dict {
             codeEyebrow: string;
             copyLink: string;
             copied: string;
-            whatsapp: string;
             stats: { friends: string; credits: string };
             howEyebrow: string;
             howTitle: string;

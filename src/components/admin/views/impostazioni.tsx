@@ -12,7 +12,6 @@ type EditableSettings = Omit<SalonSettings, "id" | "updated_at" | "onboarding_co
 const FIELD_LABELS: Record<keyof EditableSettings, string> = {
     display_name: "Nome salone",
     phone: "Telefono",
-    whatsapp: "WhatsApp",
     email: "Email",
     address: "Indirizzo",
     city: "Città",
@@ -132,14 +131,6 @@ export default function AdminImpostazioniPage() {
                         <input
                             value={draft.phone ?? ""}
                             onChange={(e) => change("phone", e.target.value || null)}
-                            placeholder="+39 …"
-                            className="w-full bg-black-2 border border-line rounded-md px-3 py-2 text-warm-white"
-                        />
-                    </Field>
-                    <Field label={FIELD_LABELS.whatsapp}>
-                        <input
-                            value={draft.whatsapp ?? ""}
-                            onChange={(e) => change("whatsapp", e.target.value || null)}
                             placeholder="+39 …"
                             className="w-full bg-black-2 border border-line rounded-md px-3 py-2 text-warm-white"
                         />

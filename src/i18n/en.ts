@@ -274,7 +274,7 @@ export const en: Dict = {
         titleA: "Your",
         titleB: "style.",
         intro:
-            "Pick service, barber and time. Few steps, no phone wait. We confirm on WhatsApp.",
+            "Pick service, barber and time. Few steps, no phone wait. Instant confirmation.",
         contactLabels: { salon: "Salon", phone: "Phone", email: "Email" },
         responseHint: "Reply within 1 hour during opening times",
         steps: { serviceStaff: "Service & Barber", dateTime: "Date & Time", confirm: "Confirm" },
@@ -462,7 +462,7 @@ export const en: Dict = {
             toggles: [
                 {
                     label: "Marketing & promos",
-                    description: "Receive deals, new product previews and news via email/WhatsApp",
+                    description: "Receive deals, new product previews and news via email",
                 },
                 {
                     label: "Appointment reminders",
@@ -492,7 +492,6 @@ export const en: Dict = {
             codeEyebrow: "Your invite code",
             copyLink: "Copy link",
             copied: "Copied",
-            whatsapp: "WhatsApp",
             stats: { friends: "Friends invited", credits: "Credits earned" },
             howEyebrow: "How it works",
             howTitle: "How it works",
@@ -500,7 +499,7 @@ export const en: Dict = {
                 {
                     n: "01",
                     title: "Share the code",
-                    body: "Send your code or link to friends, on WhatsApp or email.",
+                    body: "Send your code or link to friends, by email or message.",
                 },
                 {
                     n: "02",

@@ -119,7 +119,6 @@ export interface SalonSettings {
     id: string;
     display_name: string;
     phone: string | null;
-    whatsapp: string | null;
     email: string | null;
     address: string | null;
     city: string | null;
