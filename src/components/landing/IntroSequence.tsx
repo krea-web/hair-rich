@@ -211,13 +211,18 @@ export function IntroSequence() {
 
                     {/* Inner padded wrapper: pushes the canvas (and the welcome
                        overlay) below the fixed navbar so frame 1 is never
-                       clipped behind it. */}
+                       clipped behind it. Mobile fills full width (subject is
+                       portrait, viewport is portrait — match). Desktop caps
+                       the canvas width so the subject doesn't bloat across a
+                       16:9 viewport. */}
                     <div className="absolute inset-0 pt-[68px] md:pt-[80px]">
-                        <canvas
-                            ref={canvasRef}
-                            className="w-full h-full block"
-                            aria-hidden="true"
-                        />
+                        <div className="w-full h-full mx-auto md:max-w-xl lg:max-w-2xl">
+                            <canvas
+                                ref={canvasRef}
+                                className="w-full h-full block"
+                                aria-hidden="true"
+                            />
+                        </div>
                     </div>
 
                     {!imagesReady && (

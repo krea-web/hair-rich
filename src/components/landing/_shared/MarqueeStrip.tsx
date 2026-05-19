@@ -18,10 +18,14 @@ const Asterisk = ({ className = "" }: { className?: string }) => (
 
 /**
  * Logo separator — renders `/logo-mark.webp`, a 1:1 square canvas with the
- * rose+scissors icon perfectly centered inside it (no asymmetric whitespace).
- * Because the canvas is square and the icon is centred in it, flex
- * `items-center` places the visual centre of the icon on the row's baseline,
- * and equal flex gaps on either side put it exactly between adjacent words.
+ * rose+scissors icon centered inside it. Wrapping the img in a span with
+ * explicit `line-height: 1` and `display: inline-flex; align-items: center`
+ * forces every browser (especially iOS Safari, which leaks descender space
+ * even with leading-none on the parent) to compute the icon's cross-axis
+ * center against a clean box, not the text line-box. The small translateY
+ * compensates the optical gap between the line-box center and the cap-height
+ * center of uppercase display glyphs so the logo sits visually between the
+ * words, not slightly below them.
  */
 function LogoSeparator({
     size = 32,
@@ -33,19 +37,27 @@ function LogoSeparator({
     tone?: "silver" | "ink";
 }) {
     return (
-        <img
-            src="/logo-mark.webp?v=2"
-            alt=""
+        <span
             aria-hidden="true"
-            draggable={false}
-            className="block shrink-0 select-none pointer-events-none"
+            className="inline-flex shrink-0 items-center justify-center select-none pointer-events-none"
             style={{
                 height: `${size}px`,
                 width: `${size}px`,
-                opacity,
-                filter: tone === "ink" ? "brightness(0) saturate(100%)" : undefined,
+                lineHeight: 1,
+                transform: "translateY(-0.08em)",
             }}
-        />
+        >
+            <img
+                src="/logo-mark.webp?v=2"
+                alt=""
+                draggable={false}
+                className="block w-full h-full"
+                style={{
+                    opacity,
+                    filter: tone === "ink" ? "brightness(0) saturate(100%)" : undefined,
+                }}
+            />
+        </span>
     );
 }
 
