@@ -6,31 +6,56 @@ import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { useToastStore } from "@/lib/store";
 
+type Purpose = "collaborazione" | "stampa" | "fornitore" | "altro";
+
 interface FormData {
     name: string;
     email: string;
     phone: string;
-    subject: string;
+    purpose: Purpose;
+    company: string;
     message: string;
 }
 
+const PURPOSE_LABELS: Record<Purpose, string> = {
+    collaborazione: "Collaborazione / Partnership",
+    stampa: "Stampa / Media",
+    fornitore: "Proposta fornitore",
+    altro: "Altro",
+};
+
+/**
+ * Generic outreach form for non-booking inquiries: collaborations, press,
+ * supplier pitches. For a haircut appointment customers should use the
+ * booking drawer — the /contatti page makes that explicit above this
+ * form so we don't pollute contact_messages with mis-routed bookings.
+ */
 export function ContactForm() {
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const addToast = useToastStore((s) => s.addToast);
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        reset,
+    } = useForm<FormData>({ defaultValues: { purpose: "collaborazione" } });
 
     const onSubmit = async (data: FormData) => {
         setSubmitting(true);
         setError(null);
         try {
+            const subjectLabel = PURPOSE_LABELS[data.purpose];
+            const subject = data.company
+                ? `${subjectLabel} · ${data.company}`
+                : subjectLabel;
             const supabase = createClient();
             const { error: insertErr } = await supabase.from("contact_messages").insert({
                 name: data.name,
                 email: data.email || null,
                 phone: data.phone || null,
-                subject: data.subject || null,
+                subject,
                 message: data.message,
                 source: "contact_page",
                 user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
@@ -38,7 +63,7 @@ export function ContactForm() {
             if (insertErr) throw insertErr;
             setSubmitted(true);
             reset();
-            addToast("Messaggio inviato. Ti rispondiamo entro un'ora lavorativa.", "success");
+            addToast("Richiesta inviata. Ti rispondiamo entro 24h.", "success");
         } catch (e: any) {
             setError(e?.message ?? "Errore nell'invio del messaggio");
             addToast("Errore nell'invio", "error");
@@ -60,16 +85,16 @@ export function ContactForm() {
                     </svg>
                 </div>
                 <h3 className="text-display text-2xl md:text-3xl text-warm-white mt-5 tracking-tight">
-                    Messaggio ricevuto
+                    Richiesta ricevuta
                 </h3>
                 <p className="mt-3 text-warm-white-muted text-sm md:text-base max-w-md mx-auto leading-relaxed">
-                    Grazie, ti risponderemo entro un'ora lavorativa al recapito che hai lasciato.
+                    Grazie. Ti rispondiamo entro 24h al recapito che hai lasciato.
                 </p>
                 <button
                     onClick={() => setSubmitted(false)}
                     className="mt-6 text-[10px] uppercase tracking-[0.3em] text-silver hover:text-warm-white font-body font-semibold transition-colors"
                 >
-                    Invia un altro messaggio
+                    Invia un'altra richiesta
                 </button>
             </motion.div>
         );
@@ -77,6 +102,19 @@ export function ContactForm() {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <Field label="Motivo del contatto">
+                <select
+                    {...register("purpose", { required: true })}
+                    className={`${inputClass} appearance-none cursor-pointer`}
+                >
+                    {(Object.keys(PURPOSE_LABELS) as Purpose[]).map((k) => (
+                        <option key={k} value={k}>
+                            {PURPOSE_LABELS[k]}
+                        </option>
+                    ))}
+                </select>
+            </Field>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Field label="Nome e cognome" error={errors.name?.message}>
                     <input
@@ -85,7 +123,28 @@ export function ContactForm() {
                         className={inputClass}
                     />
                 </Field>
-                <Field label="Telefono" error={errors.phone?.message}>
+                <Field label="Azienda / Testata (opzionale)">
+                    <input
+                        {...register("company")}
+                        placeholder="Es. Vogue Italia, L'Oréal"
+                        className={inputClass}
+                    />
+                </Field>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Field label="Email" error={errors.email?.message}>
+                    <input
+                        {...register("email", {
+                            required: "Email richiesta",
+                            pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Email non valida" },
+                        })}
+                        type="email"
+                        placeholder="mario@email.com"
+                        className={inputClass}
+                    />
+                </Field>
+                <Field label="Telefono (opzionale)" error={errors.phone?.message}>
                     <input
                         {...register("phone", { pattern: { value: /^\+?[0-9\s]{8,15}$/, message: "Numero non valido" } })}
                         type="tel"
@@ -94,26 +153,12 @@ export function ContactForm() {
                     />
                 </Field>
             </div>
-            <Field label="Email (opzionale)" error={errors.email?.message}>
-                <input
-                    {...register("email", { pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Email non valida" } })}
-                    type="email"
-                    placeholder="mario@email.com"
-                    className={inputClass}
-                />
-            </Field>
-            <Field label="Oggetto (opzionale)">
-                <input
-                    {...register("subject")}
-                    placeholder="Prenotazione, info, collaborazione…"
-                    className={inputClass}
-                />
-            </Field>
+
             <Field label="Messaggio" error={errors.message?.message}>
                 <textarea
                     {...register("message", { required: "Scrivici qualcosa", minLength: { value: 10, message: "Minimo 10 caratteri" } })}
                     rows={5}
-                    placeholder="Dicci tutto: tipo di taglio che vorresti, esigenze particolari, orari preferiti…"
+                    placeholder="Raccontaci cosa hai in mente: progetto, tempistiche, link al portfolio…"
                     className={`${inputClass} resize-none`}
                 />
             </Field>
@@ -136,7 +181,7 @@ export function ContactForm() {
                     </svg>
                 ) : (
                     <>
-                        Invia messaggio
+                        Invia richiesta
                         <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                         </svg>
