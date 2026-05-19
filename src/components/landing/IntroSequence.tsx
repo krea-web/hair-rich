@@ -256,13 +256,12 @@ export function IntroSequence() {
                         EST. 2017
                     </span>
 
-                    {/* Welcome word — visible from mount (no scroll required).
-                       Sits in the lower portion of the visible area so it
-                       doesn't fight with the subject which lives at the top
-                       just below the navbar. Stays at full opacity until the
-                       intro section scrolls away. */}
+                    {/* Welcome word — mobile only. On desktop the constrained
+                       canvas already breathes inside a wide viewport and the
+                       welcome text was competing with the subject + hero text
+                       below, so it's mobile-only by design. */}
                     <motion.div
-                        className="absolute inset-x-0 bottom-[15%] flex items-center justify-center pointer-events-none z-20 px-6"
+                        className="md:hidden absolute inset-x-0 bottom-[15%] flex items-center justify-center pointer-events-none z-20 px-6"
                         initial={{ opacity: 0, y: 40 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 1.2, delay: 0.9, ease: [0.25, 0.1, 0.25, 1] }}
