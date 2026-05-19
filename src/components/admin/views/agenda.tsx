@@ -60,7 +60,7 @@ function statusClasses(status: string): string {
 }
 
 function formatDayHeading(d: Date): string {
-    return d.toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" });
+    return d.toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" });
 }
 
 function isoDate(d: Date): string {
@@ -279,25 +279,26 @@ export default function AdminAgendaPage() {
     return (
         <div className="flex flex-col h-[100dvh] overflow-hidden">
             {/* Toolbar */}
-            <div className="h-16 border-b border-line px-6 flex items-center justify-between shrink-0 bg-black">
-                <div className="flex items-center gap-4">
-                    <h1 className="text-xl text-warm-white font-display">Agenda</h1>
+            <div className="h-16 border-b border-line px-3 md:px-6 flex items-center justify-between shrink-0 bg-black gap-2">
+                <div className="flex items-center gap-2 md:gap-4">
+                    <h1 className="hidden md:block text-xl text-warm-white font-display">Agenda</h1>
                     <button
                         onClick={goToday}
-                        className="hidden md:inline px-3 py-1.5 text-xs uppercase tracking-[0.2em] text-warm-white border border-line rounded-[var(--radius-sm)] hover:bg-carbon transition-colors"
+                        className="px-3 py-1.5 text-[10px] md:text-xs uppercase tracking-[0.2em] text-warm-white border border-line rounded-[var(--radius-sm)] hover:bg-carbon transition-colors"
                     >
                         Oggi
                     </button>
                     <a
                         href="/admin/agenda-week"
-                        className="hidden md:inline px-3 py-1.5 text-xs uppercase tracking-[0.2em] text-accent-warm border border-accent-warm/40 rounded-[var(--radius-sm)] hover:bg-accent-warm/10 transition-colors"
+                        className="px-3 py-1.5 text-[10px] md:text-xs uppercase tracking-[0.2em] text-accent-warm border border-accent-warm/40 rounded-[var(--radius-sm)] hover:bg-accent-warm/10 transition-colors"
                     >
-                        Settimana →
+                        <span className="md:hidden">Sett.</span>
+                        <span className="hidden md:inline">Settimana →</span>
                     </a>
                 </div>
 
-                <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 md:gap-4">
+                    <div className="flex items-center gap-1.5 md:gap-2">
                         <button
                             onClick={goPrev}
                             className="w-8 h-8 rounded border border-line flex items-center justify-center text-silver hover:text-warm-white hover:bg-carbon transition-colors"
@@ -307,7 +308,7 @@ export default function AdminAgendaPage() {
                                 <path d="M15 18l-6-6 6-6" />
                             </svg>
                         </button>
-                        <h2 className="font-body text-sm font-semibold text-warm-white min-w-[180px] text-center">
+                        <h2 className="font-body text-xs md:text-sm font-semibold text-warm-white min-w-[110px] md:min-w-[180px] text-center">
                             {formatDayHeading(currentDate)}
                         </h2>
                         <button
@@ -320,15 +321,93 @@ export default function AdminAgendaPage() {
                             </svg>
                         </button>
                     </div>
-                    <span className="text-[10px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold">
+                    <span className="hidden md:inline text-[10px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold">
                         {appts.length} {appts.length === 1 ? "appuntamento" : "appuntamenti"}
                     </span>
                 </div>
             </div>
 
-            {/* Grid */}
+            {/* Mobile list view (touch-friendly fallback for the desktop drag grid) */}
+            <div className="md:hidden flex-1 overflow-y-auto bg-[#111111]">
+                {loading ? (
+                    <div className="p-4 space-y-2">
+                        {[0, 1, 2, 3].map((i) => (
+                            <div key={i} className="h-20 bg-carbon border border-line rounded-[var(--radius-md)] animate-pulse" />
+                        ))}
+                    </div>
+                ) : appts.length === 0 ? (
+                    <p className="p-10 text-center text-warm-white-muted text-sm">
+                        Nessun appuntamento per oggi.
+                    </p>
+                ) : (
+                    <ul className="p-3 space-y-2 pb-[calc(env(safe-area-inset-bottom,0px)+24px)]">
+                        {[...appts]
+                            .sort((a, b) => (a.startISO < b.startISO ? -1 : 1))
+                            .map((ev) => {
+                                const startHHMM = toLocalHHMM(ev.startISO);
+                                const staffName =
+                                    staff.find((s) => s.id === ev.staffId)?.name ?? null;
+                                const open =
+                                    ev.status !== "completed" &&
+                                    ev.status !== "cancelled" &&
+                                    ev.status !== "no_show";
+                                return (
+                                    <li
+                                        key={ev.id}
+                                        className={`rounded-[var(--radius-md)] p-3 ${statusClasses(ev.status)}`}
+                                    >
+                                        <div className="flex items-start justify-between gap-3">
+                                            <div className="flex-1 min-w-0">
+                                                <div className="font-mono text-base tabular-nums leading-none">
+                                                    {startHHMM}
+                                                </div>
+                                                <div className="mt-1.5 text-sm font-body font-semibold leading-tight">
+                                                    {ev.title}
+                                                </div>
+                                                <div className="mt-1 text-[10px] uppercase tracking-[0.2em] opacity-70 flex items-center gap-2 flex-wrap">
+                                                    {staffName && <span>· {staffName}</span>}
+                                                    {ev.customerPhone && <a href={`tel:${ev.customerPhone.replace(/\s+/g, "")}`} className="underline">{ev.customerPhone}</a>}
+                                                </div>
+                                            </div>
+                                            {ev.isFirstVisit && (
+                                                <span className="flex-shrink-0 inline-flex items-center px-2 py-1 rounded bg-accent-warm/30 text-accent-warm text-[9px] uppercase tracking-wider font-bold">
+                                                    1° visita
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        {open && (
+                                            <div className="mt-3 flex gap-2">
+                                                <button
+                                                    onClick={() => changeStatus(ev.id, "completed")}
+                                                    className="flex-1 text-[10px] uppercase tracking-[0.25em] py-2 rounded-full bg-success/15 text-success border border-success/40 hover:bg-success hover:text-black transition-colors"
+                                                >
+                                                    Completa
+                                                </button>
+                                                <button
+                                                    onClick={() => changeStatus(ev.id, "no_show")}
+                                                    className="flex-1 text-[10px] uppercase tracking-[0.25em] py-2 rounded-full bg-warning/15 text-warning border border-warning/40 hover:bg-warning hover:text-black transition-colors"
+                                                >
+                                                    No-show
+                                                </button>
+                                                <button
+                                                    onClick={() => changeStatus(ev.id, "cancelled")}
+                                                    className="flex-1 text-[10px] uppercase tracking-[0.25em] py-2 rounded-full bg-error/15 text-error border border-error/40 hover:bg-error hover:text-black transition-colors"
+                                                >
+                                                    Annulla
+                                                </button>
+                                            </div>
+                                        )}
+                                    </li>
+                                );
+                            })}
+                    </ul>
+                )}
+            </div>
+
+            {/* Desktop drag grid */}
             <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-            <div className="flex-1 overflow-auto bg-[#111111] relative">
+            <div className="hidden md:block flex-1 overflow-auto bg-[#111111] relative">
                 <div className="min-w-[800px] h-full flex flex-col">
                     <div className="flex border-b border-line sticky top-0 bg-[#111111] z-20 shadow-sm">
                         <div className="w-20 shrink-0 border-r border-line bg-carbon/50 backdrop-blur" />

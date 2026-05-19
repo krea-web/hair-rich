@@ -290,13 +290,15 @@ export default function AdminImpostazioniPage() {
                 </div>
             </section>
 
-            {/* Sticky save bar */}
-            <div className="sticky bottom-0 -mx-6 md:-mx-10 px-6 md:px-10 py-4 bg-black/85 backdrop-blur-md border-t border-line flex flex-wrap items-center gap-3 justify-end">
+            {/* Sticky save bar — stack vertically on mobile so the dirty
+                label doesn't push the buttons onto a wrapped row */}
+            <div className="sticky bottom-0 -mx-6 md:-mx-10 px-6 md:px-10 py-3 md:py-4 bg-black/85 backdrop-blur-md border-t border-line flex flex-col md:flex-row items-stretch md:items-center gap-2 md:gap-3 md:justify-end">
                 {dirty && (
-                    <span className="text-[10px] uppercase tracking-[0.3em] text-accent-warm font-body font-semibold mr-auto">
+                    <span className="text-[10px] uppercase tracking-[0.3em] text-accent-warm font-body font-semibold md:mr-auto">
                         · modifiche non salvate
                     </span>
                 )}
+                <div className="flex items-center gap-2 md:gap-3 justify-end">
                 <button
                     onClick={cancel}
                     disabled={!dirty || saving}
@@ -311,6 +313,7 @@ export default function AdminImpostazioniPage() {
                 >
                     {saving ? "Salvataggio…" : "Salva impostazioni"}
                 </button>
+                </div>
             </div>
         </div>
     );

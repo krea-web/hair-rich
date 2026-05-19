@@ -186,7 +186,7 @@ export default function AdminStatisticheePage() {
                 <h2 className="text-display text-xl text-warm-white tracking-tight mb-4">
                     Fatturato giornaliero
                 </h2>
-                <div className="h-64">
+                <div className="h-48 md:h-64">
                     {loading ? (
                         <div className="h-full bg-black-2 rounded-md animate-pulse" />
                     ) : revenueChartData.length === 0 ? (
@@ -236,7 +236,7 @@ export default function AdminStatisticheePage() {
                     <h2 className="text-display text-xl text-warm-white tracking-tight mb-4">
                         Top 5 servizi
                     </h2>
-                    <div className="h-56">
+                    <div className="h-44 md:h-56">
                         {loading ? (
                             <div className="h-full bg-black-2 rounded-md animate-pulse" />
                         ) : topServicesData.length === 0 ? (
