@@ -118,6 +118,14 @@ function DraggableWrapper({
 
 export default function AdminAgendaPage() {
     const [currentDate, setCurrentDate] = useState(() => {
+        if (typeof window !== "undefined") {
+            const params = new URLSearchParams(window.location.search);
+            const q = params.get("date");
+            if (q && /^\d{4}-\d{2}-\d{2}$/.test(q)) {
+                const [y, m, d] = q.split("-").map((n) => parseInt(n, 10));
+                return new Date(y!, (m ?? 1) - 1, d ?? 1, 0, 0, 0, 0);
+            }
+        }
         const d = new Date();
         d.setHours(0, 0, 0, 0);
         return d;
@@ -280,6 +288,12 @@ export default function AdminAgendaPage() {
                     >
                         Oggi
                     </button>
+                    <a
+                        href="/admin/agenda-week"
+                        className="hidden md:inline px-3 py-1.5 text-xs uppercase tracking-[0.2em] text-accent-warm border border-accent-warm/40 rounded-[var(--radius-sm)] hover:bg-accent-warm/10 transition-colors"
+                    >
+                        Settimana →
+                    </a>
                 </div>
 
                 <div className="flex items-center gap-4">
@@ -425,6 +439,16 @@ export default function AdminAgendaPage() {
                                                     className="text-[9px] uppercase tracking-wide px-1.5 py-0.5 rounded bg-success/20 text-success hover:bg-success hover:text-black transition-colors"
                                                 >
                                                     Completa
+                                                </button>
+                                                <button
+                                                    onPointerDown={(e) => e.stopPropagation()}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        changeStatus(ev.id, "no_show");
+                                                    }}
+                                                    className="text-[9px] uppercase tracking-wide px-1.5 py-0.5 rounded bg-warning/20 text-warning hover:bg-warning hover:text-black transition-colors"
+                                                >
+                                                    No-show
                                                 </button>
                                                 <button
                                                     onPointerDown={(e) => e.stopPropagation()}

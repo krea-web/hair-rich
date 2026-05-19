@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useToastStore } from "@/lib/store";
+import { persistSortOrder } from "@/lib/sortOrder";
 
 interface StaffRow {
     id: string;
@@ -93,6 +94,21 @@ export default function AdminStaffPage() {
         return true;
     };
 
+    const move = async (id: string, dir: -1 | 1) => {
+        const i = staff.findIndex((s) => s.id === id);
+        const j = i + dir;
+        if (i < 0 || j < 0 || j >= staff.length) return;
+        const next = [...staff];
+        [next[i], next[j]] = [next[j]!, next[i]!];
+        setStaff(next);
+        try {
+            await persistSortOrder("staff", next.map((s) => s.id));
+        } catch (e: any) {
+            addToast(`Errore: ${e?.message ?? "?"}`, "error");
+            setStaff(staff);
+        }
+    };
+
     const totals = useMemo(
         () => ({
             total: staff.length,
@@ -138,7 +154,7 @@ export default function AdminStaffPage() {
 
             {!loading && (
                 <div className="space-y-4">
-                    {staff.map((s) => {
+                    {staff.map((s, idx) => {
                         const saving = savingId === s.id;
                         const personStats = stats[s.id] ?? { nextAppt: null, completedThisMonth: 0 };
                         return (
@@ -149,6 +165,28 @@ export default function AdminStaffPage() {
                                 }`}
                             >
                                 <div className="flex items-start gap-5">
+                                    <div className="flex flex-col gap-1 shrink-0">
+                                        <button
+                                            onClick={() => move(s.id, -1)}
+                                            disabled={idx === 0}
+                                            aria-label="Su"
+                                            className="text-silver-dark hover:text-warm-white disabled:opacity-20 transition-colors"
+                                        >
+                                            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                <path d="M18 15l-6-6-6 6" />
+                                            </svg>
+                                        </button>
+                                        <button
+                                            onClick={() => move(s.id, 1)}
+                                            disabled={idx === staff.length - 1}
+                                            aria-label="Giù"
+                                            className="text-silver-dark hover:text-warm-white disabled:opacity-20 transition-colors"
+                                        >
+                                            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                <path d="M6 9l6 6 6-6" />
+                                            </svg>
+                                        </button>
+                                    </div>
                                     <div className="w-16 h-16 rounded-full bg-gradient-to-br from-accent-warm/40 to-warning/40 flex items-center justify-center flex-shrink-0">
                                         <span className="text-2xl font-display text-warm-white">
                                             {s.name.charAt(0)}

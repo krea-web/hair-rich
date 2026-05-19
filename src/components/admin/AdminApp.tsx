@@ -21,6 +21,7 @@ import AdminFotoRisultatiPage from "./views/foto-risultati";
 import AdminChiusurePage from "./views/chiusure";
 import AdminOrariPage from "./views/orari";
 import AdminStatistichePage from "./views/statistiche";
+import AdminAgendaWeekPage from "./views/agenda-week";
 
 function pickView(pathname: string) {
     const p = pathname.replace(/\/$/, "");
@@ -29,6 +30,8 @@ function pickView(pathname: string) {
             return <AdminDashboardPage />;
         case "/admin/agenda":
             return <AdminAgendaPage />;
+        case "/admin/agenda-week":
+            return <AdminAgendaWeekPage />;
         case "/admin/clienti":
             return <AdminClientiPage />;
         case "/admin/ordini":
@@ -89,6 +92,24 @@ export function AdminApp() {
                 if (!data.session) {
                     window.location.replace("/login");
                     return;
+                }
+                // Onboarding guard: redirect to /admin/onboarding if the salon
+                // hasn't completed the wizard yet (unless already there).
+                const path = typeof window !== "undefined" ? window.location.pathname : "";
+                if (!path.startsWith("/admin/onboarding")) {
+                    try {
+                        const { data: setRow } = await supabase
+                            .from("salon_settings")
+                            .select("onboarding_completed_at")
+                            .limit(1)
+                            .maybeSingle();
+                        if (!cancelled && setRow && setRow.onboarding_completed_at == null) {
+                            window.location.replace("/admin/onboarding");
+                            return;
+                        }
+                    } catch {
+                        /* swallow */
+                    }
                 }
                 setReady(true);
             } catch {

@@ -132,5 +132,6 @@ export interface SalonSettings {
     cancel_min_hours: number;
     no_show_threshold: number;
     slot_step_min: number;
+    onboarding_completed_at: string | null;
     updated_at: string;
 }

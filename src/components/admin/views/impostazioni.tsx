@@ -7,7 +7,7 @@ import { fetchSalonSettings } from "@/lib/supabase/queries";
 import type { SalonSettings } from "@/lib/supabase/types";
 import { useToastStore } from "@/lib/store";
 
-type EditableSettings = Omit<SalonSettings, "id" | "updated_at">;
+type EditableSettings = Omit<SalonSettings, "id" | "updated_at" | "onboarding_completed_at">;
 
 const FIELD_LABELS: Record<keyof EditableSettings, string> = {
     display_name: "Nome salone",
@@ -40,9 +40,10 @@ export default function AdminImpostazioniPage() {
             const data = await fetchSalonSettings();
             setRow(data);
             if (data) {
-                const { id, updated_at, ...rest } = data;
+                const { id, updated_at, onboarding_completed_at, ...rest } = data;
                 void id;
                 void updated_at;
+                void onboarding_completed_at;
                 setDraft(rest);
             }
         } catch (e: any) {
@@ -78,9 +79,10 @@ export default function AdminImpostazioniPage() {
 
     const cancel = () => {
         if (!row) return;
-        const { id, updated_at, ...rest } = row;
+        const { id, updated_at, onboarding_completed_at, ...rest } = row;
         void id;
         void updated_at;
+        void onboarding_completed_at;
         setDraft(rest);
     };
 

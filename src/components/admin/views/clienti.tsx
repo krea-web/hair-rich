@@ -16,6 +16,7 @@ interface CustomerRow {
     is_guest: boolean;
     birthdate: string | null;
     notes: string | null;
+    noshow_count: number;
     created_at: string;
     completed_count: number;
     last_visit_at: string | null;
@@ -40,7 +41,7 @@ export default function AdminClientiPage() {
             const supabase = createClient();
             const { data: custData, error: custErr } = await supabase
                 .from("customers")
-                .select("id, first_name, last_name, email, phone, is_guest, birthdate, notes, created_at")
+                .select("id, first_name, last_name, email, phone, is_guest, birthdate, notes, noshow_count, created_at")
                 .order("created_at", { ascending: false });
             if (custErr) throw custErr;
 
@@ -239,6 +240,11 @@ export default function AdminClientiPage() {
                                                 {isRecurring && (
                                                     <span className="text-[9px] uppercase tracking-wider text-accent-warm border border-accent-warm/40 px-1.5 py-0.5 rounded">
                                                         Cliente abituale
+                                                    </span>
+                                                )}
+                                                {c.noshow_count > 0 && (
+                                                    <span className="text-[9px] uppercase tracking-wider text-warning border border-warning/40 px-1.5 py-0.5 rounded bg-warning/10">
+                                                        {c.noshow_count} no-show
                                                     </span>
                                                 )}
                                             </div>

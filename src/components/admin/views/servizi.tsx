@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { formatPrice } from "@/lib/format";
 import { useToastStore } from "@/lib/store";
+import { persistSortOrder } from "@/lib/sortOrder";
 
 interface ServiceRow {
     id: string;
@@ -68,6 +69,25 @@ export default function AdminServiziPage() {
         );
     }, [services, search]);
 
+    const move = async (id: string, dir: -1 | 1) => {
+        if (search.trim()) {
+            addToast("Disabilita la ricerca per riordinare", "info");
+            return;
+        }
+        const i = services.findIndex((s) => s.id === id);
+        const j = i + dir;
+        if (i < 0 || j < 0 || j >= services.length) return;
+        const next = [...services];
+        [next[i], next[j]] = [next[j]!, next[i]!];
+        setServices(next);
+        try {
+            await persistSortOrder("services", next.map((s) => s.id));
+        } catch (e: any) {
+            addToast(`Errore: ${e?.message ?? "?"}`, "error");
+            setServices(services);
+        }
+    };
+
     return (
         <div className="p-6 md:p-10 max-w-6xl mx-auto space-y-8">
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
@@ -107,6 +127,7 @@ export default function AdminServiziPage() {
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="bg-carbon text-[10px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold">
+                                <th className="w-8 p-3" aria-label="Ordine"></th>
                                 <th className="text-left p-3 font-semibold">Servizio</th>
                                 <th className="text-left p-3 font-semibold hidden md:table-cell">Badge</th>
                                 <th className="text-right p-3 font-semibold">Prezzo</th>
@@ -115,7 +136,7 @@ export default function AdminServiziPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {filtered.map((s) => {
+                            {filtered.map((s, idx) => {
                                 const saving = savingId === s.id;
                                 return (
                                     <tr
@@ -124,6 +145,30 @@ export default function AdminServiziPage() {
                                             !s.is_active ? "opacity-50" : ""
                                         }`}
                                     >
+                                        <td className="p-2 w-8">
+                                            <div className="flex flex-col gap-0.5">
+                                                <button
+                                                    onClick={() => move(s.id, -1)}
+                                                    disabled={idx === 0 || saving}
+                                                    aria-label="Su"
+                                                    className="text-silver-dark hover:text-warm-white disabled:opacity-20 transition-colors"
+                                                >
+                                                    <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                        <path d="M18 15l-6-6-6 6" />
+                                                    </svg>
+                                                </button>
+                                                <button
+                                                    onClick={() => move(s.id, 1)}
+                                                    disabled={idx === filtered.length - 1 || saving}
+                                                    aria-label="Giù"
+                                                    className="text-silver-dark hover:text-warm-white disabled:opacity-20 transition-colors"
+                                                >
+                                                    <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                        <path d="M6 9l6 6 6-6" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </td>
                                         <td className="p-3">
                                             <div className="font-body text-warm-white">{s.name}</div>
                                             {s.description && (
