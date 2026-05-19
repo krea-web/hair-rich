@@ -4,7 +4,7 @@ import { SiteHeader } from "../components/ui/SiteHeader";
 import { MobileTopBar } from "../components/ui/MobileTopBar";
 import { BookingDrawer } from "../components/booking/BookingDrawer";
 import { StickySlotPeek } from "../components/landing/StickySlotPeek";
-import { PageHero } from "../components/landing/_shared/PageHero";
+import { TeamHero } from "../components/landing/hero/TeamHero";
 import { TeamShowcase } from "../components/landing/TeamShowcase";
 import { SalonDay } from "../components/landing/SalonDay";
 import { ProcessSteps } from "../components/landing/_shared/ProcessSteps";
@@ -38,16 +38,7 @@ const VALUES = [
   <SiteHeader client:load />
   <MobileTopBar client:load />
   <main>
-    <PageHero
-      client:load
-      eyebrow="Team · Master barber"
-      titleA="Mani che"
-      titleB="pensano insieme"
-      intro="Hair Rich è il lavoro di un gruppo piccolo, scelto a mano, con cui condividiamo standard e linguaggio. Ognuno arriva da una formazione diversa e porta una sensibilità diversa al rituale."
-      bgImage="provvisorio/IMG_2143.jpeg"
-      metaLeft="Sul campo · Dal 2017"
-      metaRight="03 / Team"
-    />
+    <TeamHero client:load />
 
     <TeamShowcase client:visible />
 

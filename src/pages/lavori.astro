@@ -4,7 +4,7 @@ import { SiteHeader } from "../components/ui/SiteHeader";
 import { MobileTopBar } from "../components/ui/MobileTopBar";
 import { BookingDrawer } from "../components/booking/BookingDrawer";
 import { StickySlotPeek } from "../components/landing/StickySlotPeek";
-import { PageHero } from "../components/landing/_shared/PageHero";
+import { PortfolioHero } from "../components/landing/hero/PortfolioHero";
 import { PortfolioGallery } from "../components/landing/PortfolioGallery";
 import { BeforeAfterSlider } from "../components/landing/BeforeAfterSlider";
 import { FeaturedWork } from "../components/landing/FeaturedWork";
@@ -20,16 +20,7 @@ import { MobileBottomBar } from "../components/ui/MobileBottomBar";
   <SiteHeader client:load />
   <MobileTopBar client:load />
   <main>
-    <PageHero
-      client:load
-      eyebrow="Portfolio · Lavori"
-      titleA="Tagli che hanno"
-      titleB="camminato fuori da qui"
-      intro="Ogni foto è un cliente vero, fotografato a fine servizio. Niente stock, niente IA, niente catalogo riciclato. Solo quello che facciamo davvero, sulle teste degli olbiesi."
-      bgImage="provvisorio/IMG_2374.jpeg"
-      metaLeft="Archive 2024 — 2026"
-      metaRight="02 / Lavori"
-    />
+    <PortfolioHero client:load />
 
     <FeaturedWork
       client:visible

@@ -4,7 +4,7 @@ import { SiteHeader } from "../components/ui/SiteHeader";
 import { MobileTopBar } from "../components/ui/MobileTopBar";
 import { BookingDrawer } from "../components/booking/BookingDrawer";
 import { StickySlotPeek } from "../components/landing/StickySlotPeek";
-import { PageHero } from "../components/landing/_shared/PageHero";
+import { ShopHero } from "../components/landing/hero/ShopHero";
 import { ProductCatalog } from "../components/landing/ProductCatalog";
 import { FAQAccordion } from "../components/landing/_shared/FAQAccordion";
 import { Footer } from "../components/landing/Footer";
@@ -40,16 +40,7 @@ const FAQ = [
   <SiteHeader client:load />
   <MobileTopBar client:load />
   <main>
-    <PageHero
-      client:load
-      eyebrow="Shop · Ritiro in salone"
-      titleA="Prodotti scelti"
-      titleB="con le nostre mani"
-      intro="Le pomate, gli oli e gli strumenti che usiamo davvero in salone — selezionati uno per uno. Prenoti online, paghi e ritiri quando passi."
-      bgImage="provvisorio/IMG_2493.jpeg"
-      metaLeft="Ritiro entro 7 giorni"
-      metaRight="06 / Prodotti"
-    />
+    <ShopHero client:load />
 
     <ProductCatalog client:visible />
 

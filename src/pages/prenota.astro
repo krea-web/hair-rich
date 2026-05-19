@@ -3,7 +3,7 @@ import RootLayout from "../layouts/RootLayout.astro";
 import { SiteHeader } from "../components/ui/SiteHeader";
 import { MobileTopBar } from "../components/ui/MobileTopBar";
 import { BookingDrawer } from "../components/booking/BookingDrawer";
-import { PageHero } from "../components/landing/_shared/PageHero";
+import { BookingHero } from "../components/landing/hero/BookingHero";
 import { BookingSection } from "../components/landing/BookingSection";
 import { ProcessSteps } from "../components/landing/_shared/ProcessSteps";
 import { BookingReassurance } from "../components/landing/BookingReassurance";
@@ -65,16 +65,7 @@ const FAQ = [
   <SiteHeader client:load />
   <MobileTopBar client:load />
   <main>
-    <PageHero
-      client:load
-      eyebrow="Booking · Prenotazione online"
-      titleA="Prenota in"
-      titleB="trenta secondi"
-      intro="Disponibilità in tempo reale, conferma immediata, nessun pagamento online. Scegli servizio, ora e barber — pensiamo noi al resto."
-      bgImage="provvisorio/IMG_2493.jpeg"
-      metaLeft="Slot live · 365 giorni"
-      metaRight="04 / Prenota"
-    />
+    <BookingHero client:load />
 
     <BookingSection client:visible />
 

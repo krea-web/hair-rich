@@ -4,7 +4,7 @@ import { SiteHeader } from "../components/ui/SiteHeader";
 import { MobileTopBar } from "../components/ui/MobileTopBar";
 import { BookingDrawer } from "../components/booking/BookingDrawer";
 import { StickySlotPeek } from "../components/landing/StickySlotPeek";
-import { PageHero } from "../components/landing/_shared/PageHero";
+import { ServicesHero } from "../components/landing/hero/ServicesHero";
 import { ServiceCatalog } from "../components/landing/ServiceCatalog";
 import { ServiceStories } from "../components/landing/ServiceStories";
 import { StyleQuiz } from "../components/landing/StyleQuiz";
@@ -59,16 +59,7 @@ const FAQ = [
   <SiteHeader client:load />
   <MobileTopBar client:load />
   <main>
-    <PageHero
-      client:load
-      eyebrow="Servizi · Consulto · Rituali"
-      titleA="Niente listino."
-      titleB="Solo rituale tuo."
-      intro="Tre domande, sessanta secondi, e ti diciamo qual è il rituale calibrato sulla tua testa. Il prezzo arriva alla fine: non lo scegli al buio."
-      bgImage="provvisorio/IMG_2090.jpeg"
-      metaLeft="Consulto · 60 secondi"
-      metaRight="01 / Trova il tuo"
-    />
+    <ServicesHero client:load />
 
     <StyleQuiz client:load />
 
