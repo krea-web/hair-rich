@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
-import { fetchProducts, portfolioImageSrcset, portfolioImageUrl } from "@/lib/supabase/queries";
+import { fetchProducts, productImageSrcset, productImageUrl } from "@/lib/supabase/queries";
 import type { Product, ProductCategory } from "@/lib/supabase/types";
 import { formatPrice } from "@/lib/format";
 import { useCartStore, useToastStore } from "@/lib/store";
@@ -53,7 +53,7 @@ export function ProductCatalog() {
             name: p.name,
             price: p.price_cents,
             imageUrl: p.image_path
-                ? portfolioImageUrl(p.image_path, { width: 400, quality: 78, format: "webp" })
+                ? productImageUrl(p.image_path, { width: 400, quality: 78, format: "webp" })
                 : undefined,
         });
         if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(8);
@@ -125,8 +125,8 @@ export function ProductCatalog() {
                                         <div className="relative aspect-[4/5] bg-black-2 overflow-hidden">
                                             {p.image_path ? (
                                                 <SmartImage
-                                                    src={portfolioImageUrl(p.image_path, { width: 600, quality: 80, format: "webp" })}
-                                                    srcSet={portfolioImageSrcset(p.image_path, 80)}
+                                                    src={productImageUrl(p.image_path, { width: 600, quality: 80, format: "webp" })}
+                                                    srcSet={productImageSrcset(p.image_path, 80)}
                                                     sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
                                                     alt={p.name}
                                                     className="h-full transition-transform duration-700 group-hover:scale-[1.04]"

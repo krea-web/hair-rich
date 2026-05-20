@@ -28,12 +28,12 @@ interface TransformOpts {
 }
 
 /**
- * Builds a Supabase Image Transformations URL for the public `portfolio`
- * bucket. Use this everywhere instead of `publicStorageUrl` for portfolio
- * images — file delivery drops ~90% on average (a 3MB iPhone JPEG renders
- * as a ~200KB WebP at width 800).
+ * Generic Supabase Image Transformations URL builder for any public bucket.
+ * Routes through `/storage/v1/render/image/public/<bucket>/<path>` so the
+ * file is served as WebP at the requested width — saves ~90% bandwidth
+ * vs the raw asset.
  */
-export function portfolioImageUrl(path: string, opts: TransformOpts = {}): string {
+export function bucketImageUrl(bucket: string, path: string, opts: TransformOpts = {}): string {
     const params = new URLSearchParams();
     if (opts.width) params.set("width", String(opts.width));
     if (opts.height) params.set("height", String(opts.height));
@@ -41,21 +41,40 @@ export function portfolioImageUrl(path: string, opts: TransformOpts = {}): strin
     if (opts.resize) params.set("resize", opts.resize);
     if (opts.format) params.set("format", opts.format);
     const qs = params.toString();
-    return `${SUPABASE_URL}/storage/v1/render/image/public/portfolio/${path}${qs ? "?" + qs : ""}`;
+    return `${SUPABASE_URL}/storage/v1/render/image/public/${bucket}/${path}${qs ? "?" + qs : ""}`;
 }
 
-/**
- * Responsive srcset for a portfolio image at 3 widths + WebP. Returns a
- * srcset string for the `<img srcset>` attribute. Pair with a `sizes`
- * attribute on the consumer side.
- */
-export function portfolioImageSrcset(path: string, quality = 78): string {
+function bucketImageSrcset(bucket: string, path: string, quality = 78): string {
     return [480, 800, 1280, 1920]
         .map(
             (w) =>
-                `${portfolioImageUrl(path, { width: w, quality, format: "webp" })} ${w}w`
+                `${bucketImageUrl(bucket, path, { width: w, quality, format: "webp" })} ${w}w`
         )
         .join(", ");
+}
+
+/** Portfolio bucket helpers (haircut/editorial shots). */
+export function portfolioImageUrl(path: string, opts: TransformOpts = {}): string {
+    return bucketImageUrl("portfolio", path, opts);
+}
+export function portfolioImageSrcset(path: string, quality = 78): string {
+    return bucketImageSrcset("portfolio", path, quality);
+}
+
+/** Product bucket helpers (shop product photos). */
+export function productImageUrl(path: string, opts: TransformOpts = {}): string {
+    return bucketImageUrl("products", path, opts);
+}
+export function productImageSrcset(path: string, quality = 78): string {
+    return bucketImageSrcset("products", path, quality);
+}
+
+/** Asset bucket helpers (salon photos used in marketing surfaces). */
+export function assetImageUrl(path: string, opts: TransformOpts = {}): string {
+    return bucketImageUrl("asset", path, opts);
+}
+export function assetImageSrcset(path: string, quality = 78): string {
+    return bucketImageSrcset("asset", path, quality);
 }
 
 

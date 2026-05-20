@@ -1,15 +1,17 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { portfolioImageUrl } from "@/lib/supabase/queries";
+import { bucketImageUrl } from "@/lib/supabase/queries";
 
 interface Props {
     eyebrow: string;
     titleA: string;
     titleB?: string;
     intro?: string;
-    /** Optional storage_path within the portfolio bucket for the bg image. */
+    /** Optional storage path for the bg image (filename inside the chosen bucket). */
     bgImage?: string;
+    /** Bucket where bgImage lives. Defaults to portfolio for back-compat. */
+    bgImageBucket?: "portfolio" | "asset" | "products";
     /** Children appear under the intro, before the scroll cue. Typically a CTA. */
     children?: React.ReactNode;
     /** Bottom-left meta line: e.g. "Aggiornato · Maggio 2026" */
@@ -30,6 +32,7 @@ export function PageHero({
     titleB,
     intro,
     bgImage,
+    bgImageBucket = "portfolio",
     children,
     metaLeft,
     metaRight,
@@ -40,7 +43,7 @@ export function PageHero({
             {bgImage && (
                 <div className="absolute inset-0" aria-hidden="true">
                     <img
-                        src={portfolioImageUrl(bgImage, { width: 1920, quality: 70, format: "webp" })}
+                        src={bucketImageUrl(bgImageBucket, bgImage, { width: 1920, quality: 70, format: "webp" })}
                         alt=""
                         className="absolute inset-0 w-full h-full object-cover opacity-40 grayscale-[15%]"
                         loading="eager"
