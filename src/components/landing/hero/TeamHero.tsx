@@ -83,7 +83,7 @@ export function TeamHero() {
                         ? staff
                         : ([
                               { id: "s1", name: "Federico", role: "Master barber" },
-                              { id: "s2", name: "Luca", role: "Barber" },
+                              { id: "s2", name: "Cristian", role: "Barber" },
                               { id: "s3", name: "Marco", role: "Barber" },
                           ] as any[])
                     ).map((s, i) => (

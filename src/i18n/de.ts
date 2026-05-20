@@ -141,12 +141,12 @@ export const de: Dict = {
         },
         members: [
             {
-                name: "Luca",
+                name: "Cristian",
                 role: "Senior Barber",
                 specialties: "Schnitt · Bart · Styling",
                 quote: "Ein guter Schnitt zeigt sich nach einer Woche, nicht nach fünf Minuten.",
                 bio:
-                    "Luca kam ins Hair Rich Team nach Jahren in Salons in Rom und Cagliari. Spezialisiert auf moderne Schnitte, Texturierung und maßgeschneiderten Bart. Leichte Hand, echtes Zuhören und genau die richtige Prise Humor, um den Stuhl zum Privileg zu machen.",
+                    "Cristian kam ins Hair Rich Team nach Jahren in Salons in Rom und Cagliari. Spezialisiert auf moderne Schnitte, Texturierung und maßgeschneiderten Bart. Leichte Hand, echtes Zuhören und genau die richtige Prise Humor, um den Stuhl zum Privileg zu machen.",
                 tags: ["Modern", "Texture", "Beard", "Styling"],
                 yearsLabel: "6+",
                 yearsCaption: "Jahre Handwerk",

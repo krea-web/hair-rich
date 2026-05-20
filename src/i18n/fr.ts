@@ -141,12 +141,12 @@ export const fr: Dict = {
         },
         members: [
             {
-                name: "Luca",
+                name: "Cristian",
                 role: "Senior Barber",
                 specialties: "Coupe · Barbe · Styling",
                 quote: "Une bonne coupe se voit après une semaine, pas après cinq minutes.",
                 bio:
-                    "Luca a rejoint l'équipe Hair Rich après plusieurs années dans des salons à Rome et Cagliari. Spécialisé en coupes modernes, texturisation et barbe sur mesure. Main légère, écoute vraie, et juste ce qu'il faut d'humour pour faire de la séance un plaisir.",
+                    "Cristian a rejoint l'équipe Hair Rich après plusieurs années dans des salons à Rome et Cagliari. Spécialisé en coupes modernes, texturisation et barbe sur mesure. Main légère, écoute vraie, et juste ce qu'il faut d'humour pour faire de la séance un plaisir.",
                 tags: ["Modern", "Texture", "Beard", "Styling"],
                 yearsLabel: "6+",
                 yearsCaption: "années de métier",

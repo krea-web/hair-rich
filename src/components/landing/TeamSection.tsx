@@ -3,15 +3,13 @@
 import { motion } from "framer-motion";
 import { EditorialHeading } from "./_shared/EditorialHeading";
 import { SmartImage } from "./_shared/SmartImage";
+import { assetImageUrl, assetImageSrcset } from "@/lib/supabase/queries";
 import { useT } from "@/i18n/useLang";
 
-const FEATURED_IMG =
-    "https://images.unsplash.com/photo-1599351431613-18ef1fdd27e3?q=80&w=900&auto=format&fit=crop";
-const TEAM_IMGS = [
-    "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=600&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1620577314869-4d3a3b8a8d8b?q=80&w=600&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1582095133179-bfd08e2fc6b3?q=80&w=600&auto=format&fit=crop",
-];
+// Real staff portraits from the asset bucket. Order matches the i18n
+// members[] array (currently a single entry: Cristian).
+const FEATURED_IMG = "federico.webp";
+const TEAM_IMGS = ["cristian.webp"];
 
 export function TeamSection() {
     const { t } = useT();
@@ -44,7 +42,9 @@ export function TeamSection() {
                     >
                         <div className="relative aspect-[3/4]">
                             <SmartImage
-                                src={FEATURED_IMG}
+                                src={assetImageUrl(FEATURED_IMG, { width: 1200, quality: 82, format: "webp" })}
+                                srcSet={assetImageSrcset(FEATURED_IMG, 82)}
+                                sizes="(min-width: 768px) 42vw, 100vw"
                                 alt={`${FEATURED.name}, ${FEATURED.role}`}
                                 className="h-full grayscale-[10%]"
                             />
@@ -126,7 +126,7 @@ export function TeamSection() {
                     </div>
                 </div>
 
-                {/* ── Featured Member 2 (Luca) — stesso peso del founder ──────── */}
+                {/* ── Featured Member 2 — stesso peso del founder ──────── */}
                 {TEAM.map((m, i) => (
                     <div
                         key={m.name}
@@ -201,7 +201,9 @@ export function TeamSection() {
                         >
                             <div className="relative aspect-[3/4]">
                                 <SmartImage
-                                    src={m.img}
+                                    src={assetImageUrl(m.img, { width: 1200, quality: 82, format: "webp" })}
+                                    srcSet={assetImageSrcset(m.img, 82)}
+                                    sizes="(min-width: 768px) 42vw, 100vw"
                                     alt={`${m.name}, ${m.role}`}
                                     className="h-full grayscale-[10%]"
                                 />
