@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { fetchProducts, portfolioImageUrl } from "@/lib/supabase/queries";
+import { fetchProducts, assetImageUrl } from "@/lib/supabase/queries";
 import { formatPrice } from "@/lib/format";
 import type { Product } from "@/lib/supabase/types";
 
@@ -33,7 +33,7 @@ export function ShopHero() {
         <section className="relative bg-black overflow-hidden border-b border-line">
             <div className="absolute inset-0" aria-hidden="true">
                 <img
-                    src={portfolioImageUrl("provvisorio/IMG_2493.jpeg", {
+                    src={assetImageUrl("salone-esterno.webp", {
                         width: 1920,
                         quality: 70,
                         format: "webp",

@@ -2,7 +2,14 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { fetchAvailableSlots, fetchServices, portfolioImageUrl, portfolioImageSrcset } from "@/lib/supabase/queries";
+import {
+    fetchAvailableSlots,
+    fetchServices,
+    portfolioImageUrl,
+    portfolioImageSrcset,
+    assetImageUrl,
+    assetImageSrcset,
+} from "@/lib/supabase/queries";
 import type { AvailableSlot, Service } from "@/lib/supabase/types";
 import { formatPrice } from "@/lib/format";
 import { useBookingDrawer, useBookingStore } from "@/lib/store";
@@ -12,7 +19,10 @@ interface ServiceEnrichment {
     poetic: string;
     persona: string;
     tools: string[];
-    coverImage: string; // storage_path in portfolio bucket
+    /** Storage path inside the bucket. */
+    coverImage: string;
+    /** Defaults to "portfolio". Set to "asset" for real salon shots. */
+    coverBucket?: "portfolio" | "asset";
 }
 
 const ENRICHMENT: Record<string, ServiceEnrichment> = {
@@ -20,7 +30,8 @@ const ENRICHMENT: Record<string, ServiceEnrichment> = {
         poetic: "Forbice, controllo, niente fronzoli. La scuola italiana al millimetro.",
         persona: "Per chi sa cosa vuole e lo vuole eseguito bene.",
         tools: ["Forbice Joewell 5.5\"", "Shampoo dedicato", "Spazzolata finale"],
-        coverImage: "provvisorio/IMG_1200.jpeg",
+        coverImage: "salone-team-staff.webp",
+        coverBucket: "asset",
     },
     "fade-sfumatura": {
         poetic: "Tre lunghezze graduate, transizione invisibile, contorni a rasoio.",
@@ -44,7 +55,8 @@ const ENRICHMENT: Record<string, ServiceEnrichment> = {
         poetic: "Un'ora intera. Capelli e barba in continuità, niente dettaglio lasciato indietro.",
         persona: "Per chi viene da noi una volta al mese e vuole tutto.",
         tools: ["Tutto il taglio classico", "Tutta la barba sartoriale", "Pausa relax"],
-        coverImage: "provvisorio/IMG_2374.jpeg",
+        coverImage: "salone-vista-completa.webp",
+        coverBucket: "asset",
     },
     "taglio-domicilio": {
         poetic: "Veniamo noi. Stessa attrezzatura, stessa cura. A casa, in albergo, in barca.",
@@ -53,6 +65,18 @@ const ENRICHMENT: Record<string, ServiceEnrichment> = {
         coverImage: "provvisorio/IMG_2549.jpeg",
     },
 };
+
+function coverUrl(en: ServiceEnrichment, width: number) {
+    return en.coverBucket === "asset"
+        ? assetImageUrl(en.coverImage, { width, quality: 80, format: "webp" })
+        : portfolioImageUrl(en.coverImage, { width, quality: 80, format: "webp" });
+}
+
+function coverSrcset(en: ServiceEnrichment) {
+    return en.coverBucket === "asset"
+        ? assetImageSrcset(en.coverImage, 80)
+        : portfolioImageSrcset(en.coverImage, 80);
+}
 
 export function ServiceCatalog() {
     const [services, setServices] = useState<Service[]>([]);
@@ -128,8 +152,8 @@ export function ServiceCatalog() {
                                         <div className="relative aspect-[4/3] md:aspect-auto md:h-[640px]">
                                             {enrich?.coverImage && (
                                                 <SmartImage
-                                                    src={portfolioImageUrl(enrich.coverImage, { width: 1200, quality: 80, format: "webp" })}
-                                                    srcSet={portfolioImageSrcset(enrich.coverImage, 80)}
+                                                    src={coverUrl(enrich, 1200)}
+                                                    srcSet={coverSrcset(enrich)}
                                                     sizes="(min-width: 768px) 58vw, 100vw"
                                                     alt={s.name}
                                                     className="h-full grayscale-[10%]"

@@ -6,10 +6,10 @@ import { EditorialHeading } from "./_shared/EditorialHeading";
 import { assetImageUrl, assetImageSrcset } from "@/lib/supabase/queries";
 import { useT } from "@/i18n/useLang";
 
-// Real salon photos from the asset bucket. The large shot is the
-// storefront (immediately recognisable, Hair Rich wordmark visible); the
-// inset photo shows the floor with multiple stations and ceiling design.
-const ABOUT_LARGE = "salone-vetrina.webp";
+// Real salon photos from the asset bucket. Large card: the new landscape
+// storefront shot (signage + entrance both visible). Inset: the interior
+// with multiple stations and the hexagonal ceiling.
+const ABOUT_LARGE = "salone-esterno.webp";
 const ABOUT_SMALL = "salone-interno-postazioni.webp";
 
 export function ManifestoSection() {

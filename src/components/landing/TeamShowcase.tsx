@@ -2,10 +2,9 @@
 
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { fetchStaff, assetImageUrl, assetImageSrcset } from "@/lib/supabase/queries";
+import { fetchStaff } from "@/lib/supabase/queries";
 import type { Staff } from "@/lib/supabase/types";
 import { useBookingDrawer, useBookingStore } from "@/lib/store";
-import { SmartImage } from "./_shared/SmartImage";
 
 interface QA {
     q: string;
@@ -116,7 +115,7 @@ export function TeamShowcase() {
     return (
         <section className="relative py-20 md:py-32 px-6 md:px-12 lg:px-20 bg-black overflow-hidden">
             <div className="max-w-6xl mx-auto">
-                <div className="mb-12 md:mb-16 max-w-3xl">
+                <div className="mb-16 md:mb-24 max-w-3xl">
                     <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
                         Master barber
                     </span>
@@ -128,35 +127,6 @@ export function TeamShowcase() {
                         capire perché il risultato sarà quello giusto per te — e non solo "un taglio".
                     </p>
                 </div>
-
-                {/* Squadra al lavoro — due scatti reali del salone in azione,
-                    posti prima delle schede individuali per dare contesto. */}
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-80px" }}
-                    transition={{ duration: 0.7 }}
-                    className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4 mb-16 md:mb-24"
-                >
-                    <div className="md:col-span-7 relative rounded-[var(--radius-md)] border border-line overflow-hidden">
-                        <SmartImage
-                            src={assetImageUrl("salone-vista-completa.webp", { width: 1400, quality: 82, format: "webp" })}
-                            srcSet={assetImageSrcset("salone-vista-completa.webp", 82)}
-                            sizes="(min-width: 768px) 58vw, 100vw"
-                            alt="Hair Rich Olbia · la squadra al lavoro in salone"
-                            aspect="aspect-[4/5] md:aspect-[5/6]"
-                        />
-                    </div>
-                    <div className="md:col-span-5 relative rounded-[var(--radius-md)] border border-line overflow-hidden">
-                        <SmartImage
-                            src={assetImageUrl("salone-team-staff.webp", { width: 900, quality: 82, format: "webp" })}
-                            srcSet={assetImageSrcset("salone-team-staff.webp", 82)}
-                            sizes="(min-width: 768px) 42vw, 100vw"
-                            alt="Hair Rich Olbia · un barber in tenuta brandizzata"
-                            aspect="aspect-[4/5] md:aspect-[5/6]"
-                        />
-                    </div>
-                </motion.div>
 
                 {loading ? (
                     <div className="space-y-12">
