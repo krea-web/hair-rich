@@ -3,12 +3,14 @@
 import { motion } from "framer-motion";
 import { SmartImage } from "./_shared/SmartImage";
 import { EditorialHeading } from "./_shared/EditorialHeading";
+import { assetImageUrl, assetImageSrcset } from "@/lib/supabase/queries";
 import { useT } from "@/i18n/useLang";
 
-const ABOUT_IMG_LARGE =
-    "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=1200&auto=format&fit=crop";
-const ABOUT_IMG_SMALL =
-    "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?q=80&w=900&auto=format&fit=crop";
+// Real salon photos from the asset bucket. The large shot is the
+// storefront (immediately recognisable, Hair Rich wordmark visible); the
+// inset photo shows the floor with multiple stations and ceiling design.
+const ABOUT_LARGE = "salone-vetrina.webp";
+const ABOUT_SMALL = "salone-interno-postazioni.webp";
 
 export function ManifestoSection() {
     const { t } = useT();
@@ -31,7 +33,13 @@ export function ManifestoSection() {
                         viewport={{ once: true, margin: "-100px" }}
                         transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
                     >
-                        <SmartImage src={ABOUT_IMG_LARGE} alt="Hair Rich Olbia" className="h-full grayscale-[15%]" />
+                        <SmartImage
+                            src={assetImageUrl(ABOUT_LARGE, { width: 1200, quality: 82, format: "webp" })}
+                            srcSet={assetImageSrcset(ABOUT_LARGE, 82)}
+                            sizes="(min-width: 768px) 50vw, 100vw"
+                            alt="Hair Rich Olbia · vetrina del salone"
+                            className="h-full"
+                        />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
                     </motion.div>
 
@@ -42,7 +50,13 @@ export function ManifestoSection() {
                         viewport={{ once: true, margin: "-100px" }}
                         transition={{ duration: 0.9, delay: 0.3 }}
                     >
-                        <SmartImage src={ABOUT_IMG_SMALL} alt="" className="h-full" />
+                        <SmartImage
+                            src={assetImageUrl(ABOUT_SMALL, { width: 900, quality: 82, format: "webp" })}
+                            srcSet={assetImageSrcset(ABOUT_SMALL, 82)}
+                            sizes="(min-width: 768px) 22vw, 45vw"
+                            alt="Hair Rich Olbia · interno con le postazioni di lavoro"
+                            className="h-full"
+                        />
                     </motion.div>
 
                     <motion.div
