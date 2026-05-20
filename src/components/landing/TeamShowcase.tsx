@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { fetchStaff } from "@/lib/supabase/queries";
+import { fetchStaff, assetImageUrl, assetImageSrcset } from "@/lib/supabase/queries";
 import type { Staff } from "@/lib/supabase/types";
 import { useBookingDrawer, useBookingStore } from "@/lib/store";
 
@@ -47,12 +47,12 @@ const STAFF_ENRICHMENT: Record<string, Omit<EnrichedStaff, keyof Staff>> = {
             },
         ],
     },
-    luca: {
+    cristian: {
         yearsActive: "Dal 2019",
         expertise: ["Barba sartoriale", "Rasoio classico", "Skin fade", "Modellatura sopracciglia"],
         quote: "Sulla barba si fa la differenza nei millimetri, non nei centimetri.",
         fullBio:
-            "Luca è il nostro specialista barba e rasoio. Formato a Roma alla scuola Mascotte, in Hair Rich dal 2019. La modellatura barba è la sua cifra: lavora a rasoio classico per i contorni, forbice-trama per la rifinitura, e finisce con un olio scelto sulla base del tuo tipo di pelle.",
+            "Cristian è il nostro specialista barba e rasoio. Formato a Roma alla scuola Mascotte, in Hair Rich dal 2019. La modellatura barba è la sua cifra: lavora a rasoio classico per i contorni, forbice-trama per la rifinitura, e finisce con un olio scelto sulla base del tuo tipo di pelle.",
         signature: "Barba sartoriale a rasoio classico",
         qa: [
             {
@@ -152,10 +152,21 @@ export function TeamShowcase() {
                                     <div className="relative aspect-[4/5] rounded-[var(--radius-md)] border border-line bg-gradient-to-br from-carbon to-black-2 overflow-hidden">
                                         {member.avatar_url ? (
                                             <img
-                                                src={member.avatar_url}
+                                                src={
+                                                    member.avatar_url.startsWith("http")
+                                                        ? member.avatar_url
+                                                        : assetImageUrl(member.avatar_url, { width: 900, quality: 82, format: "webp" })
+                                                }
+                                                srcSet={
+                                                    member.avatar_url.startsWith("http")
+                                                        ? undefined
+                                                        : assetImageSrcset(member.avatar_url, 82)
+                                                }
+                                                sizes="(min-width: 1024px) 42vw, 100vw"
                                                 alt={member.name}
                                                 className="w-full h-full object-cover"
                                                 loading="lazy"
+                                                decoding="async"
                                             />
                                         ) : (
                                             <div className="absolute inset-0 flex items-center justify-center">
