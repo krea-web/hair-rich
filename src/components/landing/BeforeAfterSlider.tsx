@@ -11,34 +11,26 @@ interface Pair {
     note?: string;
 }
 
-// Demo pairs — sostituibili con coppie reali quando saranno disponibili.
-// Per ora uso 2 foto del portfolio come prima/dopo per mostrare il pattern.
-const DEMO_PAIRS: Pair[] = [
-    {
-        before: "provvisorio/IMG_1208.jpeg",
-        after: "provvisorio/IMG_2090.jpeg",
-        title: "Mid Fade · trasformazione classico → moderno",
-        note: "Da lunghezza uniforme a fade graduato con sopra texture lavorata.",
-    },
-    {
-        before: "provvisorio/IMG_2143.jpeg",
-        after: "provvisorio/IMG_2391.jpeg",
-        title: "Barba sartoriale · dal grezzo al sartoriale",
-        note: "Modellatura completa, rifinitura a rasoio e olio finale.",
-    },
-];
+// Single real before/after pair shot in salon. Same client, same chair,
+// same lighting — the only variable is the cut.
+const REAL_PAIR: Pair = {
+    before: "trasformazione-prima.webp",
+    after: "trasformazione-dopo.webp",
+    title: "Bowl cut + low fade · taglio sartoriale Hair Rich",
+    note: "Stessa testa, stesso sguardo. Solo il taglio cambia.",
+};
 
 interface Props {
-    pairs?: Pair[];
+    pair?: Pair;
 }
 
-export function BeforeAfterSlider({ pairs = DEMO_PAIRS }: Props) {
+export function BeforeAfterSlider({ pair = REAL_PAIR }: Props) {
     return (
         <section className="relative py-20 md:py-32 px-6 md:px-12 lg:px-20 bg-black-2 border-y border-line overflow-hidden">
-            <div className="max-w-6xl mx-auto">
-                <div className="mb-12 md:mb-16 max-w-2xl">
+            <div className="max-w-3xl mx-auto">
+                <div className="mb-12 md:mb-16 text-center md:text-left">
                     <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
-                        Trasformazioni
+                        Trasformazione
                     </span>
                     <h2 className="text-display text-4xl md:text-6xl text-warm-white tracking-tight mt-3 leading-[1.05]">
                         Prima e dopo, senza filtri.
@@ -49,11 +41,7 @@ export function BeforeAfterSlider({ pairs = DEMO_PAIRS }: Props) {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10">
-                    {pairs.map((pair, i) => (
-                        <Compare key={i} pair={pair} />
-                    ))}
-                </div>
+                <Compare pair={pair} />
             </div>
         </section>
     );
@@ -113,7 +101,7 @@ function Compare({ pair }: { pair: Pair }) {
                     if (e.key === "ArrowLeft") setPos((p) => Math.max(0, p - 5));
                     if (e.key === "ArrowRight") setPos((p) => Math.min(100, p + 5));
                 }}
-                className="relative aspect-[4/5] w-full rounded-[var(--radius-md)] border border-line overflow-hidden cursor-ew-resize select-none touch-none focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-accent-warm"
+                className="relative aspect-[3/4] w-full rounded-[var(--radius-md)] border border-line overflow-hidden cursor-ew-resize select-none touch-none focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-accent-warm"
             >
                 {/* After (sfondo full) */}
                 <img
