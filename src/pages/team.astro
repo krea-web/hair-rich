@@ -8,6 +8,7 @@ import { TeamHero } from "../components/landing/hero/TeamHero";
 import { TeamShowcase } from "../components/landing/TeamShowcase";
 import { SalonDay } from "../components/landing/SalonDay";
 import { ProcessSteps } from "../components/landing/_shared/ProcessSteps";
+import { InstagramSection } from "../components/landing/InstagramSection";
 import { Footer } from "../components/landing/Footer";
 import { ToastViewport } from "../components/ui/ToastViewport";
 import { MobileBottomBar } from "../components/ui/MobileBottomBar";
@@ -52,6 +53,8 @@ const VALUES = [
       title="Tre valori che si vedono in ogni servizio."
       steps={VALUES}
     />
+
+    <InstagramSection client:visible />
 
     <Footer client:idle />
   </main>
