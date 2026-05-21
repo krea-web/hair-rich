@@ -138,21 +138,27 @@ export function PortfolioGallery() {
                     </div>
                 </div>
 
-                {/* Mobile: square tiles in a 2-col grid with alternating
-                   vertical offsets — irregular checkerboard. The photo
-                   fills the square (object-cover), no black letterbox bars. */}
-                <div className="md:hidden grid grid-cols-2 gap-3 pb-12">
+                {/* Unified grid — square tiles on every breakpoint. Photos
+                   fill the tile (object-cover, server-side cover crop). Per-
+                   item margin-top staggers the row by index for the irregular
+                   checkerboard feel; mt-* (not transform) extends the row
+                   height instead of overlapping the next row. */}
+                <motion.div
+                    key={filter}
+                    layout
+                    className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 pb-12"
+                >
                     <AnimatePresence mode="popLayout">
                         {visible.map((shot, i) => {
                             const offset = i % 4;
                             const offsetClass =
                                 offset === 1
-                                    ? "translate-y-6"
+                                    ? "mt-6 md:mt-8"
                                     : offset === 2
-                                      ? "translate-y-3"
+                                      ? "mt-3 md:mt-4"
                                       : offset === 3
-                                        ? "translate-y-9"
-                                        : "translate-y-0";
+                                        ? "mt-9 md:mt-12"
+                                        : "mt-0";
                             return (
                                 <motion.button
                                     key={shot.path}
@@ -170,21 +176,21 @@ export function PortfolioGallery() {
                                         className="absolute inset-0 transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:scale-[1.05]"
                                     >
                                         <img
-                                            src={portfolioImageUrl(shot.path, { width: 600, height: 600, resize: "cover", quality: 80, format: "webp" })}
+                                            src={portfolioImageUrl(shot.path, { width: 800, height: 800, resize: "cover", quality: 80, format: "webp" })}
                                             alt={shot.alt}
                                             loading="lazy"
                                             decoding="async"
                                             className="absolute inset-0 w-full h-full object-cover"
                                         />
                                     </motion.div>
-                                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-black/0 to-transparent" />
-                                    <div className="absolute top-2 left-2">
-                                        <span className="text-[8px] uppercase tracking-[0.3em] bg-black/60 backdrop-blur-md text-warm-white px-2 py-0.5 rounded-full border border-line">
+                                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-transparent" />
+                                    <div className="absolute top-2 md:top-3 left-2 md:left-3">
+                                        <span className="text-[8px] md:text-[9px] uppercase tracking-[0.3em] bg-black/60 backdrop-blur-md text-warm-white px-2 md:px-2.5 py-0.5 md:py-1 rounded-full border border-line">
                                             {shot.tag}
                                         </span>
                                     </div>
-                                    <div className="absolute bottom-2 left-2 right-2">
-                                        <span className="text-display text-xs text-warm-white tracking-tight truncate block">
+                                    <div className="absolute bottom-2 md:bottom-3 left-2 md:left-3 right-2 md:right-3">
+                                        <span className="text-display text-xs md:text-base text-warm-white tracking-tight truncate block">
                                             {shot.title}
                                         </span>
                                     </div>
@@ -192,57 +198,7 @@ export function PortfolioGallery() {
                             );
                         })}
                     </AnimatePresence>
-                </div>
-
-                {/* Desktop: masonry columns — each photo renders at its natural
-                   aspect, no crop. */}
-                <AnimatePresence mode="popLayout">
-                    <motion.div
-                        key={filter}
-                        layout
-                        className="hidden md:block columns-3 lg:columns-4 gap-4 [column-fill:_balance]"
-                    >
-                        {visible.map((shot, i) => {
-                            return (
-                                <motion.button
-                                    key={shot.path}
-                                    layout
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.95 }}
-                                    transition={{ duration: 0.4, delay: (i % 12) * 0.04 }}
-                                    onClick={() => setLightboxIdx(filtered.indexOf(shot))}
-                                    className="group relative overflow-hidden rounded-[var(--radius-md)] border border-line block w-full mb-4 break-inside-avoid focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-warm"
-                                    aria-label={`Apri ${shot.title}`}
-                                >
-                                    <motion.div
-                                        className="transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:scale-[1.04]"
-                                    >
-                                        <SmartImage
-                                            src={portfolioImageUrl(shot.path, { width: 800, quality: 80, format: "webp" })}
-                                            srcSet={portfolioImageSrcset(shot.path, 80)}
-                                            sizes="(min-width: 1024px) 25vw, 33vw"
-                                            alt={shot.alt}
-                                            natural
-                                        />
-                                    </motion.div>
-                                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/0 to-transparent" />
-
-                                    <div className="absolute top-3 left-3">
-                                        <span className="text-[9px] uppercase tracking-[0.3em] bg-black/60 backdrop-blur-md text-warm-white px-2.5 py-1 rounded-full border border-line">
-                                            {shot.tag}
-                                        </span>
-                                    </div>
-                                    <div className="absolute bottom-3 left-3 right-3">
-                                        <span className="text-display text-base md:text-lg text-warm-white tracking-tight block truncate">
-                                            {shot.title}
-                                        </span>
-                                    </div>
-                                </motion.button>
-                            );
-                        })}
-                    </motion.div>
-                </AnimatePresence>
+                </motion.div>
 
                 {hasMore && (
                     <div className="mt-10 md:mt-14 flex justify-center">

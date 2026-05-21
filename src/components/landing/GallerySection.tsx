@@ -111,23 +111,24 @@ export function GallerySection() {
                     ))}
                 </motion.div>
 
-                {/* Mobile: square tiles in a 2-col grid with alternating
-                   vertical offsets — irregular checkerboard. The photo
-                   fills the entire square (object-cover), so no black bars
-                   ever appear. Portrait shots get a symmetric vertical
-                   crop, landscape shots get a symmetric horizontal crop. */}
-                <div className="md:hidden grid grid-cols-2 gap-3 pb-12">
+                {/* Unified grid — square tiles on every breakpoint. Photos
+                   fill the tile (object-cover, server-side cover crop) so no
+                   black bars. Per-item margin-top staggers the row by index
+                   for the irregular checkerboard feel — using mt-* (not
+                   transform) so offset items extend the row height instead
+                   of overlapping the next row. */}
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 pb-12">
                     <AnimatePresence mode="popLayout">
                         {filtered.map((shot, i) => {
                             const offset = i % 4;
                             const offsetClass =
                                 offset === 1
-                                    ? "translate-y-6"
+                                    ? "mt-6 md:mt-8"
                                     : offset === 2
-                                      ? "translate-y-3"
+                                      ? "mt-3 md:mt-4"
                                       : offset === 3
-                                        ? "translate-y-9"
-                                        : "translate-y-0";
+                                        ? "mt-9 md:mt-12"
+                                        : "mt-0";
                             return (
                                 <motion.button
                                     key={shot.path}
@@ -141,71 +142,21 @@ export function GallerySection() {
                                     aria-label={`Apri ${shot.title}`}
                                 >
                                     <img
-                                        src={portfolioImageUrl(shot.path, { width: 600, height: 600, resize: "cover", quality: 80, format: "webp" })}
+                                        src={portfolioImageUrl(shot.path, { width: 800, height: 800, resize: "cover", quality: 80, format: "webp" })}
                                         alt={shot.alt}
                                         loading="lazy"
                                         decoding="async"
                                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-[var(--dur-cinema)] ease-[var(--ease-cinema)] group-hover:scale-[1.05]"
                                     />
-                                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-black/0 to-transparent" />
-                                    <div className="absolute top-2 left-2">
-                                        <span className="text-[8px] uppercase tracking-[0.3em] bg-black/60 backdrop-blur-md text-warm-white px-2 py-0.5 rounded-full border border-line">
+                                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-transparent" />
+                                    <div className="absolute top-2 md:top-3 left-2 md:left-3">
+                                        <span className="text-[8px] md:text-[9px] uppercase tracking-[0.3em] bg-black/60 backdrop-blur-md text-warm-white px-2 md:px-2.5 py-0.5 md:py-1 rounded-full border border-line">
                                             {shot.tag}
                                         </span>
                                     </div>
-                                    <div className="absolute bottom-2 left-2 right-2">
-                                        <span className="text-display text-xs text-warm-white tracking-tight truncate block">
+                                    <div className="absolute bottom-2 md:bottom-3 left-2 md:left-3 right-2 md:right-3">
+                                        <span className="text-display text-xs md:text-base text-warm-white tracking-tight truncate block">
                                             {shot.title}
-                                        </span>
-                                    </div>
-                                </motion.button>
-                            );
-                        })}
-                    </AnimatePresence>
-                </div>
-
-                {/* Desktop: masonry columns — photos render at natural aspect,
-                   no crop. CSS columns balance heights across the row freely. */}
-                <div className="hidden md:block columns-4 gap-4 [column-fill:_balance]">
-                    <AnimatePresence mode="popLayout">
-                        {filtered.map((shot, i) => {
-                            return (
-                                <motion.button
-                                    key={shot.path}
-                                    layout
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.95 }}
-                                    transition={{ duration: 0.5, delay: i * 0.05 }}
-                                    onClick={() => setLightbox(shot)}
-                                    className="group relative overflow-hidden rounded-[var(--radius-md)] border border-line block w-full mb-4 break-inside-avoid focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-warm"
-                                    aria-label={`Apri ${shot.title}`}
-                                >
-                                    <div className="transition-transform duration-[var(--dur-cinema)] ease-[var(--ease-cinema)] group-hover:scale-[1.04]">
-                                        <SmartImage
-                                            src={portfolioImageUrl(shot.path, { width: 800, quality: 80, format: "webp" })}
-                                            srcSet={portfolioImageSrcset(shot.path, 80)}
-                                            sizes="25vw"
-                                            alt={shot.alt}
-                                            natural
-                                        />
-                                    </div>
-                                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/0 to-transparent opacity-90 group-hover:opacity-100 transition-opacity" />
-
-                                    <div className="absolute top-3 left-3">
-                                        <span className="text-[9px] uppercase tracking-[0.3em] bg-black/60 backdrop-blur-md text-warm-white px-2.5 py-1 rounded-full border border-line">
-                                            {shot.tag}
-                                        </span>
-                                    </div>
-
-                                    <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-2">
-                                        <span className="text-display text-base md:text-lg text-warm-white tracking-tight truncate">
-                                            {shot.title}
-                                        </span>
-                                        <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-warm-white text-black w-8 h-8 rounded-full flex items-center justify-center shrink-0">
-                                            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" />
-                                            </svg>
                                         </span>
                                     </div>
                                 </motion.button>
