@@ -25,7 +25,7 @@ export function BookingCTA({ source, label = "Prenota un taglio" }: Props) {
                     });
                 }
             }}
-            className="inline-flex items-center gap-3 px-7 py-4 bg-accent-warm text-black rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold hover:scale-[1.02] active:scale-95 transition-transform"
+            className="cta-shine cta-pulse inline-flex items-center gap-3 px-7 py-4 bg-accent-warm text-black rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold hover:scale-[1.02] active:scale-95 transition-transform"
         >
             {label}
             <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">

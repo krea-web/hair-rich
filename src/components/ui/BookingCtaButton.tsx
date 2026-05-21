@@ -23,7 +23,7 @@ export function BookingCtaButton({ label, pageHref = "/prenota", className = "",
         "group relative inline-flex items-center gap-3 px-8 py-4 rounded-full font-body font-semibold text-sm uppercase tracking-[0.2em] transition-transform hover:scale-[1.02] active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-warm-white";
     const styles =
         variant === "primary"
-            ? "bg-accent-warm text-black"
+            ? "bg-accent-warm text-black cta-shine cta-pulse"
             : "border border-line text-warm-white hover:border-warm-white hover:bg-warm-white/5";
 
     return (

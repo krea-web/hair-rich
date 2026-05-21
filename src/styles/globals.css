@@ -231,3 +231,83 @@ body[data-intro-active="true"] [data-intro-hidden] {
 [data-intro-hidden] {
   transition: opacity 0.5s ease, visibility 0.5s ease;
 }
+
+/* ── CTA shine animation. A diagonal highlight band sweeps across the
+   button every few seconds, giving the booking CTA a subtle "alive" feel
+   without changing its silhouette or color. Pair with overflow-hidden on
+   the host and a positioned ::before pseudo. */
+@keyframes hr-shine {
+  0% {
+    transform: translateX(-120%) skewX(-15deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  60% {
+    transform: translateX(220%) skewX(-15deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(220%) skewX(-15deg);
+    opacity: 0;
+  }
+}
+
+.cta-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.cta-shine::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: 0;
+  width: 40%;
+  height: 200%;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 100%
+  );
+  transform: translateX(-120%) skewX(-15deg);
+  animation: hr-shine 3.8s ease-in-out infinite;
+  animation-delay: 1.4s;
+  pointer-events: none;
+  z-index: 1;
+}
+.cta-shine > * {
+  position: relative;
+  z-index: 2;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cta-shine::before {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* ── CTA pulse glow. A soft accent-warm halo breathes around the
+   booking pill, signalling interactivity beyond the static shine. */
+@keyframes hr-cta-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 0 rgba(212, 165, 116, 0.5),
+      0 8px 24px -8px rgba(212, 165, 116, 0.35);
+  }
+  50% {
+    box-shadow:
+      0 0 0 10px rgba(212, 165, 116, 0),
+      0 12px 28px -10px rgba(212, 165, 116, 0.55);
+  }
+}
+.cta-pulse {
+  animation: hr-cta-pulse 2.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cta-pulse {
+    animation: none;
+  }
+}
