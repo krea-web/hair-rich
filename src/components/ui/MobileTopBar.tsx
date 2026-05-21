@@ -12,11 +12,11 @@ import { useT } from "@/i18n/useLang";
  * so the IntroSequence canvas behind it appears to emerge through it.
  *
  * Layout:
- *  [contact]   [        Hairrich extended logo (centered)        ] [profile] [lang]
+ *  [contact · cart]   [   Hairrich wordmark (centered)   ] [profile · lang]
  *
- * Hamburger removed: the bottom 5-tab nav (MobileBottomBar) is the primary
- * navigation on mobile. Tap the wordmark to go home, tap the contact icon
- * for direct access to telefono / email / indirizzo.
+ * Cart sits on the left next to the contact icon — keeps the right side
+ * less cluttered and gives the cart pill room to flip to its bright
+ * filled state when items land in it.
  */
 export function MobileTopBar() {
     const { lang } = useT();
@@ -53,8 +53,8 @@ export function MobileTopBar() {
                     WebkitBackdropFilter: "blur(18px) saturate(160%)",
                 }}
             >
-                {/* Contact shortcut */}
-                <div className="justify-self-start">
+                {/* Left group: contact + cart */}
+                <div className="justify-self-start flex items-center gap-1.5">
                     <a
                         href={lang === "it" ? "/contatti" : `/${lang}/contatti`}
                         aria-label="Contatti"
@@ -69,6 +69,7 @@ export function MobileTopBar() {
                             <path strokeLinecap="round" strokeLinejoin="round" d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.91.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0122 16.92z" />
                         </svg>
                     </a>
+                    <CartIconButton />
                 </div>
 
                 {/* Centered wordmark */}
@@ -80,9 +81,8 @@ export function MobileTopBar() {
                     <Wordmark variant="wordmark" size="sm" className="[&>img]:h-7" />
                 </a>
 
-                {/* Right group: cart + profile + lang */}
+                {/* Right group: profile + lang */}
                 <div className="justify-self-end flex items-center gap-1.5">
-                    <CartIconButton />
                     <a
                         href={profileHref}
                         aria-label="Profilo"

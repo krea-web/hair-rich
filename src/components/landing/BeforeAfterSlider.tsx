@@ -51,6 +51,7 @@ function Compare({ pair }: { pair: Pair }) {
     const [pos, setPos] = useState(50);
     const ref = useRef<HTMLDivElement>(null);
     const dragging = useRef(false);
+    const activePointer = useRef<number | null>(null);
 
     const updateFromEvent = (clientX: number) => {
         const el = ref.current;
@@ -63,16 +64,36 @@ function Compare({ pair }: { pair: Pair }) {
 
     const onMove = (e: React.PointerEvent) => {
         if (!dragging.current) return;
+        e.preventDefault();
         updateFromEvent(e.clientX);
     };
 
     const onDown = (e: React.PointerEvent) => {
+        const el = ref.current;
+        if (!el) return;
+        // Always capture on the SLIDER container, not the click target —
+        // a click on the handle/badge child would otherwise capture there
+        // and lose move events when the pointer leaves that child.
+        try {
+            el.setPointerCapture(e.pointerId);
+        } catch {
+            /* unsupported */
+        }
+        activePointer.current = e.pointerId;
         dragging.current = true;
-        (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
         updateFromEvent(e.clientX);
     };
 
-    const onUp = () => {
+    const onUp = (e: React.PointerEvent) => {
+        const el = ref.current;
+        if (el && activePointer.current != null) {
+            try {
+                el.releasePointerCapture(activePointer.current);
+            } catch {
+                /* already released */
+            }
+        }
+        activePointer.current = null;
         dragging.current = false;
     };
 
@@ -82,7 +103,7 @@ function Compare({ pair }: { pair: Pair }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.6 }}
-            className="space-y-4"
+            className="space-y-5"
         >
             <div
                 ref={ref}
@@ -90,7 +111,6 @@ function Compare({ pair }: { pair: Pair }) {
                 onPointerMove={onMove}
                 onPointerUp={onUp}
                 onPointerCancel={onUp}
-                onPointerLeave={onUp}
                 role="slider"
                 aria-label={`Confronto prima/dopo: ${pair.title}`}
                 aria-valuemin={0}
@@ -102,6 +122,7 @@ function Compare({ pair }: { pair: Pair }) {
                     if (e.key === "ArrowRight") setPos((p) => Math.min(100, p + 5));
                 }}
                 className="relative aspect-[3/4] w-full rounded-[var(--radius-md)] border border-line overflow-hidden cursor-ew-resize select-none touch-none focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-accent-warm"
+                style={{ WebkitUserSelect: "none", userSelect: "none" }}
             >
                 {/* After (sfondo full) */}
                 <img
@@ -127,15 +148,16 @@ function Compare({ pair }: { pair: Pair }) {
                     />
                 </div>
 
-                {/* Etichette */}
-                <span className="absolute top-4 left-4 bg-black/70 backdrop-blur-md text-warm-white text-[10px] uppercase tracking-[0.3em] font-body font-semibold px-3 py-1.5 rounded-full border border-line pointer-events-none">
+                {/* Labels — small badges, both with the same compact glass
+                    treatment so neither competes with the photo subject. */}
+                <span className="absolute top-3 left-3 md:top-4 md:left-4 bg-black/65 backdrop-blur-md text-warm-white text-[9px] uppercase tracking-[0.3em] font-body font-semibold px-2.5 py-1 rounded-full border border-line pointer-events-none">
                     Prima
                 </span>
-                <span className="cta-shine cta-pulse absolute top-4 right-4 bg-accent-warm text-black text-[10px] uppercase tracking-[0.3em] font-body font-semibold px-3 py-1.5 rounded-full pointer-events-none">
+                <span className="absolute top-3 right-3 md:top-4 md:right-4 bg-accent-warm text-black text-[9px] uppercase tracking-[0.3em] font-body font-semibold px-2.5 py-1 rounded-full pointer-events-none">
                     Dopo
                 </span>
 
-                {/* Handle */}
+                {/* Handle — divider line + circular grip with arrows */}
                 <div
                     className="absolute top-0 bottom-0 w-px bg-warm-white pointer-events-none"
                     style={{ left: `${pos}%` }}
@@ -147,12 +169,12 @@ function Compare({ pair }: { pair: Pair }) {
                     </div>
                 </div>
             </div>
-            <div>
-                <span className="text-display text-lg md:text-xl text-warm-white tracking-tight block">
+            <div className="text-center md:text-left">
+                <span className="text-display text-base md:text-lg text-warm-white tracking-tight block">
                     {pair.title}
                 </span>
                 {pair.note && (
-                    <p className="text-warm-white-muted text-sm mt-1">{pair.note}</p>
+                    <p className="text-warm-white-muted text-xs md:text-sm mt-1">{pair.note}</p>
                 )}
             </div>
         </motion.div>

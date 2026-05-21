@@ -2,15 +2,8 @@
 
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import {
-    fetchProducts,
-    productImageUrl,
-    productImageSrcset,
-    assetImageUrl,
-} from "@/lib/supabase/queries";
-import { formatPrice } from "@/lib/format";
-import type { Product } from "@/lib/supabase/types";
-import { useProductDrawer } from "@/lib/store";
+import { fetchProducts, assetImageUrl } from "@/lib/supabase/queries";
+import type { ProductCategory } from "@/lib/supabase/types";
 
 /**
  * Editorial hero for /prodotti. Storefront photo darkened in the bg, two
@@ -18,38 +11,76 @@ import { useProductDrawer } from "@/lib/store";
  * + Click & Collect badge on the left. The product cards open the global
  * ProductDrawer on tap — same interaction as the catalog below.
  */
+const CATEGORY_CARDS: {
+    key: ProductCategory;
+    label: string;
+    blurb: string;
+    icon: (props: { className?: string }) => React.JSX.Element;
+}[] = [
+    {
+        key: "hair",
+        label: "Capelli",
+        blurb: "Pomate, cere, polveri",
+        icon: ({ className = "" }) => (
+            <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 21V11l7-7 7 7v10M9 21v-6h6v6" />
+            </svg>
+        ),
+    },
+    {
+        key: "beard",
+        label: "Barba",
+        blurb: "Oli, balsami, mousse",
+        icon: ({ className = "" }) => (
+            <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3a4 4 0 014 4v3a8 8 0 11-8 0V7a4 4 0 014-4z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8 13v3a4 4 0 008 0v-3" />
+            </svg>
+        ),
+    },
+    {
+        key: "shave",
+        label: "Rasatura",
+        blurb: "Dopobarba, pre-shave",
+        icon: ({ className = "" }) => (
+            <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 12h13l3-3v6l-3-3M3 6v12" />
+            </svg>
+        ),
+    },
+    {
+        key: "tools",
+        label: "Strumenti",
+        blurb: "Forbici, pettini",
+        icon: ({ className = "" }) => (
+            <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.6">
+                <circle cx="6" cy="6" r="3" />
+                <circle cx="6" cy="18" r="3" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.5 7.5L20 18.5M8.5 16.5L20 5.5" />
+            </svg>
+        ),
+    },
+];
+
 export function ShopHero() {
-    const [products, setProducts] = useState<Product[]>([]);
-    const openProduct = useProductDrawer((s) => s.open);
+    const [counts, setCounts] = useState<Record<string, number>>({});
 
     useEffect(() => {
         let alive = true;
         fetchProducts()
             .then((rows) => {
-                if (alive) setProducts(rows.slice(0, 2));
+                if (!alive) return;
+                const c: Record<string, number> = {};
+                for (const p of rows) c[p.category] = (c[p.category] ?? 0) + 1;
+                setCounts(c);
             })
             .catch(() => {
-                /* fail silently, hero degrades to text-only */
+                /* fail silently — counts fall back to "—" */
             });
         return () => {
             alive = false;
         };
     }, []);
-
-    const handleOpen = (p: Product) => {
-        openProduct({
-            id: p.id,
-            slug: p.slug,
-            name: p.name,
-            brand: p.brand,
-            category: p.category,
-            description: p.description,
-            price_cents: p.price_cents,
-            stock: p.stock,
-            image_path: p.image_path,
-            badge: p.badge,
-        });
-    };
 
     return (
         <section className="relative bg-black overflow-hidden border-b border-line">
@@ -151,68 +182,59 @@ export function ShopHero() {
                         </motion.div>
                     </motion.div>
 
-                    {/* Right column — two featured product cards. Stack on lg+,
-                        side-by-side on smaller screens for visual interest. */}
+                    {/* Right column — four category cards. No product photos
+                        here (the catalog below already shows them all); these
+                        are conceptual jump-points: tap a category to land on
+                        the catalog already filtered. */}
                     <motion.div
                         initial="hidden"
                         animate="visible"
                         variants={{
                             hidden: {},
-                            visible: { transition: { staggerChildren: 0.18, delayChildren: 0.4 } },
+                            visible: { transition: { staggerChildren: 0.12, delayChildren: 0.35 } },
                         }}
                         className="lg:col-span-5 grid grid-cols-2 gap-3 md:gap-4"
                     >
-                        {(products.length > 0
-                            ? products
-                            : ([
-                                  { id: "ph1", name: "—", brand: "Hair Rich", price_cents: 0, image_path: null, slug: "", category: "hair", description: null, stock: 1, badge: null } as any,
-                                  { id: "ph2", name: "—", brand: "Hair Rich", price_cents: 0, image_path: null, slug: "", category: "hair", description: null, stock: 1, badge: null } as any,
-                              ])
-                        ).map((p, i) => (
-                            <motion.button
-                                key={p.id}
-                                variants={{
-                                    hidden: { opacity: 0, y: 24 },
-                                    visible: { opacity: 1, y: 0 },
-                                }}
-                                onClick={() => p.image_path && handleOpen(p)}
-                                className={`group relative aspect-square rounded-[var(--radius-md)] border border-line bg-carbon overflow-hidden text-left ${
-                                    i === 0 ? "lg:translate-y-6" : ""
-                                } ${p.image_path ? "" : "pointer-events-none"}`}
-                            >
-                                {p.image_path ? (
-                                    <img
-                                        src={productImageUrl(p.image_path, { width: 700, quality: 82, format: "webp" })}
-                                        srcSet={productImageSrcset(p.image_path, 82)}
-                                        sizes="(min-width: 1024px) 22vw, 45vw"
-                                        alt={p.name}
-                                        className="absolute inset-0 w-full h-full object-contain p-4 transition-transform duration-700 group-hover:scale-[1.04]"
-                                        loading="eager"
-                                    />
-                                ) : (
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <span className="text-display-alt text-5xl text-accent-warm/30">
-                                            {p.name.charAt(0)}
-                                        </span>
-                                    </div>
-                                )}
-                                <div className="absolute inset-x-0 bottom-0 p-3 md:p-4 bg-gradient-to-t from-black/95 via-black/40 to-transparent">
-                                    {p.brand && (
-                                        <span className="text-[8px] md:text-[9px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold block">
-                                            {p.brand}
-                                        </span>
-                                    )}
-                                    <span className="mt-0.5 text-warm-white text-xs md:text-sm font-body font-semibold leading-tight line-clamp-2 block">
-                                        {p.name}
+                        {CATEGORY_CARDS.map((c, i) => {
+                            const count = counts[c.key];
+                            return (
+                                <motion.a
+                                    key={c.key}
+                                    variants={{
+                                        hidden: { opacity: 0, y: 24 },
+                                        visible: { opacity: 1, y: 0 },
+                                    }}
+                                    href={`#catalog`}
+                                    className={`group relative aspect-square rounded-[var(--radius-md)] border border-line bg-gradient-to-br from-carbon to-black-2 overflow-hidden flex flex-col items-start justify-between p-4 md:p-5 hover:border-accent-warm/40 transition-colors ${
+                                        i === 0 || i === 3 ? "lg:translate-y-6" : ""
+                                    }`}
+                                >
+                                    {/* Big watermark numeral behind */}
+                                    <span
+                                        aria-hidden="true"
+                                        className="absolute -top-3 -right-3 text-display-alt text-7xl md:text-8xl text-warm-white/[0.05] leading-none pointer-events-none select-none"
+                                    >
+                                        {String(i + 1).padStart(2, "0")}
                                     </span>
-                                    {p.price_cents > 0 && (
-                                        <span className="mt-1 text-accent-warm text-sm md:text-base font-display tabular-nums block">
-                                            {formatPrice(p.price_cents)}
+                                    <span className="relative inline-flex w-10 h-10 rounded-full border border-accent-warm/40 bg-accent-warm/10 items-center justify-center text-accent-warm">
+                                        <c.icon className="w-5 h-5" />
+                                    </span>
+                                    <div className="relative">
+                                        <span className="block text-warm-white font-body font-semibold text-sm md:text-base leading-tight">
+                                            {c.label}
                                         </span>
-                                    )}
-                                </div>
-                            </motion.button>
-                        ))}
+                                        <span className="block text-silver-dark text-[10px] md:text-xs uppercase tracking-[0.25em] font-body font-semibold mt-1">
+                                            {c.blurb}
+                                        </span>
+                                        {typeof count === "number" && count > 0 && (
+                                            <span className="block mt-2 text-accent-warm text-xs md:text-sm font-display tabular-nums">
+                                                {count} {count === 1 ? "prodotto" : "prodotti"}
+                                            </span>
+                                        )}
+                                    </div>
+                                </motion.a>
+                            );
+                        })}
                     </motion.div>
                 </div>
 

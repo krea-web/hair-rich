@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { SmartImage } from "./_shared/SmartImage";
+import { assetImageUrl, assetImageSrcset } from "@/lib/supabase/queries";
 
 interface Review {
     name: string;
@@ -47,8 +48,9 @@ const REVIEWS: Review[] = [
     },
 ];
 
-const BG_IMG =
-    "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=1600&auto=format&fit=crop";
+// Real salon photo from the asset bucket — wider angle of the floor with
+// barbers at work. Lives in the asset/ bucket alongside the other shots.
+const BG_IMG_KEY = "salone-vista-completa.webp";
 
 function Stars({ rating }: { rating: number }) {
     return (
@@ -94,7 +96,14 @@ export function ReviewsSection() {
         >
             {/* Backdrop image */}
             <div className="absolute inset-0">
-                <SmartImage src={BG_IMG} alt="" aspect="" className="h-full grayscale brightness-[0.35]" />
+                <SmartImage
+                    src={assetImageUrl(BG_IMG_KEY, { width: 1920, quality: 70, format: "webp" })}
+                    srcSet={assetImageSrcset(BG_IMG_KEY, 70)}
+                    sizes="100vw"
+                    alt=""
+                    aspect=""
+                    className="h-full grayscale brightness-[0.35]"
+                />
                 <div className="absolute inset-0 bg-gradient-to-r from-black via-black/85 to-black/70" />
                 <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/60" />
             </div>

@@ -4,10 +4,10 @@ import { motion } from "framer-motion";
 import { portfolioImageUrl } from "@/lib/supabase/queries";
 
 const SERVICES = [
-    { num: "01", name: "Taglio sartoriale", time: "30 min" },
-    { num: "02", name: "Taglio + barba", time: "60 min" },
-    { num: "03", name: "Rasatura tradizionale", time: "45 min" },
-    { num: "04", name: "Servizi speciali", time: "on demand" },
+    { num: "01", name: "Taglio capelli", time: "30 min · 20€" },
+    { num: "02", name: "Taglio barba", time: "30 min · 10€" },
+    { num: "03", name: "Taglio capelli + barba", time: "60 min · 30€" },
+    { num: "04", name: "Taglio a domicilio", time: "solo telefono" },
 ];
 
 /**
@@ -54,15 +54,15 @@ export function ServicesHero() {
                         I servizi · L'indice
                     </span>
                     <h1 className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-warm-white tracking-tight mt-3 md:mt-5 leading-[0.95]">
-                        Niente listino.
+                        Listino chiaro.
                         <br />
                         <em className="text-display-alt not-italic text-silver">
-                            Solo servizio tuo.
+                            Niente sorprese.
                         </em>
                     </h1>
                     <p className="mt-5 md:mt-7 max-w-xl text-warm-white-muted text-base md:text-lg leading-relaxed">
-                        Tre domande, sessanta secondi, e ti diciamo qual è il servizio calibrato
-                        sulla tua testa. Il prezzo arriva alla fine: non lo scegli al buio.
+                        Tre servizi prenotabili online in 60 secondi. Un quarto su misura
+                        — il taglio a domicilio — si organizza solo per telefono.
                     </p>
                 </motion.div>
 

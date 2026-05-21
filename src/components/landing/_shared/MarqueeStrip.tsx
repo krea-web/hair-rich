@@ -102,26 +102,33 @@ export function MarqueeStrip({
     if (variant === "ribbon") {
         return (
             <div
-                className="relative overflow-hidden"
+                className="relative overflow-hidden border-y border-line"
                 style={{
                     background:
-                        "linear-gradient(180deg, #B8843D 0%, #D9A663 22%, #F2D49A 50%, #D9A663 78%, #A4702C 100%)",
-                    boxShadow:
-                        "inset 0 1px 0 rgba(255,236,200,0.55), inset 0 -1px 0 rgba(0,0,0,0.32), 0 1px 0 rgba(0,0,0,0.4)",
+                        "linear-gradient(135deg, #0a0a0a 0%, #1a0f04 35%, #2a1707 55%, #1a0f04 75%, #0a0a0a 100%)",
                 }}
                 aria-hidden="true"
             >
-                {/* subtle horizontal sheen */}
+                {/* Animated diagonal accent stripes — keeps the ribbon
+                    interesting without the heavy gold panel. */}
+                <div
+                    className="absolute inset-0 pointer-events-none opacity-[0.08]"
+                    style={{
+                        background:
+                            "repeating-linear-gradient(45deg, transparent 0, transparent 28px, var(--accent-warm) 28px, var(--accent-warm) 30px)",
+                    }}
+                />
+                {/* Subtle horizontal glow band crossing the middle */}
                 <div
                     className="absolute inset-0 pointer-events-none"
                     style={{
                         background:
-                            "linear-gradient(90deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0) 18%, rgba(255,255,255,0.14) 50%, rgba(0,0,0,0) 82%, rgba(0,0,0,0.18) 100%)",
+                            "linear-gradient(90deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 25%, rgba(212,165,116,0.12) 50%, rgba(0,0,0,0) 75%, rgba(0,0,0,0.5) 100%)",
                     }}
                 />
                 <MarqueeTrack
                     items={items}
-                    speedSec={speedSec ?? 22}
+                    speedSec={speedSec ?? 14}
                     direction="left"
                     gapClass="gap-6 md:gap-10"
                 >
@@ -130,19 +137,18 @@ export function MarqueeStrip({
                         return (
                             <span
                                 key={`${item}-${i}`}
-                                className="inline-flex items-center gap-6 md:gap-10 py-3.5 md:py-4 leading-none"
-                                style={{ color: "#1a0f04" }}
+                                className="inline-flex items-center gap-6 md:gap-10 py-4 md:py-5 leading-none"
                             >
                                 {italic ? (
-                                    <span className="text-display-alt text-2xl md:text-3xl leading-none">
+                                    <span className="text-display-alt text-2xl md:text-3xl leading-none text-accent-warm">
                                         {item}
                                     </span>
                                 ) : (
-                                    <span className="text-display text-[11px] md:text-sm tracking-[0.42em] font-semibold uppercase leading-none">
+                                    <span className="text-display text-[11px] md:text-sm tracking-[0.42em] font-semibold uppercase leading-none text-warm-white">
                                         {item}
                                     </span>
                                 )}
-                                <LogoSeparator size={40} tone="ink" opacity={0.85} />
+                                <LogoSeparator size={40} opacity={0.95} />
                             </span>
                         );
                     }}
@@ -160,7 +166,7 @@ export function MarqueeStrip({
                 <div className="space-y-1 md:space-y-2">
                     <MarqueeTrack
                         items={items}
-                        speedSec={speedSec ?? 22}
+                        speedSec={speedSec ?? 12}
                         direction="left"
                         gapClass="gap-8 md:gap-12"
                     >
@@ -176,7 +182,7 @@ export function MarqueeStrip({
 
                     <MarqueeTrack
                         items={[...items].reverse()}
-                        speedSec={(speedSec ?? 22) + 4}
+                        speedSec={(speedSec ?? 12) + 3}
                         direction="right"
                         gapClass="gap-8 md:gap-12"
                     >
@@ -208,7 +214,7 @@ export function MarqueeStrip({
         >
             <MarqueeTrack
                 items={items}
-                speedSec={speedSec ?? 22}
+                speedSec={speedSec ?? 13}
                 direction="left"
                 gapClass="gap-7 md:gap-12"
             >
