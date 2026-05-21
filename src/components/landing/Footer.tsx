@@ -3,6 +3,7 @@
 import { SITE } from "@/lib/constants";
 import { useT } from "@/i18n/useLang";
 import { useBookingDrawer } from "@/lib/store";
+import { assetImageUrl, assetImageSrcset } from "@/lib/supabase/queries";
 
 const HOURS_RAW = [
     { dayKey: "mon" as const, hours: "closed" as const },
@@ -46,38 +47,68 @@ export function Footer() {
 
     return (
         <footer className="relative bg-black border-t border-line overflow-hidden">
-            {/* ── BLOCK 1 · BIG EDITORIAL CTA ─────────────────────────────────── */}
-            <div className="relative border-b border-line">
-                <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 pt-20 md:pt-32 pb-16 md:pb-24">
-                    <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-end">
-                        <div className="md:col-span-8">
-                            <span className="text-[10px] uppercase tracking-[0.5em] text-accent-warm font-body font-semibold">
-                                Pronto?
-                            </span>
-                            <h2 className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-warm-white tracking-tight mt-4 leading-[0.95]">
-                                Vieni a trovarci.<br />
-                                <em className="text-display-alt not-italic text-silver">
-                                    Ti aspettiamo.
-                                </em>
-                            </h2>
-                        </div>
-                        <div className="md:col-span-4 md:text-right">
-                            <button
-                                onClick={openDrawer}
-                                className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-accent-warm text-black rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform"
-                            >
-                                Prenota ora
-                                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                                </svg>
-                            </button>
-                            <a
-                                href={phoneHref}
-                                className="block mt-4 text-warm-white-muted text-sm font-body hover:text-warm-white transition-colors md:text-right"
-                            >
-                                oppure chiama <span className="text-warm-white font-semibold">{SITE.phone}</span>
-                            </a>
-                        </div>
+            {/* ── BLOCK 1 · CINEMATIC CTA WITH STOREFRONT BG ──────────────────── */}
+            <div className="relative border-b border-line overflow-hidden">
+                {/* Full-bleed storefront photo, darkened for legibility */}
+                <div className="absolute inset-0" aria-hidden="true">
+                    <img
+                        src={assetImageUrl("salone-esterno.webp", { width: 1920, quality: 75, format: "webp" })}
+                        srcSet={assetImageSrcset("salone-esterno.webp", 75)}
+                        sizes="100vw"
+                        alt=""
+                        className="absolute inset-0 w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/55" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-black/50" />
+                </div>
+
+                {/* Decorative editorial watermark */}
+                <div
+                    aria-hidden="true"
+                    className="absolute -bottom-10 right-2 md:right-8 text-display-alt text-[28vw] md:text-[14vw] text-warm-white/[0.05] leading-none pointer-events-none select-none"
+                >
+                    rich
+                </div>
+
+                <div className="relative max-w-4xl mx-auto px-6 md:px-12 lg:px-20 pt-24 md:pt-36 pb-20 md:pb-32 text-center">
+                    <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent-warm/15 border border-accent-warm/40 text-[10px] uppercase tracking-[0.5em] text-accent-warm font-body font-semibold">
+                        <span className="w-1.5 h-1.5 rounded-full bg-accent-warm animate-pulse" aria-hidden="true" />
+                        Pronto?
+                    </span>
+
+                    <h2 className="text-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-warm-white tracking-tight mt-6 md:mt-8 leading-[0.95]">
+                        Vieni a trovarci.<br />
+                        <em className="text-display-alt not-italic text-silver">
+                            Ti aspettiamo.
+                        </em>
+                    </h2>
+
+                    <p className="mt-6 md:mt-8 max-w-xl mx-auto text-warm-white-muted text-base md:text-lg leading-relaxed">
+                        Prenota in 60 secondi — conferma immediata, niente attese al telefono.
+                        Oppure passa direttamente da noi in Via Regina Elena.
+                    </p>
+
+                    <div className="mt-10 md:mt-12 flex flex-col items-center gap-4">
+                        <button
+                            onClick={openDrawer}
+                            className="cta-shine cta-pulse group inline-flex items-center justify-center gap-3 px-10 py-5 bg-accent-warm text-black rounded-full text-sm md:text-base uppercase tracking-[0.3em] font-body font-semibold active:scale-95 hover:scale-[1.03] transition-transform shadow-[0_20px_60px_-15px_rgba(212,165,116,0.55)]"
+                        >
+                            Prenota ora
+                            <svg viewBox="0 0 24 24" className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg>
+                        </button>
+                        <a
+                            href={phoneHref}
+                            className="inline-flex items-center gap-2 text-warm-white-muted text-sm md:text-base font-body hover:text-warm-white transition-colors"
+                        >
+                            <svg viewBox="0 0 24 24" className="w-4 h-4 text-accent-warm" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.91.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0122 16.92z" />
+                            </svg>
+                            oppure chiama <span className="text-warm-white font-semibold">{SITE.phone}</span>
+                        </a>
                     </div>
                 </div>
             </div>
