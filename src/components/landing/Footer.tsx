@@ -72,44 +72,16 @@ export function Footer() {
                     rich
                 </div>
 
-                <div className="relative max-w-4xl mx-auto px-6 md:px-12 lg:px-20 pt-24 md:pt-36 pb-20 md:pb-32 text-center">
-                    <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent-warm/15 border border-accent-warm/40 text-[10px] uppercase tracking-[0.5em] text-accent-warm font-body font-semibold">
-                        <span className="w-1.5 h-1.5 rounded-full bg-accent-warm animate-pulse" aria-hidden="true" />
-                        Pronto?
-                    </span>
-
-                    <h2 className="text-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-warm-white tracking-tight mt-6 md:mt-8 leading-[0.95]">
-                        Vieni a trovarci.<br />
-                        <em className="text-display-alt not-italic text-silver">
-                            Ti aspettiamo.
-                        </em>
-                    </h2>
-
-                    <p className="mt-6 md:mt-8 max-w-xl mx-auto text-warm-white-muted text-base md:text-lg leading-relaxed">
-                        Prenota in 60 secondi — conferma immediata, niente attese al telefono.
-                        Oppure passa direttamente da noi in Via Regina Elena.
-                    </p>
-
-                    <div className="mt-10 md:mt-12 flex flex-col items-center gap-4">
-                        <button
-                            onClick={openDrawer}
-                            className="cta-shine cta-pulse group inline-flex items-center justify-center gap-3 px-10 py-5 bg-accent-warm text-black rounded-full text-sm md:text-base uppercase tracking-[0.3em] font-body font-semibold active:scale-95 hover:scale-[1.03] transition-transform shadow-[0_20px_60px_-15px_rgba(212,165,116,0.55)]"
-                        >
-                            Prenota ora
-                            <svg viewBox="0 0 24 24" className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                            </svg>
-                        </button>
-                        <a
-                            href={phoneHref}
-                            className="inline-flex items-center gap-2 text-warm-white-muted text-sm md:text-base font-body hover:text-warm-white transition-colors"
-                        >
-                            <svg viewBox="0 0 24 24" className="w-4 h-4 text-accent-warm" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.91.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0122 16.92z" />
-                            </svg>
-                            oppure chiama <span className="text-warm-white font-semibold">{SITE.phone}</span>
-                        </a>
-                    </div>
+                <div className="relative max-w-4xl mx-auto px-6 md:px-12 lg:px-20 py-24 md:py-40 flex items-center justify-center min-h-[55vh] md:min-h-[65vh]">
+                    <button
+                        onClick={openDrawer}
+                        className="cta-shine cta-pulse group inline-flex items-center justify-center gap-3 md:gap-4 px-10 md:px-14 py-5 md:py-6 bg-accent-warm text-black rounded-full text-sm md:text-lg uppercase tracking-[0.3em] font-body font-semibold active:scale-95 hover:scale-[1.03] transition-transform shadow-[0_24px_70px_-15px_rgba(212,165,116,0.65)]"
+                    >
+                        Prenota ora
+                        <svg viewBox="0 0 24 24" className="w-5 h-5 md:w-6 md:h-6 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                        </svg>
+                    </button>
                 </div>
             </div>
 
