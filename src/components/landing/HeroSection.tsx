@@ -81,23 +81,20 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
                 transition={{ duration: 0.8, delay: 0.8 }}
             >
                 <BookingCtaButton label={t.hero.primaryCta} />
-                {/* Secondary inline link su mobile (no button), bordo su desktop */}
+                {/* "Servizi" secondary: desktop only. On mobile the hero stays
+                    focused on the single booking CTA — the bottom-nav already
+                    surfaces Servizi from every screen. */}
                 <a
                     href="/servizi"
                     className="hidden md:inline-flex items-center gap-3 border border-line text-warm-white px-8 py-4 rounded-full font-body font-semibold text-sm uppercase tracking-[0.2em] transition-colors hover:border-warm-white hover:bg-warm-white/5"
                 >
                     {t.hero.secondaryCta}
                 </a>
-                <a
-                    href="/servizi"
-                    className="md:hidden inline-flex items-center gap-2 text-silver underline underline-offset-4 text-xs uppercase tracking-[0.25em] font-body font-semibold"
-                >
-                    {t.hero.secondaryCta}
-                </a>
             </motion.div>
 
-            {/* Prossimo slot disponibile (live da Supabase) */}
-            <div className="mt-5 md:mt-6 flex flex-wrap items-center gap-3">
+            {/* Prossimo slot + Open Now: desktop only. Mobile hero stays
+                CTA-only — extra chips fragment the call to action. */}
+            <div className="hidden md:flex mt-5 md:mt-6 flex-wrap items-center gap-3">
                 <NextSlotWidget />
                 <OpenNowBadge />
             </div>
