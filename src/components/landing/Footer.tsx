@@ -72,7 +72,11 @@ export function Footer() {
                     rich
                 </div>
 
-                <div className="relative max-w-4xl mx-auto px-6 md:px-12 lg:px-20 py-24 md:py-40 flex items-center justify-center min-h-[55vh] md:min-h-[65vh]">
+                {/* Button anchored to the BOTTOM of the storefront photo
+                    — never centred. The min-height keeps the photo readable
+                    while the CTA sits in its lower-third so the eye lands on
+                    "salone visibile" first, then on "Prenota ora". */}
+                <div className="relative max-w-4xl mx-auto px-6 md:px-12 lg:px-20 pt-32 md:pt-48 pb-10 md:pb-14 flex items-end justify-center min-h-[55vh] md:min-h-[65vh]">
                     <button
                         onClick={openDrawer}
                         className="cta-shine cta-pulse group inline-flex items-center justify-center gap-3 md:gap-4 px-10 md:px-14 py-5 md:py-6 bg-accent-warm text-black rounded-full text-sm md:text-lg uppercase tracking-[0.3em] font-body font-semibold active:scale-95 hover:scale-[1.03] transition-transform shadow-[0_24px_70px_-15px_rgba(212,165,116,0.65)]"
