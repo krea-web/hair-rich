@@ -22,6 +22,10 @@ import { MobileBottomBar } from "../components/ui/MobileBottomBar";
   <main>
     <PortfolioHero client:load />
 
+    <BeforeAfterSlider client:visible />
+
+    <PortfolioGallery client:visible />
+
     <FeaturedWork
       client:visible
       image="provvisorio/IMG_2493.jpeg"
@@ -36,10 +40,6 @@ import { MobileBottomBar } from "../components/ui/MobileBottomBar";
         { label: "Manutenzione", value: "Ogni 3 settimane" },
       ]}
     />
-
-    <PortfolioGallery client:visible />
-
-    <BeforeAfterSlider client:visible />
 
     <Footer client:idle />
   </main>

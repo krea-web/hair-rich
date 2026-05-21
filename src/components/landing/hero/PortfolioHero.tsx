@@ -78,7 +78,10 @@ export function PortfolioHero() {
                         </motion.dl>
                     </motion.div>
 
-                    {/* Right column — mosaic */}
+                    {/* Right column — mosaic. Mobile: photos render at their
+                        natural aspect (no fixed 3:4, no cover crop) so the
+                        composition is fully visible. Desktop: keeps the
+                        editorial 3:4 contact-sheet mosaic with parallax. */}
                     <motion.div
                         initial="hidden"
                         animate="visible"
@@ -97,7 +100,7 @@ export function PortfolioHero() {
                                         hidden: { opacity: 0, y: 24 },
                                         visible: { opacity: 1, y: 0 },
                                     }}
-                                    className={`relative aspect-[3/4] rounded-[var(--radius-md)] overflow-hidden border border-line group ${offsetClass}`}
+                                    className={`relative rounded-[var(--radius-md)] overflow-hidden border border-line group lg:aspect-[3/4] ${offsetClass}`}
                                 >
                                     <img
                                         src={portfolioImageUrl(path, {
@@ -106,10 +109,10 @@ export function PortfolioHero() {
                                             format: "webp",
                                         })}
                                         alt=""
-                                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                                        className="block w-full h-auto lg:absolute lg:inset-0 lg:w-full lg:h-full lg:object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                                         loading="eager"
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                                     <span className="absolute bottom-2 left-2 text-[10px] uppercase tracking-[0.3em] text-warm-white font-body font-semibold tabular-nums">
                                         #{String(i + 1).padStart(3, "0")}
                                     </span>
