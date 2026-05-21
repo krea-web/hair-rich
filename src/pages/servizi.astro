@@ -5,9 +5,8 @@ import { MobileTopBar } from "../components/ui/MobileTopBar";
 import { BookingDrawer } from "../components/booking/BookingDrawer";
 import { StickySlotPeek } from "../components/landing/StickySlotPeek";
 import { ServicesHero } from "../components/landing/hero/ServicesHero";
-import { ServiceCatalog } from "../components/landing/ServiceCatalog";
-import { ServiceStories } from "../components/landing/ServiceStories";
 import { StyleQuiz } from "../components/landing/StyleQuiz";
+import { HomeServiceFocus } from "../components/landing/HomeServiceFocus";
 import { ProcessSteps } from "../components/landing/_shared/ProcessSteps";
 import { FAQAccordion } from "../components/landing/_shared/FAQAccordion";
 import { Footer } from "../components/landing/Footer";
@@ -16,40 +15,36 @@ import { MobileBottomBar } from "../components/ui/MobileBottomBar";
 import { CartDrawer } from "../components/shop/CartDrawer";
 import { ProductDrawer } from "../components/shop/ProductDrawer";
 
-const SERVICES = [
+const PROCESS = [
   {
     n: "01",
-    title: "Consulto iniziale",
-    body: "Prima di toccare le forbici, due minuti per capire forma del viso, stile di vita e tempo di manutenzione che puoi dedicare.",
+    title: "Consulto · 2 minuti",
+    body: "Prima delle forbici: forma del viso, stile di vita, tempo che puoi dedicare al mattino. Decidiamo insieme.",
   },
   {
     n: "02",
-    title: "Lavaggio dedicato",
-    body: "Shampoo e maschera scelti sulla base di cuoio capelluto e tipo di capello — sempre incluso, mai un extra.",
+    title: "Esecuzione · forbice o rasoio",
+    body: "Tecnica scelta sul risultato che vuoi, non sulla moda del mese. Lavaggio sempre incluso.",
   },
   {
     n: "03",
-    title: "Taglio e styling",
-    body: "Forbice, rasoio o macchinetta — la tecnica giusta per il risultato giusto. Finitura con prodotto adatto al tuo styling quotidiano.",
+    title: "Finitura · prodotto giusto",
+    body: "Styling con prodotto adatto al tuo capello, così a casa lo riproduci in 30 secondi.",
   },
 ];
 
 const FAQ = [
   {
-    q: "Quanto durano i servizi?",
-    a: "Taglio capelli e taglio barba durano 30 minuti ciascuno. Il combo taglio + barba dura un'ora intera — abbastanza per fare tutto con calma, senza fretta.",
+    q: "Posso prenotare il taglio a domicilio online?",
+    a: "No: il taglio a domicilio è esclusivo e si organizza solo per telefono. Location, numero di teste, durata e tariffa li decidiamo insieme — chiama il numero del salone.",
   },
   {
-    q: "Posso prenotare il taglio a domicilio online?",
-    a: "No: il taglio a domicilio è esclusivo e si organizza solo per telefono. Location, numero di teste, durata e tariffa li decidiamo insieme. Chiama il numero del salone.",
+    q: "Posso passare da solo capelli al combo durante l'appuntamento?",
+    a: "Sì. Al consulto iniziale possiamo aggiungere la barba se la forma del viso lo chiede. Il prezzo viene ricalibrato in modo trasparente prima di iniziare.",
   },
   {
     q: "Servizi solo per uomo?",
     a: "Hair Rich è specializzato sull'uomo e sulla barba. Per styling unisex avanzato lavoriamo su prenotazione dedicata — scrivici e ti diciamo come gestiamo il caso.",
-  },
-  {
-    q: "Posso passare da solo capelli al combo durante l'appuntamento?",
-    a: "Sì, succede spesso. Al consulto iniziale possiamo aggiungere la barba se la forma del viso lo chiede. Il prezzo viene ricalibrato in modo trasparente prima di iniziare.",
   },
 ];
 ---
@@ -63,23 +58,24 @@ const FAQ = [
   <main>
     <ServicesHero client:load />
 
+    {/* Three bookable services — the only catalog block on the page */}
     <StyleQuiz client:load />
 
-    <ServiceStories client:visible />
+    {/* Phone-only home service: dedicated full-bleed focus block */}
+    <HomeServiceFocus client:visible />
 
+    {/* What happens during a service — short, no service repetition */}
     <ProcessSteps
       client:idle
       eyebrow="Il servizio Hair Rich"
-      title="Tre passaggi che attraversano ogni servizio."
-      steps={SERVICES}
+      title="Cosa succede quando ti siedi."
+      steps={PROCESS}
     />
-
-    <ServiceCatalog client:visible />
 
     <FAQAccordion
       client:idle
       eyebrow="Domande sui servizi"
-      title="Le più frequenti, una volta per tutte."
+      title="Le più frequenti."
       items={FAQ}
     />
 

@@ -3,18 +3,11 @@
 import { motion } from "framer-motion";
 import { portfolioImageUrl } from "@/lib/supabase/queries";
 
-const SERVICES = [
-    { num: "01", name: "Taglio capelli", time: "30 min · 20€" },
-    { num: "02", name: "Taglio barba", time: "30 min · 10€" },
-    { num: "03", name: "Taglio capelli + barba", time: "60 min · 30€" },
-    { num: "04", name: "Taglio a domicilio", time: "solo telefono" },
-];
-
 /**
- * "Editorial index" hero for /servizi. Big watermark numeral on the right
- * (the brand's 01 / 04 ordinal) intersects the title. A service ledger
- * occupies the lower half — four lines, each numbered, that act as both
- * a tease of the catalogue below and a scannable answer to "cosa offrite".
+ * Slim hero for /servizi. Big watermark numeral behind the headline,
+ * a short body line, and a flat strip of price pills (3 bookable +
+ * 1 phone-only home anchor). The detailed service cards live below
+ * in StyleQuiz so this header doesn't repeat the catalog.
  */
 export function ServicesHero() {
     return (
@@ -66,50 +59,54 @@ export function ServicesHero() {
                     </p>
                 </motion.div>
 
-                {/* Service index */}
-                <motion.ul
+                {/* Quick at-a-glance pricing strip — three pills, no full
+                    index here (the catalog block below shows everything in
+                    detail). Plus a phone-only home-service teaser. */}
+                <motion.div
                     initial="hidden"
                     animate="visible"
                     variants={{
                         hidden: {},
                         visible: { transition: { staggerChildren: 0.08, delayChildren: 0.5 } },
                     }}
-                    className="mt-10 md:mt-14 divide-y divide-line/40 border-y border-line/40"
+                    className="mt-10 md:mt-14 flex flex-wrap gap-2 md:gap-3"
                 >
-                    {SERVICES.map((r) => (
-                        <motion.li
-                            key={r.num}
+                    {[
+                        { label: "Taglio capelli", price: "20€" },
+                        { label: "Taglio barba", price: "10€" },
+                        { label: "Capelli + barba", price: "30€" },
+                    ].map((p) => (
+                        <motion.span
+                            key={p.label}
                             variants={{
-                                hidden: { opacity: 0, x: -20 },
-                                visible: { opacity: 1, x: 0 },
+                                hidden: { opacity: 0, y: 12 },
+                                visible: { opacity: 1, y: 0 },
                             }}
-                            className="flex items-baseline gap-4 md:gap-6 py-3 md:py-4 group cursor-default"
+                            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-line bg-black/40 backdrop-blur-md"
                         >
-                            <span className="text-display-alt text-accent-warm text-xl md:text-3xl tabular-nums shrink-0">
-                                {r.num}
+                            <span className="text-[10px] uppercase tracking-[0.25em] text-warm-white font-body font-semibold">
+                                {p.label}
                             </span>
-                            <span className="flex-1 text-display text-warm-white text-lg md:text-2xl lg:text-3xl tracking-tight">
-                                {r.name}
+                            <span className="text-accent-warm font-display text-sm tabular-nums">
+                                {p.price}
                             </span>
-                            <span className="text-[10px] md:text-xs uppercase tracking-[0.3em] text-silver-dark font-body font-semibold shrink-0">
-                                {r.time}
-                            </span>
-                        </motion.li>
+                        </motion.span>
                     ))}
-                </motion.ul>
-
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.8, delay: 0.9 }}
-                    className="mt-6 md:mt-8 flex items-end justify-between gap-4"
-                >
-                    <span className="text-[10px] uppercase tracking-[0.4em] text-silver-dark font-body font-semibold">
-                        Consulto · 60 secondi
-                    </span>
-                    <span className="text-[10px] uppercase tracking-[0.4em] text-silver-dark font-body font-semibold">
-                        01 / Trova il tuo
-                    </span>
+                    <motion.a
+                        variants={{
+                            hidden: { opacity: 0, y: 12 },
+                            visible: { opacity: 1, y: 0 },
+                        }}
+                        href="#taglio-a-domicilio"
+                        className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-accent-warm/40 bg-accent-warm/10 hover:bg-accent-warm/20 transition-colors"
+                    >
+                        <svg viewBox="0 0 24 24" className="w-3 h-3 text-accent-warm" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.91.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0122 16.92z" />
+                        </svg>
+                        <span className="text-[10px] uppercase tracking-[0.25em] text-accent-warm font-body font-semibold">
+                            A domicilio · solo telefono
+                        </span>
+                    </motion.a>
                 </motion.div>
             </div>
         </section>
