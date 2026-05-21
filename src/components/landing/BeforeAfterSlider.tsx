@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { portfolioImageUrl } from "@/lib/supabase/queries";
 
@@ -50,52 +50,87 @@ export function BeforeAfterSlider({ pair = REAL_PAIR }: Props) {
 function Compare({ pair }: { pair: Pair }) {
     const [pos, setPos] = useState(50);
     const ref = useRef<HTMLDivElement>(null);
-    const dragging = useRef(false);
-    const activePointer = useRef<number | null>(null);
 
-    const updateFromEvent = (clientX: number) => {
+    // Native listeners attached via useEffect — React's synthetic
+    // PointerEvent handlers attach as passive on iOS Safari, which both
+    // breaks preventDefault and occasionally drops events when the finger
+    // glides over child elements. Going native + window-level move/up
+    // gives us reliable cross-browser behaviour, particularly on iOS.
+    useEffect(() => {
         const el = ref.current;
         if (!el) return;
-        const rect = el.getBoundingClientRect();
-        const x = clientX - rect.left;
-        const pct = Math.max(0, Math.min(100, (x / rect.width) * 100));
-        setPos(pct);
-    };
 
-    const onMove = (e: React.PointerEvent) => {
-        if (!dragging.current) return;
-        e.preventDefault();
-        updateFromEvent(e.clientX);
-    };
+        let dragging = false;
 
-    const onDown = (e: React.PointerEvent) => {
-        const el = ref.current;
-        if (!el) return;
-        // Always capture on the SLIDER container, not the click target —
-        // a click on the handle/badge child would otherwise capture there
-        // and lose move events when the pointer leaves that child.
-        try {
-            el.setPointerCapture(e.pointerId);
-        } catch {
-            /* unsupported */
+        const clientXFromEvent = (e: PointerEvent | TouchEvent): number | null => {
+            if ("clientX" in e) return (e as PointerEvent).clientX;
+            const t = (e as TouchEvent).touches[0] || (e as TouchEvent).changedTouches[0];
+            return t ? t.clientX : null;
+        };
+
+        const update = (clientX: number) => {
+            const rect = el.getBoundingClientRect();
+            const x = clientX - rect.left;
+            const pct = Math.max(0, Math.min(100, (x / rect.width) * 100));
+            setPos(pct);
+        };
+
+        const onDown = (e: PointerEvent | TouchEvent) => {
+            const cx = clientXFromEvent(e);
+            if (cx == null) return;
+            dragging = true;
+            update(cx);
+            // Stop the page from rubber-banding while we drag.
+            if (e.cancelable) e.preventDefault();
+        };
+
+        const onMove = (e: PointerEvent | TouchEvent) => {
+            if (!dragging) return;
+            const cx = clientXFromEvent(e);
+            if (cx == null) return;
+            update(cx);
+            if (e.cancelable) e.preventDefault();
+        };
+
+        const onUp = () => {
+            dragging = false;
+        };
+
+        // Pointer events where available
+        const hasPointer = typeof window !== "undefined" && "PointerEvent" in window;
+        if (hasPointer) {
+            el.addEventListener("pointerdown", onDown as EventListener, { passive: false });
+            window.addEventListener("pointermove", onMove as EventListener, { passive: false });
+            window.addEventListener("pointerup", onUp);
+            window.addEventListener("pointercancel", onUp);
+        } else {
+            // Fallback: touch + mouse
+            el.addEventListener("touchstart", onDown as EventListener, { passive: false });
+            window.addEventListener("touchmove", onMove as EventListener, { passive: false });
+            window.addEventListener("touchend", onUp);
+            window.addEventListener("touchcancel", onUp);
+            el.addEventListener("mousedown", onDown as EventListener);
+            window.addEventListener("mousemove", onMove as EventListener);
+            window.addEventListener("mouseup", onUp);
         }
-        activePointer.current = e.pointerId;
-        dragging.current = true;
-        updateFromEvent(e.clientX);
-    };
 
-    const onUp = (e: React.PointerEvent) => {
-        const el = ref.current;
-        if (el && activePointer.current != null) {
-            try {
-                el.releasePointerCapture(activePointer.current);
-            } catch {
-                /* already released */
+        return () => {
+            if (hasPointer) {
+                el.removeEventListener("pointerdown", onDown as EventListener);
+                window.removeEventListener("pointermove", onMove as EventListener);
+                window.removeEventListener("pointerup", onUp);
+                window.removeEventListener("pointercancel", onUp);
+            } else {
+                el.removeEventListener("touchstart", onDown as EventListener);
+                window.removeEventListener("touchmove", onMove as EventListener);
+                window.removeEventListener("touchend", onUp);
+                window.removeEventListener("touchcancel", onUp);
+                el.removeEventListener("mousedown", onDown as EventListener);
+                window.removeEventListener("mousemove", onMove as EventListener);
+                window.removeEventListener("mouseup", onUp);
             }
-        }
-        activePointer.current = null;
-        dragging.current = false;
-    };
+        };
+    }, []);
 
     return (
         <motion.div
@@ -107,10 +142,6 @@ function Compare({ pair }: { pair: Pair }) {
         >
             <div
                 ref={ref}
-                onPointerDown={onDown}
-                onPointerMove={onMove}
-                onPointerUp={onUp}
-                onPointerCancel={onUp}
                 role="slider"
                 aria-label={`Confronto prima/dopo: ${pair.title}`}
                 aria-valuemin={0}
@@ -121,8 +152,13 @@ function Compare({ pair }: { pair: Pair }) {
                     if (e.key === "ArrowLeft") setPos((p) => Math.max(0, p - 5));
                     if (e.key === "ArrowRight") setPos((p) => Math.min(100, p + 5));
                 }}
-                className="relative aspect-[3/4] w-full rounded-[var(--radius-md)] border border-line overflow-hidden cursor-ew-resize select-none touch-none focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-accent-warm"
-                style={{ WebkitUserSelect: "none", userSelect: "none" }}
+                className="relative aspect-[3/4] w-full rounded-[var(--radius-md)] border border-line overflow-hidden cursor-ew-resize select-none focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-accent-warm"
+                style={{
+                    WebkitUserSelect: "none",
+                    userSelect: "none",
+                    touchAction: "none",
+                    WebkitTouchCallout: "none",
+                }}
             >
                 {/* After (sfondo full) */}
                 <img
