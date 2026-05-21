@@ -25,7 +25,7 @@ const REVIEWS: Review[] = [
         name: "Francesco R.",
         rating: 5,
         text:
-            "Ambiente curato, musica perfetta, taglio impeccabile. Hair Rich è un'esperienza, non un semplice appuntamento. Il rituale della barba con asciugamani caldi è qualcosa di unico.",
+            "Ambiente curato, musica perfetta, taglio impeccabile. Hair Rich è un'esperienza, non un semplice appuntamento. Il momento della barba con asciugamani caldi è qualcosa di unico.",
         date: "Marzo 2025",
         location: "Cagliari",
     },

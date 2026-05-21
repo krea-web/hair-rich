@@ -39,7 +39,7 @@ export const en: Dict = {
         titleA: "BARBER",
         titleB: "STUDIO",
         body:
-            "For eight years our mission has been to sculpt your identity. Cut, beard and exclusive rituals in the heart of Olbia.",
+            "For eight years our mission has been to sculpt your identity. Cut, beard and exclusive treatments in the heart of Olbia.",
         primaryCta: "Book Now",
         secondaryCta: "Explore services",
         captionEyebrow: "Premium",
@@ -60,10 +60,10 @@ export const en: Dict = {
         titleA: "Our",
         titleB: "studio.",
         bodyP1:
-            "Hair Rich was born from a vision: turning the haircut ritual into an intimate, tailored, one-of-a-kind experience. One chair, one Master Barber, expert hands.",
+            "Hair Rich was born from a vision: turning the haircut into an intimate, tailored, one-of-a-kind experience. One chair, one Master Barber, expert hands.",
         bodyP2:
             "No rush. No standardisation. Just the time it takes to sculpt your character — one fade at a time.",
-        values: ["Obsessive tailoring", "Premium materials", "Intimate atmosphere", "Slow ritual"],
+        values: ["Obsessive tailoring", "Premium materials", "Intimate atmosphere", "Slow craft"],
         cta: "Live the experience",
         sinceLabel: "since",
     },
@@ -72,7 +72,7 @@ export const en: Dict = {
         titleA: "Our",
         titleB: "services.",
         intro:
-            "Three families of treatments for every moment of your day. Pick the ritual that defines you — we'll handle the rest.",
+            "Three families of treatments for every moment of your day. Pick the treatment that defines you — we'll handle the rest.",
         items: [
             {
                 eyebrow: "Sharp",
@@ -121,7 +121,7 @@ export const en: Dict = {
             {
                 title: "Dedicated time",
                 description:
-                    "Generous slots, never overlapped. The ritual demands calm — you'll have plenty of it.",
+                    "Generous slots, never overlapped. The service demands calm — you'll have plenty of it.",
             },
         ],
     },
@@ -238,7 +238,7 @@ export const en: Dict = {
             },
             {
                 name: "Francesco R.",
-                text: "Curated atmosphere, perfect music, impeccable cut. Hair Rich is an experience, not a simple appointment. The hot-towel beard ritual is something unique.",
+                text: "Curated atmosphere, perfect music, impeccable cut. Hair Rich is an experience, not a simple appointment. The hot-towel beard service is something unique.",
                 date: "March 2025",
                 location: "Cagliari",
             },
@@ -423,7 +423,7 @@ export const en: Dict = {
             greetingEyebrow: "Welcome back,",
             greetingName: (name) => `${name}.`,
             intro:
-                "Your next ritual is already booked. Here's a quick recap of your credits and recent activity.",
+                "Your next appointment is already booked. Here's a quick recap of your credits and recent activity.",
             ctaNew: "New appointment",
             kpis: { wallet: "Wallet", visits: "Total visits", favoriteCut: "Favorite cut", trustScore: "Trust score" },
             nextEyebrow: "Up next",
@@ -439,7 +439,7 @@ export const en: Dict = {
         appointments: {
             eyebrow: "Your",
             title: "Appointments.",
-            intro: "Manage future bookings or review your history of cuts, beard and rituals.",
+            intro: "Manage future bookings or review your history of cuts, beard and treatments.",
             new: "New",
             filters: { all: "All", confirmed: "Confirmed", completed: "Completed", cancelled: "Cancelled" },
             count: (n) => (n === 1 ? "1 appointment" : `${n} appointments`),

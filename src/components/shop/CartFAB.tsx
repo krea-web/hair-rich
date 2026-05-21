@@ -45,7 +45,7 @@ export function CartFAB() {
                             <path d="M3 6h18" />
                             <path d="M16 10a4 4 0 0 1-8 0" />
                         </svg>
-                        <span className="absolute -top-2 -right-2 bg-accent-warm text-black w-4 h-4 text-[10px] flex items-center justify-center rounded-full font-bold">
+                        <span className="cta-shine cta-pulse absolute -top-2 -right-2 bg-accent-warm text-black w-4 h-4 text-[10px] flex items-center justify-center rounded-full font-bold">
                             {itemsCount}
                         </span>
                     </div>

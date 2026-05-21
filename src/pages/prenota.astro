@@ -11,12 +11,14 @@ import { FAQAccordion } from "../components/landing/_shared/FAQAccordion";
 import { Footer } from "../components/landing/Footer";
 import { ToastViewport } from "../components/ui/ToastViewport";
 import { MobileBottomBar } from "../components/ui/MobileBottomBar";
+import { CartDrawer } from "../components/shop/CartDrawer";
+import { ProductDrawer } from "../components/shop/ProductDrawer";
 
 const STEPS = [
   {
     n: "01",
     title: "Scegli il servizio",
-    body: "Taglio, barba, combo o rituale completo. Ogni opzione ha tempo e prezzo trasparenti — niente sorprese.",
+    body: "Taglio, barba, combo o servizio completo. Ogni opzione ha tempo e prezzo trasparenti — niente sorprese.",
   },
   {
     n: "02",
@@ -53,7 +55,7 @@ const FAQ = [
   },
   {
     q: "Cosa porto con me al primo appuntamento?",
-    a: "Niente, ti aspettiamo già con il rituale pronto. Se hai una foto di riferimento di un taglio o uno styling che ti piace, puoi mostrarcela direttamente sul telefono — aiuta tantissimo il barber a calibrare il lavoro.",
+    a: "Niente, ti aspettiamo già con il servizio pronto. Se hai una foto di riferimento di un taglio o uno styling che ti piace, puoi mostrarcela direttamente sul telefono — aiuta tantissimo il barber a calibrare il lavoro.",
   },
 ];
 ---
@@ -91,4 +93,6 @@ const FAQ = [
   <ToastViewport client:load />
   <MobileBottomBar client:idle />
   <BookingDrawer client:idle />
+  <CartDrawer client:idle />
+  <ProductDrawer client:idle />
 </RootLayout>

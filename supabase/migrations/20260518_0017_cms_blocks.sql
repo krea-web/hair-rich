@@ -26,7 +26,7 @@ CREATE TRIGGER trg_cms_blocks_updated
 
 -- Seed the canonical editable blocks. Inserts are idempotent.
 INSERT INTO cms_blocks (key, label, value, kind) VALUES
-  ('home_manifesto_heading', 'Home · titolo manifesto', 'Il taglio è un rituale.', 'text'),
+  ('home_manifesto_heading', 'Home · titolo manifesto', 'Il taglio è un'arte.', 'text'),
   ('home_manifesto_body', 'Home · testo manifesto', 'Da Hair Rich non vendiamo tempo. Vendiamo cura, attenzione, e un risultato che riconosci appena ti specchi.', 'markdown'),
   ('footer_tagline', 'Footer · tagline', 'Hair Rich · Olbia · barberia di precisione dal 2018.', 'text'),
   ('intro_welcome_word', 'Intro · parola benvenuto', 'Benvenuto', 'text'),

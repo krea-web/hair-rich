@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Wordmark } from "@/components/landing/_shared/Wordmark";
 import { LangSwitcher } from "@/components/landing/_shared/LangSwitcher";
+import { CartIconButton } from "@/components/shop/CartIconButton";
 import { useT } from "@/i18n/useLang";
 
 /**
@@ -79,8 +80,9 @@ export function MobileTopBar() {
                     <Wordmark variant="wordmark" size="sm" className="[&>img]:h-7" />
                 </a>
 
-                {/* Right group: profile + lang */}
+                {/* Right group: cart + profile + lang */}
                 <div className="justify-self-end flex items-center gap-1.5">
+                    <CartIconButton />
                     <a
                         href={profileHref}
                         aria-label="Profilo"

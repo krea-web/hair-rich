@@ -78,10 +78,10 @@ export function PortfolioHero() {
                         </motion.dl>
                     </motion.div>
 
-                    {/* Right column — mosaic. Mobile: photos render at their
-                        natural aspect (no fixed 3:4, no cover crop) so the
-                        composition is fully visible. Desktop: keeps the
-                        editorial 3:4 contact-sheet mosaic with parallax. */}
+                    {/* Right column — square contact-sheet mosaic. Same square
+                        tile shape as the rest of the site (gallery grid),
+                        photos fill the tile via object-cover. Alternating
+                        parallax offset on desktop keeps the editorial feel. */}
                     <motion.div
                         initial="hidden"
                         animate="visible"
@@ -100,16 +100,18 @@ export function PortfolioHero() {
                                         hidden: { opacity: 0, y: 24 },
                                         visible: { opacity: 1, y: 0 },
                                     }}
-                                    className={`relative rounded-[var(--radius-md)] overflow-hidden border border-line group lg:aspect-[3/4] ${offsetClass}`}
+                                    className={`relative aspect-square rounded-[var(--radius-md)] overflow-hidden border border-line group ${offsetClass}`}
                                 >
                                     <img
                                         src={portfolioImageUrl(path, {
                                             width: 600,
-                                            quality: 70,
+                                            height: 600,
+                                            resize: "cover",
+                                            quality: 75,
                                             format: "webp",
                                         })}
                                         alt=""
-                                        className="block w-full h-auto lg:absolute lg:inset-0 lg:w-full lg:h-full lg:object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                                         loading="eager"
                                     />
                                     <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />

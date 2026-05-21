@@ -94,7 +94,7 @@ export default function ProfiloDashboardPage() {
     const firstName = customer?.first_name ?? "Ciao";
     const next = stats?.nextAppt ?? null;
     const nextStamp = next ? formatStamp(next.start_at) : null;
-    const nextService = next?.services[0]?.name ?? "Rituale";
+    const nextService = next?.services[0]?.name ?? "Servizio";
     const nextDuration = next?.services[0]?.duration_min ?? 30;
     const nextStaff = next?.staff?.name ?? "Prima disponibilità";
 
@@ -139,13 +139,13 @@ export default function ProfiloDashboardPage() {
                     </h1>
                     <p className="mt-4 text-warm-white-muted text-base max-w-md">
                         {next
-                            ? "Il tuo prossimo rituale è già fissato. Ecco un riepilogo veloce."
-                            : "Non hai prenotazioni attive. Quando vuoi, il tuo prossimo rituale è un tap di distanza."}
+                            ? "Il tuo prossimo appuntamento è già fissato. Ecco un riepilogo veloce."
+                            : "Non hai prenotazioni attive. Quando vuoi, il tuo prossimo servizio è un tap di distanza."}
                     </p>
                 </div>
                 <button
                     onClick={openDrawer}
-                    className="inline-flex items-center justify-center gap-3 px-7 py-4 bg-accent-warm text-black rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold hover:scale-[1.02] transition-transform whitespace-nowrap self-start md:self-end active:scale-95"
+                    className="cta-shine cta-pulse inline-flex items-center justify-center gap-3 px-7 py-4 bg-accent-warm text-black rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold hover:scale-[1.02] transition-transform whitespace-nowrap self-start md:self-end active:scale-95"
                 >
                     Nuovo appuntamento
                     <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
@@ -283,11 +283,11 @@ export default function ProfiloDashboardPage() {
                             Nessun appuntamento in programma.
                         </p>
                         <p className="mt-2 text-warm-white-muted text-sm max-w-md mx-auto">
-                            Prenota il tuo prossimo rituale e ti diamo conferma immediata.
+                            Prenota il tuo prossimo servizio e ti diamo conferma immediata.
                         </p>
                         <button
                             onClick={openDrawer}
-                            className="mt-6 inline-flex items-center justify-center gap-3 px-7 py-3.5 bg-accent-warm text-black rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform"
+                            className="cta-shine cta-pulse mt-6 inline-flex items-center justify-center gap-3 px-7 py-3.5 bg-accent-warm text-black rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform"
                         >
                             Prenota ora
                             <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -320,7 +320,7 @@ export default function ProfiloDashboardPage() {
                     <ol className="md:col-span-2 relative pl-6 md:pl-8 border-l border-line space-y-6">
                         {stats.recent.map((row) => {
                             const stamp = formatStamp(row.start_at);
-                            const svc = row.services[0]?.name ?? "Rituale";
+                            const svc = row.services[0]?.name ?? "Servizio";
                             const cancelled = row.status === "cancelled" || row.status === "no_show";
                             return (
                                 <li key={row.id} className="relative">

@@ -96,7 +96,7 @@ export default function AdminServiziPage() {
                     Servizi.
                 </h1>
                 <p className="mt-3 text-warm-white-muted text-base max-w-2xl">
-                    I rituali offerti in salone. Tocca prezzo, durata o badge per modificarli
+                    I servizi offerti in salone. Tocca prezzo, durata o badge per modificarli
                     inline. Toggle "Attivo" li nasconde dal sito senza eliminarli.
                 </p>
             </motion.div>

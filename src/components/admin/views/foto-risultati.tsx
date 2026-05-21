@@ -59,7 +59,7 @@ export default function AdminFotoRisultatiPage() {
                 customer_first: r.customer?.first_name ?? "—",
                 customer_last: r.customer?.last_name ?? null,
                 service_name:
-                    r.appointment_services?.[0]?.service?.name ?? "Rituale",
+                    r.appointment_services?.[0]?.service?.name ?? "Servizio",
                 photo_count: r.appointment_photos?.length ?? 0,
             }));
             setRows(mapped);

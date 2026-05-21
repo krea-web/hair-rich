@@ -39,7 +39,7 @@ export const de: Dict = {
         titleA: "BARBER",
         titleB: "STUDIO",
         body:
-            "Seit acht Jahren ist es unsere Mission, deine Identität zu formen. Schnitt, Bart und exklusive Rituale im Herzen von Olbia.",
+            "Seit acht Jahren ist es unsere Mission, deine Identität zu formen. Schnitt, Bart und exklusive Servizio im Herzen von Olbia.",
         primaryCta: "Jetzt buchen",
         secondaryCta: "Services entdecken",
         captionEyebrow: "Premium",
@@ -60,10 +60,10 @@ export const de: Dict = {
         titleA: "Unser",
         titleB: "Studio.",
         bodyP1:
-            "Hair Rich entstand aus einer Vision: das Ritual des Haarschnitts in eine intime, maßgeschneiderte, einzigartige Erfahrung zu verwandeln. Ein Stuhl, ein Master Barber, erfahrene Hände.",
+            "Hair Rich entstand aus einer Vision: das Service des Haarschnitts in eine intime, maßgeschneiderte, einzigartige Erfahrung zu verwandeln. Ein Stuhl, ein Master Barber, erfahrene Hände.",
         bodyP2:
             "Keine Eile. Keine Standardisierung. Nur die Zeit, die nötig ist, um deinen Charakter zu formen — ein Fade nach dem anderen.",
-        values: ["Obsessive Maßarbeit", "Premium-Materialien", "Intime Atmosphäre", "Langsames Ritual"],
+        values: ["Obsessive Maßarbeit", "Premium-Materialien", "Intime Atmosphäre", "Langsames Service"],
         cta: "Erlebe es",
         sinceLabel: "seit",
     },
@@ -72,7 +72,7 @@ export const de: Dict = {
         titleA: "Unsere",
         titleB: "Services.",
         intro:
-            "Drei Familien von Behandlungen für jeden Moment deines Tages. Wähle das Ritual, das dich definiert — den Rest übernehmen wir.",
+            "Drei Familien von Behandlungen für jeden Moment deines Tages. Wähle das Service, das dich definiert — den Rest übernehmen wir.",
         items: [
             {
                 eyebrow: "Sharp",
@@ -121,7 +121,7 @@ export const de: Dict = {
             {
                 title: "Bewusste Zeit",
                 description:
-                    "Großzügige Slots, niemals überlappend. Das Ritual verlangt Ruhe — du wirst genug davon haben.",
+                    "Großzügige Slots, niemals überlappend. Das Service verlangt Ruhe — du wirst genug davon haben.",
             },
         ],
     },
@@ -242,7 +242,7 @@ export const de: Dict = {
             },
             {
                 name: "Francesco R.",
-                text: "Gepflegte Atmosphäre, perfekte Musik, makelloser Schnitt. Hair Rich ist ein Erlebnis, kein einfacher Termin. Das Bartritual mit heißen Tüchern ist einzigartig.",
+                text: "Gepflegte Atmosphäre, perfekte Musik, makelloser Schnitt. Hair Rich ist ein Erlebnis, kein einfacher Termin. Das Bartservice mit heißen Tüchern ist einzigartig.",
                 date: "März 2025",
                 location: "Cagliari",
             },
@@ -427,7 +427,7 @@ export const de: Dict = {
             greetingEyebrow: "Willkommen zurück,",
             greetingName: (name) => `${name}.`,
             intro:
-                "Dein nächstes Ritual ist bereits gebucht. Hier eine schnelle Übersicht deiner Credits und der letzten Aktivität.",
+                "Dein nächstes Service ist bereits gebucht. Hier eine schnelle Übersicht deiner Credits und der letzten Aktivität.",
             ctaNew: "Neuer Termin",
             kpis: { wallet: "Wallet", visits: "Besuche", favoriteCut: "Lieblingsschnitt", trustScore: "Trust Score" },
             nextEyebrow: "Up next",
@@ -443,7 +443,7 @@ export const de: Dict = {
         appointments: {
             eyebrow: "Deine",
             title: "Termine.",
-            intro: "Verwalte zukünftige Buchungen oder schau dir den Verlauf von Schnitten, Bart und Ritualen an.",
+            intro: "Verwalte zukünftige Buchungen oder schau dir den Verlauf von Schnitten, Bart und Servizion an.",
             new: "Neu",
             filters: { all: "Alle", confirmed: "Bestätigt", completed: "Abgeschlossen", cancelled: "Storniert" },
             count: (n) => (n === 1 ? "1 Termin" : `${n} Termine`),

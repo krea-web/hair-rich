@@ -58,14 +58,14 @@ export function BirthdayBanner() {
                             Buon compleanno, {name}.
                         </h2>
                         <p className="mt-2 text-warm-white-muted text-sm md:text-base leading-relaxed max-w-md">
-                            Hai diritto a <strong className="text-warm-white">−20% sul prossimo rituale</strong>{" "}
+                            Hai diritto a <strong className="text-warm-white">−20% sul prossimo servizio</strong>{" "}
                             entro fine {monthLabel}. Te lo applichiamo in salone.
                         </p>
                     </div>
                 </div>
                 <button
                     onClick={openDrawer}
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-accent-warm text-black rounded-full text-[11px] uppercase tracking-[0.25em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform whitespace-nowrap self-start md:self-center"
+                    className="cta-shine cta-pulse inline-flex items-center justify-center gap-2 px-6 py-3 bg-accent-warm text-black rounded-full text-[11px] uppercase tracking-[0.25em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform whitespace-nowrap self-start md:self-center"
                 >
                     Prenota con sconto
                     <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5">

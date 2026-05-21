@@ -32,7 +32,7 @@ const TIMELINE: TimelineEntry[] = [
     {
         time: "17:00",
         title: "Slot premium",
-        body: "Le ore d'oro. Razor cut, barba sartoriale, combo. Qui i clienti chiedono il tempo per il rituale completo.",
+        body: "Le ore d'oro. Razor cut, barba sartoriale, combo. Qui i clienti chiedono il tempo per il servizio completo.",
     },
     {
         time: "19:30",

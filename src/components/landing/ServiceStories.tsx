@@ -122,7 +122,7 @@ export function ServiceStories() {
         <section className="md:hidden relative bg-black overflow-hidden">
             <div className="max-w-7xl mx-auto px-6 pt-10 pb-6">
                 <span className="text-[10px] uppercase tracking-[0.5em] text-accent-warm font-body font-semibold">
-                    Anteprima rituali
+                    Anteprima servizi
                 </span>
                 <h2 className="text-display text-3xl text-warm-white tracking-tight mt-2 leading-tight">
                     Sfoglia in 60 secondi.
@@ -199,7 +199,7 @@ export function ServiceStories() {
                             {/* Body */}
                             <div className="absolute bottom-0 left-0 right-0 px-6 pb-8 z-10">
                                 <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
-                                    Rituale
+                                    Servizio
                                 </span>
                                 <h3 className="text-display text-4xl text-warm-white tracking-tight mt-2 leading-[1.05]">
                                     {cur.name}
@@ -221,7 +221,7 @@ export function ServiceStories() {
                                             e.stopPropagation();
                                             handleBook();
                                         }}
-                                        className="inline-flex items-center gap-2 px-4 py-2.5 bg-accent-warm text-black rounded-full text-[10px] uppercase tracking-[0.25em] font-body font-semibold active:scale-95"
+                                        className="cta-shine cta-pulse inline-flex items-center gap-2 px-4 py-2.5 bg-accent-warm text-black rounded-full text-[10px] uppercase tracking-[0.25em] font-body font-semibold active:scale-95"
                                     >
                                         Prenota
                                         <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5">

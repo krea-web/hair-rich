@@ -114,13 +114,13 @@ export function ServiceCatalog() {
             <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 pt-20 md:pt-28 pb-12 md:pb-16">
                 <div className="max-w-2xl">
                     <span className="text-[10px] uppercase tracking-[0.5em] text-accent-warm font-body font-semibold">
-                        Tutti i rituali · 06
+                        Tutti i servizi · 06
                     </span>
                     <h2 className="text-display text-3xl md:text-5xl text-warm-white tracking-tight mt-4 leading-[1.05]">
-                        Esplora ogni rituale.
+                        Esplora ogni servizio.
                     </h2>
                     <p className="mt-4 text-warm-white-muted text-base md:text-lg leading-relaxed">
-                        Sei servizi, sei filosofie diverse. Ogni rituale ha la sua tecnica,
+                        Sei servizi, sei filosofie diverse. Ogni servizio ha la sua tecnica,
                         i suoi tempi, la sua persona di riferimento.
                     </p>
                 </div>
@@ -162,18 +162,18 @@ export function ServiceCatalog() {
                                             {/* Gradient ramp */}
                                             <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-black/70 via-black/10 to-transparent pointer-events-none" />
 
-                                            {/* Numero rituale top-left */}
+                                            {/* Numero servizio top-left */}
                                             <div className="absolute top-5 left-5 md:top-8 md:left-8 flex items-baseline gap-3 text-warm-white">
                                                 <span className="text-display-alt text-4xl md:text-6xl leading-none text-accent-warm">
                                                     {String(i + 1).padStart(2, "0")}
                                                 </span>
                                                 <span className="text-[9px] uppercase tracking-[0.4em] font-body font-semibold opacity-70">
-                                                    Rituale
+                                                    Servizio
                                                 </span>
                                             </div>
 
                                             {s.badge && (
-                                                <div className="absolute top-5 right-5 md:top-8 md:right-8 inline-flex items-center px-3 py-1.5 bg-accent-warm text-black text-[9px] uppercase tracking-[0.3em] font-body font-bold rounded-full">
+                                                <div className="cta-shine cta-pulse absolute top-5 right-5 md:top-8 md:right-8 inline-flex items-center px-3 py-1.5 bg-accent-warm text-black text-[9px] uppercase tracking-[0.3em] font-body font-bold rounded-full">
                                                     {s.badge}
                                                 </div>
                                             )}
@@ -238,7 +238,7 @@ export function ServiceCatalog() {
                                             </div>
                                             <button
                                                 onClick={() => toggleExpand(s.id)}
-                                                className="inline-flex items-center gap-2 px-5 py-3 bg-accent-warm text-black rounded-full text-[11px] uppercase tracking-[0.25em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform whitespace-nowrap"
+                                                className="cta-shine cta-pulse inline-flex items-center gap-2 px-5 py-3 bg-accent-warm text-black rounded-full text-[11px] uppercase tracking-[0.25em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform whitespace-nowrap"
                                                 aria-expanded={expandedId === s.id}
                                             >
                                                 {expandedId === s.id ? "Chiudi" : "Prenota"}

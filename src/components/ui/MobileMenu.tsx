@@ -98,7 +98,7 @@ export function MobileMenu() {
                                     close();
                                     openBookingDrawer();
                                 }}
-                                className="w-full inline-flex items-center justify-center gap-3 px-7 py-4 bg-accent-warm text-black rounded-full text-sm uppercase tracking-[0.25em] font-body font-semibold active:scale-95 transition-transform"
+                                className="cta-shine cta-pulse w-full inline-flex items-center justify-center gap-3 px-7 py-4 bg-accent-warm text-black rounded-full text-sm uppercase tracking-[0.25em] font-body font-semibold active:scale-95 transition-transform"
                             >
                                 {t.nav.bookCta}
                                 <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5">

@@ -251,7 +251,7 @@ export function CartDrawer() {
                                         </div>
                                         <button
                                             onClick={() => setStage("checkout")}
-                                            className="w-full py-4 px-6 bg-accent-warm text-black font-body font-semibold text-sm tracking-wider uppercase rounded-full transition-all duration-200 hover:brightness-110 hover:scale-[1.01] active:scale-[0.98]"
+                                            className="cta-shine cta-pulse w-full py-4 px-6 bg-accent-warm text-black font-body font-semibold text-sm tracking-wider uppercase rounded-full transition-all duration-200 hover:brightness-110 hover:scale-[1.01] active:scale-[0.98]"
                                         >
                                             Conferma ordine →
                                         </button>
@@ -341,7 +341,7 @@ export function CartDrawer() {
                                 <button
                                     type="submit"
                                     disabled={submitting}
-                                    className="mt-6 w-full py-4 px-6 bg-accent-warm text-black font-body font-semibold text-sm tracking-wider uppercase rounded-full transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-3"
+                                    className="cta-shine cta-pulse mt-6 w-full py-4 px-6 bg-accent-warm text-black font-body font-semibold text-sm tracking-wider uppercase rounded-full transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-3"
                                 >
                                     {submitting ? (
                                         <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -403,7 +403,7 @@ export function CartDrawer() {
 
                                 <button
                                     onClick={close}
-                                    className="mt-10 inline-flex items-center justify-center gap-3 px-7 py-3.5 bg-accent-warm text-black rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold active:scale-95"
+                                    className="cta-shine cta-pulse mt-10 inline-flex items-center justify-center gap-3 px-7 py-3.5 bg-accent-warm text-black rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold active:scale-95"
                                 >
                                     Chiudi
                                 </button>

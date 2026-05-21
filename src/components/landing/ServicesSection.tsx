@@ -51,7 +51,7 @@ export function ServicesSection() {
                     className="relative overflow-hidden rounded-[var(--radius-lg)] mb-12 md:mb-16 border border-accent-warm/40 bg-gradient-to-r from-accent-warm/15 via-carbon to-black-2"
                 >
                     <div className="grid grid-cols-1 md:grid-cols-[auto_1fr_auto] gap-5 md:gap-8 items-center p-5 md:p-7">
-                        <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-accent-warm text-black rounded-full text-[10px] uppercase tracking-[0.3em] font-body font-bold whitespace-nowrap self-start md:self-auto w-fit">
+                        <span className="cta-shine cta-pulse inline-flex items-center gap-2 px-3 py-1.5 bg-accent-warm text-black rounded-full text-[10px] uppercase tracking-[0.3em] font-body font-bold whitespace-nowrap self-start md:self-auto w-fit">
                             <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor" aria-hidden="true">
                                 <path d="M12 2.5l2.4 5.6L20.5 9l-4.5 4 1.2 6.4L12 16.4l-5.2 3 1.2-6.4-4.5-4 6.1-.9L12 2.5z" />
                             </svg>

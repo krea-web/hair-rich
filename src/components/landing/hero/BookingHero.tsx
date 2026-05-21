@@ -176,7 +176,7 @@ export function BookingHero() {
 
                                 <button
                                     onClick={claim}
-                                    className="mt-6 md:mt-8 w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-accent-warm text-black rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold hover:scale-[1.02] active:scale-95 transition-transform"
+                                    className="cta-shine cta-pulse mt-6 md:mt-8 w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-accent-warm text-black rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold hover:scale-[1.02] active:scale-95 transition-transform"
                                 >
                                     {next ? "Prendi questo slot" : "Apri il booking"}
                                     <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">

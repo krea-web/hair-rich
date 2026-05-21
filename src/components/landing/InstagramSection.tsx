@@ -13,7 +13,7 @@ const INSTA_FEED = [
     },
     {
         src: "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?q=80&w=600&auto=format&fit=crop",
-        caption: "Beard sculpt — full ritual",
+        caption: "Beard sculpt — full service",
         likes: 287,
     },
     {

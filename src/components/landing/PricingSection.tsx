@@ -29,10 +29,10 @@ const PRICE_GROUPS: { title: string; items: PriceItem[] }[] = [
         ],
     },
     {
-        title: "Barba & Rituali",
+        title: "Barba & Servizi",
         items: [
             { name: "Barba sartoriale", description: "Modellatura, asciugamani caldi, olio", duration: "30'", price: "€15" },
-            { name: "Rasatura tradizionale", description: "Rasoio a mano libera, rituale completo", duration: "40'", price: "€25" },
+            { name: "Rasatura tradizionale", description: "Rasoio a mano libera, servizio completo", duration: "40'", price: "€25" },
             { name: "Taglio + Barba", description: "Il combo signature", duration: "60'", price: "€35", popular: true },
             { name: "Taglio a domicilio", description: "Veniamo noi. Su prenotazione, in orari concordati.", duration: "60'", price: "€45", seasonal: true },
         ],
@@ -120,7 +120,7 @@ export function PricingSection() {
                                             <h4 className="text-display text-base md:text-lg text-warm-white tracking-wider whitespace-nowrap group-hover:text-accent-warm transition-colors flex items-center gap-2">
                                                 {item.name}
                                                 {popular && (
-                                                    <span className="text-[8px] md:text-[9px] uppercase tracking-[0.2em] bg-accent-warm text-black px-1.5 py-0.5 rounded-full font-body font-bold normal-case whitespace-nowrap">
+                                                    <span className="cta-shine cta-pulse text-[8px] md:text-[9px] uppercase tracking-[0.2em] bg-accent-warm text-black px-1.5 py-0.5 rounded-full font-body font-bold normal-case whitespace-nowrap">
                                                         Top
                                                     </span>
                                                 )}

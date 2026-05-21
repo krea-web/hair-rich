@@ -131,7 +131,7 @@ function Compare({ pair }: { pair: Pair }) {
                 <span className="absolute top-4 left-4 bg-black/70 backdrop-blur-md text-warm-white text-[10px] uppercase tracking-[0.3em] font-body font-semibold px-3 py-1.5 rounded-full border border-line pointer-events-none">
                     Prima
                 </span>
-                <span className="absolute top-4 right-4 bg-accent-warm text-black text-[10px] uppercase tracking-[0.3em] font-body font-semibold px-3 py-1.5 rounded-full pointer-events-none">
+                <span className="cta-shine cta-pulse absolute top-4 right-4 bg-accent-warm text-black text-[10px] uppercase tracking-[0.3em] font-body font-semibold px-3 py-1.5 rounded-full pointer-events-none">
                     Dopo
                 </span>
 

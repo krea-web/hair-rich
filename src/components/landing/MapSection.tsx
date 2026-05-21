@@ -58,7 +58,7 @@ export function MapSection() {
                             href={GOOGLE_MAPS_LINK}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="mt-10 group inline-flex items-center gap-3 bg-accent-warm text-black px-7 py-4 rounded-full font-body font-semibold text-sm uppercase tracking-[0.2em] hover:brightness-110 active:scale-95 transition-all"
+                            className="cta-shine cta-pulse mt-10 group inline-flex items-center gap-3 bg-accent-warm text-black px-7 py-4 rounded-full font-body font-semibold text-sm uppercase tracking-[0.2em] hover:brightness-110 active:scale-95 transition-all"
                             whileHover={{ y: -2 }}
                             whileTap={{ scale: 0.97 }}
                         >

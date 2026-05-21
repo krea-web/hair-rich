@@ -47,7 +47,7 @@ function toDisplay(row: AppointmentWithDetails): DisplayAppt {
     return {
         id: row.id,
         date: row.start_at,
-        serviceName: firstService?.name ?? "Rituale",
+        serviceName: firstService?.name ?? "Servizio",
         serviceId: firstService?.id ?? null,
         staffName: row.staff?.name ?? "Prima disponibilità",
         staffId: row.staff?.id ?? null,
@@ -222,7 +222,7 @@ export default function ProfiloAppuntamentiPage() {
                         Appuntamenti.
                     </h1>
                     <p className="mt-4 text-warm-white-muted text-base max-w-md">
-                        Gestisci le prenotazioni future o rivedi lo storico dei tuoi tagli, barba e rituali.
+                        Gestisci le prenotazioni future o rivedi lo storico dei tuoi tagli, barba e trattamenti.
                     </p>
                 </div>
                 <button
@@ -279,7 +279,7 @@ export default function ProfiloAppuntamentiPage() {
                     </p>
                     <button
                         onClick={openDrawer}
-                        className="mt-6 inline-flex items-center justify-center gap-3 px-7 py-3.5 bg-accent-warm text-black rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform"
+                        className="cta-shine cta-pulse mt-6 inline-flex items-center justify-center gap-3 px-7 py-3.5 bg-accent-warm text-black rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform"
                     >
                         Prenota il primo
                         <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5">

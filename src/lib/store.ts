@@ -17,7 +17,9 @@ interface CartState {
     open: () => void;
     close: () => void;
     toggle: () => void;
-    addItem: (item: Omit<CartItem, "quantity">) => void;
+    /** Add an item. `qty` defaults to 1 — pass any positive integer to add
+     *  multiple units in one shot (e.g. from the product detail drawer). */
+    addItem: (item: Omit<CartItem, "quantity">, qty?: number) => void;
     removeItem: (productId: string) => void;
     updateQuantity: (productId: string, quantity: number) => void;
     clearCart: () => void;
@@ -33,19 +35,20 @@ export const useCartStore = create<CartState>((set, get) => ({
     close: () => set({ isOpen: false }),
     toggle: () => set((s) => ({ isOpen: !s.isOpen })),
 
-    addItem: (item) =>
+    addItem: (item, qty = 1) =>
         set((state) => {
+            const add = Math.max(1, Math.floor(qty));
             const existing = state.items.find((i) => i.productId === item.productId);
             if (existing) {
                 return {
                     items: state.items.map((i) =>
                         i.productId === item.productId
-                            ? { ...i, quantity: i.quantity + 1 }
+                            ? { ...i, quantity: i.quantity + add }
                             : i
                     ),
                 };
             }
-            return { items: [...state.items, { ...item, quantity: 1 }] };
+            return { items: [...state.items, { ...item, quantity: add }] };
         }),
 
     removeItem: (productId) =>
@@ -125,6 +128,84 @@ export const useBookingDrawer = create<BookingDrawerState>((set) => ({
     open: () => set({ isOpen: true }),
     close: () => set({ isOpen: false }),
     setOpen: (open) => set({ isOpen: open }),
+}));
+
+/* ── Product detail drawer (bottom sheet, mirror of booking drawer) ────────── */
+interface ProductDrawerProduct {
+    id: string;
+    slug: string;
+    name: string;
+    brand: string | null;
+    category: string;
+    description: string | null;
+    price_cents: number;
+    stock: number;
+    image_path: string | null;
+    badge: string | null;
+}
+
+interface ProductDrawerState {
+    isOpen: boolean;
+    product: ProductDrawerProduct | null;
+    open: (product: ProductDrawerProduct) => void;
+    close: () => void;
+    setOpen: (open: boolean) => void;
+}
+
+export const useProductDrawer = create<ProductDrawerState>((set) => ({
+    isOpen: false,
+    product: null,
+    open: (product) => set({ isOpen: true, product }),
+    close: () => set({ isOpen: false }),
+    setOpen: (open) => set((s) => ({ isOpen: open, product: open ? s.product : null })),
+}));
+
+/* ── Favorites (persisted) ─────────────────────────────────────────────────── */
+const FAV_STORAGE_KEY = "hairrich.favorites";
+
+interface FavoritesState {
+    ids: string[];
+    toggle: (productId: string) => void;
+    has: (productId: string) => boolean;
+    clear: () => void;
+}
+
+function loadFavorites(): string[] {
+    if (typeof window === "undefined") return [];
+    try {
+        const raw = window.localStorage.getItem(FAV_STORAGE_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed.filter((x) => typeof x === "string") : [];
+    } catch {
+        return [];
+    }
+}
+
+function saveFavorites(ids: string[]) {
+    if (typeof window === "undefined") return;
+    try {
+        window.localStorage.setItem(FAV_STORAGE_KEY, JSON.stringify(ids));
+    } catch {
+        /* quota exceeded — fail silently */
+    }
+}
+
+export const useFavoritesStore = create<FavoritesState>((set, get) => ({
+    ids: loadFavorites(),
+    toggle: (productId) =>
+        set((s) => {
+            const next = s.ids.includes(productId)
+                ? s.ids.filter((x) => x !== productId)
+                : [...s.ids, productId];
+            saveFavorites(next);
+            return { ids: next };
+        }),
+    has: (productId) => get().ids.includes(productId),
+    clear: () => {
+        saveFavorites([]);
+        set({ ids: [] });
+    },
 }));
 
 /* ── Mobile menu ───────────────────────────────────────────────────────────── */

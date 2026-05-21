@@ -130,7 +130,7 @@ export default function AdminDashboardPage() {
                             `${a.customer?.first_name ?? "—"}${
                                 a.customer?.last_name ? " " + a.customer.last_name[0] + "." : ""
                             }`,
-                        service: a.appointment_services?.[0]?.service?.name ?? "Rituale",
+                        service: a.appointment_services?.[0]?.service?.name ?? "Servizio",
                         staff: a.staff?.name ?? "—",
                         status: a.status,
                     }));

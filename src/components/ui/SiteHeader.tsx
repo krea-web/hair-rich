@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Wordmark } from "@/components/landing/_shared/Wordmark";
 import { LangSwitcher } from "@/components/landing/_shared/LangSwitcher";
 import { MobileMenuTrigger } from "@/components/ui/MobileMenu";
+import { CartIconButton } from "@/components/shop/CartIconButton";
 import { useBookingDrawer } from "@/lib/store";
 import { useT } from "@/i18n/useLang";
 
@@ -75,13 +76,14 @@ export function SiteHeader() {
                             if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(6);
                             openDrawer();
                         }}
-                        className="hidden md:inline-flex items-center gap-2 bg-accent-warm text-black px-5 py-2.5 rounded-full text-[10px] uppercase tracking-[0.25em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform"
+                        className="cta-shine cta-pulse hidden md:inline-flex items-center gap-2 bg-accent-warm text-black px-5 py-2.5 rounded-full text-[10px] uppercase tracking-[0.25em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform"
                     >
                         {t.nav.bookCta}
                         <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                         </svg>
                     </button>
+                    <CartIconButton size="md" />
                     <LangSwitcher current={lang} variant="navbar" />
                     <MobileMenuTrigger />
                 </div>

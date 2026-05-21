@@ -13,8 +13,10 @@ import { FAQAccordion } from "../components/landing/_shared/FAQAccordion";
 import { Footer } from "../components/landing/Footer";
 import { ToastViewport } from "../components/ui/ToastViewport";
 import { MobileBottomBar } from "../components/ui/MobileBottomBar";
+import { CartDrawer } from "../components/shop/CartDrawer";
+import { ProductDrawer } from "../components/shop/ProductDrawer";
 
-const RITUALS = [
+const SERVICES = [
   {
     n: "01",
     title: "Consulto iniziale",
@@ -67,9 +69,9 @@ const FAQ = [
 
     <ProcessSteps
       client:idle
-      eyebrow="Il rituale Hair Rich"
+      eyebrow="Il servizio Hair Rich"
       title="Tre passaggi che attraversano ogni servizio."
-      steps={RITUALS}
+      steps={SERVICES}
     />
 
     <ServiceCatalog client:visible />
@@ -87,5 +89,7 @@ const FAQ = [
   <ToastViewport client:load />
   <MobileBottomBar client:idle />
   <BookingDrawer client:idle />
+  <CartDrawer client:idle />
+  <ProductDrawer client:idle />
   <StickySlotPeek client:idle />
 </RootLayout>

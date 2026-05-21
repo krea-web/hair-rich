@@ -3,16 +3,16 @@
 import { motion } from "framer-motion";
 import { portfolioImageUrl } from "@/lib/supabase/queries";
 
-const RITUALS = [
+const SERVICES = [
     { num: "01", name: "Taglio sartoriale", time: "30 min" },
     { num: "02", name: "Taglio + barba", time: "60 min" },
     { num: "03", name: "Rasatura tradizionale", time: "45 min" },
-    { num: "04", name: "Rituali speciali", time: "on demand" },
+    { num: "04", name: "Servizi speciali", time: "on demand" },
 ];
 
 /**
  * "Editorial index" hero for /servizi. Big watermark numeral on the right
- * (the brand's 01 / 04 ordinal) intersects the title. A ritual ledger
+ * (the brand's 01 / 04 ordinal) intersects the title. A service ledger
  * occupies the lower half — four lines, each numbered, that act as both
  * a tease of the catalogue below and a scannable answer to "cosa offrite".
  */
@@ -51,22 +51,22 @@ export function ServicesHero() {
                     className="max-w-3xl"
                 >
                     <span className="text-[10px] md:text-xs uppercase tracking-[0.5em] text-accent-warm font-body font-semibold">
-                        I rituali · L'indice
+                        I servizi · L'indice
                     </span>
                     <h1 className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-warm-white tracking-tight mt-3 md:mt-5 leading-[0.95]">
                         Niente listino.
                         <br />
                         <em className="text-display-alt not-italic text-silver">
-                            Solo rituale tuo.
+                            Solo servizio tuo.
                         </em>
                     </h1>
                     <p className="mt-5 md:mt-7 max-w-xl text-warm-white-muted text-base md:text-lg leading-relaxed">
-                        Tre domande, sessanta secondi, e ti diciamo qual è il rituale calibrato
+                        Tre domande, sessanta secondi, e ti diciamo qual è il servizio calibrato
                         sulla tua testa. Il prezzo arriva alla fine: non lo scegli al buio.
                     </p>
                 </motion.div>
 
-                {/* Ritual index */}
+                {/* Service index */}
                 <motion.ul
                     initial="hidden"
                     animate="visible"
@@ -76,7 +76,7 @@ export function ServicesHero() {
                     }}
                     className="mt-10 md:mt-14 divide-y divide-line/40 border-y border-line/40"
                 >
-                    {RITUALS.map((r) => (
+                    {SERVICES.map((r) => (
                         <motion.li
                             key={r.num}
                             variants={{

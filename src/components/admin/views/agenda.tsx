@@ -162,7 +162,7 @@ export default function AdminAgendaPage() {
 
             const mapped: AgendaAppt[] = (data ?? []).map((r: any) => ({
                 id: r.id,
-                title: `${r.appointment_services?.[0]?.service?.name ?? "Rituale"} · ${
+                title: `${r.appointment_services?.[0]?.service?.name ?? "Servizio"} · ${
                     r.customer?.first_name ?? "?"
                 }${r.customer?.last_name ? " " + r.customer.last_name[0] + "." : ""}`,
                 staffId: r.staff_id ?? null,

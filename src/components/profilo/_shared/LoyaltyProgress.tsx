@@ -38,13 +38,13 @@ export function LoyaltyProgress() {
                     </span>
                     <h3 className="text-display text-2xl md:text-3xl text-warm-white tracking-tight mt-1 leading-tight">
                         {isCycleComplete
-                            ? `Hai sbloccato un rituale in regalo.`
+                            ? `Hai sbloccato un servizio in regalo.`
                             : `Sei al taglio ${labelN} di ${MILESTONE}.`}
                     </h3>
                     <p className="mt-2 text-warm-white-muted text-sm leading-relaxed max-w-md">
                         {isCycleComplete
-                            ? "Al prossimo appuntamento il rituale è offerto da noi. Te lo applicheremo direttamente in salone."
-                            : `Mancano ${toGoal} ${toGoal === 1 ? "rituale" : "rituali"} al prossimo regalo${cycle > 0 ? " · " + cycle + " regalo già sbloccato" + (cycle > 1 ? "i" : "") : ""}.`}
+                            ? "Al prossimo appuntamento il servizio è offerto da noi. Te lo applicheremo direttamente in salone."
+                            : `Mancano ${toGoal} ${toGoal === 1 ? "servizio" : "servizi"} al prossimo regalo${cycle > 0 ? " · " + cycle + " regalo già sbloccato" + (cycle > 1 ? "i" : "") : ""}.`}
                     </p>
                 </div>
                 <div className="hidden md:flex flex-col items-end shrink-0">

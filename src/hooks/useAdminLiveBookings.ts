@@ -91,7 +91,7 @@ export function useAdminLiveBookings() {
                         ? `${row.customer.first_name ?? ""} ${row.customer.last_name ?? ""}`.trim() ||
                           "Cliente"
                         : "Cliente";
-                    const service = row.appointment_services?.[0]?.service?.name ?? "Rituale";
+                    const service = row.appointment_services?.[0]?.service?.name ?? "Servizio";
                     const when = formatStart(row.start_at);
                     const message = `Nuova prenotazione · ${customer} · ${service} · ${when}`;
                     addToast(message, "success");

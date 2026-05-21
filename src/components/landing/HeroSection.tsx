@@ -69,7 +69,7 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 0.6 }}
             >
-                Da otto anni la nostra missione è scolpire la tua identità. Taglio, barba e rituali esclusivi
+                Da otto anni la nostra missione è scolpire la tua identità. Taglio, barba e trattamenti esclusivi
                 nel cuore di Olbia.
             </motion.p>
 

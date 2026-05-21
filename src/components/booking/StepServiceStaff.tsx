@@ -49,7 +49,7 @@ export function StepServiceStaff({ onNext }: { onNext: () => void }) {
                     Servizio &amp; Barber
                 </h3>
                 <p className="mt-2 text-warm-white-muted text-sm">
-                    Scegli il rituale e (opzionale) il barber che preferisci.
+                    Scegli il servizio e (opzionale) il barber che preferisci.
                 </p>
             </div>
 

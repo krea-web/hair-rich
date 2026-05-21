@@ -299,7 +299,7 @@ function buildRationale(serviceSlug: string, a: QuizAnswers): string {
 
     const recipe: Record<string, string> = {
         "fade-sfumatura":
-            "Il Fade è il rituale più flessibile: sfumatura tecnica + rifinitura a rasoio. Pulito 2-3 settimane senza ritocchi, niente prodotti necessari.",
+            "Il Fade è il servizio più flessibile: sfumatura tecnica + rifinitura a rasoio. Pulito 2-3 settimane senza ritocchi, niente prodotti necessari.",
         "razor-cut":
             "Il Razor Cut lavora a rasoio le punte per creare movimento naturale. Texture viva, niente forme rigide — perfetto se hai una mossa di partenza da assecondare.",
         "taglio-classico":
@@ -368,11 +368,11 @@ export function StyleQuiz() {
                     </span>
                     <h2 className="text-display text-4xl md:text-6xl text-warm-white tracking-tight mt-4 leading-[1.05]">
                         Costruiamo<br />
-                        <em className="text-display-alt not-italic text-silver">il tuo rituale.</em>
+                        <em className="text-display-alt not-italic text-silver">il tuo servizio.</em>
                     </h2>
                     <p className="mt-5 text-warm-white-muted text-base md:text-lg leading-relaxed max-w-xl mx-auto">
                         Quattro domande sul tuo contesto, capelli e abitudini. Alla fine ti diciamo
-                        quale dei nostri sei rituali è davvero calibrato su di te — con la
+                        quale dei nostri sei servizi è davvero calibrato su di te — con la
                         spiegazione del perché.
                     </p>
                 </div>
@@ -477,7 +477,7 @@ export function StyleQuiz() {
                                 <div className="relative">
                                     <span className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
                                         <span className="w-1.5 h-1.5 rounded-full bg-accent-warm animate-pulse" aria-hidden="true" />
-                                        Il tuo rituale, calibrato
+                                        Il tuo servizio, calibrato
                                     </span>
                                     <h3 className="text-display text-3xl md:text-5xl text-warm-white tracking-tight mt-3 leading-[1.05]">
                                         {result.name}
@@ -518,9 +518,9 @@ export function StyleQuiz() {
                                     <div className="mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                                         <button
                                             onClick={handleBookResult}
-                                            className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-accent-warm text-black rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform"
+                                            className="cta-shine cta-pulse inline-flex items-center justify-center gap-3 px-8 py-4 bg-accent-warm text-black rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform"
                                         >
-                                            Prenota questo rituale
+                                            Prenota questo servizio
                                             <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5">
                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                                             </svg>
@@ -536,7 +536,7 @@ export function StyleQuiz() {
                             </div>
 
                             <p className="mt-6 text-center text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
-                                Vuoi vedere tutti i sei rituali? Scorri sotto ↓
+                                Vuoi vedere tutti i sei servizi? Scorri sotto ↓
                             </p>
                         </motion.div>
                     )}

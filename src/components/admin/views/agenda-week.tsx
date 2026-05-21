@@ -80,7 +80,7 @@ export default function AdminAgendaWeekPage() {
                 customer: `${r.customer?.first_name ?? "?"}${
                     r.customer?.last_name ? " " + r.customer.last_name[0] + "." : ""
                 }`,
-                serviceName: r.appointment_services?.[0]?.service?.name ?? "Rituale",
+                serviceName: r.appointment_services?.[0]?.service?.name ?? "Servizio",
                 status: r.status,
             }));
             setAppts(mapped);

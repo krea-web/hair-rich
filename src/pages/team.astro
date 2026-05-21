@@ -11,6 +11,8 @@ import { ProcessSteps } from "../components/landing/_shared/ProcessSteps";
 import { Footer } from "../components/landing/Footer";
 import { ToastViewport } from "../components/ui/ToastViewport";
 import { MobileBottomBar } from "../components/ui/MobileBottomBar";
+import { CartDrawer } from "../components/shop/CartDrawer";
+import { ProductDrawer } from "../components/shop/ProductDrawer";
 
 const VALUES = [
   {
@@ -57,5 +59,7 @@ const VALUES = [
   <ToastViewport client:load />
   <MobileBottomBar client:idle />
   <BookingDrawer client:idle />
+  <CartDrawer client:idle />
+  <ProductDrawer client:idle />
   <StickySlotPeek client:idle />
 </RootLayout>

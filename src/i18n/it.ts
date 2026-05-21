@@ -39,7 +39,7 @@ export const it: Dict = {
         titleA: "BARBER",
         titleB: "STUDIO",
         body:
-            "Da otto anni la nostra missione è scolpire la tua identità. Taglio, barba e rituali esclusivi nel cuore di Olbia.",
+            "Da otto anni la nostra missione è scolpire la tua identità. Taglio, barba e trattamenti esclusivi nel cuore di Olbia.",
         primaryCta: "Prenota Ora",
         secondaryCta: "Esplora i servizi",
         captionEyebrow: "Premium",
@@ -60,14 +60,14 @@ export const it: Dict = {
         titleA: "Il nostro",
         titleB: "studio.",
         bodyP1:
-            "Hair Rich nasce da una visione: trasformare il rituale del taglio in un'esperienza intima, sartoriale, irripetibile. Una poltrona, un Master Barber, mani esperte.",
+            "Hair Rich nasce da una visione: trasformare il taglio in un'esperienza intima, sartoriale, irripetibile. Una poltrona, un Master Barber, mani esperte.",
         bodyP2:
             "Niente fretta. Niente standardizzazioni. Solo il tempo che serve per scolpire il tuo carattere — un fade alla volta.",
         values: [
             "Sartorialità ossessiva",
             "Materiali premium",
             "Atmosfera intima",
-            "Rituale lento",
+            "Tempo lento",
         ],
         cta: "Vivi l'esperienza",
         sinceLabel: "since",
@@ -77,7 +77,7 @@ export const it: Dict = {
         titleA: "I nostri",
         titleB: "servizi.",
         intro:
-            "Tre famiglie di trattamenti per ogni momento della tua giornata. Scegli il rituale che ti rappresenta — noi pensiamo al resto.",
+            "Tre famiglie di trattamenti per ogni momento della tua giornata. Scegli il servizio che ti rappresenta — noi pensiamo al resto.",
         items: [
             {
                 eyebrow: "Sharp",
@@ -136,7 +136,7 @@ export const it: Dict = {
             {
                 title: "Tempo Dedicato",
                 description:
-                    "Slot ampi, mai sovrapposti. Il rituale richiede calma — ne avrai a sufficienza.",
+                    "Slot ampi, mai sovrapposti. Il servizio richiede calma — ne avrai a sufficienza.",
             },
         ],
     },
@@ -253,7 +253,7 @@ export const it: Dict = {
             },
             {
                 name: "Francesco R.",
-                text: "Ambiente curato, musica perfetta, taglio impeccabile. Hair Rich è un'esperienza, non un semplice appuntamento. Il rituale della barba con asciugamani caldi è qualcosa di unico.",
+                text: "Ambiente curato, musica perfetta, taglio impeccabile. Hair Rich è un'esperienza, non un semplice appuntamento. Il momento della barba con asciugamani caldi è qualcosa di unico.",
                 date: "Marzo 2025",
                 location: "Cagliari",
             },
@@ -438,7 +438,7 @@ export const it: Dict = {
             greetingEyebrow: "Bentornato,",
             greetingName: (name) => `${name}.`,
             intro:
-                "Il tuo prossimo rituale è già fissato. Ecco un riepilogo veloce dei tuoi crediti e dell'attività recente.",
+                "Il tuo prossimo appuntamento è già fissato. Ecco un riepilogo veloce dei tuoi crediti e dell'attività recente.",
             ctaNew: "Nuovo appuntamento",
             kpis: {
                 wallet: "Portafoglio",
@@ -460,7 +460,7 @@ export const it: Dict = {
             eyebrow: "Your",
             title: "Appuntamenti.",
             intro:
-                "Gestisci le prenotazioni future o rivedi lo storico dei tuoi tagli, barba e rituali.",
+                "Gestisci le prenotazioni future o rivedi lo storico dei tuoi tagli, barba e trattamenti.",
             new: "Nuovo",
             filters: { all: "Tutti", confirmed: "Confermati", completed: "Completati", cancelled: "Annullati" },
             count: (n) => (n === 1 ? "1 appuntamento" : `${n} appuntamenti`),
