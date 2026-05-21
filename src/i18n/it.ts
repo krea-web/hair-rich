@@ -344,7 +344,7 @@ export const it: Dict = {
         intro:
             "Lo studio Hair Rich è in centro a Olbia, a pochi passi da Corso Umberto. Parcheggio nelle vicinanze.",
         cta: "Indicazioni stradali",
-        hoursSummary: "Mar–Sab · 9:00–19:30",
+        hoursSummary: "Mar–Sab · 9:00–19:00",
         labels: { address: "Indirizzo", hours: "Orari" },
     },
     footer: {

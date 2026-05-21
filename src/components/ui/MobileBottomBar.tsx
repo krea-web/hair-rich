@@ -113,11 +113,23 @@ export function MobileBottomBar() {
 
     return (
         <nav
-            className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
+            className="fixed left-0 right-0 z-50 md:hidden"
             aria-label="Navigazione principale"
             data-intro-hidden
+            // Anchor with explicit bottom: 0 (not via Tailwind) + force a
+            // compositor layer with translateZ(0). On Chrome mobile this
+            // prevents the bar from jittering up/down each time the URL bar
+            // collapses/expands. Safe-area is paid inside the inner div, so
+            // the nav itself sits flush with the visual viewport bottom.
+            style={{
+                bottom: 0,
+                transform: "translateZ(0)",
+                willChange: "transform",
+                WebkitBackfaceVisibility: "hidden",
+                backfaceVisibility: "hidden",
+            }}
         >
-            <div className="pointer-events-auto bg-black/90 backdrop-blur-xl border-t border-line pb-[max(env(safe-area-inset-bottom),8px)] pt-2">
+            <div className="pointer-events-auto bg-black/90 backdrop-blur-xl border-t border-line pt-2" style={{ paddingBottom: "max(env(safe-area-inset-bottom), 8px)" }}>
                 <ul className="grid grid-cols-5 items-end gap-0 px-2 max-w-md mx-auto">
                     {TABS.map((tab) => {
                         const active = isActive(tab.href);

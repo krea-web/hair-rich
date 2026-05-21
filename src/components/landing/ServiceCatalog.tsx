@@ -13,6 +13,7 @@ import {
 import type { AvailableSlot, Service } from "@/lib/supabase/types";
 import { formatPrice } from "@/lib/format";
 import { useBookingDrawer, useBookingStore } from "@/lib/store";
+import { SITE } from "@/lib/constants";
 import { SmartImage } from "./_shared/SmartImage";
 
 interface ServiceEnrichment {
@@ -26,6 +27,7 @@ interface ServiceEnrichment {
 }
 
 const ENRICHMENT: Record<string, ServiceEnrichment> = {
+    // DB slug → Taglio capelli (€20, 30')
     "taglio-classico": {
         poetic: "Forbice, controllo, niente fronzoli. La scuola italiana al millimetro.",
         persona: "Per chi sa cosa vuole e lo vuole eseguito bene.",
@@ -33,36 +35,21 @@ const ENRICHMENT: Record<string, ServiceEnrichment> = {
         coverImage: "salone-team-staff.webp",
         coverBucket: "asset",
     },
-    "fade-sfumatura": {
-        poetic: "Tre lunghezze graduate, transizione invisibile, contorni a rasoio.",
-        persona: "Per chi vuole un risultato che si nota — anche se non sa come si chiama.",
-        tools: ["Macchinetta · 3 lunghezze", "Rasoio per contorni", "Pomata finale"],
-        coverImage: "provvisorio/IMG_2090.jpeg",
-    },
-    "razor-cut": {
-        poetic: "Rasoio sulle punte, texture viva, niente forme rigide.",
-        persona: "Per chi ha capelli che chiedono movimento, non struttura.",
-        tools: ["Rasoio a mano libera", "Forbice-trama", "Asciugatura morbida"],
-        coverImage: "provvisorio/IMG_1208.jpeg",
-    },
+    // DB slug → Taglio barba (€10, 30')
     "barba-sartoriale": {
         poetic: "Asciugamano caldo, rasoio classico, olio sulla pelle.",
         persona: "Per chi cura il volto come un capo d'abbigliamento.",
         tools: ["Asciugamano caldo", "Rasoio classico", "Olio post-shave"],
-        coverImage: "provvisorio/IMG_2143.jpeg",
-    },
-    "taglio-barba": {
-        poetic: "Un'ora intera. Capelli e barba in continuità, niente dettaglio lasciato indietro.",
-        persona: "Per chi viene da noi una volta al mese e vuole tutto.",
-        tools: ["Tutto il taglio classico", "Tutta la barba sartoriale", "Pausa relax"],
         coverImage: "salone-vista-completa.webp",
         coverBucket: "asset",
     },
-    "taglio-domicilio": {
-        poetic: "Veniamo noi. Stessa attrezzatura, stessa cura. A casa, in albergo, in barca.",
-        persona: "Per chi viaggia, per occasioni speciali, per la clientela VIP.",
-        tools: ["Sopralluogo 24h prima", "Setup completo", "Aftercare via messaggio"],
-        coverImage: "provvisorio/IMG_2549.jpeg",
+    // DB slug → Taglio capelli + barba (€30, 60')
+    "taglio-barba": {
+        poetic: "Un'ora intera. Capelli e barba in continuità, niente dettaglio lasciato indietro.",
+        persona: "Per chi viene da noi una volta al mese e vuole tutto.",
+        tools: ["Tutto il taglio capelli", "Tutta la barba sartoriale", "Pausa relax"],
+        coverImage: "salone-interno-postazioni.webp",
+        coverBucket: "asset",
     },
 };
 
@@ -114,14 +101,15 @@ export function ServiceCatalog() {
             <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 pt-20 md:pt-28 pb-12 md:pb-16">
                 <div className="max-w-2xl">
                     <span className="text-[10px] uppercase tracking-[0.5em] text-accent-warm font-body font-semibold">
-                        Tutti i servizi · 06
+                        Listino · 03
                     </span>
                     <h2 className="text-display text-3xl md:text-5xl text-warm-white tracking-tight mt-4 leading-[1.05]">
-                        Esplora ogni servizio.
+                        Tre servizi. Niente sovrastrutture.
                     </h2>
                     <p className="mt-4 text-warm-white-muted text-base md:text-lg leading-relaxed">
-                        Sei servizi, sei filosofie diverse. Ogni servizio ha la sua tecnica,
-                        i suoi tempi, la sua persona di riferimento.
+                        Tre opzioni chiare, prezzi trasparenti, tempi onesti. Il quarto —
+                        taglio a domicilio — esiste ma è su misura: si prenota solo per
+                        telefono.
                     </p>
                 </div>
             </div>
@@ -269,9 +257,118 @@ export function ServiceCatalog() {
                             </motion.article>
                         );
                     })}
+
+                    {/* Phone-only 4th option: home service. Sits as the closer
+                        of the catalog with the same article shell as the
+                        bookable services but a tel: CTA instead of the
+                        drawer trigger. */}
+                    <HomeServiceCard index={services.length} />
                 </div>
             )}
         </section>
+    );
+}
+
+function HomeServiceCard({ index }: { index: number }) {
+    const phoneHref = "tel:" + SITE.phone.replace(/\s+/g, "");
+    const reverse = index % 2 === 1;
+    return (
+        <motion.article
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+            className="relative border-b border-line"
+        >
+            <div className={`grid grid-cols-1 md:grid-cols-12 ${reverse ? "md:[direction:rtl]" : ""}`}>
+                {/* Photo column */}
+                <div className="md:col-span-7 relative overflow-hidden md:[direction:ltr]">
+                    <div className="relative aspect-[4/3] md:aspect-auto md:h-[640px]">
+                        <SmartImage
+                            src={assetImageUrl("salone-vetrina.webp", { width: 1200, quality: 80, format: "webp" })}
+                            srcSet={assetImageSrcset("salone-vetrina.webp", 80)}
+                            sizes="(min-width: 768px) 58vw, 100vw"
+                            alt="Taglio a domicilio · Hair Rich"
+                            className="h-full grayscale-[10%]"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-black/75 via-black/15 to-transparent pointer-events-none" />
+
+                        <div className="absolute top-5 left-5 md:top-8 md:left-8 flex items-baseline gap-3 text-warm-white">
+                            <span className="text-display-alt text-4xl md:text-6xl leading-none text-accent-warm">
+                                {String(index + 1).padStart(2, "0")}
+                            </span>
+                            <span className="text-[9px] uppercase tracking-[0.4em] font-body font-semibold opacity-70">
+                                Esclusivo
+                            </span>
+                        </div>
+
+                        <div className="absolute top-5 right-5 md:top-8 md:right-8 inline-flex items-center gap-2 px-3 py-1.5 border border-accent-warm/40 bg-black/60 backdrop-blur-md rounded-full">
+                            <svg viewBox="0 0 24 24" className="w-3 h-3 text-accent-warm" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.91.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0122 16.92z" />
+                            </svg>
+                            <span className="text-[9px] uppercase tracking-[0.3em] text-accent-warm font-body font-bold">
+                                Solo telefono
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Body column */}
+                <div className="md:col-span-5 md:[direction:ltr] flex flex-col justify-center px-6 md:px-10 lg:px-14 py-10 md:py-12 bg-black">
+                    <h3 className="text-display text-3xl md:text-5xl text-warm-white tracking-tight leading-[1.05]">
+                        Taglio a domicilio
+                    </h3>
+
+                    <p className="mt-4 text-display-alt text-lg md:text-2xl text-silver italic leading-snug">
+                        Veniamo noi. Stessa attrezzatura, stessa cura. A casa, in albergo,
+                        in barca.
+                    </p>
+
+                    <div className="mt-6 pl-4 border-l-2 border-accent-warm/40">
+                        <span className="text-[10px] uppercase tracking-[0.35em] text-accent-warm font-body font-semibold">
+                            Per chi
+                        </span>
+                        <p className="mt-1 text-warm-white-muted text-sm md:text-base leading-relaxed">
+                            Viaggi, occasioni speciali, clientela VIP. Eventi, set, location
+                            private.
+                        </p>
+                    </div>
+
+                    <div className="mt-6">
+                        <span className="text-[10px] uppercase tracking-[0.35em] text-silver-dark font-body font-semibold">
+                            Come funziona
+                        </span>
+                        <ul className="mt-3 flex flex-wrap gap-2">
+                            {["Sopralluogo 24h prima", "Setup completo", "Tariffa su misura"].map((t) => (
+                                <li
+                                    key={t}
+                                    className="inline-flex items-center px-3 py-1.5 rounded-full border border-line text-warm-white-muted text-xs font-body"
+                                >
+                                    {t}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    {/* CTA row — phone-only, no booking drawer */}
+                    <div className="mt-8 pt-6 border-t border-line space-y-4">
+                        <p className="text-warm-white-muted text-sm leading-relaxed">
+                            Non è prenotabile online. Il preventivo si fa al telefono —
+                            location, numero di teste, durata e tariffa decisi insieme.
+                        </p>
+                        <a
+                            href={phoneHref}
+                            className="cta-shine cta-pulse w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-accent-warm text-black rounded-full text-xs md:text-sm uppercase tracking-[0.3em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform"
+                        >
+                            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.91.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0122 16.92z" />
+                            </svg>
+                            Chiama per prenotare · {SITE.phone}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </motion.article>
     );
 }
 

@@ -25,7 +25,7 @@ const TIMELINE: TimelineEntry[] = [
         body: "Chiudiamo davvero. Niente improvvisate, niente \"giusto cinque minuti\". Mangiare bene è parte del mestiere.",
     },
     {
-        time: "14:30",
+        time: "15:00",
         title: "Riapertura",
         body: "Pomeriggio = clienti dopo-lavoro. Tagli più rapidi, focus su mantenimento. La macchinetta lavora di più del rasoio in questo turno.",
     },
@@ -35,7 +35,7 @@ const TIMELINE: TimelineEntry[] = [
         body: "Le ore d'oro. Razor cut, barba sartoriale, combo. Qui i clienti chiedono il tempo per il servizio completo.",
     },
     {
-        time: "19:30",
+        time: "19:00",
         title: "Chiusura",
         body: "Stesso rispetto del mattino: chiudiamo in orario per chi viene dopo, ma chi è dentro finisce con calma. Sempre.",
     },
@@ -53,7 +53,7 @@ export function SalonDay() {
                 aria-hidden="true"
                 className="absolute -top-20 right-0 text-display-alt text-[32vw] md:text-[18vw] text-warm-white/[0.02] leading-none pointer-events-none select-none whitespace-nowrap"
             >
-                09 — 19:30
+                09 — 19:00
             </div>
 
             <div className="relative max-w-5xl mx-auto">

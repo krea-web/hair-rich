@@ -9,11 +9,11 @@ type Window = { open: string; close: string };
 const HOURS: Record<number, Window[]> = {
     0: [], // Sun closed
     1: [], // Mon closed
-    2: [{ open: "09:00", close: "13:00" }, { open: "14:30", close: "19:30" }],
-    3: [{ open: "09:00", close: "13:00" }, { open: "14:30", close: "19:30" }],
-    4: [{ open: "09:00", close: "13:00" }, { open: "14:30", close: "19:30" }],
-    5: [{ open: "09:00", close: "13:00" }, { open: "14:30", close: "19:30" }],
-    6: [{ open: "09:00", close: "13:00" }, { open: "14:30", close: "19:30" }],
+    2: [{ open: "09:00", close: "12:30" }, { open: "15:00", close: "19:00" }],
+    3: [{ open: "09:00", close: "12:30" }, { open: "15:00", close: "19:00" }],
+    4: [{ open: "09:00", close: "12:30" }, { open: "15:00", close: "19:00" }],
+    5: [{ open: "09:00", close: "12:30" }, { open: "15:00", close: "19:00" }],
+    6: [{ open: "09:00", close: "12:30" }, { open: "15:00", close: "19:00" }],
 };
 
 const DAY_NAMES_IT: Record<number, string> = {

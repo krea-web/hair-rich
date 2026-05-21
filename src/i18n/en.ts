@@ -329,7 +329,7 @@ export const en: Dict = {
         intro:
             "The Hair Rich studio sits in central Olbia, a short walk from Corso Umberto. Parking nearby.",
         cta: "Get directions",
-        hoursSummary: "Tue–Sat · 9:00–19:30",
+        hoursSummary: "Tue–Sat · 9:00–19:00",
         labels: { address: "Address", hours: "Hours" },
     },
     footer: {

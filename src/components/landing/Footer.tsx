@@ -7,11 +7,11 @@ import { assetImageUrl, assetImageSrcset } from "@/lib/supabase/queries";
 
 const HOURS_RAW = [
     { dayKey: "mon" as const, hours: "closed" as const },
-    { dayKey: "tue" as const, hours: "09:00 – 13:00 · 14:30 – 19:30" },
-    { dayKey: "wed" as const, hours: "09:00 – 13:00 · 14:30 – 19:30" },
-    { dayKey: "thu" as const, hours: "09:00 – 13:00 · 14:30 – 19:30" },
-    { dayKey: "fri" as const, hours: "09:00 – 13:00 · 14:30 – 19:30" },
-    { dayKey: "sat" as const, hours: "09:00 – 13:00 · 14:30 – 19:30" },
+    { dayKey: "tue" as const, hours: "09:00 – 12:30 · 15:00 – 19:00" },
+    { dayKey: "wed" as const, hours: "09:00 – 12:30 · 15:00 – 19:00" },
+    { dayKey: "thu" as const, hours: "09:00 – 12:30 · 15:00 – 19:00" },
+    { dayKey: "fri" as const, hours: "09:00 – 12:30 · 15:00 – 19:00" },
+    { dayKey: "sat" as const, hours: "09:00 – 12:30 · 15:00 – 19:00" },
     { dayKey: "sun" as const, hours: "closed" as const },
 ];
 

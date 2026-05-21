@@ -220,46 +220,21 @@ const QUESTIONS: Question[] = [
 ];
 
 /**
- * Pick the best-fitting service slug based on the 4 answers. The mapping
- * is intentionally explicit so a barber can read it, sanity-check it, and
- * tune it in five minutes if real-world feedback diverges from intuition.
+ * Pick one of the three real bookable services based on the answers.
+ * Catalog is now intentionally minimal: cut, beard, or the combo.
+ * - beard full/trim + any haircut intent → combo (taglio-barba)
+ * - beard full, no haircut intent (zero context care) → standalone beard
+ * - everything else → straight haircut
  */
 function pickService(a: QuizAnswers): string {
     const wantsBeard = a.beard === "full" || a.beard === "trim";
 
-    // Full beard sartorial wins for editorial + creative contexts with care
-    if (a.beard === "full" && a.context === "creative") return "barba-sartoriale";
+    // The combo is the default winner whenever beard work is requested
+    // alongside a haircut: visitor saves money vs two separate services.
+    if (wantsBeard) return "taglio-barba";
 
-    // Combo (taglio + barba) — anyone who wants real beard work + a haircut
-    if (a.beard === "full") return "taglio-barba";
-
-    // Razor cut for creative/social contexts with wavy/curly hair OR
-    // someone who actually styles in the morning
-    if (
-        (a.context === "creative" || a.context === "social") &&
-        (a.texture === "wavy" || a.texture === "curly") &&
-        a.styling !== "zero"
-    ) {
-        return wantsBeard ? "taglio-barba" : "razor-cut";
-    }
-
-    // Fade is the universal workhorse — modern, low-maintenance, defined.
-    // Office + low maintenance, outdoor + any, or thin hair benefits.
-    if (
-        a.context === "office" && a.styling === "zero" ||
-        a.context === "outdoor" ||
-        a.texture === "thin"
-    ) {
-        return wantsBeard ? "taglio-barba" : "fade-sfumatura";
-    }
-
-    // Classic for office contexts with care + straight/wavy hair
-    if (a.context === "office" && (a.texture === "straight" || a.texture === "wavy") && a.styling !== "zero") {
-        return "taglio-classico";
-    }
-
-    // Default: the most flexible service
-    return "fade-sfumatura";
+    // Otherwise — single haircut. There's only one cut SKU now.
+    return "taglio-classico";
 }
 
 /**
@@ -298,16 +273,12 @@ function buildRationale(serviceSlug: string, a: QuizAnswers): string {
     const profile = [ctxPart, texPart, styPart].filter(Boolean).join(" · ");
 
     const recipe: Record<string, string> = {
-        "fade-sfumatura":
-            "Il Fade è il servizio più flessibile: sfumatura tecnica + rifinitura a rasoio. Pulito 2-3 settimane senza ritocchi, niente prodotti necessari.",
-        "razor-cut":
-            "Il Razor Cut lavora a rasoio le punte per creare movimento naturale. Texture viva, niente forme rigide — perfetto se hai una mossa di partenza da assecondare.",
         "taglio-classico":
-            "Il Taglio Classico è scuola italiana a forbice: controllo millimetrico, niente fronzoli. Forma pulita che resta pulita.",
+            "Il taglio capelli: 30 minuti, ascolto + esecuzione + finish. 20€, niente sovrastrutture.",
         "taglio-barba":
-            "Il combo Taglio + Barba dà continuità stilistica al volto e risparmi 5€ rispetto al singolo. Un'ora intera dedicata.",
+            "Il combo taglio capelli + barba: un'ora intera, continuità stilistica al volto e risparmi sul singolo. 30€.",
         "barba-sartoriale":
-            "La Barba Sartoriale lavora a rasoio classico i contorni e finisce con olio scelto sul tuo tipo di pelle. È dove si fa la differenza nei millimetri.",
+            "Solo barba: rasoio classico sui contorni, olio scelto sul tipo di pelle. 30 minuti, 10€.",
     };
 
     const why = recipe[serviceSlug] ?? "";

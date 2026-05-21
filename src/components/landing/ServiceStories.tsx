@@ -4,31 +4,25 @@ import { AnimatePresence, motion, useMotionValue, useTransform } from "framer-mo
 import { useEffect, useRef, useState } from "react";
 import {
     fetchServices,
-    portfolioImageSrcset,
-    portfolioImageUrl,
+    assetImageUrl,
+    assetImageSrcset,
 } from "@/lib/supabase/queries";
 import type { Service } from "@/lib/supabase/types";
 import { formatPrice } from "@/lib/format";
 import { useBookingDrawer, useBookingStore } from "@/lib/store";
 
-// Same cover-image mapping as ServiceCatalog — kept inline so the two
-// components don't grow a coupling.
+// Cover image per active service slug — sourced from the asset bucket so
+// the stories use real salon shots, matching the desktop ServiceCatalog.
 const COVER: Record<string, string> = {
-    "taglio-classico": "provvisorio/IMG_1200.jpeg",
-    "fade-sfumatura": "provvisorio/IMG_2090.jpeg",
-    "razor-cut": "provvisorio/IMG_1208.jpeg",
-    "barba-sartoriale": "provvisorio/IMG_2143.jpeg",
-    "taglio-barba": "provvisorio/IMG_2374.jpeg",
-    "taglio-domicilio": "provvisorio/IMG_2549.jpeg",
+    "taglio-classico": "salone-team-staff.webp",
+    "barba-sartoriale": "salone-vista-completa.webp",
+    "taglio-barba": "salone-interno-postazioni.webp",
 };
 
 const POETIC: Record<string, string> = {
     "taglio-classico": "Forbice, controllo, niente fronzoli.",
-    "fade-sfumatura": "Tre lunghezze graduate, transizione invisibile.",
-    "razor-cut": "Rasoio sulle punte, texture viva.",
     "barba-sartoriale": "Asciugamano caldo, rasoio classico, olio sulla pelle.",
     "taglio-barba": "Un'ora intera. Capelli e barba in continuità.",
-    "taglio-domicilio": "Veniamo noi. A casa, in albergo, in barca.",
 };
 
 const STORY_DURATION_MS = 6500;
@@ -178,8 +172,8 @@ export function ServiceStories() {
                         >
                             {cover && (
                                 <img
-                                    src={portfolioImageUrl(cover, { width: 900, quality: 82, format: "webp" })}
-                                    srcSet={portfolioImageSrcset(cover, 82)}
+                                    src={assetImageUrl(cover, { width: 900, quality: 82, format: "webp" })}
+                                    srcSet={assetImageSrcset(cover, 82)}
                                     sizes="(min-width: 768px) 0px, 100vw"
                                     alt={cur.name}
                                     className="absolute inset-0 w-full h-full object-cover"
