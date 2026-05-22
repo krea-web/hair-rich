@@ -18,7 +18,7 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
                 <Wordmark
                     variant="mark"
                     size="lg"
-                    className="mb-4 md:mb-10 [&>img]:h-24 md:[&>img]:h-40 lg:[&>img]:h-48 opacity-95 drop-shadow-[0_0_24px_rgba(212,165,116,0.22)]"
+                    className="mb-4 md:mb-10 [&>img]:h-40 md:[&>img]:h-64 lg:[&>img]:h-80 opacity-95 drop-shadow-[0_0_28px_rgba(212,165,116,0.25)]"
                     animated
                 />
             )}
