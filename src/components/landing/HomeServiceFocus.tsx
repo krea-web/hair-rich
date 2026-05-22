@@ -22,8 +22,8 @@ export function HomeServiceFocus() {
             {/* Photo background */}
             <div className="absolute inset-0" aria-hidden="true">
                 <img
-                    src={assetImageUrl("salone-vetrina.webp", { width: 1920, quality: 70, format: "webp" })}
-                    srcSet={assetImageSrcset("salone-vetrina.webp", 70)}
+                    src={assetImageUrl("taglio-domicilio-yacht.webp", { width: 1920, quality: 75, format: "webp" })}
+                    srcSet={assetImageSrcset("taglio-domicilio-yacht.webp", 75)}
                     sizes="100vw"
                     alt=""
                     className="absolute inset-0 w-full h-full object-cover"
