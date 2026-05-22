@@ -15,12 +15,63 @@ const HOURS_RAW = [
     { dayKey: "sun" as const, hours: "closed" as const },
 ];
 
-const NAV_LINKS = [
-    { href: "/servizi", label: "Servizi" },
-    { href: "/lavori", label: "Portfolio" },
-    { href: "/team", label: "Team" },
-    { href: "/prodotti", label: "Shop" },
-    { href: "/contatti", label: "Contatti" },
+const NAV_LINKS: {
+    href: string;
+    label: string;
+    blurb: string;
+    icon: (props: { className?: string }) => React.JSX.Element;
+}[] = [
+    {
+        href: "/servizi",
+        label: "Servizi",
+        blurb: "Listino + booking",
+        icon: ({ className = "" }) => (
+            <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M14.121 14.121 18 18m-3.879-3.879a3 3 0 1 0-4.242-4.242 3 3 0 0 0 4.242 4.242ZM18 6 6 18M6 6l4.879 4.879" />
+            </svg>
+        ),
+    },
+    {
+        href: "/lavori",
+        label: "Portfolio",
+        blurb: "Archivio tagli",
+        icon: ({ className = "" }) => (
+            <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 6.75A2.25 2.25 0 0 1 5.25 4.5h13.5A2.25 2.25 0 0 1 21 6.75v10.5A2.25 2.25 0 0 1 18.75 19.5H5.25A2.25 2.25 0 0 1 3 17.25V6.75Zm6 6.75 2.25 2.25L15 9m-12 8.25 4.5-4.5 3 3 3.75-3.75 4.5 4.5" />
+            </svg>
+        ),
+    },
+    {
+        href: "/team",
+        label: "Team",
+        blurb: "Federico, Cristian",
+        icon: ({ className = "" }) => (
+            <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+            </svg>
+        ),
+    },
+    {
+        href: "/prodotti",
+        label: "Shop",
+        blurb: "Click & collect",
+        icon: ({ className = "" }) => (
+            <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+            </svg>
+        ),
+    },
+    {
+        href: "/contatti",
+        label: "Contatti",
+        blurb: "Mappa + telefono",
+        icon: ({ className = "" }) => (
+            <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+            </svg>
+        ),
+    },
 ];
 
 const LEGAL_LINKS = [
@@ -167,55 +218,103 @@ export function Footer() {
                 </div>
             </div>
 
-            {/* ── BLOCK 3 · NAV + SEGUI ───────────────────────────────────────── */}
-            <div className="border-b border-line">
-                <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 py-12 md:py-16 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-12 items-start">
-                    <div className="md:col-span-3">
-                        <span className="text-[10px] uppercase tracking-[0.4em] text-silver-dark font-body font-semibold">
-                            Naviga
-                        </span>
-                        <ul className="mt-4 space-y-2.5 text-base">
-                            {NAV_LINKS.map((l) => (
-                                <li key={l.href}>
-                                    <a
-                                        href={l.href}
-                                        className="text-warm-white font-body hover:text-accent-warm transition-colors"
-                                    >
-                                        {l.label}
-                                    </a>
-                                </li>
-                            ))}
-                        </ul>
+            {/* ── BLOCK 3 · INDEX EDITORIAL ──────────────────────────────────── */}
+            <div className="relative border-b border-line overflow-hidden">
+                {/* Watermark behind the index */}
+                <div
+                    aria-hidden="true"
+                    className="absolute -bottom-12 -right-4 md:-right-10 text-display-alt text-[40vw] md:text-[18vw] text-warm-white/[0.035] leading-none pointer-events-none select-none tracking-tighter"
+                >
+                    naviga
+                </div>
+
+                <div className="relative max-w-7xl mx-auto px-6 md:px-12 lg:px-20 py-14 md:py-20">
+                    {/* Header — eyebrow + brand blurb side by side on desktop */}
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 mb-10 md:mb-14">
+                        <div className="md:col-span-5">
+                            <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
+                                Indice
+                            </span>
+                            <h2 className="text-display text-3xl md:text-5xl text-warm-white tracking-tight mt-3 leading-[1.05]">
+                                Cinque{" "}
+                                <em className="text-display-alt not-italic text-silver">strade</em>,
+                                <br />
+                                una sola poltrona.
+                            </h2>
+                        </div>
+                        <div className="md:col-span-6 md:col-start-7 flex md:items-end">
+                            <p className="text-warm-white-muted text-sm md:text-base leading-relaxed max-w-md">
+                                Barbiere sartoriale a Olbia dal 2017. Lavoriamo capelli e barba con
+                                la stessa cura con cui un sarto cuce un capo: una persona alla
+                                volta, una testa alla volta. Sempre su prenotazione.
+                            </p>
+                        </div>
                     </div>
-                    <div className="md:col-span-3">
-                        <span className="text-[10px] uppercase tracking-[0.4em] text-silver-dark font-body font-semibold">
-                            Segui
-                        </span>
-                        <ul className="mt-4 space-y-2.5 text-base">
-                            <li>
-                                <a
-                                    href={SITE.instagram}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 text-warm-white font-body hover:text-accent-warm transition-colors"
+
+                    {/* Big editorial index — 5 numbered cards */}
+                    <nav aria-label="Pagine del sito" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 md:gap-3">
+                        {NAV_LINKS.map((l, i) => (
+                            <a
+                                key={l.href}
+                                href={l.href}
+                                className="group relative flex flex-col justify-between gap-6 p-5 md:p-6 min-h-[160px] md:min-h-[200px] rounded-[var(--radius-md)] border border-line bg-carbon/40 hover:bg-carbon hover:border-accent-warm/50 transition-all overflow-hidden"
+                            >
+                                {/* Big watermark ordinal behind */}
+                                <span
+                                    aria-hidden="true"
+                                    className="absolute -top-4 -right-3 md:-top-6 md:-right-4 text-display-alt text-7xl md:text-[7rem] text-warm-white/[0.06] leading-none pointer-events-none select-none tabular-nums transition-colors group-hover:text-accent-warm/20"
                                 >
-                                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor" aria-hidden="true">
-                                        <path d="M7.5 2C4.46 2 2 4.46 2 7.5v9C2 19.54 4.46 22 7.5 22h9c3.04 0 5.5-2.46 5.5-5.5v-9C22 4.46 19.54 2 16.5 2h-9zm9 18h-9c-1.93 0-3.5-1.57-3.5-3.5v-9C4 5.57 5.57 4 7.5 4h9C18.43 4 20 5.57 20 7.5v9c0 1.93-1.57 3.5-3.5 3.5zM12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 8c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3zm5.5-8.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
-                                    </svg>
-                                    @hair_rich_
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div className="md:col-span-6">
-                        <span className="text-[10px] uppercase tracking-[0.4em] text-silver-dark font-body font-semibold">
-                            Hair Rich · Dal 2017
+                                    {String(i + 1).padStart(2, "0")}
+                                </span>
+
+                                <div className="relative flex items-center justify-between gap-3">
+                                    <span className="inline-flex w-10 h-10 rounded-full border border-accent-warm/40 bg-accent-warm/10 items-center justify-center text-accent-warm transition-colors group-hover:bg-accent-warm group-hover:text-black">
+                                        <l.icon className="w-5 h-5" />
+                                    </span>
+                                    <span className="text-[9px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
+                                        {String(i + 1).padStart(2, "0")}
+                                    </span>
+                                </div>
+
+                                <div className="relative">
+                                    <span className="block text-display text-2xl md:text-3xl text-warm-white tracking-tight leading-none">
+                                        {l.label}
+                                    </span>
+                                    <span className="mt-2 flex items-center justify-between gap-2">
+                                        <span className="text-[10px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold">
+                                            {l.blurb}
+                                        </span>
+                                        <svg viewBox="0 0 24 24" className="w-4 h-4 text-warm-white transition-all duration-300 group-hover:text-accent-warm group-hover:translate-x-1" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                                        </svg>
+                                    </span>
+                                </div>
+                            </a>
+                        ))}
+                    </nav>
+
+                    {/* Segui IG — full-width bar below the index */}
+                    <div className="mt-8 md:mt-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-6 md:pt-8 border-t border-line">
+                        <div className="flex items-center gap-3">
+                            <span className="text-[10px] uppercase tracking-[0.4em] text-silver-dark font-body font-semibold">
+                                Segui
+                            </span>
+                            <span className="w-px h-4 bg-line" aria-hidden="true" />
+                            <a
+                                href={SITE.instagram}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group inline-flex items-center gap-2 text-warm-white font-body text-base hover:text-accent-warm transition-colors"
+                            >
+                                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor" aria-hidden="true">
+                                    <path d="M7.5 2C4.46 2 2 4.46 2 7.5v9C2 19.54 4.46 22 7.5 22h9c3.04 0 5.5-2.46 5.5-5.5v-9C22 4.46 19.54 2 16.5 2h-9zm9 18h-9c-1.93 0-3.5-1.57-3.5-3.5v-9C4 5.57 5.57 4 7.5 4h9C18.43 4 20 5.57 20 7.5v9c0 1.93-1.57 3.5-3.5 3.5zM12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 8c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3zm5.5-8.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                                </svg>
+                                @hair_rich_
+                            </a>
+                        </div>
+                        <span className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
+                            Reel, backstage, taglio in tempo reale
                         </span>
-                        <p className="mt-4 text-warm-white-muted text-sm md:text-base leading-relaxed max-w-md">
-                            Barbiere sartoriale a Olbia. Lavoriamo capelli e barba con la stessa cura
-                            con cui un sarto cuce un capo: una persona alla volta, una testa alla
-                            volta. Sempre su prenotazione.
-                        </p>
                     </div>
                 </div>
             </div>
