@@ -4,19 +4,16 @@ import { useBookingDrawer } from "@/lib/store";
 
 interface Props {
     label: string;
-    /** If true, falls back to /prenota navigation on Cmd/Ctrl-click. */
-    pageHref?: string;
     className?: string;
     variant?: "primary" | "outline";
 }
 
 /**
- * The big orange "Prenota Ora" button. Default behavior: open the global
- * booking drawer (bottom sheet on mobile, centered on desktop). Cmd/Ctrl-
- * click or middle-click navigates to /prenota for a full page (useful for
- * bookmarking and sharing).
+ * The big orange "Prenota Ora" button. Always opens the global booking
+ * drawer (bottom sheet on mobile, centered modal on desktop). There is
+ * no /prenota page anymore — booking is drawer-only by design.
  */
-export function BookingCtaButton({ label, pageHref = "/prenota", className = "", variant = "primary" }: Props) {
+export function BookingCtaButton({ label, className = "", variant = "primary" }: Props) {
     const open = useBookingDrawer((s) => s.open);
 
     const base =
@@ -27,13 +24,11 @@ export function BookingCtaButton({ label, pageHref = "/prenota", className = "",
             : "border border-line text-warm-white hover:border-warm-white hover:bg-warm-white/5";
 
     return (
-        <a
-            href={pageHref}
+        <button
+            type="button"
             className={`${base} ${styles} ${className}`}
-            onClick={(e) => {
-                // Permetti Cmd/Ctrl click + middle click di seguire l'href
-                if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
-                e.preventDefault();
+            onClick={() => {
+                if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(6);
                 open();
             }}
         >
@@ -41,6 +36,6 @@ export function BookingCtaButton({ label, pageHref = "/prenota", className = "",
             <svg viewBox="0 0 24 24" className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
             </svg>
-        </a>
+        </button>
     );
 }

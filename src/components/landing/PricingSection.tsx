@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { EditorialHeading } from "./_shared/EditorialHeading";
 import { SmartImage } from "./_shared/SmartImage";
+import { useBookingDrawer } from "@/lib/store";
 import { useT } from "@/i18n/useLang";
 
 interface PriceItem {
@@ -44,6 +45,7 @@ const ASIDE_IMG =
 
 export function PricingSection() {
     const { t } = useT();
+    const openDrawer = useBookingDrawer((s) => s.open);
     const PRICE_GROUPS = t.pricing.groups;
     return (
         <section
@@ -161,15 +163,16 @@ export function PricingSection() {
                         <p className="text-warm-white-muted text-sm max-w-md">
                             {t.pricing.footnote}
                         </p>
-                        <a
-                            href="/prenota"
+                        <button
+                            type="button"
+                            onClick={openDrawer}
                             className="inline-flex items-center gap-3 px-7 py-3.5 bg-warm-white text-black rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold hover:bg-accent-warm transition-colors"
                         >
                             {t.pricing.cta}
                             <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                             </svg>
-                        </a>
+                        </button>
                     </motion.div>
                 </div>
             </div>

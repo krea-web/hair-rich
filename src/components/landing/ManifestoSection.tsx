@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { SmartImage } from "./_shared/SmartImage";
 import { EditorialHeading } from "./_shared/EditorialHeading";
 import { assetImageUrl, assetImageSrcset } from "@/lib/supabase/queries";
+import { useBookingDrawer } from "@/lib/store";
 import { useT } from "@/i18n/useLang";
 
 // Real salon photos from the asset bucket. Large card: the new landscape
@@ -14,6 +15,7 @@ const ABOUT_SMALL = "salone-interno-postazioni.webp";
 
 export function ManifestoSection() {
     const { t } = useT();
+    const openDrawer = useBookingDrawer((s) => s.open);
     return (
         <section
             id="about"
@@ -124,9 +126,10 @@ export function ManifestoSection() {
                         ))}
                     </motion.ul>
 
-                    <motion.a
-                        href="/prenota"
-                        className="inline-flex items-center gap-3 mt-10 text-warm-white border-b border-warm-white pb-2 text-xs uppercase tracking-[0.3em] font-body font-semibold hover:text-accent-warm hover:border-accent-warm transition-colors"
+                    <motion.button
+                        type="button"
+                        onClick={openDrawer}
+                        className="inline-flex items-center gap-3 mt-10 text-warm-white border-b border-warm-white pb-2 text-xs uppercase tracking-[0.3em] font-body font-semibold hover:text-accent-warm hover:border-accent-warm transition-colors w-fit"
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true }}
@@ -136,7 +139,7 @@ export function ManifestoSection() {
                         <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                         </svg>
-                    </motion.a>
+                    </motion.button>
                 </div>
             </div>
         </section>
