@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { fetchProducts, assetImageUrl } from "@/lib/supabase/queries";
-import type { ProductCategory } from "@/lib/supabase/types";
 
 /**
  * Editorial hero for /prodotti. Storefront photo darkened in the bg, two
@@ -12,15 +11,25 @@ import type { ProductCategory } from "@/lib/supabase/types";
  * ProductDrawer on tap — same interaction as the catalog below.
  */
 const CATEGORY_CARDS: {
-    key: ProductCategory;
+    /** Either a real ProductCategory slug (drives the live count) or a
+     *  pseudo-key like "merch" for non-catalog entries. */
+    key: string;
     label: string;
     blurb: string;
+    /** Anchor target inside /prodotti. Catalog categories jump to the
+     *  catalog grid; "merch" jumps to the dedicated MerchCTA section. */
+    href: string;
+    /** When false, the live product count is suppressed (the card is
+     *  promotional, not a filter). */
+    showCount?: boolean;
     icon: (props: { className?: string }) => React.JSX.Element;
 }[] = [
     {
         key: "hair",
         label: "Capelli",
         blurb: "Pomate, cere, polveri",
+        href: "#catalog",
+        showCount: true,
         icon: ({ className = "" }) => (
             <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 21V11l7-7 7 7v10M9 21v-6h6v6" />
@@ -31,6 +40,8 @@ const CATEGORY_CARDS: {
         key: "beard",
         label: "Barba",
         blurb: "Oli, balsami, mousse",
+        href: "#catalog",
+        showCount: true,
         icon: ({ className = "" }) => (
             <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 3a4 4 0 014 4v3a8 8 0 11-8 0V7a4 4 0 014-4z" />
@@ -42,6 +53,8 @@ const CATEGORY_CARDS: {
         key: "shave",
         label: "Rasatura",
         blurb: "Dopobarba, pre-shave",
+        href: "#catalog",
+        showCount: true,
         icon: ({ className = "" }) => (
             <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 12h13l3-3v6l-3-3M3 6v12" />
@@ -49,14 +62,14 @@ const CATEGORY_CARDS: {
         ),
     },
     {
-        key: "tools",
-        label: "Strumenti",
-        blurb: "Forbici, pettini",
+        key: "merch",
+        label: "Merchandising",
+        blurb: "T-shirt, felpe, capi brand",
+        href: "#merch",
+        // Phone-only request — no online catalog yet.
         icon: ({ className = "" }) => (
             <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.6">
-                <circle cx="6" cy="6" r="3" />
-                <circle cx="6" cy="18" r="3" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8.5 7.5L20 18.5M8.5 16.5L20 5.5" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 3l3 2 3-1 3 1 3-2 3 4-3 2v11H6V9L3 7l3-4z" />
             </svg>
         ),
     },
@@ -204,7 +217,7 @@ export function ShopHero() {
                                         hidden: { opacity: 0, y: 24 },
                                         visible: { opacity: 1, y: 0 },
                                     }}
-                                    href={`#catalog`}
+                                    href={c.href}
                                     className={`group relative aspect-square rounded-[var(--radius-md)] border border-line bg-gradient-to-br from-carbon to-black-2 overflow-hidden flex flex-col items-start justify-between p-4 md:p-5 hover:border-accent-warm/40 transition-colors ${
                                         i === 0 || i === 3 ? "lg:translate-y-6" : ""
                                     }`}
@@ -226,7 +239,7 @@ export function ShopHero() {
                                         <span className="block text-silver-dark text-[10px] md:text-xs uppercase tracking-[0.25em] font-body font-semibold mt-1">
                                             {c.blurb}
                                         </span>
-                                        {typeof count === "number" && count > 0 && (
+                                        {c.showCount && typeof count === "number" && count > 0 && (
                                             <span className="block mt-2 text-accent-warm text-xs md:text-sm font-display tabular-nums">
                                                 {count} {count === 1 ? "prodotto" : "prodotti"}
                                             </span>

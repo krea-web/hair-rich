@@ -6,6 +6,7 @@ import { BookingDrawer } from "../components/booking/BookingDrawer";
 import { StickySlotPeek } from "../components/landing/StickySlotPeek";
 import { ShopHero } from "../components/landing/hero/ShopHero";
 import { ProductCatalog } from "../components/landing/ProductCatalog";
+import { MerchCTA } from "../components/shop/MerchCTA";
 import { FAQAccordion } from "../components/landing/_shared/FAQAccordion";
 import { Footer } from "../components/landing/Footer";
 import { ToastViewport } from "../components/ui/ToastViewport";
@@ -50,6 +51,8 @@ const FAQ = [
       title="Pagamento e ritiro, semplice."
       items={FAQ}
     />
+
+    <MerchCTA client:visible />
 
     <Footer client:idle />
   </main>

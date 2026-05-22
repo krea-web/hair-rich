@@ -121,11 +121,11 @@ export function StyleQuiz() {
                                       : slug === "barba-sartoriale"
                                         ? 30
                                         : 60,
-                              badge: slug === "taglio-barba" ? "Più scelto" : null,
+                              badge: slug === "taglio-classico" ? "Più scelto" : null,
                           })) as unknown as Service[])
                     ).map((s, i) => {
                         const c = COPY[s.slug] ?? { tag: "", quick: "", cta: `Prenota ${s.name}` };
-                        const featured = s.slug === "taglio-barba";
+                        const featured = s.slug === "taglio-classico";
                         return (
                             <motion.li
                                 key={s.slug}
