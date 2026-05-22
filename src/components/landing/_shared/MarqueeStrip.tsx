@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 
 interface Props {
     items: string[];
@@ -74,20 +74,19 @@ function MarqueeTrack({
     children: (item: string, i: number) => React.ReactNode;
     gapClass?: string;
 }) {
-    const reduced = useReducedMotion();
+    // 4 copies of the items so the -25% translation seams perfectly.
     const loop = [...items, ...items, ...items, ...items];
-    const xKeyframes = direction === "left" ? ["0%", "-25%"] : ["-25%", "0%"];
 
     return (
-        <motion.div
-            className={`flex items-center ${gapClass} whitespace-nowrap will-change-transform`}
-            animate={reduced ? undefined : { x: xKeyframes }}
-            transition={
-                reduced ? undefined : { duration: speedSec, ease: "linear", repeat: Infinity }
+        <div
+            className={`hr-marquee-track flex items-center ${gapClass} whitespace-nowrap w-max`}
+            data-direction={direction}
+            style={
+                { ["--marquee-duration" as string]: `${speedSec}s` } as React.CSSProperties
             }
         >
             {loop.map((it, i) => children(it, i))}
-        </motion.div>
+        </div>
     );
 }
 
@@ -128,7 +127,7 @@ export function MarqueeStrip({
                 />
                 <MarqueeTrack
                     items={items}
-                    speedSec={speedSec ?? 14}
+                    speedSec={speedSec ?? 9}
                     direction="left"
                     gapClass="gap-6 md:gap-10"
                 >
@@ -166,7 +165,7 @@ export function MarqueeStrip({
                 <div className="space-y-1 md:space-y-2">
                     <MarqueeTrack
                         items={items}
-                        speedSec={speedSec ?? 12}
+                        speedSec={speedSec ?? 8}
                         direction="left"
                         gapClass="gap-8 md:gap-12"
                     >
@@ -182,7 +181,7 @@ export function MarqueeStrip({
 
                     <MarqueeTrack
                         items={[...items].reverse()}
-                        speedSec={(speedSec ?? 12) + 3}
+                        speedSec={(speedSec ?? 8) + 2}
                         direction="right"
                         gapClass="gap-8 md:gap-12"
                     >
@@ -214,7 +213,7 @@ export function MarqueeStrip({
         >
             <MarqueeTrack
                 items={items}
-                speedSec={speedSec ?? 13}
+                speedSec={speedSec ?? 8}
                 direction="left"
                 gapClass="gap-7 md:gap-12"
             >

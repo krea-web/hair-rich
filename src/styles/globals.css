@@ -311,3 +311,31 @@ body[data-intro-active="true"] [data-intro-hidden] {
     animation: none;
   }
 }
+
+/* ── Marquee: pure CSS, infinite loop. The track holds 4 copies of the
+   items; translating by -25% over the cycle is exactly one set, so the
+   loop seams seamlessly. Bypasses framer-motion's reduced-motion gate
+   on purpose — the marquee is brand identity, must always scroll. */
+@keyframes hr-marquee-left {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-25%, 0, 0);
+  }
+}
+@keyframes hr-marquee-right {
+  from {
+    transform: translate3d(-25%, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+.hr-marquee-track {
+  animation: hr-marquee-left var(--marquee-duration, 18s) linear infinite;
+  will-change: transform;
+}
+.hr-marquee-track[data-direction="right"] {
+  animation-name: hr-marquee-right;
+}
