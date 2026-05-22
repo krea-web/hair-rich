@@ -16,9 +16,9 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
         <div className="flex flex-col justify-center items-center text-center md:items-start md:text-left">
             {withWordmark && (
                 <Wordmark
-                    variant="wordmark"
+                    variant="mark"
                     size="lg"
-                    className="mb-4 md:-ml-2 md:mb-10 [&>img]:h-16 md:[&>img]:h-36 lg:[&>img]:h-44 opacity-90 drop-shadow-[0_0_20px_rgba(212,165,116,0.18)]"
+                    className="mb-4 md:mb-10 [&>img]:h-24 md:[&>img]:h-40 lg:[&>img]:h-48 opacity-95 drop-shadow-[0_0_24px_rgba(212,165,116,0.22)]"
                     animated
                 />
             )}
