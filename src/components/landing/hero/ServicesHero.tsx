@@ -5,10 +5,9 @@ import { portfolioImageUrl } from "@/lib/supabase/queries";
 import { BookingCtaButton } from "@/components/ui/BookingCtaButton";
 
 /**
- * Minimal hero for /servizi. Photo backdrop, watermark numeral, and one
- * single primary CTA — "Prenota ora". No headline / body / price strip
- * here, the listino lives in the StyleQuiz block below and the page
- * doesn't need to repeat itself in the hero.
+ * Hero for /servizi. Photo backdrop, watermark numeral, hero claim + CTA
+ * + 3 trust metrics. Il listino dettagliato vive in StyleQuiz più sotto,
+ * qui in alto solo il pitch e la conferma di velocità del booking.
  */
 export function ServicesHero() {
     return (
@@ -37,20 +36,88 @@ export function ServicesHero() {
                 01
             </div>
 
-            <div className="relative max-w-5xl mx-auto px-6 md:px-12 lg:px-20 pt-28 md:pt-44 pb-16 md:pb-24 min-h-[70vh] md:min-h-[80vh] flex flex-col items-center justify-end">
+            <div className="relative max-w-5xl mx-auto px-6 md:px-12 lg:px-20 pt-28 md:pt-44 pb-16 md:pb-24 min-h-[70vh] md:min-h-[80vh] flex flex-col items-center justify-end text-center">
+                {/* Eyebrow live-availability chip */}
                 <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7, delay: 0.1 }}
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent-warm/15 border border-accent-warm/40 mb-6 md:mb-8"
+                >
+                    <span className="w-1.5 h-1.5 rounded-full bg-accent-warm animate-pulse" aria-hidden="true" />
+                    <span className="text-[10px] uppercase tracking-[0.3em] text-accent-warm font-body font-semibold">
+                        Slot oggi disponibili
+                    </span>
+                </motion.div>
+
+                {/* Hero claim */}
+                <motion.h1
                     initial={{ opacity: 0, y: 24 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.9, ease: [0.25, 0.1, 0.25, 1] }}
+                    transition={{ duration: 0.9, ease: [0.25, 0.1, 0.25, 1], delay: 0.2 }}
+                    className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-[6rem] text-warm-white tracking-tight leading-[0.92] max-w-3xl"
+                >
+                    Tre servizi.
+                    <br />
+                    <em className="text-display-alt not-italic text-silver">Un tap.</em>
+                </motion.h1>
+
+                <motion.p
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.45 }}
+                    className="mt-5 md:mt-7 max-w-xl text-warm-white-muted text-base md:text-lg leading-relaxed"
+                >
+                    Listino trasparente, prenotazione in 60 secondi, conferma immediata.
+                    Niente carte, niente acconti.
+                </motion.p>
+
+                {/* Primary CTA */}
+                <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.6 }}
+                    className="mt-8 md:mt-10"
                 >
                     <BookingCtaButton label="Prenota ora" />
                 </motion.div>
 
+                {/* Trust metrics — non duplicano il listino, parlano di flusso */}
+                <motion.dl
+                    initial="hidden"
+                    animate="visible"
+                    variants={{
+                        hidden: {},
+                        visible: { transition: { staggerChildren: 0.08, delayChildren: 0.85 } },
+                    }}
+                    className="mt-10 md:mt-14 grid grid-cols-3 gap-4 md:gap-8 max-w-xl"
+                >
+                    {[
+                        { v: "60s", l: "Booking online" },
+                        { v: "0€", l: "Acconto" },
+                        { v: "24/7", l: "Slot in tempo reale" },
+                    ].map((m) => (
+                        <motion.div
+                            key={m.l}
+                            variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}
+                            className="text-left border-l-2 border-accent-warm/60 pl-3"
+                        >
+                            <dt className="text-display text-2xl md:text-3xl text-warm-white tabular-nums">
+                                {m.v}
+                            </dt>
+                            <dd className="text-[9px] md:text-[10px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold mt-1">
+                                {m.l}
+                            </dd>
+                        </motion.div>
+                    ))}
+                </motion.dl>
+
+                {/* Footer meta */}
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ duration: 0.8, delay: 0.5 }}
-                    className="mt-8 md:mt-10 w-full flex items-end justify-between gap-4"
+                    transition={{ duration: 0.8, delay: 1.1 }}
+                    className="mt-10 md:mt-14 w-full flex items-end justify-between gap-4"
                 >
                     <span className="text-[10px] uppercase tracking-[0.4em] text-silver-dark font-body font-semibold">
                         Conferma immediata
