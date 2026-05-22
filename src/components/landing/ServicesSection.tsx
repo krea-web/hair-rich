@@ -8,12 +8,16 @@ import {
     fetchPortfolio,
     portfolioImageUrl,
     portfolioImageSrcset,
+    assetImageUrl,
+    assetImageSrcset,
 } from "@/lib/supabase/queries";
 import type { PortfolioImage } from "@/lib/supabase/types";
 import { useBookingDrawer } from "@/lib/store";
 import { useT } from "@/i18n/useLang";
 
 const HIGHLIGHT_INDEX = 1;
+const DOMICILIO_INDEX = 2;
+const DOMICILIO_ASSET = "taglio-domicilio-yacht.webp";
 
 export function ServicesSection() {
     const { t } = useT();
@@ -74,6 +78,7 @@ export function ServicesSection() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 items-stretch">
                     {t.services.items.map((cat, i) => {
                         const highlight = i === HIGHLIGHT_INDEX;
+                        const isDomicilio = i === DOMICILIO_INDEX;
                         const photo = photos[i];
                         return (
                             <motion.article
@@ -90,7 +95,21 @@ export function ServicesSection() {
                             >
                                 <div className="relative aspect-[4/3] overflow-hidden">
                                     <div className="absolute inset-0 transition-transform duration-[var(--dur-cinema)] ease-[var(--ease-cinema)] group-hover:scale-110">
-                                        {photo ? (
+                                        {isDomicilio ? (
+                                            <SmartImage
+                                                src={assetImageUrl(DOMICILIO_ASSET, {
+                                                    width: 900,
+                                                    height: 675,
+                                                    resize: "cover",
+                                                    quality: 80,
+                                                    format: "webp",
+                                                })}
+                                                srcSet={assetImageSrcset(DOMICILIO_ASSET, 80)}
+                                                sizes="(min-width: 768px) 33vw, 100vw"
+                                                alt={`${cat.title} — Hair Rich Olbia`}
+                                                className="h-full grayscale-[15%]"
+                                            />
+                                        ) : photo ? (
                                             <SmartImage
                                                 src={portfolioImageUrl(photo.storage_path, {
                                                     width: 900,

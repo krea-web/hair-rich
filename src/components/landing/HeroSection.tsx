@@ -13,12 +13,12 @@ const HERO_PHOTO = "/hero-seq/frame_001.webp";
 function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
     const { t } = useT();
     return (
-        <div className="flex flex-col justify-center">
+        <div className="flex flex-col justify-center items-center text-center md:items-start md:text-left">
             {withWordmark && (
                 <Wordmark
                     variant="wordmark"
                     size="lg"
-                    className="mb-4 -ml-2 md:mb-10 [&>img]:h-16 md:[&>img]:h-36 lg:[&>img]:h-44 opacity-90 drop-shadow-[0_0_20px_rgba(212,165,116,0.18)]"
+                    className="mb-4 md:-ml-2 md:mb-10 [&>img]:h-16 md:[&>img]:h-36 lg:[&>img]:h-44 opacity-90 drop-shadow-[0_0_20px_rgba(212,165,116,0.18)]"
                     animated
                 />
             )}
@@ -63,7 +63,7 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
             </motion.h1>
 
             <motion.p
-                className="mt-6 md:mt-8 max-w-md text-warm-white-muted text-sm md:text-lg leading-relaxed font-body"
+                className="mt-6 md:mt-8 max-w-md mx-auto md:mx-0 text-warm-white-muted text-sm md:text-lg leading-relaxed font-body"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -74,7 +74,7 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
             </motion.p>
 
             <motion.div
-                className="mt-7 md:mt-10 flex flex-wrap items-center gap-4 md:gap-5"
+                className="mt-7 md:mt-10 flex flex-wrap items-center justify-center md:justify-start gap-4 md:gap-5"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
