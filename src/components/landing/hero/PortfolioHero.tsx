@@ -4,11 +4,11 @@ import { motion } from "framer-motion";
 import { portfolioImageUrl } from "@/lib/supabase/queries";
 
 const TEASER_IMAGES = [
-    "provvisorio/IMG_2374.jpeg",
-    "provvisorio/IMG_2493.jpeg",
-    "provvisorio/IMG_2549.jpeg",
-    "provvisorio/IMG_2090.jpeg",
-    "provvisorio/IMG_2143.jpeg",
+    "tagli/taper-fade-01.jpeg",
+    "tagli/burst-fade-01.jpeg",
+    "tagli/french-crop-01.jpeg",
+    "tagli/mid-fade-01.jpeg",
+    "tagli/buzz-cut-01.jpeg",
 ];
 
 /**

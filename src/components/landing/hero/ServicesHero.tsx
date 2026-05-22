@@ -15,7 +15,7 @@ export function ServicesHero() {
         <section className="relative bg-black overflow-hidden border-b border-line">
             <div className="absolute inset-0" aria-hidden="true">
                 <img
-                    src={portfolioImageUrl("provvisorio/IMG_2090.jpeg", {
+                    src={portfolioImageUrl("tagli/mid-fade-01.jpeg", {
                         width: 1920,
                         quality: 70,
                         format: "webp",
