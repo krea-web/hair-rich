@@ -293,7 +293,7 @@ Legenda:
 | 47 | 🔐 Gestione Consensi GDPR | ⏸️ | Cookie banner c'è, consensi profilo da rifinire |
 | 48 | 📸 Archivio Foto Clienti | ✅ | `appointment_photos` table + `AppointmentPhotos` component + admin foto-risultati.tsx |
 | 49 | ⚠️ Gestione Allergeni | ❌ | Non rilevante per barber |
-| 50 | 🏷️ Segmentazione Clienti | ⏸️ | Base esiste con `fn_customers_at_risk`, estendere |
+| 50 | 🏷️ Segmentazione Clienti | ✅ promosso (con flag) | Etichette auto + manuali. **Segmenti auto** (cron daily): 🆕Nuovo · 🔁Abituale · 💎VIP · 😴A rischio · 🚪Perso · ⚠️No-show · 🎂Compleanno mese · 🌍Turista · 🎁Referral. Tutte le soglie configurabili da admin. **Segmenti manuali** liberi (max 5/cliente, mai esposti al cliente). Tabella `customer_segments`. Badge in `/admin/clienti`, `/admin/agenda`, dashboard counter. **Foundation per #4, #5, #6, #62** (target chirurgico vs blast generico). Skills Hub key: `customer_segments`. |
 
 ### Gestione Team
 
@@ -306,7 +306,7 @@ Legenda:
 | 55 | 🔑 Gestione Permessi Operatori | ⏸️ | RLS base c'è, granulare da fare |
 | 56 | 📱 Dashboard Mobile Operatore | ⏸️ | Admin è responsive, no PWA dedicata staff |
 | 57 | ⚙️ Onboarding Operatore Auto | ⏸️ | onboarding.tsx admin view stub esiste |
-| 58 | 📋 Log Attività Gestionale | ⏸️ | Trigger Postgres → audit_log table |
+| 58 | 📋 Log Attività Gestionale | ✅ promosso (con flag) | Trigger Postgres su tutte le tabelle critiche → tabella `activity_log` con before/after diff. Admin view `/admin/log` con feed cronologico, filtri (categoria/attore/target/data), diff viewer, export CSV. Categorie: appointments, customers, payments, catalog, staff, system, login. **Sub-config**: retention (90gg/12m/24m/forever), alert critici via Telegram (login falliti, cambi prezzo, VIP cancel), visibilità per-staff. Default: tipi `high` priority sempre ON, gli altri opt-in. Skills Hub key: `activity_log`. |
 | 59 | 📆 Calendario Ferie Automatico | ✅ | `time_off` table + chiusure.tsx admin view |
 | 60 | 💬 Chat Interna Team | ❌ | WA/Telegram esterno fanno meglio |
 
@@ -333,8 +333,8 @@ Legenda:
 | 72 | 📋 Sondaggio Post-Visita | ⏸️ | Email + form NPS |
 | 73 | 💸 Bot Recupero Crediti | ❌ | Barber non ha insoluti tipici |
 | 74 | 📅 Gestione Listino Stagionale | ❌ | Prezzi fissi, no logica stagionale |
-| 75 | 📦 Scorte & Riordino | ⏸️ | `products.stock` esiste, threshold alert |
-| 76 | 🏠 Rubrica Fornitori | ⏸️ | Tabella semplice, minor |
+| 75 | 📦 Scorte & Riordino | ✅ promosso (con flag) | `products.stock` esiste. Estensione: `stock_low_threshold` + `stock_critical_threshold` per prodotto. Cron daily 08:00 → check soglie → Telegram alert titolare con trend velocità vendite. `/admin/prodotti` esteso: barra progresso colorata, sort by stock, quick action "Riordina" che apre modale con quantità suggerita (storico × 30gg) + selettore fornitore (#76) + genera PDF ordine bozza. Auto-decremento stock al completamento `product_orders`. Skills Hub key: `stock_alerts`. |
+| 76 | 🏠 Rubrica Fornitori | ✅ promosso (con flag) | Nuove tabelle `suppliers` (contatti completi + payment_terms + notes) e `supplier_orders` (storico ordini con items jsonb + status + PDF). Colonna `products.default_supplier_id`. Admin `/admin/fornitori` con lista + dettaglio + storico + quick "Nuovo ordine" che genera PDF. Sinergia diretta con #75 (riordino in 2 click). Skills Hub key: `suppliers_directory`. |
 | 77 | 🛠️ Manutenzione Attrezzature | ⏸️ | Cron + checklist, minor |
 | 78 | 🔁 Follow-up Post-Acquisto | ⏸️ | Utile per click & collect orders |
 | 79 | 💡 Widget Prezzi Dinamici | ✅ | Già wired — prezzi da `services` / `products` table |
@@ -369,7 +369,7 @@ Legenda:
 | 98 | 🔁 Automazione Feedback Strutturato | ⏸️ | Diverso da #62 — survey per servizio |
 | 99 | 🗂️ Audit Trail Appuntamenti | ⏸️ | Variante di #58 |
 | 100 | 📱 App Cliente PWA | ✅ | Il sito è già installable PWA |
-| 101 | 🔍 Ricerca Avanzata Clienti | ⏸️ | clienti.tsx ha base, estendere con filtri compositi |
+| 101 | 🔍 Ricerca Avanzata Clienti | ✅ promosso (con flag) | Query builder visuale in `/admin/clienti`. **Filtri concatenabili**: segmento (#50), servizio fatto, operatore preferito, # visite, spesa totale, ultima visita, no-show, compleanno, referral source, coupon usati, pacchetto attivo, indirizzo, età, lingua, note libere. Salva ricerche con nome. Azioni batch: msg via Router, segmento manuale, coupon mirato, export CSV. 5 ricerche **template predefinite** (VIP a rischio, Compleanno mese, Top spender, Da riattivare, ecc). Stack: react-querybuilder + RPC `fn_search_customers(p_filters jsonb)` + materialized view aggregate. **Foundation dati già pronta**: tabelle `customers`/`appointments`/`product_orders` si popolano automaticamente dal flow live (booking online, ordini, completion) — la skill lavora su dati reali dal giorno 1, niente backfill. Skills Hub key: `advanced_customer_search`. |
 
 ### 🎛️ Skills Hub — la pagina "centro funzionalità" dell'admin
 
