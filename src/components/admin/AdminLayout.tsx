@@ -23,6 +23,7 @@ const SETTINGS_MENU = [
     { href: "/admin/marketing", label: "Recensioni" },
     { href: "/admin/gamification", label: "Coupon & sconti" },
     { href: "/admin/cms", label: "Testi del sito" },
+    { href: "/admin/funzionalita", label: "Funzionalità (Skills Hub)" },
     { href: "/admin/impostazioni", label: "Impostazioni Salone" },
 ];
 
