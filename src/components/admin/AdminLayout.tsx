@@ -9,6 +9,7 @@ const MAIN_MENU = [
     { href: "/admin", label: "Dashboard", icon: "svg-dash" },
     { href: "/admin/inbox", label: "Inbox", icon: "svg-inbox" },
     { href: "/admin/agenda", label: "Agenda", icon: "svg-calendar" },
+    { href: "/admin/waitlist", label: "Lista d'attesa", icon: "svg-pause" },
     { href: "/admin/chiusure", label: "Chiusure & ferie", icon: "svg-pause" },
     { href: "/admin/statistiche", label: "Statistiche", icon: "svg-chart" },
     { href: "/admin/clienti", label: "Clienti", icon: "svg-users" },
