@@ -13,6 +13,7 @@ const MAIN_MENU = [
     { href: "/admin/chiusure", label: "Chiusure & ferie", icon: "svg-pause" },
     { href: "/admin/statistiche", label: "Statistiche", icon: "svg-chart" },
     { href: "/admin/clienti", label: "Clienti", icon: "svg-users" },
+    { href: "/admin/clienti-no-show", label: "No-show", icon: "svg-users" },
     { href: "/admin/ordini", label: "Ordini & Cassa", icon: "svg-wallet" },
     { href: "/admin/foto-risultati", label: "Foto risultato", icon: "svg-camera" },
 ];
