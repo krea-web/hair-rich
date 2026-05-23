@@ -371,6 +371,216 @@ Legenda:
 | 100 | 📱 App Cliente PWA | ✅ | Il sito è già installable PWA |
 | 101 | 🔍 Ricerca Avanzata Clienti | ✅ promosso (con flag) | Query builder visuale in `/admin/clienti`. **Filtri concatenabili**: segmento (#50), servizio fatto, operatore preferito, # visite, spesa totale, ultima visita, no-show, compleanno, referral source, coupon usati, pacchetto attivo, indirizzo, età, lingua, note libere. Salva ricerche con nome. Azioni batch: msg via Router, segmento manuale, coupon mirato, export CSV. 5 ricerche **template predefinite** (VIP a rischio, Compleanno mese, Top spender, Da riattivare, ecc). Stack: react-querybuilder + RPC `fn_search_customers(p_filters jsonb)` + materialized view aggregate. **Foundation dati già pronta**: tabelle `customers`/`appointments`/`product_orders` si popolano automaticamente dal flow live (booking online, ordini, completion) — la skill lavora su dati reali dal giorno 1, niente backfill. Skills Hub key: `advanced_customer_search`. |
 
+## 📅 Roadmap a 3 chat — come orchestrare il lavoro
+
+> Il sistema si costruisce in 3 chat Claude Code indipendenti.
+> All'inizio di ogni chat l'utente scrive: **"Sei la Chat N — leggi CLAUDE.md sezione `Chat N`, esegui i task in ordine, committa+pusha alla fine di ogni task."**
+> Chat 1 deve completarsi PRIMA delle altre. Chat 2 e Chat 3 possono girare in parallelo dopo.
+
+---
+
+### Chat 1 · Foundation + Owner UX 🏗️
+
+**Scope**: scheletro infrastrutturale. Dopo questa chat il gestionale ha il sistema di flag, il routing notifiche, gli alert al titolare, e i fondamenti legali/UX cliente.
+
+**Dipendenze**: nessuna (parte per prima, blocca le altre).
+
+**File "owned" da Chat 1** (le altre chat NON toccano):
+- `src/components/admin/views/skills-hub.tsx` (nuovo)
+- `src/components/admin/views/inbox.tsx` (nuovo)
+- `src/components/admin/views/log.tsx` (nuovo)
+- `src/components/admin/views/impostazioni.tsx` (estensione)
+- `src/components/admin/AdminLayout.tsx` (sidebar + badge inbox)
+- `src/lib/skills/registry.ts` (nuovo — metadata 101 skill)
+- `src/lib/notifications/router.ts` (nuovo)
+- `src/lib/notifications/channels/gmail.ts` (nuovo)
+- `src/lib/notifications/channels/telegram.ts` (nuovo)
+- `src/components/profilo/views/impostazioni.tsx` (consensi GDPR + preferenze canale)
+- `src/components/profilo/_shared/OnboardingWizard.tsx` (nuovo)
+- `supabase/functions/notifications-router/index.ts` (Edge Function nuova)
+- `supabase/functions/admin-inbox-realtime/index.ts` (nuovo)
+- Migrations 0021-0028 (vedi sotto)
+
+**Task list in ordine** (committa + pusha a fine di ognuno):
+
+1. **Migration `skills_config`** — tabella registry + seed con tutte le 101 skill_key in `enabled=false`
+2. **Migration `customer_consents`** — schema GDPR signed records con versione policy
+3. **Migration `customer_notification_preferences`** — JSONB column su `customers`
+4. **Migration `notifications_sent`** — audit log centrale per Router
+5. **Migration `activity_log` + triggers** — su tutte le tabelle critiche (#58)
+6. **Migration `admin_inbox_items`** — items con type/payload/read_at
+7. **Migration `cms_blocks` seed templates** — email/telegram template per ogni eventType
+8. **Notification Router lib + Edge Function** — `sendCustomerNotification` + `sendOwnerAlert`
+9. **Gmail SMTP channel** — Nodemailer con app password, env `GMAIL_USER`/`GMAIL_APP_PASSWORD`
+10. **Telegram bot channel** — `TELEGRAM_BOT_TOKEN`, recipient `salon_settings.owner_telegram_chat_id`
+11. **Skills registry TypeScript** — array con 101 skill (icon, nameIT, descriptionIT, exampleIT, benefitIT, effortHours, category, relatedSkills)
+12. **Skills Hub view `/admin/funzionalita`** — cards grid filtrabili, toggle ON/OFF persist su `skills_config`, configure modal per skill
+13. **Activity Log view `/admin/log`** — feed cronologico + filtri + diff viewer + export CSV
+14. **Inbox admin view `/admin/inbox`** — list + filters + realtime via Supabase channel
+15. **Sidebar badge inbox** in `AdminLayout` con counter unread
+16. **GDPR consents** — onboarding del primo accesso `/profilo` raccoglie firme + `/profilo/impostazioni` revoca/aggiornamento
+17. **OnboardingWizard `/profilo`** — wizard 90s al primo accesso (birthday, foto, preferenze taglio, consensi)
+18. **Cancel + Reschedule appointment in /profilo** — RPC `fn_cancel_appointment_by_customer` + RPC `fn_reschedule_appointment_by_customer` + UI in `/profilo/appuntamenti` (precondizione per Chat 2 waitlist)
+19. **`/admin/impostazioni` wire-up real** — singleton `salon_settings` con tutti i campi (cancel_min_hours, default channel priority, owner Telegram chat ID, quiet hours, ecc.)
+
+**Done criteria**:
+- Build `npm run build` verde, 50+ pagine
+- `/admin/funzionalita` mostra 101 skill, tutti OFF
+- Toggle di una skill → persist su `skills_config`
+- Invio test notifica via Router (a un email finto + a un Telegram bot finto) funziona
+- Cliente onboarding wizard si completa
+- Cliente può cancellare/spostare propri appuntamenti
+- `/admin/inbox` riceve un evento "appointment created" in realtime
+- `/admin/log` mostra l'audit trail di ogni edit
+
+**Handoff a Chat 2/3**:
+- Le altre chat trovano `skills_config` populated, possono attivare i loro flag specifici
+- Router pronto, basta chiamare `sendCustomerNotification(customerId, eventType, payload)`
+- Inbox pronta, basta inserire row in `admin_inbox_items`
+- Activity log automatico per ogni trigger Postgres
+- `salon_settings` ha tutti i campi config
+
+---
+
+### Chat 2 · Booking experience + Customer-facing 🛋️
+
+**Scope**: tutto il flow di prenotazione potenziato (waitlist, no-show, pacchetti, sync calendar, push, sondaggi). Parte appena Chat 1 chiusa.
+
+**Dipendenze**:
+- Chat 1 completata (Router + skills_config + cancel /profilo)
+- `salon_settings.cancel_min_hours` configurato
+- Tabelle `notifications_sent` + `admin_inbox_items` operative
+
+**File "owned" da Chat 2**:
+- `src/components/booking/BookingDrawer.tsx` (estensioni: waitlist opt-in, package credit redemption, upsell step)
+- `src/components/admin/views/waitlist.tsx` (nuovo)
+- `src/components/admin/views/clienti-no-show.tsx` (nuovo, sotto-view di clienti)
+- `src/components/admin/views/pacchetti.tsx` (nuovo)
+- `src/components/profilo/views/appuntamenti.tsx` (lista crediti pacchetti attivi)
+- `src/components/profilo/views/dashboard.tsx` (card "pacchetto attivo")
+- `src/components/ui/PushOptInPrompt.tsx` (nuovo)
+- `supabase/functions/waitlist-matcher/index.ts` (nuovo cron 15min)
+- `supabase/functions/post-visit-survey-sender/index.ts` (nuovo cron 30min)
+- `supabase/functions/push-sender/index.ts` (nuovo)
+- Migrations 0029-0036
+
+**Task list in ordine**:
+
+1. **Migrations `waitlist` + `appointments` extension (cancelled_at, cancelled_by, soft_reserved status, package_credit_id)**
+2. **RPC `fn_match_waitlist_entry(p_cancelled_appointment_id)`** + cron waitlist-matcher con soft-reservation + token validity adattiva
+3. **BookingDrawer waitlist opt-in** — quando slot non disponibili → CTA "entra in lista"
+4. **`/admin/waitlist`** view — coda con position, status, override manuale
+5. **Migration `noshow_outreach` + `service_packages` + `customer_packages` + `customer_surveys` + `push_subscriptions`**
+6. **`/admin/clienti/no-show`** dashboard — lista cronologica, counter, bottone "📧 Chiedi spiegazione" con bozza AI GPT-4o-mini
+7. **`/admin/pacchetti`** — CRUD service_packages + sell modale in `/admin/clienti/[id]` (payment_method: cash/pos/bonifico/omaggio)
+8. **BookingDrawer package credit detection** — se cliente ha crediti → CTA "Usa 1 credito? (gratis)"
+9. **Cron `package-expiry-reminders`** — notifica clienti con crediti in scadenza <30gg
+10. **Upsell step BookingDrawer** — "Aggiungi barba +€10" prima della conferma, dismiss "3 volte = mai più"
+11. **Push subscriptions + opt-in UI** + Push Edge Function sender + integrate con Router come canale
+12. **Sondaggio post-visita cron** + tabella `customer_surveys` + dashboard NPS in `/admin/marketing`
+13. **Google Calendar OAuth integration** + `staff_gcal_tokens` table + sync bidirezionale Hair Rich ⇄ personal Gcal
+14. **Google Business Profile API** — sync orari/chiusure straordinarie (`salon_settings` + `time_off` → Google)
+15. **Google Reserve with Google** — registrazione partner program + endpoint conferma slot
+
+**Done criteria**:
+- Cliente cancella appointment in `/profilo` → cron waitlist-matcher invia notifica al #1 in lista entro 15 min (se lead-time >3h)
+- Cliente in waitlist conferma via token → appointment creato, soft-reservation chiusa
+- Cliente che ha pacchetto vede "Usa 1 credito" in BookingDrawer
+- Push subscription si salva + invio test funziona
+- Storico no-show visibile in admin con AI outreach pronto
+- Google Calendar staff sincronizzato in entrambe le direzioni
+
+**Handoff a Chat 3**:
+- BookingDrawer pronto per coupon input field (slot UI a destra dell'upsell step)
+- Push channel disponibile nel Router
+- Tutti i flag relevant attivabili dalla Skills Hub
+
+---
+
+### Chat 3 · Marketing engine + AI + Insights 🚀
+
+**Scope**: motore di marketing automation, AI assistants, analytics, operatività magazzino. Può girare in parallelo a Chat 2 ma con attenzione ai merge BookingDrawer.
+
+**Dipendenze**:
+- Chat 1 completata
+- BookingDrawer base pronto (se Chat 2 in corso, coordinarsi sui merge)
+
+**File "owned" da Chat 3**:
+- `src/components/admin/views/gamification.tsx` (CRUD coupon + fidelity rules + referral admin)
+- `src/components/admin/views/marketing.tsx` (campagne + reviews moderation + sondaggio NPS lettura)
+- `src/components/admin/views/statistiche.tsx` (recharts dashboards)
+- `src/components/admin/views/cms.tsx` (CMS lite con TipTap)
+- `src/components/admin/views/fornitori.tsx` (nuovo)
+- `src/components/admin/views/contenuti-ai.tsx` (nuovo — AI Content Generator)
+- `src/components/admin/views/clienti.tsx` (estensione: query builder #101 + segment badges)
+- `src/components/admin/views/dashboard.tsx` (customer health alerts box)
+- `src/components/admin/views/prodotti.tsx` (estensione scorte + threshold)
+- `src/components/profilo/views/referral.tsx` (wire-up completo)
+- `src/components/profilo/views/dashboard.tsx` (loyalty progress card + segment badges interni — ma SOLO se mostrabili a cliente)
+- `src/components/booking/BookingDrawer.tsx` (solo: coupon input field "Hai un codice?") — coordinarsi con Chat 2
+- `src/pages/recensione/[token].astro` (nuovo — pagina cuscinetto Reviews)
+- `src/pages/coupon/[code].astro` (nuovo — landing QR promo)
+- `supabase/functions/birthday-sender/index.ts` (cron daily 09:00)
+- `supabase/functions/reactivation-sender/index.ts` (cron weekly)
+- `supabase/functions/ai-content-generator/index.ts` (OpenAI)
+- `supabase/functions/ai-weekly-suggestions/index.ts` (cron lun 09:00 + OpenAI)
+- `supabase/functions/ai-monthly-report/index.ts` (cron 1° del mese + OpenAI)
+- `supabase/functions/reviews-harvester/index.ts` (cron 30min post-completed)
+- `supabase/functions/reviews-google-verify/index.ts` (cron weekly — Places API fuzzy-match)
+- `supabase/functions/bookings-drop-alert/index.ts` (cron weekly)
+- `supabase/functions/stock-low-alert/index.ts` (cron daily 08:00)
+- Migrations 0037-0048
+
+**Task list in ordine**:
+
+1. **Migrations coupon ecosystem** — `coupons` table extension + `coupon_redemptions` + `coupon_qr_batches` + `service_packages_referrals` (link referral-coupons)
+2. **Migration `loyalty_config` + `loyalty_transactions`** — config rules customizable da admin + ledger
+3. **Migration `customer_segments` + cron classifier**
+4. **Migration `review_requests` + Google Place ID in `salon_settings`**
+5. **Migration `ai_reports` + `ai_content_drafts`**
+6. **Migration `suppliers` + `supplier_orders` + `products.default_supplier_id` + threshold columns**
+7. **Migration `saved_searches`**
+8. **`/admin/gamification`** — CRUD coupon, regole fidelity (modello a-stamp / a-punti / cashback, soglie reward), referral admin (link generator, lista invitati, credit tracking)
+9. **Referral wire-up** completo: `/profilo/referral` page + share buttons + code generator + tracking conversioni
+10. **Coupon input nel BookingDrawer** (coord. con Chat 2 per il merge)
+11. **Birthday cron** + template messaggio Router-routed
+12. **Reactivation cron** + RPC `fn_customers_at_risk` (esiste) + AI-drafted message option
+13. **Reviews Harvester end-to-end** — cron, pagina cuscinetto `/recensione/[token]`, anti-spam 5 livelli, Google Places API fuzzy match
+14. **Promo Last-Minute** — trigger Telegram manuale, target solo abituali, cap -15%, max 1/mese
+15. **Customer Segments classifier cron** + badge UI in `/admin/clienti`, `/admin/agenda`, dashboard counters
+16. **Ricerca Avanzata Clienti** — query builder react-querybuilder + RPC `fn_search_customers(p_filters jsonb)` + 5 ricerche template + saved searches + batch actions
+17. **Statistiche admin view** — recharts (revenue daily, top services, top staff, no-show rate, cohort retention)
+18. **AI Content Generator** — upload foto + GPT-4o-mini → 3 caption + hashtag + best time to post
+19. **AI Weekly Suggestions** + **AI Monthly Report** — Edge Functions + email titolare via Gmail SMTP
+20. **Bookings Drop Alert** — cron weekly + Telegram + suggested actions
+21. **Stock Low Alert** — cron daily + Telegram + reorder modal
+22. **Suppliers Directory** — `/admin/fornitori` CRUD + PDF order generator
+23. **CMS lite** — `/admin/cms` con TipTap editor su `cms_blocks` (testi homepage, footer, FAQ, email/telegram templates)
+24. **QR Promotions** — generatore QR univoci + UTM tracking + landing `/coupon/[code].astro`
+
+**Done criteria**:
+- Tutti i 14 skill marketing/AI/ops sono ON in Skills Hub e funzionanti
+- Almeno una campagna birthday + una riattivazione + un review request inviati end-to-end
+- Dashboard recharts popolata con dati reali
+- Ricerca avanzata clienti restituisce risultati corretti su query composite
+- AI report mensile arriva in casella email di test
+
+**Handoff finale**:
+- Sito + admin + profilo cliente sono operativi al 100%
+- Tutte le skill Skills Hub disattivate by default — il titolare attiva quelle che vuole
+- Documentazione utente generata in `docs/manuale-titolare.md` (opzionale)
+
+---
+
+### ⚠️ Note sul merge
+
+- **BookingDrawer** è il file più "conteso": Chat 2 ci aggiunge waitlist opt-in + package credit + upsell. Chat 3 ci aggiunge coupon input field. **Risoluzione**: Chat 3 fa merge DOPO Chat 2 e si limita alla sua slot UI senza toccare il resto.
+- **Migrations**: Chat 1 usa numeri 0021-0028, Chat 2 0029-0036, Chat 3 0037-0048 → niente collisioni numeriche.
+- **`salon_settings`**: tutte e 3 le chat aggiungono colonne. Per evitare conflitti: ogni chat fa la sua migration di ALTER TABLE atomica con `ADD COLUMN IF NOT EXISTS`.
+- **`skills_config`**: Chat 1 fa il seed iniziale di tutte le 101 skill_key. Chat 2 e Chat 3 non toccano la tabella, solo leggono il flag della loro skill.
+
+---
+
 ### 🎛️ Skills Hub — la pagina "centro funzionalità" dell'admin
 
 **Concept**: una pagina dedicata in admin (`/admin/funzionalita` o `/admin/skills`) dove il titolare vede TUTTE le skill digitali del gestionale e le accende/spegne a piacimento con un toggle. Sostituisce la dispersione di mille checkbox tra varie view di impostazioni.
