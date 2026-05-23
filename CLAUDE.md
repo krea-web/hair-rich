@@ -111,7 +111,7 @@ Routes: `/profilo`, `/profilo/appuntamenti`, `/profilo/impostazioni`, `/profilo/
 | View | Stato |
 |---|---|
 | `dashboard.tsx` | ⚠️ Mostra prossimi appuntamenti + loyalty progress. Da rifinire (data binding) |
-| `appuntamenti.tsx` | ⚠️ Lista storico/futuri. Manca: cancel/reschedule actions |
+| `appuntamenti.tsx` | ⚠️ Lista storico/futuri. **Manca**: cancel (RPC `fn_cancel_appointment_by_customer` + lead-time policy da `salon_settings.cancel_min_hours`) + reschedule (riusa BookingDrawer edit-mode). Cancel **triggera waitlist auto-notify** se lead-time >3h. |
 | `impostazioni.tsx` | ⚠️ Form dati personali + privacy. Da wire-up completo |
 | `referral.tsx` | ⚠️ Codice referral + credit history. Tabella `referrals` esiste, RPC da completare |
 
@@ -232,14 +232,14 @@ Legenda:
 | 6 | 📣 Promo Last Minute | ⏸️ | Buchi agenda → blast WA. Smart per Olbia turisti |
 | 7 | 💌 Newsletter Automatica | ⏸️ | Valore basso per un barber 2-chair |
 | 8 | 🌱 Campagne Stagionali | ⏸️ | Natale ok, San Valentino meno barber |
-| 9 | 🔔 Notifiche Push Web | ⏸️ | PWA infra già pronta, Push API gratis |
+| 9 | 🔔 Notifiche Push Web | ✅ promosso (con flag + router) | **Master flag** `push_enabled` in `salon_settings`. **Vincolo critico**: NON inviare push se lo stesso evento è già stato spedito via WA/email — vedi sezione "Notification Router" sotto. Coverage realistica: 15-25% utenti registrati. Foundation PWA già pronta. |
 | 10 | ✅ WhatsApp Business API | ⏸️ | Foundational per #1, #2, #3, #6 |
 
 ### Prenotazione & Booking
 
 | # | Idea | Stato | Nota |
 |---|---|---|---|
-| 11 | ⏳ Waitlist Manager | ⏸️ | Smart, semplice da costruire |
+| 11 | ⏳ Waitlist Manager | ✅ promosso (design ricco) | **Trigger**: cancellazione cliente in /profilo/appuntamenti (RPC `fn_cancel_appointment_by_customer`). **Lead-time rule**: auto-notify solo se cancellazione >3h prima (configurable). **Token validity adattiva**: 24h se >7gg, 6h se >24h, 2h se >6h, 45min se >3h, no notify se <3h. **Soft-reservation**: slot fantasma con `status=soft_reserved` durante token window → escluso da `fn_available_slots`. **Sender iniziale**: Gmail SMTP via Nodemailer (`GMAIL_USER`+`GMAIL_APP_PASSWORD`); architettura channel-agnostic, switch WA Cloud quando #1 attivato. **DB**: tabella `waitlist` + estensioni `appointments` (cancelled_at, cancelled_by, cancellation_reason) + `cancellation_history`. **Master flag**: `waitlist_enabled` in `salon_settings`. **Edge case da gestire**: ghosting (auto-remove dopo 3 missed), salone chiuso, cliente ritira waitlist, prenotazione autonoma rimuove waitlist, walk-in manuale da admin, slot già notificato a qualcun altro. Visibilità in /admin/agenda con badge "👀 in waitlist". |
 | 12 | 📲 QR Code Check-in | ⏸️ | Niche per un barber piccolo |
 | 13 | 💳 Deposito Anticipo | ⏸️ | Utile per combo €30. Stripe integration |
 | 14 | 🤳 Booking da Instagram | ✅ | Già funziona — basta il link in bio al sito |
@@ -256,7 +256,7 @@ Legenda:
 |---|---|---|---|
 | 21 | 🤖 Receptionist AI | ⏸️ | Alto valore, complesso. OpenAI + WA API |
 | 22 | 💇 Consulenza Capelli AI | ❌ | 3 SKU barber, non serve consulenza foto |
-| 23 | 🧠 Suggerimenti AI Gestionale | ⏸️ | Da statistiche.tsx + LLM weekly digest |
+| 23 | 🧠 Suggerimenti AI Gestionale | ✅ promosso (con flag) | Cron settimanale (lun 9:00) → analizza dati settimana → GPT-4o-mini genera 3-5 azioni operative → email al titolare. **Sub-flag** `weekly_suggestions_enabled` in `salon_settings`. Anonymize dati cliente. Costo ~€0.05/mese. Implementazione tecnica subito, attivazione effettiva dopo 60-90gg di dati reali. |
 | 24 | 😊 Analisi Sentiment Recensioni | ⏸️ | Utile, Google + reviews table |
 | 25 | 🎨 Generatore Contenuti AI | ⏸️ | Utile per owner social, ChatGPT-grade |
 | 26 | 🎙️ Risponditore Vocale AI | ⏸️ | Twilio missed call → SMS con link prenota |
@@ -269,7 +269,7 @@ Legenda:
 
 | # | Idea | Stato | Nota |
 |---|---|---|---|
-| 31 | 📊 Report Mensile AI | ⏸️ | RPC `fn_admin_stats_range` + email cron |
+| 31 | 📊 Report Mensile AI | ✅ promosso (con flag) | Cron 1° del mese 9:00 → analizza mese precedente → GPT-4o-mini genera report ricco (KPI + analisi + obiettivi) → email titolare (+commercialista opzionale). **Sub-flag** `monthly_report_enabled`. RPC `fn_admin_stats_range` esiste. Archivio storico in tabella `ai_reports`. Stesso engine di #23. |
 | 32 | 📈 Performance Operatori | ⏸️ | Pianificato (statistiche.tsx) |
 | 33 | 🏆 Classifica Operatori | ⏸️ | Gamification minor |
 | 34 | 🗺️ Heatmap Clienti | ⏸️ | Customer ZIP/lat-lng → Leaflet heatmap |
@@ -285,10 +285,10 @@ Legenda:
 | # | Idea | Stato | Nota |
 |---|---|---|---|
 | 41 | 📝 Scheda Tecnica Cliente | ❌ | Non serve formule colore per barber |
-| 42 | 🎟️ Fidelity & Punti | ⏸️ | `LoyaltyProgress` esiste in /profilo, logica da finire |
-| 43 | 🎫 Gestione Abbonamenti | ⏸️ | Pacchetto "10 tagli" — utile per Olbia turisti |
+| 42 | 🎟️ Fidelity & Punti | ✅ promosso (con flag + config) | `LoyaltyProgress` UI esiste. **REQUISITI**: (a) master flag `loyalty_enabled` in `salon_settings`, default OFF. (b) admin /admin/gamification deve permettere configurazione COMPLETA: modello (a-stamp / a-punti / cashback), soglia reward, tipo reward (free service / sconto fisso / sconto %), validità giorni, bonus iniziale, regole anti-gaming. Niente hardcoded. Quando OFF: component nascosto in /profilo, trigger Postgres in pausa. |
+| 43 | 🎫 Gestione Abbonamenti / Pacchetti | ✅ promosso (con flag + Stripe) | **Master flag** `packages_enabled` in `salon_settings`, default OFF. Cliente decide se attivare. **DB**: `service_packages` (catalogo) + `customer_packages` (acquisti con credits_remaining + expires_at) + colonna `package_credit_id` in `appointments`. **Stripe Checkout** per pagamenti (~1.5% + €0.25/tx). **BookingDrawer**: detect crediti attivi → CTA "Usa 1 credito?". **Admin** CRUD pacchetti + refund policy configurabile + reminder scadenza configurabile. **Da chiarire col cliente PRIMA dell'implementazione**: account Stripe, refund policy, fatturazione voucher multiuso col commercialista. |
 | 44 | 🎁 Gift Card Digitali | ⏸️ | Stripe + coupons table |
-| 45 | 🎪 Gestione Coupon & Sconti | ✅ | Tabella `coupons` esiste, wire-up gamification.tsx nel piano |
+| 45 | 🎪 Gestione Coupon & Sconti | ✅ promosso | Tabella `coupons` esiste. **REQUISITO**: master feature-flag `coupons_enabled` in `salon_settings` — il campo "Hai un codice?" nel BookingDrawer appare SOLO se il flag è ON. Default OFF. Toggle dal gestionale. |
 | 46 | 🚫 Lista Nera Automatica | ⏸️ | `customers.noshow_count` esiste (migration 0001_noshow) |
 | 47 | 🔐 Gestione Consensi GDPR | ⏸️ | Cookie banner c'è, consensi profilo da rifinire |
 | 48 | 📸 Archivio Foto Clienti | ✅ | `appointment_photos` table + `AppointmentPhotos` component + admin foto-risultati.tsx |
@@ -315,15 +315,15 @@ Legenda:
 | # | Idea | Stato | Nota |
 |---|---|---|---|
 | 61 | 📱 Social Scheduler | ❌ | Buffer/Later gratis fanno meglio |
-| 62 | ⭐ Review Harvester | ⏸️ | Top ROI — auto-trigger 2h post-app |
+| 62 | ⭐ Review Harvester | ✅ promosso (con flag + anti-spam) | Top ROI — auto-trigger 2h post-app. **REQUISITI**: (a) master flag `reviews_enabled` in `salon_settings`, default OFF. (b) **anti-spam multilivello** per evitare invii infiniti: L1 click-through tracking (`routed_to_google_at`), L2 self-report (`confirmed_left_review_at`), L3 one-shot per appointment, L4 cooldown 90gg per cliente, L5 verifica fuzzy-match Google Places API. (c) Tabella nuova `review_requests` con tutti i flag. (d) Pagina cuscinetto `/recensione/[token]` con smart-routing 😊/😞. (e) Admin funnel dashboard. Tutto configurabile da gestionale. |
 | 63 | 🗣️ Raccolta Testimonianze | ⏸️ | Form video, upload S3 |
 | 64 | 📸 Gallery Before/After | ✅ | BeforeAfterSlider component live in /lavori |
-| 65 | 🤝 Referral Automatico | ✅ | `referrals` table + /profilo/referral page (UI parziale) |
+| 65 | 🤝 Referral Automatico | ✅ promosso (con flag) | `referrals` table + /profilo/referral page esistono. **REQUISITO**: master flag `referrals_enabled` in `salon_settings`. Quando OFF → /profilo/referral mostra placeholder "Programma in arrivo"; nessun campo "codice amico" nel BookingDrawer. Default OFF. |
 | 66 | 📡 Integrazione Meta Ads | ⏸️ | Pixel + Conversion API |
 | 67 | 💬 Bot Risposta Commenti Social | ❌ | Edge case, complessità Meta API |
 | 68 | 🔗 Link in Bio Dinamico | ✅ | Il sito stesso serve da link-in-bio aggiornato dal DB |
 | 69 | 📱 Integrazione TikTok | ⏸️ | TikTok Pixel, useful per giovani |
-| 70 | 📲 Alert Telegram Titolare | ⏸️ | Telegram Bot webhook → owner |
+| 70 | 📲 Alert Telegram Titolare | ✅ promosso (con flag) | Bot Telegram dedicato via @BotFather. **Master flag** `telegram_alerts_enabled` in `salon_settings`. **Config admin granulare**: quali eventi notificare (toggle per tipo: nuova prenotazione / cancellazione / recensione negativa / no-show / slot vuoto / coupon esaurito / win-back / VIP booking / errore tecnico / daily digest 18:00), priorità minima, quiet hours (default 22-08), chat IDs multipli. Setup ~5 min titolare. Costo €0. **Variabile** `TELEGRAM_BOT_TOKEN` in `.env.local`. Fase 2: inline buttons per actions inline (conferma, sposta, cancel). |
 
 ### Vendite & Revenue
 
@@ -370,6 +370,48 @@ Legenda:
 | 99 | 🗂️ Audit Trail Appuntamenti | ⏸️ | Variante di #58 |
 | 100 | 📱 App Cliente PWA | ✅ | Il sito è già installable PWA |
 | 101 | 🔍 Ricerca Avanzata Clienti | ⏸️ | clienti.tsx ha base, estendere con filtri compositi |
+
+### ⚠️ Notification Router — regola cross-cutting
+
+**Problema**: con 4+ canali messaging attivi (WA, Push, Email, SMS), c'è il rischio reale che il cliente riceva lo STESSO evento (es. reminder) 3 volte.
+
+**Soluzione architetturale**: tutte le notifiche passano per UN SOLO punto centrale che separa due tipi di flusso:
+
+#### 1️⃣ Notifiche CLIENTI (esterni)
+Funzione `sendCustomerNotification(customerId, eventType, payload)` → sceglie UN canale e basta.
+
+**Hierarchy default** (configurabile in `salon_settings.notification_channel_priority`):
+```
+WhatsApp (se opt-in + numero) → Push (se subscribed) → Email (sempre) → SMS (solo se abilitato)
+```
+
+**Preferenze per-cliente** in `customers.notification_preferences` JSONB (mode "smart" o "manual" per categoria).
+
+**Eccezione critical events**: opzionale flag `multi_channel_critical = true` per eventi time-sensitive (waitlist match con token <1h).
+
+#### 2️⃣ Notifiche INTERNE (titolare / staff)
+**Decisione cliente**: TUTTE le notifiche owner-facing vanno SOLO su **Telegram** (vedi #70). No email, no WA, no push web.
+
+Funzione `sendOwnerAlert(eventType, payload)` → invio diretto a `salon_settings.owner_telegram_chat_id` (e opzionalmente chat IDs aggiuntivi per staff/delegati).
+
+Eventi owner che usano questo canale (tutti su Telegram):
+- Nuova prenotazione / cancellazione / no-show
+- Recensione negativa (#62 routing 😞)
+- Slot vuoto urgente / coupon esaurito (#45)
+- Win-back / VIP booking
+- Alert calo prenotazioni (#36)
+- Daily digest 18:00 (config)
+- Suggerimenti AI weekly (#23) e Report Mensile (#31) — header su Telegram, dettaglio email per archivio
+
+**Quiet hours** sempre applicate (default 22-08) tranne eventi critical-priority.
+
+#### Log centrale
+Tabella `notifications_sent` con `(recipient_type, recipient_id, event_type, related_id, channel, sent_at, opened_at)` → garantisce idempotenza, impedisce duplicati, fornisce audit.
+
+#### Implementazione
+**Prima** di costruire qualsiasi feature messaging (#1, #2, #5, #6, #9, #62, ecc), implementare le 2 funzioni del Router. Tutte le feature le riusano. Il canale per owner-alert è fisso (Telegram), non passa per la hierarchy clienti.
+
+---
 
 ### Top 10 da prioritizzare (mia opinione, da confermare col cliente)
 
