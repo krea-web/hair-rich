@@ -575,7 +575,7 @@ Legenda:
 ### ⚠️ Note sul merge
 
 - **BookingDrawer** è il file più "conteso": Chat 2 ci aggiunge waitlist opt-in + package credit + upsell. Chat 3 ci aggiunge coupon input field. **Risoluzione**: Chat 3 fa merge DOPO Chat 2 e si limita alla sua slot UI senza toccare il resto.
-- **Migrations**: Chat 1 usa numeri 0021-0028, Chat 2 0029-0036, Chat 3 0037-0048 → niente collisioni numeriche.
+- **Migrations**: Chat 1 ha usato **0021-0029** (task 18 ha richiesto una slot RPC extra), Chat 2 parte da **0030-0037**, Chat 3 da **0038-0048** → niente collisioni numeriche.
 - **`salon_settings`**: tutte e 3 le chat aggiungono colonne. Per evitare conflitti: ogni chat fa la sua migration di ALTER TABLE atomica con `ADD COLUMN IF NOT EXISTS`.
 - **`skills_config`**: Chat 1 fa il seed iniziale di tutte le 101 skill_key. Chat 2 e Chat 3 non toccano la tabella, solo leggono il flag della loro skill.
 

@@ -132,5 +132,13 @@ export interface SalonSettings {
     no_show_threshold: number;
     slot_step_min: number;
     onboarding_completed_at: string | null;
+    // Notification Router config (migration 0028)
+    notification_channel_priority: string[];
+    owner_telegram_chat_id: string | null;
+    owner_telegram_extra_chat_ids: string[];
+    quiet_hours_start: string;
+    quiet_hours_end: string;
+    timezone: string;
+    multi_channel_critical: boolean;
     updated_at: string;
 }

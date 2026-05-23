@@ -24,6 +24,21 @@ const FIELD_LABELS: Record<keyof EditableSettings, string> = {
     cancel_min_hours: "Cancellazione minima (ore)",
     no_show_threshold: "Soglia no-show",
     slot_step_min: "Step slot (minuti)",
+    notification_channel_priority: "Priorità canali",
+    owner_telegram_chat_id: "Telegram chat ID",
+    owner_telegram_extra_chat_ids: "Chat ID aggiuntivi",
+    quiet_hours_start: "Inizio quiet hours",
+    quiet_hours_end: "Fine quiet hours",
+    timezone: "Fuso orario",
+    multi_channel_critical: "Multi-channel per eventi critici",
+};
+
+const ALL_CHANNELS = ["whatsapp", "push", "email", "sms"] as const;
+const CHANNEL_LABELS: Record<string, string> = {
+    whatsapp: "WhatsApp",
+    push: "Push web",
+    email: "Email",
+    sms: "SMS",
 };
 
 export default function AdminImpostazioniPage() {
@@ -290,6 +305,104 @@ export default function AdminImpostazioniPage() {
                 </div>
             </section>
 
+            {/* Notification Router config */}
+            <section className="bg-carbon border border-line rounded-[var(--radius-md)] p-5 md:p-6 space-y-4">
+                <h2 className="text-display text-xl text-warm-white tracking-tight">
+                    Notifiche & Comunicazioni
+                </h2>
+                <p className="text-warm-white-muted text-sm">
+                    Il Notification Router usa queste impostazioni per scegliere come
+                    raggiungere clienti e titolare. Cambiamento immediato — nessun deploy.
+                </p>
+
+                <Field
+                    label={FIELD_LABELS.notification_channel_priority}
+                    hint="Ordine con cui il Router prova i canali quando il cliente non ha preferenze specifiche."
+                >
+                    <ChannelPriorityEditor
+                        value={draft.notification_channel_priority ?? []}
+                        onChange={(v) => change("notification_channel_priority", v)}
+                    />
+                </Field>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                    <Field
+                        label={FIELD_LABELS.owner_telegram_chat_id}
+                        hint="Chat ID numerico ottenuto da @BotFather + /start. Vuoto = no alert Telegram."
+                    >
+                        <input
+                            value={draft.owner_telegram_chat_id ?? ""}
+                            onChange={(e) => change("owner_telegram_chat_id", e.target.value || null)}
+                            placeholder="123456789"
+                            className="w-full bg-black-2 border border-line rounded-md px-3 py-2 text-warm-white font-mono"
+                        />
+                    </Field>
+                    <Field
+                        label={FIELD_LABELS.owner_telegram_extra_chat_ids}
+                        hint="Chat ID delegati separati da virgola (staff, partner)."
+                    >
+                        <input
+                            value={(draft.owner_telegram_extra_chat_ids ?? []).join(", ")}
+                            onChange={(e) =>
+                                change(
+                                    "owner_telegram_extra_chat_ids",
+                                    e.target.value
+                                        .split(",")
+                                        .map((s) => s.trim())
+                                        .filter(Boolean),
+                                )
+                            }
+                            placeholder="111, 222"
+                            className="w-full bg-black-2 border border-line rounded-md px-3 py-2 text-warm-white font-mono"
+                        />
+                    </Field>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-4">
+                    <Field
+                        label={FIELD_LABELS.quiet_hours_start}
+                        hint="Le notifiche non-critiche vengono trattenute durante questa fascia."
+                    >
+                        <input
+                            type="time"
+                            value={(draft.quiet_hours_start ?? "22:00").slice(0, 5)}
+                            onChange={(e) => change("quiet_hours_start", e.target.value)}
+                            className="w-full bg-black-2 border border-line rounded-md px-3 py-2 text-warm-white font-mono"
+                        />
+                    </Field>
+                    <Field label={FIELD_LABELS.quiet_hours_end}>
+                        <input
+                            type="time"
+                            value={(draft.quiet_hours_end ?? "08:00").slice(0, 5)}
+                            onChange={(e) => change("quiet_hours_end", e.target.value)}
+                            className="w-full bg-black-2 border border-line rounded-md px-3 py-2 text-warm-white font-mono"
+                        />
+                    </Field>
+                    <Field label={FIELD_LABELS.timezone}>
+                        <input
+                            value={draft.timezone ?? "Europe/Rome"}
+                            onChange={(e) => change("timezone", e.target.value || "Europe/Rome")}
+                            className="w-full bg-black-2 border border-line rounded-md px-3 py-2 text-warm-white font-mono"
+                        />
+                    </Field>
+                </div>
+
+                <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                        type="checkbox"
+                        checked={Boolean(draft.multi_channel_critical)}
+                        onChange={(e) => change("multi_channel_critical", e.target.checked)}
+                        className="accent-accent-warm"
+                    />
+                    <span className="text-warm-white text-sm">
+                        {FIELD_LABELS.multi_channel_critical}
+                    </span>
+                    <span className="text-silver-dark text-xs">
+                        — eventi time-sensitive (es. waitlist &lt;1h) fan-out su più canali
+                    </span>
+                </label>
+            </section>
+
             {/* Sticky save bar — stack vertically on mobile so the dirty
                 label doesn't push the buttons onto a wrapped row */}
             <div className="sticky bottom-0 -mx-6 md:-mx-10 px-6 md:px-10 py-3 md:py-4 bg-black/85 backdrop-blur-md border-t border-line flex flex-col md:flex-row items-stretch md:items-center gap-2 md:gap-3 md:justify-end">
@@ -316,6 +429,90 @@ export default function AdminImpostazioniPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+function ChannelPriorityEditor({
+    value,
+    onChange,
+}: {
+    value: string[];
+    onChange: (v: string[]) => void;
+}) {
+    const enabled = new Set(value);
+    const ordered = [...value, ...ALL_CHANNELS.filter((c) => !enabled.has(c))];
+
+    const move = (channel: string, direction: -1 | 1) => {
+        const idx = value.indexOf(channel);
+        if (idx === -1) return;
+        const target = idx + direction;
+        if (target < 0 || target >= value.length) return;
+        const next = [...value];
+        [next[idx], next[target]] = [next[target]!, next[idx]!];
+        onChange(next);
+    };
+
+    const toggle = (channel: string) => {
+        if (enabled.has(channel)) {
+            onChange(value.filter((c) => c !== channel));
+        } else {
+            onChange([...value, channel]);
+        }
+    };
+
+    return (
+        <ul className="space-y-2">
+            {ordered.map((channel) => {
+                const isOn = enabled.has(channel);
+                const idx = value.indexOf(channel);
+                return (
+                    <li
+                        key={channel}
+                        className={`flex items-center gap-3 p-2 bg-black-2 border rounded-md ${
+                            isOn ? "border-line" : "border-line opacity-50"
+                        }`}
+                    >
+                        <span className="w-6 text-center text-[10px] uppercase tracking-[0.2em] text-silver-dark font-body font-semibold">
+                            {isOn ? idx + 1 : "—"}
+                        </span>
+                        <span className="flex-1 text-warm-white text-sm">{CHANNEL_LABELS[channel] ?? channel}</span>
+                        {isOn && (
+                            <>
+                                <button
+                                    type="button"
+                                    onClick={() => move(channel, -1)}
+                                    disabled={idx === 0}
+                                    className="text-silver hover:text-warm-white px-1 disabled:opacity-30"
+                                    aria-label="Sposta su"
+                                >
+                                    ▲
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => move(channel, 1)}
+                                    disabled={idx === value.length - 1}
+                                    className="text-silver hover:text-warm-white px-1 disabled:opacity-30"
+                                    aria-label="Sposta giù"
+                                >
+                                    ▼
+                                </button>
+                            </>
+                        )}
+                        <button
+                            type="button"
+                            onClick={() => toggle(channel)}
+                            className={`text-[10px] uppercase tracking-[0.25em] font-body font-semibold px-3 py-1 rounded-full border ${
+                                isOn
+                                    ? "border-accent-warm text-accent-warm"
+                                    : "border-line text-silver"
+                            }`}
+                        >
+                            {isOn ? "Attivo" : "Off"}
+                        </button>
+                    </li>
+                );
+            })}
+        </ul>
     );
 }
 
