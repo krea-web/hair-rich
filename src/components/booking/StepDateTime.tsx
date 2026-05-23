@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useBookingStore } from "@/lib/store";
 import { fetchAvailableSlots, fetchDayDensity } from "@/lib/supabase/queries";
 import type { AvailableSlot } from "@/lib/supabase/types";
+import { WaitlistOptIn } from "./WaitlistOptIn";
 
 const today = new Date();
 const dates = Array.from({ length: 21 })
@@ -225,10 +226,13 @@ export function StepDateTime({ onNext, onBack }: { onNext: () => void; onBack: (
                             ))}
                         </div>
                     ) : uniqueTimes.length === 0 ? (
-                        <div className="h-32 flex items-center justify-center p-6 bg-black-2 border border-line border-dashed rounded-[var(--radius-md)]">
-                            <span className="text-sm text-silver-dark text-center">
-                                Nessuno slot libero per questo giorno. Prova un'altra data.
-                            </span>
+                        <div>
+                            <div className="h-32 flex items-center justify-center p-6 bg-black-2 border border-line border-dashed rounded-[var(--radius-md)]">
+                                <span className="text-sm text-silver-dark text-center">
+                                    Nessuno slot libero per questo giorno. Prova un'altra data.
+                                </span>
+                            </div>
+                            <WaitlistOptIn fallbackDate={selectedDateStr} />
                         </div>
                     ) : (
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
