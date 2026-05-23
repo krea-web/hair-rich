@@ -3,10 +3,11 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useClientPath, handleClientLink } from "@/lib/clientRouter";
-import { useAdminNotifyStore } from "@/lib/store";
+import { useAdminNotifyStore, useAdminInboxStore } from "@/lib/store";
 
 const MAIN_MENU = [
     { href: "/admin", label: "Dashboard", icon: "svg-dash" },
+    { href: "/admin/inbox", label: "Inbox", icon: "svg-inbox" },
     { href: "/admin/agenda", label: "Agenda", icon: "svg-calendar" },
     { href: "/admin/chiusure", label: "Chiusure & ferie", icon: "svg-pause" },
     { href: "/admin/statistiche", label: "Statistiche", icon: "svg-chart" },
@@ -33,6 +34,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const newBookingsCount = useAdminNotifyStore((s) => s.newBookingsCount);
     const markSeen = useAdminNotifyStore((s) => s.markSeen);
+    const inboxUnreadCount = useAdminInboxStore((s) => s.unreadCount);
 
     useEffect(() => {
         // Visiting the agenda clears the unseen-new-bookings counter.
@@ -100,6 +102,13 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                         <rect x="15" y="9" width="3" height="11" />
                     </svg>
                 );
+            case "svg-inbox":
+                return (
+                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
+                        <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
+                    </svg>
+                );
         }
     };
 
@@ -148,7 +157,9 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                                 <nav className="space-y-0.5">
                                     {MAIN_MENU.map((item) => {
                                         const active = pathname === item.href;
-                                        const showBadge = item.href === "/admin/agenda" && newBookingsCount > 0;
+                                        const agendaBadge = item.href === "/admin/agenda" && newBookingsCount > 0;
+                                        const inboxBadge = item.href === "/admin/inbox" && inboxUnreadCount > 0;
+                                        const badgeCount = agendaBadge ? newBookingsCount : inboxBadge ? inboxUnreadCount : 0;
                                         return (
                                             <a
                                                 key={item.href}
@@ -158,9 +169,9 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                                             >
                                                 <span className={active ? "text-warm-white" : "text-silver-dark"}>{renderIcon(item.icon)}</span>
                                                 <span className="flex-1">{item.label}</span>
-                                                {showBadge && (
+                                                {badgeCount > 0 && (
                                                     <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1.5 rounded-full bg-accent-warm text-black text-[10px] font-body font-semibold tabular-nums">
-                                                        {newBookingsCount > 9 ? "9+" : newBookingsCount}
+                                                        {badgeCount > 9 ? "9+" : badgeCount}
                                                     </span>
                                                 )}
                                             </a>

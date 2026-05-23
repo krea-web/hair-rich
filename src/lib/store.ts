@@ -236,6 +236,19 @@ export const useAdminNotifyStore = create<AdminNotifyState>((set) => ({
     markSeen: () => set({ newBookingsCount: 0 }),
 }));
 
+/* ── Admin inbox unread counter ─────────────────────────────────────────────── */
+interface AdminInboxState {
+    unreadCount: number;
+    setUnreadCount: (n: number) => void;
+    incUnread: (n?: number) => void;
+}
+
+export const useAdminInboxStore = create<AdminInboxState>((set) => ({
+    unreadCount: 0,
+    setUnreadCount: (n) => set({ unreadCount: Math.max(0, n) }),
+    incUnread: (n = 1) => set((s) => ({ unreadCount: s.unreadCount + n })),
+}));
+
 /* ── Booking store ─────────────────────────────────────────────────────────── */
 import type { Service, Staff } from "./supabase/types";
 
