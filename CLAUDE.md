@@ -227,8 +227,8 @@ Legenda:
 | 1 | 💬 Reminder WhatsApp | ⏸️ | Top ROI doc. Foundation: WhatsApp Cloud API gratuita |
 | 2 | 📩 Notifiche SMS | ⏸️ | Fallback per non-WA, costo per SMS (~€0,04) |
 | 3 | 🔄 Promemoria Rinnovo | ⏸️ | Barber → ogni 3-4 settimane. Fattibile su appointments history |
-| 4 | 🎂 Birthday Campaign | ⏸️ | Customers table ha già il campo. Cron + coupon auto |
-| 5 | 🎯 Campagne Riattivazione | ⏸️ | Già nel piano: RPC `fn_customers_at_risk` esiste |
+| 4 | 🎂 Birthday Campaign | ✅ promosso (con flag) | `customers.birthday` field esiste. Cron quotidiano 09:00 → coupon "regalo compleanno" valido 7gg via Router. Open rate 80%+. Effort ~3h. Skills Hub key: `birthday_campaign`. |
+| 5 | 🎯 Campagne Riattivazione | ✅ promosso (con flag) | RPC `fn_customers_at_risk` esiste. Cron settimanale → clienti >90gg + ≥2 visite → coupon auto (#45) + msg via Router. Tono "Ti aspettiamo" non commerciale invadente. Skills Hub key: `reactivation_campaigns`. |
 | 6 | 📣 Promo Last Minute | ⏸️ | Buchi agenda → blast WA. Smart per Olbia turisti |
 | 7 | 💌 Newsletter Automatica | ⏸️ | Valore basso per un barber 2-chair |
 | 8 | 🌱 Campagne Stagionali | ⏸️ | Natale ok, San Valentino meno barber |
@@ -247,7 +247,7 @@ Legenda:
 | 16 | 💬 Chatbot Prenotazioni | ⏸️ | Utile fuori orario, OpenAI + supabase RPC |
 | 17 | 📱 Bot Telegram Prenotazioni | ❌ | Niche in Sardegna, basso ROI |
 | 18 | 🤖 Agente Preventivi WhatsApp | ❌ | Prezzi fissi, non serve calcolatore |
-| 19 | 🔗 Booking da Google | ⏸️ | "Reserve with Google" partner — utile |
+| 19 | 🔗 Booking da Google | ✅ promosso (con flag) | Reserve with Google: il pulsante "Prenota" appare direttamente sul profilo Google Business. Setup richiede approvazione partner program Google (~1-2 settimane). Traffico free dai motori di ricerca. Skills Hub key: `google_reserve`. |
 | 20 | 📊 Analisi Abbandono Prenotazione | ⏸️ | GA4 funnel + WA recovery |
 
 ### AI & Intelligenza
@@ -258,7 +258,7 @@ Legenda:
 | 22 | 💇 Consulenza Capelli AI | ❌ | 3 SKU barber, non serve consulenza foto |
 | 23 | 🧠 Suggerimenti AI Gestionale | ✅ promosso (con flag) | Cron settimanale (lun 9:00) → analizza dati settimana → GPT-4o-mini genera 3-5 azioni operative → email al titolare. **Sub-flag** `weekly_suggestions_enabled` in `salon_settings`. Anonymize dati cliente. Costo ~€0.05/mese. Implementazione tecnica subito, attivazione effettiva dopo 60-90gg di dati reali. |
 | 24 | 😊 Analisi Sentiment Recensioni | ⏸️ | Utile, Google + reviews table |
-| 25 | 🎨 Generatore Contenuti AI | ⏸️ | Utile per owner social, ChatGPT-grade |
+| 25 | 🎨 Generatore Contenuti AI | ✅ promosso (con flag) | Tool in admin: carica foto del lavoro → GPT-4o genera 3 caption Instagram + hashtag + best time to post. Tone configurabile per il brand. Risparmio 2h/settimana al titolare. Stesso engine LLM di #23/#31. Skills Hub key: `ai_content_generator`. |
 | 26 | 🎙️ Risponditore Vocale AI | ⏸️ | Twilio missed call → SMS con link prenota |
 | 27 | 📆 Calendario Editoriale AI | ⏸️ | Tool tipo Hootsuite + AI |
 | 28 | 📈 Previsione Domanda | ⏸️ | Stat module — RPC esiste |
@@ -286,7 +286,7 @@ Legenda:
 |---|---|---|---|
 | 41 | 📝 Scheda Tecnica Cliente | ❌ | Non serve formule colore per barber |
 | 42 | 🎟️ Fidelity & Punti | ✅ promosso (con flag + config) | `LoyaltyProgress` UI esiste. **REQUISITI**: (a) master flag `loyalty_enabled` in `salon_settings`, default OFF. (b) admin /admin/gamification deve permettere configurazione COMPLETA: modello (a-stamp / a-punti / cashback), soglia reward, tipo reward (free service / sconto fisso / sconto %), validità giorni, bonus iniziale, regole anti-gaming. Niente hardcoded. Quando OFF: component nascosto in /profilo, trigger Postgres in pausa. |
-| 43 | 🎫 Gestione Abbonamenti / Pacchetti | ✅ promosso (con flag + Stripe) | **Master flag** `packages_enabled` in `salon_settings`, default OFF. Cliente decide se attivare. **DB**: `service_packages` (catalogo) + `customer_packages` (acquisti con credits_remaining + expires_at) + colonna `package_credit_id` in `appointments`. **Stripe Checkout** per pagamenti (~1.5% + €0.25/tx). **BookingDrawer**: detect crediti attivi → CTA "Usa 1 credito?". **Admin** CRUD pacchetti + refund policy configurabile + reminder scadenza configurabile. **Da chiarire col cliente PRIMA dell'implementazione**: account Stripe, refund policy, fatturazione voucher multiuso col commercialista. |
+| 43 | 🎫 Gestione Abbonamenti / Pacchetti | ✅ promosso (flag + in-salon sale, **NO Stripe**) | **Master flag** `packages_enabled` in `salon_settings`, default OFF. **Coerenza filosofica**: come tutto il sito, niente pagamenti online — il pacchetto si vende e si paga in salone (cash/POS). **Vendita**: admin-driven da `/admin/clienti/[id]` → bottone "Vendi pacchetto" → modale con catalogo + payment_method (cash/pos/bonifico/omaggio) + price_paid effettivo. **Email cliente**: ricevuta digitale via Gmail SMTP (no transazione online). **DB**: `service_packages` (catalogo CRUD admin) + `customer_packages` (con sold_by, sold_at, payment_method, price_paid_cents, notes) + `package_credit_id` in `appointments`. **Redemption**: invariato — BookingDrawer rileva crediti attivi → CTA "Usa 1 credito?". **Effort** ridotto: ~10h (no Stripe integration, no webhook, no reconciliation). |
 | 44 | 🎁 Gift Card Digitali | ⏸️ | Stripe + coupons table |
 | 45 | 🎪 Gestione Coupon & Sconti | ✅ promosso | Tabella `coupons` esiste. **REQUISITO**: master feature-flag `coupons_enabled` in `salon_settings` — il campo "Hai un codice?" nel BookingDrawer appare SOLO se il flag è ON. Default OFF. Toggle dal gestionale. |
 | 46 | 🚫 Lista Nera Automatica | ⏸️ | `customers.noshow_count` esiste (migration 0001_noshow) |
@@ -329,7 +329,7 @@ Legenda:
 
 | # | Idea | Stato | Nota |
 |---|---|---|---|
-| 71 | 🛒 Upsell Intelligente | ⏸️ | "Aggiungi barba al taglio +€10" nel drawer |
+| 71 | 🛒 Upsell Intelligente | ✅ promosso (con flag) | Step opzionale prima della conferma in BookingDrawer: se taglio → propone "Aggiungi barba +€10". Max 1 upsell per booking, dismiss permanente per cliente che dice "no grazie 3 volte". +20% AOV stimato. Skills Hub key: `smart_upsell`. |
 | 72 | 📋 Sondaggio Post-Visita | ⏸️ | Email + form NPS |
 | 73 | 💸 Bot Recupero Crediti | ❌ | Barber non ha insoluti tipici |
 | 74 | 📅 Gestione Listino Stagionale | ❌ | Prezzi fissi, no logica stagionale |
@@ -351,7 +351,7 @@ Legenda:
 | 85 | 🗺️ Integrazione Apple Maps | ❌ | No API pubblica per piccoli business |
 | 86 | 💳 Integrazione Pagamenti POS | ⏸️ | Stripe Terminal o SumUp webhook |
 | 87 | 📡 Monitoraggio Uptime Sito | ❌ | UptimeRobot/Better Stack gratis |
-| 88 | 📄 Generatore QR Promozioni | ⏸️ | QR + coupons table + UTM tracking |
+| 88 | 📄 Generatore QR Promozioni | ✅ promosso (con flag) | Admin genera QR univoci stampabili per coupon fisici (volantini, cartoline, vetrina di bar/palestre/hotel). Ogni QR è un coupon code con UTM tracking → vedi esattamente quante prenotazioni vengono dal volantino X vs Y. Sinergia con #45. Skills Hub key: `qr_promotions`. |
 | 89 | 📺 Dashboard TV Salone | ❌ | Overkill per un 2-chair barber |
 | 90 | 📦 Integrazione Corriere Spedizioni | ❌ | Solo click & collect, no spedizioni |
 
@@ -370,6 +370,90 @@ Legenda:
 | 99 | 🗂️ Audit Trail Appuntamenti | ⏸️ | Variante di #58 |
 | 100 | 📱 App Cliente PWA | ✅ | Il sito è già installable PWA |
 | 101 | 🔍 Ricerca Avanzata Clienti | ⏸️ | clienti.tsx ha base, estendere con filtri compositi |
+
+### 🎛️ Skills Hub — la pagina "centro funzionalità" dell'admin
+
+**Concept**: una pagina dedicata in admin (`/admin/funzionalita` o `/admin/skills`) dove il titolare vede TUTTE le skill digitali del gestionale e le accende/spegne a piacimento con un toggle. Sostituisce la dispersione di mille checkbox tra varie view di impostazioni.
+
+#### UX
+
+- Cards grid filtrabili per categoria (Comunicazione / Booking / AI / Analytics / Clienti / Team / Marketing / Vendite / Integrazioni / Avanzata)
+- Filtro stato: "Tutte" / "Attive" / "Disattive" / "Disponibili (consigliate)" / "In sviluppo"
+- Ogni card mostra:
+  - 🎨 icona grande + nome friendly (es. "Reminder appuntamento via WhatsApp", non "WhatsApp Cloud API reminder")
+  - 📝 descrizione in 2-3 righe in italiano semplice (zero jargon — il titolare è un barbiere, non un dev)
+  - 💡 esempio pratico (es. "Marco prenota giovedì → riceve un messaggio mercoledì sera e giovedì mattina")
+  - 💰 ROI atteso o beneficio (es. "Riduce mancate presentazioni di circa il 25%")
+  - ⚙️ toggle ON/OFF master
+  - 🔧 link "Configura" → modale con opzioni avanzate (rate-limit, channel preference, ecc.)
+  - 📊 mini-stat se attiva da >7gg (es. "32 messaggi inviati, 28 letti")
+- Confirmation modale prima di disattivare una skill già attiva (mostra impatto: "X cron job verranno fermati, Y notifiche già pianificate verranno cancellate")
+- Search bar per trovare velocemente una skill
+
+#### Tono delle descrizioni (esempi)
+
+| Cattivo (tech) | Buono (friendly) |
+|---|---|
+| "Cron job Postgres che invoca fn_admin_stats_range" | "Ogni 1° del mese ricevi un report dettagliato del mese precedente nella tua email" |
+| "Soft-reservation slot durante token window" | "Quando qualcuno cancella, blocchiamo lo slot per dare tempo al primo in attesa di confermare" |
+| "RPC fuzzy-match su Google Places API" | "Controlliamo se il cliente ha già scritto la recensione, così non gli scriviamo più" |
+
+#### Schema DB
+
+```sql
+create table skills_config (
+  skill_key text pk,                   -- 'reviews_harvester', 'waitlist', 'coupons', etc
+  enabled bool default false,
+  enabled_at timestamptz null,
+  disabled_at timestamptz null,
+  config jsonb default '{}'::jsonb,    -- opzioni per-skill (rate-limit, threshold, ecc.)
+  last_used_at timestamptz null,
+  usage_count int default 0
+);
+```
+
+**Default**: tutte le skill `enabled = false`. Si attivano una a una solo se il titolare lo decide.
+
+#### Mapping skill_key → master flag
+
+Il toggle nella Skills Hub UI è la stessa cosa del `<feature>_enabled` flag che abbiamo deciso per ogni feature. Solo che invece di stare sparso in `salon_settings.coupons_enabled` + `salon_settings.waitlist_enabled` + ..., **tutto vive in `skills_config`** come single source of truth.
+
+Le feature leggono: `SELECT enabled FROM skills_config WHERE skill_key = 'coupons'`.
+
+#### Skill metadata (in codice TypeScript)
+
+Centralizzato in `src/lib/skills/registry.ts`:
+
+```ts
+export const SKILLS: Skill[] = [
+  {
+    key: 'reviews_harvester',
+    category: 'marketing',
+    icon: '⭐',
+    nameIT: 'Raccolta automatica recensioni Google',
+    descriptionIT: 'Dopo ogni appuntamento concluso, manda al cliente un messaggio per chiedergli di lasciare una recensione su Google. I clienti scontenti li dirotta su un canale interno per non rovinare la media.',
+    exampleIT: 'Marco esce alle 14. Alle 16:30 riceve "Com\'è andata oggi?". Tap su 😊 → si apre Google con la recensione pronta. Se tap su 😞 → arriva una segnalazione a te (non a Google).',
+    benefitIT: 'Da 4.2 a 4.7 stelle in 3 mesi = +30% click dal profilo Google',
+    effortHours: 12,
+    monthlyCostEur: 0,
+    requiresAccount: ['Google Place ID'],
+    relatedSkills: ['whatsapp_reminders', 'telegram_owner_alerts'],
+    docsUrl: '/admin/funzionalita/reviews_harvester'
+  },
+  // ... altre 100 skill
+];
+```
+
+#### Vantaggi di questa architettura
+
+- **One-stop-shop**: il titolare ha UN posto solo per gestire tutto, non deve scoprire dove sta cosa
+- **Onboarding**: alla prima apertura del gestionale, propone "Vuoi vedere cosa puoi fare? 🎁" → tour della Skills Hub
+- **Self-service**: il titolare può sperimentare (attiva/disattiva, vede l'effetto, sceglie) senza chiamarmi ogni volta
+- **Marketing interno**: ogni skill è un "venduto" — il titolare vede chiaramente il valore di quello che ha pagato
+- **Update senza modifiche admin**: quando aggiungiamo una nuova skill, basta aggiungerla al registry — appare auto nella Hub
+- **Stato del business**: la Hub diventa un KPI dashboard del "quanto sto sfruttando il sistema?"
+
+---
 
 ### ⚠️ Notification Router — regola cross-cutting
 
