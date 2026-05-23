@@ -3,11 +3,21 @@
 import { useEffect, useState } from "react";
 import { useClientPath } from "@/lib/clientRouter";
 import { ProfiloLayout } from "./ProfiloLayout";
+import { OnboardingWizard } from "./_shared/OnboardingWizard";
+import { hasCompletedOnboarding } from "@/lib/profilo/consents";
 
 import ProfiloDashboardPage from "./views/dashboard";
 import ProfiloAppuntamentiPage from "./views/appuntamenti";
 import ProfiloImpostazioniPage from "./views/impostazioni";
 import ProfiloReferralPage from "./views/referral";
+
+interface CustomerLite {
+    id: string;
+    first_name: string | null;
+    last_name: string | null;
+    phone: string | null;
+    birthdate: string | null;
+}
 
 function pickView(pathname: string) {
     const p = pathname.replace(/\/$/, "");
@@ -33,6 +43,8 @@ function pickView(pathname: string) {
 export function ProfiloApp() {
     const pathname = useClientPath();
     const [ready, setReady] = useState(false);
+    const [needsOnboarding, setNeedsOnboarding] = useState(false);
+    const [customer, setCustomer] = useState<CustomerLite | null>(null);
 
     useEffect(() => {
         let cancelled = false;
@@ -52,6 +64,19 @@ export function ProfiloApp() {
                     window.location.replace("/login");
                     return;
                 }
+
+                const { data: cust } = await supabase
+                    .from("customers")
+                    .select("id, first_name, last_name, phone, birthdate")
+                    .eq("user_id", data.session.user.id)
+                    .maybeSingle();
+                if (cancelled) return;
+                if (cust) {
+                    setCustomer(cust as CustomerLite);
+                    const done = await hasCompletedOnboarding(cust.id);
+                    if (cancelled) return;
+                    setNeedsOnboarding(!done);
+                }
                 setReady(true);
             } catch {
                 if (!cancelled) setReady(true);
@@ -70,5 +95,19 @@ export function ProfiloApp() {
         );
     }
 
-    return <ProfiloLayout>{pickView(pathname)}</ProfiloLayout>;
+    return (
+        <>
+            <ProfiloLayout>{pickView(pathname)}</ProfiloLayout>
+            {needsOnboarding && customer && (
+                <OnboardingWizard
+                    customerId={customer.id}
+                    initialFirstName={customer.first_name}
+                    initialLastName={customer.last_name}
+                    initialPhone={customer.phone}
+                    initialBirthdate={customer.birthdate}
+                    onComplete={() => setNeedsOnboarding(false)}
+                />
+            )}
+        </>
+    );
 }
