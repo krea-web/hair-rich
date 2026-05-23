@@ -1,8 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { fetchMyAppointmentsWithDetails, fetchServices, type AppointmentWithDetails } from "@/lib/supabase/queries";
+import { createClient } from "@/lib/supabase/client";
 import { useBookingDrawer, useBookingStore, useToastStore } from "@/lib/store";
 import { formatPrice } from "@/lib/format";
 import { AppointmentPhotos } from "../_shared/AppointmentPhotos";
@@ -68,12 +69,55 @@ function formatItalian(d: string) {
     };
 }
 
-function ApptCard({ apt }: { apt: DisplayAppt }) {
+function ApptCard({ apt, onChanged }: { apt: DisplayAppt; onChanged: () => void }) {
     const f = formatItalian(apt.date);
     const openDrawer = useBookingDrawer((s) => s.open);
     const setService = useBookingStore((s) => s.setService);
     const setStaff = useBookingStore((s) => s.setStaff);
     const addToast = useToastStore((s) => s.addToast);
+    const [showCancel, setShowCancel] = useState(false);
+    const [showReschedule, setShowReschedule] = useState(false);
+    const [busy, setBusy] = useState(false);
+
+    const handleCancel = async (reason?: string) => {
+        if (busy) return;
+        setBusy(true);
+        try {
+            const supabase = createClient();
+            const { error } = await supabase.rpc("fn_cancel_appointment_by_customer", {
+                p_id: apt.id,
+                p_reason: reason ?? null,
+            });
+            if (error) throw error;
+            addToast("Appuntamento cancellato", "success");
+            setShowCancel(false);
+            onChanged();
+        } catch (e: any) {
+            addToast(e?.message ?? "Errore", "error");
+        } finally {
+            setBusy(false);
+        }
+    };
+
+    const handleReschedule = async (newStart: string) => {
+        if (busy) return;
+        setBusy(true);
+        try {
+            const supabase = createClient();
+            const { error } = await supabase.rpc("fn_reschedule_appointment_by_customer", {
+                p_id: apt.id,
+                p_start_at: newStart,
+            });
+            if (error) throw error;
+            addToast("Appuntamento spostato", "success");
+            setShowReschedule(false);
+            onChanged();
+        } catch (e: any) {
+            addToast(e?.message ?? "Errore", "error");
+        } finally {
+            setBusy(false);
+        }
+    };
 
     const handleRebook = async () => {
         try {
@@ -143,6 +187,22 @@ function ApptCard({ apt }: { apt: DisplayAppt }) {
                     >
                         {STATUS_LABEL[apt.status]}
                     </span>
+                    {apt.status === "upcoming" && (
+                        <div className="flex items-center gap-3">
+                            <button
+                                onClick={() => setShowReschedule(true)}
+                                className="text-[10px] uppercase tracking-[0.25em] text-accent-warm hover:text-warm-white font-body font-semibold transition-colors"
+                            >
+                                Sposta
+                            </button>
+                            <button
+                                onClick={() => setShowCancel(true)}
+                                className="text-[10px] uppercase tracking-[0.25em] text-error hover:brightness-110 font-body font-semibold transition-colors"
+                            >
+                                Cancella
+                            </button>
+                        </div>
+                    )}
                     {apt.status === "completed" && (
                         <button
                             onClick={handleRebook}
@@ -156,6 +216,25 @@ function ApptCard({ apt }: { apt: DisplayAppt }) {
                     )}
                 </div>
             </div>
+
+            <AnimatePresence>
+                {showCancel && (
+                    <CancelModal
+                        apt={apt}
+                        busy={busy}
+                        onConfirm={handleCancel}
+                        onClose={() => setShowCancel(false)}
+                    />
+                )}
+                {showReschedule && (
+                    <RescheduleModal
+                        apt={apt}
+                        busy={busy}
+                        onConfirm={handleReschedule}
+                        onClose={() => setShowReschedule(false)}
+                    />
+                )}
+            </AnimatePresence>
 
             {/* Photo memory: per-appointment strip, self-hides when empty */}
             {apt.status === "completed" && (
@@ -172,6 +251,15 @@ export default function ProfiloAppuntamentiPage() {
     const [items, setItems] = useState<DisplayAppt[]>([]);
     const [loading, setLoading] = useState(true);
     const openDrawer = useBookingDrawer((s) => s.open);
+
+    const reload = () => {
+        fetchMyAppointmentsWithDetails()
+            .then((rows) => {
+                setItems(rows.map(toDisplay));
+                setLoading(false);
+            })
+            .catch(() => setLoading(false));
+    };
 
     useEffect(() => {
         let alive = true;
@@ -298,7 +386,7 @@ export default function ProfiloAppuntamentiPage() {
                             </h2>
                             <div className="space-y-3">
                                 {upcoming.map((a) => (
-                                    <ApptCard key={a.id} apt={a} />
+                                    <ApptCard key={a.id} apt={a} onChanged={reload} />
                                 ))}
                             </div>
                         </section>
@@ -318,7 +406,7 @@ export default function ProfiloAppuntamentiPage() {
                                         return true;
                                     })
                                     .map((a) => (
-                                        <ApptCard key={a.id} apt={a} />
+                                        <ApptCard key={a.id} apt={a} onChanged={reload} />
                                     ))}
                             </div>
                         </section>
@@ -326,5 +414,160 @@ export default function ProfiloAppuntamentiPage() {
                 </>
             )}
         </div>
+    );
+}
+
+function CancelModal({
+    apt,
+    busy,
+    onConfirm,
+    onClose,
+}: {
+    apt: DisplayAppt;
+    busy: boolean;
+    onConfirm: (reason?: string) => void;
+    onClose: () => void;
+}) {
+    const [reason, setReason] = useState("");
+    const f = formatItalian(apt.date);
+    return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+        >
+            <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-carbon border border-line rounded-[var(--radius-lg)] p-6 md:p-8 max-w-md w-full"
+            >
+                <span className="text-display-alt text-xl text-error">Confermi?</span>
+                <h3 className="text-display text-2xl text-warm-white tracking-tight mt-1">
+                    Cancellare l'appuntamento del {f.day} {f.month} alle {f.time}?
+                </h3>
+                <p className="text-warm-white-muted text-sm mt-3">
+                    Per ricontattarti subito, faccelo sapere il motivo (opzionale).
+                </p>
+                <textarea
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value)}
+                    rows={2}
+                    placeholder="Es. è uscito un imprevisto"
+                    className="mt-3 w-full bg-black-2 border border-line rounded-md px-3 py-2 text-warm-white text-sm placeholder:text-silver-dark"
+                />
+                <div className="mt-5 flex gap-3">
+                    <button
+                        onClick={onClose}
+                        disabled={busy}
+                        className="flex-1 px-5 py-3 border border-line text-warm-white rounded-full text-[10px] uppercase tracking-[0.3em] font-body font-semibold"
+                    >
+                        Indietro
+                    </button>
+                    <button
+                        onClick={() => onConfirm(reason)}
+                        disabled={busy}
+                        className="flex-1 px-5 py-3 bg-error text-white rounded-full text-[10px] uppercase tracking-[0.3em] font-body font-semibold disabled:opacity-50"
+                    >
+                        {busy ? "..." : "Sì, cancella"}
+                    </button>
+                </div>
+            </motion.div>
+        </motion.div>
+    );
+}
+
+function RescheduleModal({
+    apt,
+    busy,
+    onConfirm,
+    onClose,
+}: {
+    apt: DisplayAppt;
+    busy: boolean;
+    onConfirm: (newStart: string) => void;
+    onClose: () => void;
+}) {
+    const cur = new Date(apt.date);
+    const [date, setDate] = useState(cur.toISOString().slice(0, 10));
+    const [time, setTime] = useState(cur.toTimeString().slice(0, 5));
+
+    const submit = () => {
+        if (!date || !time) return;
+        // Construct ISO string in the user's local zone, then send.
+        const combined = new Date(`${date}T${time}:00`);
+        if (isNaN(combined.getTime())) return;
+        onConfirm(combined.toISOString());
+    };
+
+    return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+        >
+            <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-carbon border border-line rounded-[var(--radius-lg)] p-6 md:p-8 max-w-md w-full"
+            >
+                <span className="text-display-alt text-xl text-accent-warm">Sposta</span>
+                <h3 className="text-display text-2xl text-warm-white tracking-tight mt-1">
+                    Quando preferisci?
+                </h3>
+                <p className="text-warm-white-muted text-sm mt-3">
+                    Scegli un nuovo giorno e orario. Se lo slot non è disponibile,
+                    te lo diciamo subito.
+                </p>
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                    <label className="block">
+                        <span className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
+                            Data
+                        </span>
+                        <input
+                            type="date"
+                            value={date}
+                            onChange={(e) => setDate(e.target.value)}
+                            className="mt-1 w-full bg-black-2 border border-line rounded-md px-3 py-2 text-warm-white text-sm"
+                        />
+                    </label>
+                    <label className="block">
+                        <span className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
+                            Ora
+                        </span>
+                        <input
+                            type="time"
+                            step={1800}
+                            value={time}
+                            onChange={(e) => setTime(e.target.value)}
+                            className="mt-1 w-full bg-black-2 border border-line rounded-md px-3 py-2 text-warm-white text-sm"
+                        />
+                    </label>
+                </div>
+                <div className="mt-5 flex gap-3">
+                    <button
+                        onClick={onClose}
+                        disabled={busy}
+                        className="flex-1 px-5 py-3 border border-line text-warm-white rounded-full text-[10px] uppercase tracking-[0.3em] font-body font-semibold"
+                    >
+                        Annulla
+                    </button>
+                    <button
+                        onClick={submit}
+                        disabled={busy}
+                        className="flex-1 px-5 py-3 bg-accent-warm text-black rounded-full text-[10px] uppercase tracking-[0.3em] font-body font-semibold disabled:opacity-50"
+                    >
+                        {busy ? "..." : "Conferma"}
+                    </button>
+                </div>
+            </motion.div>
+        </motion.div>
     );
 }
