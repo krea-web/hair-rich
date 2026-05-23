@@ -274,7 +274,7 @@ Legenda:
 | 33 | 🏆 Classifica Operatori | ⏸️ | Gamification minor |
 | 34 | 🗺️ Heatmap Clienti | ⏸️ | Customer ZIP/lat-lng → Leaflet heatmap |
 | 35 | 🧮 Report Fiscale Trimestrale | ⏸️ | CSV per commercialista nel piano |
-| 36 | 📉 Alert Calo Prenotazioni | ⏸️ | Cron + threshold |
+| 36 | 📉 Alert Calo Prenotazioni | ✅ promosso (con flag) | Cron settimanale (lun 09:00): se le prenotazioni della settimana sono >20% sotto la media ultime 8 settimane → alert Telegram al titolare con suggerimenti azione automatici ("Attiva promo last-minute #6", "Lancia campagna riattivazione #5"). Threshold configurabile. **Early warning systemico** anti-disastro. Skills Hub key: `bookings_drop_alert`. |
 | 37 | ⏰ Analisi Orari di Punta | ✅ | RPC `fn_day_density` già attivo, UI parziale |
 | 38 | 📡 Tracciamento UTM Campagne | ⏸️ | Cookie + UTM column in `appointments` |
 | 39 | 📊 Integrazione Google Analytics | ⏸️ | GA4 non ancora integrato |
@@ -290,7 +290,7 @@ Legenda:
 | 44 | 🎁 Gift Card Digitali | ⏸️ | Stripe + coupons table |
 | 45 | 🎪 Gestione Coupon & Sconti | ✅ promosso | Tabella `coupons` esiste. **REQUISITO**: master feature-flag `coupons_enabled` in `salon_settings` — il campo "Hai un codice?" nel BookingDrawer appare SOLO se il flag è ON. Default OFF. Toggle dal gestionale. |
 | 46 | 🤝 No-show Manager (no lista nera) | ✅ promosso (con flag) | **REDESIGN**: nessun blocco automatico, mai. Dashboard `/admin/clienti/no-show` con lista cronologica no-show, counter per cliente, badge soft (🟡🟠🔴) visibile SOLO in admin. Click cliente → modale storico + bottone "📧 Chiedi spiegazione" che apre composer con **bozza email AI generata da GPT-4o-mini** (tono empatico, "tutto bene? posso aiutarti?"), editabile prima dell'invio. Canale configurabile (Email / Telegram cliente / WA se attivo). Tabella `noshow_outreach` per audit. Skills Hub key: `noshow_outreach`. |
-| 47 | 🔐 Gestione Consensi GDPR | ⏸️ | Cookie banner c'è, consensi profilo da rifinire |
+| 47 | 🔐 Gestione Consensi GDPR | ✅ promosso (indispensabile legale) | **Obbligo legale Italia**. Schermata consensi separati: marketing, reminder appuntamenti, foto pre/post (#48), profilazione (#50), referral (#65). Salvataggio firmato (PDF archiviato in Supabase Storage). Revoca self-service da /profilo/impostazioni. Audit log integrazione (#58). Tabella `customer_consents` con timestamp + IP + versione policy. Skills Hub key: `gdpr_consents`. **Default: SEMPRE ON** (non disattivabile, è normativo). |
 | 48 | 📸 Archivio Foto Clienti | ✅ | `appointment_photos` table + `AppointmentPhotos` component + admin foto-risultati.tsx |
 | 49 | ⚠️ Gestione Allergeni | ❌ | Non rilevante per barber |
 | 50 | 🏷️ Segmentazione Clienti | ✅ promosso (con flag) | Etichette auto + manuali. **Segmenti auto** (cron daily): 🆕Nuovo · 🔁Abituale · 💎VIP · 😴A rischio · 🚪Perso · ⚠️No-show · 🎂Compleanno mese · 🌍Turista · 🎁Referral. Tutte le soglie configurabili da admin. **Segmenti manuali** liberi (max 5/cliente, mai esposti al cliente). Tabella `customer_segments`. Badge in `/admin/clienti`, `/admin/agenda`, dashboard counter. **Foundation per #4, #5, #6, #62** (target chirurgico vs blast generico). Skills Hub key: `customer_segments`. |
@@ -300,7 +300,7 @@ Legenda:
 | # | Idea | Stato | Nota |
 |---|---|---|---|
 | 51 | 🕐 Gestione Turni Operatori | ✅ | `working_hours` table + orari.tsx (parz, da finire) |
-| 52 | 📅 Sync Google Calendar | ⏸️ | Google Calendar API, utile per i 2 staff |
+| 52 | 📅 Sync Google Calendar staff | ✅ promosso (con flag) | Ogni operatore connette il suo Google Calendar personale (OAuth). **Bidirezionale**: (1) appuntamenti Hair Rich appaiono auto nel calendar personale come read-only. (2) eventi "occupato" creati manualmente nel calendar personale dello staff sincronizzano in `time_off` → bloccano slot booking. Niente doppie prenotazioni con impegni privati. Skills Hub key: `staff_gcal_sync`. |
 | 53 | 🖨️ Stampa Agenda Giornaliera | ⏸️ | PDF export da agenda.tsx |
 | 54 | 💰 Simulatore Guadagno Operatore | ⏸️ | Calcolo su appointments confermati |
 | 55 | 🔑 Gestione Permessi Operatori | ⏸️ | RLS base c'è, granulare da fare |
@@ -330,7 +330,7 @@ Legenda:
 | # | Idea | Stato | Nota |
 |---|---|---|---|
 | 71 | 🛒 Upsell Intelligente | ✅ promosso (con flag) | Step opzionale prima della conferma in BookingDrawer: se taglio → propone "Aggiungi barba +€10". Max 1 upsell per booking, dismiss permanente per cliente che dice "no grazie 3 volte". +20% AOV stimato. Skills Hub key: `smart_upsell`. |
-| 72 | 📋 Sondaggio Post-Visita | ⏸️ | Email + form NPS |
+| 72 | 📋 Sondaggio Post-Visita | ✅ promosso (con flag) | Email/Telegram cliente 2h post-appuntamento: 3 emoji 😊😐😞 + 1 campo libero opzionale. **Privato** (NON va su Google) — serve a intercettare insoddisfazioni PRIMA che diventino recensioni pubbliche. Separato da #62 Review Harvester che invece spinge i felici verso Google. Dashboard NPS in `/admin/marketing`. Tabella `customer_surveys`. Skills Hub key: `post_visit_survey`. |
 | 73 | 💸 Bot Recupero Crediti | ❌ | Barber non ha insoluti tipici |
 | 74 | 📅 Gestione Listino Stagionale | ❌ | Prezzi fissi, no logica stagionale |
 | 75 | 📦 Scorte & Riordino | ✅ promosso (con flag) | `products.stock` esiste. Estensione: `stock_low_threshold` + `stock_critical_threshold` per prodotto. Cron daily 08:00 → check soglie → Telegram alert titolare con trend velocità vendite. `/admin/prodotti` esteso: barra progresso colorata, sort by stock, quick action "Riordina" che apre modale con quantità suggerita (storico × 30gg) + selettore fornitore (#76) + genera PDF ordine bozza. Auto-decremento stock al completamento `product_orders`. Skills Hub key: `stock_alerts`. |
@@ -338,7 +338,7 @@ Legenda:
 | 77 | 🛠️ Manutenzione Attrezzature | ⏸️ | Cron + checklist, minor |
 | 78 | 🔁 Follow-up Post-Acquisto | ⏸️ | Utile per click & collect orders |
 | 79 | 💡 Widget Prezzi Dinamici | ✅ | Già wired — prezzi da `services` / `products` table |
-| 80 | ⚙️ Onboarding Cliente Automatico | ⏸️ | Wizard primo accesso, raccolta preferenze |
+| 80 | ⚙️ Onboarding Cliente Automatico | ✅ promosso (con flag) | Wizard 90 secondi al primo login `/profilo`: nome, telefono, **birthday** (sblocca #4), consensi GDPR (#47), foto profilo opzionale, preferenze taglio. Stepper UX con skip per ogni campo non-required. Re-prompt soft dopo 3 visite per i campi mancanti. **Foundation per tutte le campagne mirate** (#4, #5, #50): senza dati cliente popolati, niente funziona davvero. Skills Hub key: `customer_onboarding`. |
 
 ### Integrazioni
 
@@ -346,7 +346,7 @@ Legenda:
 |---|---|---|---|
 | 81 | 🧾 Integrazione Fatture in Cloud | ⏸️ | API Fatture in Cloud disponibile |
 | 82 | 💾 Backup & Export Dati | ✅ | Supabase backup auto attivo; CSV export admin in piano |
-| 83 | 🕑 Aggiornamento Orari Google | ⏸️ | Google Business API, utile |
+| 83 | 🕑 Aggiornamento Orari Google | ✅ promosso (con flag) | Google Business Profile API: quando titolare aggiorna orari/chiusure straordinarie in `/admin/chiusure` o `salon_settings`, sync automatico verso Google Business. Auth OAuth Google. Zero clienti arrivati per trovare chiuso = zero recensioni negative "ho trovato chiuso". Skills Hub key: `google_hours_sync`. |
 | 84 | 📌 Monitoraggio Posizione SEO | ❌ | Ahrefs/Semrush/Search Console gratis |
 | 85 | 🗺️ Integrazione Apple Maps | ❌ | No API pubblica per piccoli business |
 | 86 | 💳 Integrazione Pagamenti POS | ⏸️ | Stripe Terminal o SumUp webhook |
@@ -365,7 +365,7 @@ Legenda:
 | 94 | 📜 Gestione Contratti Operatori | ❌ | HR niche, fuori scope |
 | 95 | 📄 Generatore Fattura Proforma | ⏸️ | Utile se entrano clienti B2B (hotel) |
 | 96 | 📊 Report Accessi Clienti | ⏸️ | GA4 fa la maggior parte |
-| 97 | 🔔 Sistema Notifiche Centralizzate | ⏸️ | `useAdminLiveBookings` hook nel piano |
+| 97 | 🔔 Inbox Notifiche Centralizzata admin | ✅ promosso (con flag) | Sostituisce la dispersione Telegram/email/log con UN'unica inbox in cima a `/admin` (badge counter unread in sidebar). Ogni evento operativo (nuove prenotazioni, cancellazioni, no-show, recensioni, scorte basse, alert calo #36, scadenze pacchetti, ecc) entra qui. Archivable, filterable per categoria/priorità/data. Realtime tramite `useAdminLiveBookings` hook + Supabase Realtime. Sub-source di verità per `notifications_sent`. Skills Hub key: `admin_inbox`. **Default: SEMPRE ON** (è infrastruttura core admin). |
 | 98 | 🔁 Automazione Feedback Strutturato | ⏸️ | Diverso da #62 — survey per servizio |
 | 99 | 🗂️ Audit Trail Appuntamenti | ⏸️ | Variante di #58 |
 | 100 | 📱 App Cliente PWA | ✅ | Il sito è già installable PWA |
