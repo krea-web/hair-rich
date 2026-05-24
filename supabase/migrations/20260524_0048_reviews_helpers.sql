@@ -54,12 +54,4 @@ END $$;
 
 GRANT EXECUTE ON FUNCTION fn_review_request_candidates(int) TO service_role;
 
-INSERT INTO cms_blocks (block_key, content_md, content_json)
-VALUES
-  ('msg_template_review_request_email',
-   E'## Com''è andata oggi, {{first_name}}? ✂️\n\nSe ti è piaciuto il taglio, una recensione su Google ci darebbe una grossa mano.\n\nUn click qui sotto, è veloce: 👉 [{{link}}]({{link}})\n\nSe invece qualcosa non è andato bene, lo stesso link ti porta a dircelo in privato — preferiamo saperlo noi prima di Google.',
-   '{"event":"review_request","channel":"email","subject":"Com''e' andata oggi, {{first_name}}?"}'::jsonb),
-  ('msg_template_review_request_telegram',
-   E'Ciao {{first_name}}! Com''è andata oggi?\nUn feedback rapido: {{link}}',
-   '{"event":"review_request","channel":"telegram"}'::jsonb)
-ON CONFLICT (block_key) DO NOTHING;
+-- Note: cms_blocks review_request templates are seeded in 0051.
