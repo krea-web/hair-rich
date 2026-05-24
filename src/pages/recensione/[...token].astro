@@ -1,0 +1,12 @@
+---
+import RootLayout from "../../layouts/RootLayout.astro";
+import { ReviewCuscinetto } from "../../components/reviews/ReviewCuscinetto";
+
+export function getStaticPaths() {
+  return [{ params: { token: undefined } }];
+}
+---
+
+<RootLayout title="La tua opinione · Hair Rich Olbia" noindex={true}>
+  <ReviewCuscinetto client:only="react" />
+</RootLayout>
