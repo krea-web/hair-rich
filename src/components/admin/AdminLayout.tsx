@@ -29,6 +29,7 @@ const SETTINGS_MENU = [
     { href: "/admin/pacchetti", label: "Pacchetti prepagati" },
     { href: "/admin/sondaggi", label: "Sondaggi (NPS)" },
     { href: "/admin/cms", label: "Testi del sito" },
+    { href: "/admin/contenuti-ai", label: "Contenuti AI" },
     { href: "/admin/funzionalita", label: "Funzionalità (Skills Hub)" },
     { href: "/admin/log", label: "Log attività" },
     { href: "/admin/impostazioni", label: "Impostazioni Salone" },
