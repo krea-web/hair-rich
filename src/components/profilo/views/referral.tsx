@@ -1,8 +1,10 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 import { formatPrice } from "@/lib/format";
+import { useToastStore } from "@/lib/store";
 
 const STEPS = [
     {
@@ -22,12 +24,108 @@ const STEPS = [
     },
 ];
 
+interface Stats {
+    friends_invited: number;
+    friends_completed: number;
+    credits_earned_cents: number;
+    credits_pending_cents: number;
+}
+
+interface InvitedRow {
+    id: string;
+    code: string;
+    invited_email: string | null;
+    invited_phone: string | null;
+    status: "pending" | "signed_up" | "first_visit_completed" | "rewarded" | "expired";
+    credit_cents: number;
+    created_at: string;
+    invited: { first_name: string; last_name: string | null } | null;
+}
+
+const STATUS_LABEL: Record<InvitedRow["status"], string> = {
+    pending: "In attesa di click",
+    signed_up: "Iscritto",
+    first_visit_completed: "Premio in arrivo",
+    rewarded: "Premio ricevuto",
+    expired: "Scaduto",
+};
+
 export default function ProfiloReferralPage() {
+    const [code, setCode] = useState<string | null>(null);
+    const [stats, setStats] = useState<Stats | null>(null);
+    const [invited, setInvited] = useState<InvitedRow[]>([]);
+    const [loading, setLoading] = useState(true);
     const [copied, setCopied] = useState(false);
-    const code = "MARIO24";
-    const link = `hairrich.it/i/${code}`;
+    const [skillEnabled, setSkillEnabled] = useState(true);
+    const addToast = useToastStore((s) => s.addToast);
+
+    useEffect(() => {
+        let cancelled = false;
+        (async () => {
+            try {
+                const supabase = createClient();
+
+                const { data: skillRow } = await supabase
+                    .from("skills_config")
+                    .select("enabled")
+                    .eq("skill_key", "referrals")
+                    .maybeSingle();
+                if (cancelled) return;
+                if (skillRow && !skillRow.enabled) {
+                    setSkillEnabled(false);
+                    setLoading(false);
+                    return;
+                }
+
+                const [{ data: codeRes }, { data: statsRes }] = await Promise.all([
+                    supabase.rpc("fn_get_or_create_my_referral_code"),
+                    supabase.rpc("fn_my_referral_stats"),
+                ]);
+                if (cancelled) return;
+                if (codeRes?.code) setCode(codeRes.code);
+                if (statsRes) setStats(statsRes as Stats);
+
+                const { data: rows } = await supabase
+                    .from("referrals")
+                    .select(
+                        "id, code, invited_email, invited_phone, status, credit_cents, created_at, invited:customers!referrals_invited_customer_id_fkey(first_name,last_name)"
+                    )
+                    .order("created_at", { ascending: false })
+                    .limit(20);
+                if (!cancelled) setInvited((rows ?? []) as InvitedRow[]);
+            } catch (e: any) {
+                if (!cancelled) addToast(`Errore: ${e?.message ?? "?"}`, "error");
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, [addToast]);
+
+    if (!skillEnabled) {
+        return (
+            <div className="px-6 md:px-12 lg:px-16 py-16 max-w-3xl">
+                <span className="text-display-alt text-2xl text-accent-warm">Coming soon</span>
+                <h1 className="text-display text-4xl md:text-5xl text-warm-white tracking-tight mt-1 leading-[0.95]">
+                    Programma referral in arrivo.
+                </h1>
+                <p className="mt-4 text-warm-white-muted text-base max-w-xl">
+                    Stiamo definendo i dettagli del programma invita-un-amico. Torna a trovarci
+                    presto: ti scriveremo non appena sarà attivo.
+                </p>
+            </div>
+        );
+    }
+
+    const link = code ? `hairrich.it/i/${code}` : "";
+    const shareText = code
+        ? `Ti consiglio Hair Rich Olbia. Usa il mio codice e ricevi 5€ di sconto sul primo taglio: https://${link}`
+        : "";
 
     const handleCopy = async () => {
+        if (!link) return;
         try {
             await navigator.clipboard.writeText(`https://${link}`);
             setCopied(true);
@@ -37,15 +135,14 @@ export default function ProfiloReferralPage() {
         }
     };
 
-    const shareText = `Ti consiglio Hair Rich Olbia. Usa il mio codice e ricevi 5€ di sconto sul primo taglio: https://${link}`;
-
     const handleNativeShare = async () => {
+        if (!shareText) return;
         if (typeof navigator !== "undefined" && navigator.share) {
             try {
                 await navigator.share({ title: "Hair Rich Olbia", text: shareText });
                 return;
             } catch {
-                /* user cancelled — fall back to copy */
+                /* user cancelled */
             }
         }
         try {
@@ -55,6 +152,12 @@ export default function ProfiloReferralPage() {
         } catch {
             /* ignore */
         }
+    };
+
+    const handleWhatsApp = () => {
+        if (!shareText) return;
+        const url = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+        window.open(url, "_blank", "noopener,noreferrer");
     };
 
     return (
@@ -75,7 +178,6 @@ export default function ProfiloReferralPage() {
                 </p>
             </motion.header>
 
-            {/* ── Code card hero ─────────────────────────────────────────── */}
             <motion.section
                 aria-label="Il tuo codice referral"
                 className="mt-10 md:mt-14 relative overflow-hidden bg-gradient-to-br from-accent-warm/15 via-carbon to-black-2 border border-accent-warm/30 rounded-[var(--radius-xl)] p-6 md:p-10"
@@ -83,12 +185,11 @@ export default function ProfiloReferralPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
             >
-                {/* Decorative big code in bg */}
                 <div
                     aria-hidden="true"
                     className="absolute -bottom-8 right-2 md:right-8 text-display text-[18vw] md:text-[10vw] font-semibold text-accent-warm/[0.06] leading-none tracking-tight pointer-events-none select-none"
                 >
-                    {code}
+                    {code ?? "•••"}
                 </div>
 
                 <div className="relative grid grid-cols-1 md:grid-cols-[1fr_auto] gap-8 items-end">
@@ -98,23 +199,29 @@ export default function ProfiloReferralPage() {
                         </span>
 
                         <div className="mt-3 inline-block">
-                            <div className="bg-black border border-accent-warm/40 rounded-[var(--radius-md)] px-6 py-4 md:px-8 md:py-5">
-                                <span className="text-display text-3xl md:text-5xl text-warm-white tracking-[0.2em] tabular-nums select-all">
-                                    {code}
-                                </span>
+                            <div className="bg-black border border-accent-warm/40 rounded-[var(--radius-md)] px-6 py-4 md:px-8 md:py-5 min-h-[88px] flex items-center">
+                                {loading ? (
+                                    <span className="text-silver-dark text-sm">Caricamento…</span>
+                                ) : (
+                                    <span className="text-display text-3xl md:text-5xl text-warm-white tracking-[0.2em] tabular-nums select-all">
+                                        {code}
+                                    </span>
+                                )}
                             </div>
                         </div>
 
-                        <p className="mt-4 text-silver-dark text-xs uppercase tracking-[0.25em] font-body font-semibold">
-                            {link}
-                        </p>
+                        {code && (
+                            <p className="mt-4 text-silver-dark text-xs uppercase tracking-[0.25em] font-body font-semibold">
+                                {link}
+                            </p>
+                        )}
                     </div>
 
-                    {/* Actions */}
                     <div className="flex flex-col gap-3 md:items-stretch w-full md:w-auto">
                         <button
                             onClick={handleCopy}
-                            className="relative inline-flex items-center justify-center gap-3 px-6 py-3.5 bg-warm-white text-black rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold hover:bg-accent-warm transition-colors active:scale-95 min-w-[180px]"
+                            disabled={!code}
+                            className="relative inline-flex items-center justify-center gap-3 px-6 py-3.5 bg-warm-white text-black rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold hover:bg-accent-warm transition-colors active:scale-95 min-w-[180px] disabled:opacity-50"
                         >
                             <AnimatePresence mode="wait">
                                 {copied ? (
@@ -125,9 +232,6 @@ export default function ProfiloReferralPage() {
                                         exit={{ opacity: 0, y: -6 }}
                                         className="inline-flex items-center gap-2"
                                     >
-                                        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                        </svg>
                                         Copiato
                                     </motion.span>
                                 ) : (
@@ -136,37 +240,31 @@ export default function ProfiloReferralPage() {
                                         initial={{ opacity: 0, y: 6 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: -6 }}
-                                        className="inline-flex items-center gap-2"
                                     >
-                                        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                                        </svg>
                                         Copia link
                                     </motion.span>
                                 )}
                             </AnimatePresence>
                         </button>
                         <button
-                            onClick={handleNativeShare}
-                            className="inline-flex items-center justify-center gap-3 px-6 py-3.5 border border-line text-warm-white rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold hover:bg-warm-white/5 hover:border-warm-white transition-colors"
+                            onClick={handleWhatsApp}
+                            disabled={!code}
+                            className="inline-flex items-center justify-center gap-3 px-6 py-3.5 bg-[#25D366]/15 border border-[#25D366]/40 text-[#25D366] rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold hover:bg-[#25D366]/20 transition-colors disabled:opacity-50"
                         >
-                            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                                <circle cx="18" cy="5" r="3" />
-                                <circle cx="6" cy="12" r="3" />
-                                <circle cx="18" cy="19" r="3" />
-                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-                                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-                            </svg>
+                            WhatsApp
+                        </button>
+                        <button
+                            onClick={handleNativeShare}
+                            disabled={!code}
+                            className="inline-flex items-center justify-center gap-3 px-6 py-3.5 border border-line text-warm-white rounded-full text-xs uppercase tracking-[0.3em] font-body font-semibold hover:bg-warm-white/5 hover:border-warm-white transition-colors disabled:opacity-50"
+                        >
                             Condividi
                         </button>
                     </div>
                 </div>
             </motion.section>
 
-            {/* ── Stats + How it works ───────────────────────────────────── */}
             <div className="mt-10 md:mt-14 grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-12">
-                {/* Stats */}
                 <motion.div
                     className="md:col-span-2 grid grid-cols-2 md:grid-cols-1 gap-3"
                     initial={{ opacity: 0, x: -16 }}
@@ -179,7 +277,7 @@ export default function ProfiloReferralPage() {
                         </span>
                         <div className="mt-3 flex items-baseline gap-3">
                             <span className="text-display text-5xl md:text-6xl text-warm-white tabular-nums leading-none">
-                                0
+                                {stats?.friends_invited ?? 0}
                             </span>
                             <span className="text-display-alt text-xl text-accent-warm">friends</span>
                         </div>
@@ -190,13 +288,17 @@ export default function ProfiloReferralPage() {
                         </span>
                         <div className="mt-3 flex items-baseline gap-3">
                             <span className="text-display text-5xl md:text-6xl text-success tabular-nums leading-none">
-                                {formatPrice(0)}
+                                {formatPrice(stats?.credits_earned_cents ?? 0)}
                             </span>
                         </div>
+                        {stats && stats.credits_pending_cents > 0 && (
+                            <p className="mt-2 text-silver-dark text-xs">
+                                + {formatPrice(stats.credits_pending_cents)} in arrivo
+                            </p>
+                        )}
                     </div>
                 </motion.div>
 
-                {/* Steps */}
                 <motion.div
                     className="md:col-span-3"
                     initial={{ opacity: 0, x: 16 }}
@@ -225,6 +327,58 @@ export default function ProfiloReferralPage() {
                     </ol>
                 </motion.div>
             </div>
+
+            {invited.length > 0 && (
+                <motion.section
+                    className="mt-12"
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.4 }}
+                >
+                    <h2 className="text-display text-2xl text-warm-white tracking-tight">I tuoi inviti</h2>
+                    <ul className="mt-6 space-y-2">
+                        {invited.map((r) => (
+                            <li
+                                key={r.id}
+                                className="flex items-center justify-between gap-4 bg-carbon border border-line rounded-[var(--radius-md)] p-4"
+                            >
+                                <div className="min-w-0">
+                                    <p className="text-warm-white text-sm font-semibold truncate">
+                                        {r.invited
+                                            ? `${r.invited.first_name} ${r.invited.last_name ?? ""}`
+                                            : r.invited_email || r.invited_phone || "Invito non ancora reclamato"}
+                                    </p>
+                                    <p className="text-silver-dark text-xs mt-0.5">
+                                        {new Date(r.created_at).toLocaleDateString("it-IT", {
+                                            day: "numeric",
+                                            month: "short",
+                                            year: "numeric",
+                                        })}
+                                    </p>
+                                </div>
+                                <div className="flex items-center gap-3 shrink-0">
+                                    <span
+                                        className={`px-2 py-0.5 rounded-full text-[10px] uppercase tracking-[0.2em] font-body font-semibold border ${
+                                            r.status === "rewarded"
+                                                ? "border-success/40 text-success bg-success/10"
+                                                : r.status === "pending"
+                                                ? "border-line text-silver"
+                                                : "border-accent-warm/40 text-accent-warm bg-accent-warm/10"
+                                        }`}
+                                    >
+                                        {STATUS_LABEL[r.status]}
+                                    </span>
+                                    {r.status === "rewarded" && (
+                                        <span className="text-accent-warm tabular-nums text-sm font-semibold">
+                                            +{formatPrice(r.credit_cents)}
+                                        </span>
+                                    )}
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </motion.section>
+            )}
         </div>
     );
 }
