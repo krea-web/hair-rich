@@ -1,0 +1,10 @@
+---
+import RootLayout from "../layouts/RootLayout.astro";
+import { SurveyResponder } from "../components/profilo/_shared/SurveyResponder";
+---
+
+<RootLayout title="Com'è andata? · Hair Rich Olbia" noindex={true}>
+  <main class="min-h-[100dvh] bg-black text-warm-white flex items-center justify-center p-6">
+    <SurveyResponder client:load />
+  </main>
+</RootLayout>

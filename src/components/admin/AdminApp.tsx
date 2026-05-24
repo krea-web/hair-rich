@@ -29,6 +29,7 @@ import AdminInboxPage from "./views/inbox";
 import AdminWaitlistPage from "./views/waitlist";
 import AdminClientiNoShowPage from "./views/clienti-no-show";
 import AdminPacchettiPage from "./views/pacchetti";
+import AdminSondaggiPage from "./views/sondaggi";
 
 function pickView(pathname: string) {
     const p = pathname.replace(/\/$/, "");
@@ -79,6 +80,8 @@ function pickView(pathname: string) {
             return <AdminClientiNoShowPage />;
         case "/admin/pacchetti":
             return <AdminPacchettiPage />;
+        case "/admin/sondaggi":
+            return <AdminSondaggiPage />;
         default:
             return (
                 <div className="p-12 text-center text-silver">

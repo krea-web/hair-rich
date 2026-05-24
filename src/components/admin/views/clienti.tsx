@@ -23,6 +23,7 @@ interface CustomerRow {
     completed_count: number;
     last_visit_at: string | null;
     lifetime_value_cents: number;
+    segments: { key: string; label: string }[];
 }
 
 function formatDate(iso: string | null): string {
@@ -53,6 +54,16 @@ export default function AdminClientiPage() {
                 .select("customer_id, status, total_cents, start_at");
             if (apptErr) throw apptErr;
 
+            const { data: segData } = await supabase
+                .from("customer_segments")
+                .select("customer_id, segment_key, segment_label");
+            const segMap = new Map<string, { key: string; label: string }[]>();
+            for (const row of (segData ?? []) as any[]) {
+                const arr = segMap.get(row.customer_id) ?? [];
+                arr.push({ key: row.segment_key, label: row.segment_label });
+                segMap.set(row.customer_id, arr);
+            }
+
             const aggMap = new Map<string, { completed: number; lastVisit: string | null; ltv: number }>();
             for (const a of (apptData ?? []) as any[]) {
                 const entry = aggMap.get(a.customer_id) ?? { completed: 0, lastVisit: null, ltv: 0 };
@@ -73,6 +84,7 @@ export default function AdminClientiPage() {
                     completed_count: agg.completed,
                     last_visit_at: agg.lastVisit,
                     lifetime_value_cents: agg.ltv,
+                    segments: segMap.get(c.id) ?? [],
                 };
             });
 
@@ -250,6 +262,14 @@ export default function AdminClientiPage() {
                                                         {c.noshow_count} no-show
                                                     </span>
                                                 )}
+                                                {c.segments.map((s) => (
+                                                    <span
+                                                        key={s.key}
+                                                        className="text-[9px] uppercase tracking-wider text-warm-white border border-line px-1.5 py-0.5 rounded bg-black-2/50"
+                                                    >
+                                                        {s.label}
+                                                    </span>
+                                                ))}
                                             </div>
                                             <p className="text-silver-dark text-xs mt-0.5 truncate">
                                                 {c.phone ?? "—"} {c.email && `· ${c.email}`}
