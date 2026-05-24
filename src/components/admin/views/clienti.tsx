@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/client";
 import { formatPrice } from "@/lib/format";
 import { useToastStore } from "@/lib/store";
 import { downloadCsv, todayStamp } from "@/lib/csv";
+import { SellPackageModal } from "../SellPackageModal";
+import { AnimatePresence } from "framer-motion";
 
 interface CustomerRow {
     id: string;
@@ -33,6 +35,7 @@ export default function AdminClientiPage() {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [sortBy, setSortBy] = useState<"recent" | "ltv" | "visits">("recent");
+    const [sellTarget, setSellTarget] = useState<{ id: string; name: string } | null>(null);
     const addToast = useToastStore((s) => s.addToast);
 
     const load = useCallback(async () => {
@@ -319,6 +322,12 @@ export default function AdminClientiPage() {
                                                     Email
                                                 </a>
                                             )}
+                                            <button
+                                                onClick={() => setSellTarget({ id: c.id, name })}
+                                                className="inline-flex items-center gap-2 px-4 py-2 border border-accent-warm/40 text-accent-warm rounded-full text-[10px] uppercase tracking-[0.25em] font-body font-semibold hover:bg-accent-warm hover:text-black transition-colors"
+                                            >
+                                                Vendi pacchetto
+                                            </button>
                                         </div>
                                     </div>
                                 </details>
@@ -327,6 +336,17 @@ export default function AdminClientiPage() {
                     })}
                 </ul>
             )}
+
+            <AnimatePresence>
+                {sellTarget && (
+                    <SellPackageModal
+                        customerId={sellTarget.id}
+                        customerName={sellTarget.name}
+                        onClose={() => setSellTarget(null)}
+                        onSold={load}
+                    />
+                )}
+            </AnimatePresence>
         </div>
     );
 }

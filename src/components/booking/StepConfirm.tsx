@@ -8,10 +8,11 @@ import { useBookingStore, useToastStore } from "@/lib/store";
 import { bookingContactSchema, type BookingContactData } from "@/lib/validation";
 import { formatPrice } from "@/lib/format";
 import { downloadICS, googleCalendarUrl, outlookCalendarUrl } from "@/lib/calendar";
-import { bookAppointment, uploadReferenceImage } from "@/lib/supabase/queries";
+import { bookAppointment, redeemCoupon, uploadReferenceImage } from "@/lib/supabase/queries";
 import { SITE } from "@/lib/constants";
 import { ConfettiBurst } from "./ConfettiBurst";
 import { renderBookingShareImage, shareBookingImage } from "@/lib/bookingShareImage";
+import { CouponField, type AppliedCoupon } from "./CouponField";
 
 export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: () => void }) {
     const {
@@ -33,6 +34,7 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
     const [submitting, setSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
     const [isFirstVisit, setIsFirstVisit] = useState(false);
+    const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
     const [referenceFiles, setReferenceFiles] = useState<File[]>([]);
     const [referencePreviews, setReferencePreviews] = useState<string[]>([]);
     const MAX_REFERENCES = 3;
@@ -96,7 +98,7 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
                 }
             }
 
-            await bookAppointment({
+            const result = await bookAppointment({
                 firstName: data.firstName,
                 lastName: data.lastName,
                 phone: data.phone,
@@ -108,6 +110,19 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
                 isFirstVisit,
                 referenceImagePaths: refPaths,
             });
+
+            if (appliedCoupon && result?.appointment_id && result?.customer_id) {
+                try {
+                    await redeemCoupon({
+                        couponId: appliedCoupon.couponId,
+                        appointmentId: result.appointment_id,
+                        customerId: result.customer_id,
+                        discountCents: appliedCoupon.discountCents,
+                    });
+                } catch {
+                    addToast("Prenotato, ma coupon non applicato", "info");
+                }
+            }
 
             setContact({
                 name: `${data.firstName} ${data.lastName}`,
@@ -489,6 +504,11 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
                         </span>
                     </label>
 
+                    <CouponField
+                        subtotalCents={service?.price_cents ?? 0}
+                        onChange={setAppliedCoupon}
+                    />
+
                     {submitError && (
                         <div className="text-xs text-error bg-error/10 border border-error/30 rounded-[var(--radius-sm)] px-3 py-2">
                             {submitError}
@@ -541,12 +561,27 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
                         />
                         <SummaryRow label="Durata" value={service ? `${service.duration_min} min` : "—"} />
                     </div>
+                    {appliedCoupon && (
+                        <div className="mt-4 pt-3 border-t border-line/50 flex items-center justify-between text-sm">
+                            <span className="text-success font-body">
+                                Coupon{" "}
+                                <code className="font-mono text-xs tracking-widest">{appliedCoupon.code}</code>
+                            </span>
+                            <span className="text-success tabular-nums">
+                                -{formatPrice(appliedCoupon.discountCents)}
+                            </span>
+                        </div>
+                    )}
                     <div className="mt-5 pt-4 border-t border-line flex items-center justify-between">
                         <span className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
                             Totale
                         </span>
                         <span className="text-display text-2xl text-accent-warm tabular-nums">
-                            {service ? formatPrice(service.price_cents) : "—"}
+                            {service
+                                ? formatPrice(
+                                      Math.max(0, service.price_cents - (appliedCoupon?.discountCents ?? 0))
+                                  )
+                                : "—"}
                         </span>
                     </div>
                 </aside>

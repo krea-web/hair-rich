@@ -25,6 +25,7 @@ const SETTINGS_MENU = [
     { href: "/admin/orari", label: "Orari staff" },
     { href: "/admin/marketing", label: "Recensioni" },
     { href: "/admin/gamification", label: "Coupon & sconti" },
+    { href: "/admin/pacchetti", label: "Pacchetti prepagati" },
     { href: "/admin/cms", label: "Testi del sito" },
     { href: "/admin/funzionalita", label: "Funzionalità (Skills Hub)" },
     { href: "/admin/log", label: "Log attività" },

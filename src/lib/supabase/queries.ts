@@ -172,6 +172,23 @@ export async function bookAppointment(input: BookAppointmentInput): Promise<Book
     return data as BookAppointmentResult;
 }
 
+export async function redeemCoupon(params: {
+    couponId: string;
+    appointmentId: string;
+    customerId: string;
+    discountCents: number;
+}): Promise<void> {
+    const supabase = createClient();
+    const { error } = await supabase.rpc("fn_redeem_coupon", {
+        p_coupon_id: params.couponId,
+        p_appointment_id: params.appointmentId,
+        p_customer_id: params.customerId,
+        p_discount_cents: params.discountCents,
+        p_source: "booking",
+    });
+    if (error) throw error;
+}
+
 /**
  * Upload a reference photo to the private client-references bucket. Returns
  * the storage path on success. Used by the booking wizard to attach photos
