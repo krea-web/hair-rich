@@ -13,6 +13,8 @@ import { SITE } from "@/lib/constants";
 import { ConfettiBurst } from "./ConfettiBurst";
 import { renderBookingShareImage, shareBookingImage } from "@/lib/bookingShareImage";
 import { CouponField, type AppliedCoupon } from "./CouponField";
+import { PackageCreditField, type ActivePackage } from "./PackageCreditField";
+import { createClient } from "@/lib/supabase/client";
 
 export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: () => void }) {
     const {
@@ -35,6 +37,7 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
     const [submitError, setSubmitError] = useState<string | null>(null);
     const [isFirstVisit, setIsFirstVisit] = useState(false);
     const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
+    const [selectedPackage, setSelectedPackage] = useState<ActivePackage | null>(null);
     const [referenceFiles, setReferenceFiles] = useState<File[]>([]);
     const [referencePreviews, setReferencePreviews] = useState<string[]>([]);
     const MAX_REFERENCES = 3;
@@ -121,6 +124,20 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
                     });
                 } catch {
                     addToast("Prenotato, ma coupon non applicato", "info");
+                }
+            }
+
+            if (selectedPackage && result?.appointment_id) {
+                try {
+                    const supabase = createClient();
+                    const { error: redeemErr } = await supabase.rpc("fn_redeem_package_credit", {
+                        p_customer_package_id: selectedPackage.customer_package_id,
+                        p_appointment_id: result.appointment_id,
+                    });
+                    if (redeemErr) throw redeemErr;
+                    addToast("Credito pacchetto applicato", "success");
+                } catch {
+                    addToast("Prenotato, ma credito non applicato", "info");
                 }
             }
 
@@ -504,6 +521,11 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
                         </span>
                     </label>
 
+                    <PackageCreditField
+                        serviceId={serviceId}
+                        onChange={setSelectedPackage}
+                    />
+
                     <CouponField
                         subtotalCents={service?.price_cents ?? 0}
                         onChange={setAppliedCoupon}
@@ -572,12 +594,25 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
                             </span>
                         </div>
                     )}
+                    {selectedPackage && (
+                        <div className="mt-4 pt-3 border-t border-line/50 flex items-center justify-between text-sm">
+                            <span className="text-accent-warm font-body">
+                                Pacchetto{" "}
+                                <span className="font-body text-xs text-silver-dark">
+                                    ({selectedPackage.credits_remaining - 1}/{selectedPackage.credits_total} dopo)
+                                </span>
+                            </span>
+                            <span className="text-accent-warm tabular-nums">−1 credito</span>
+                        </div>
+                    )}
                     <div className="mt-5 pt-4 border-t border-line flex items-center justify-between">
                         <span className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
                             Totale
                         </span>
                         <span className="text-display text-2xl text-accent-warm tabular-nums">
-                            {service
+                            {selectedPackage
+                                ? "Gratis"
+                                : service
                                 ? formatPrice(
                                       Math.max(0, service.price_cents - (appliedCoupon?.discountCents ?? 0))
                                   )
