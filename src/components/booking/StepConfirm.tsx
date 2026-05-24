@@ -14,6 +14,7 @@ import { ConfettiBurst } from "./ConfettiBurst";
 import { renderBookingShareImage, shareBookingImage } from "@/lib/bookingShareImage";
 import { CouponField, type AppliedCoupon } from "./CouponField";
 import { PackageCreditField, type ActivePackage } from "./PackageCreditField";
+import { UpsellBanner } from "./UpsellBanner";
 import { createClient } from "@/lib/supabase/client";
 
 export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: () => void }) {
@@ -354,6 +355,7 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
             <div className="grid grid-cols-1 md:grid-cols-[1fr_280px] gap-8">
                 {/* Form */}
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                    <UpsellBanner />
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
