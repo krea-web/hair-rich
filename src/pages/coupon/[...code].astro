@@ -1,0 +1,12 @@
+---
+import RootLayout from "../../layouts/RootLayout.astro";
+import { CouponLanding } from "../../components/coupon/CouponLanding";
+
+export function getStaticPaths() {
+  return [{ params: { code: undefined } }];
+}
+---
+
+<RootLayout title="Il tuo coupon · Hair Rich Olbia" noindex={true}>
+  <CouponLanding client:only="react" />
+</RootLayout>
