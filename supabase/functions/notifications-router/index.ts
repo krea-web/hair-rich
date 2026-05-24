@@ -291,8 +291,84 @@ async function trySendCustomerChannel(
     };
   }
 
-  // WhatsApp, Push, SMS — not implemented in Chat 1. Fall through.
+  if (channel === 'push') {
+    const subjectTpl = await loadTemplate(supabase, `tmpl_push_title_${args.event_type}`);
+    const bodyTpl = await loadTemplate(supabase, `tmpl_push_body_${args.event_type}`);
+    if (!subjectTpl || !bodyTpl) {
+      // Fallback to email subject/body if push-specific templates are missing
+      const fallbackTitle = await loadTemplate(supabase, `tmpl_email_subject_${args.event_type}`);
+      const fallbackBody = await loadTemplate(supabase, `tmpl_email_body_${args.event_type}`);
+      if (!fallbackTitle || !fallbackBody) return { ok: false, reason: 'template_missing' };
+      const title = renderTemplate(fallbackTitle, ctx);
+      const md = renderTemplate(fallbackBody, ctx);
+      const result = await invokePushSender(supabase, customer.id, title, markdownToText(md).slice(0, 240), args);
+      if (!result.ok) return { ok: false, reason: result.reason };
+      const recordId = await recordSend(supabase, {
+        recipient_type: 'customer',
+        recipient_id: customer.id,
+        recipient_address: 'push',
+        event_type: args.event_type,
+        related_id: args.related_id ?? null,
+        related_type: args.related_type ?? null,
+        channel: 'push',
+        status: 'sent',
+        subject: title,
+        body_preview: md.slice(0, 200),
+        payload: args.payload ?? {},
+        provider: 'web-push',
+        provider_message_id: null,
+        source_skill: args.source_skill ?? null,
+      });
+      return { ok: true, channel: 'push', notification_id: recordId };
+    }
+    const title = renderTemplate(subjectTpl, ctx);
+    const body = renderTemplate(bodyTpl, ctx);
+    const result = await invokePushSender(supabase, customer.id, title, body, args);
+    if (!result.ok) return { ok: false, reason: result.reason };
+    const recordId = await recordSend(supabase, {
+      recipient_type: 'customer',
+      recipient_id: customer.id,
+      recipient_address: 'push',
+      event_type: args.event_type,
+      related_id: args.related_id ?? null,
+      related_type: args.related_type ?? null,
+      channel: 'push',
+      status: 'sent',
+      subject: title,
+      body_preview: body.slice(0, 200),
+      payload: args.payload ?? {},
+      provider: 'web-push',
+      provider_message_id: null,
+      source_skill: args.source_skill ?? null,
+    });
+    return { ok: true, channel: 'push', notification_id: recordId };
+  }
+
+  // WhatsApp, SMS — not implemented yet. Fall through.
   return { ok: false, reason: `channel_${channel}_not_implemented` };
+}
+
+async function invokePushSender(
+  supabase: ReturnType<typeof getSupabase>,
+  customerId: string,
+  title: string,
+  body: string,
+  args: CustomerSendArgs,
+): Promise<{ ok: boolean; reason?: string }> {
+  const { data, error } = await supabase.functions.invoke('push-sender', {
+    body: {
+      customerId,
+      title,
+      body,
+      url: args.payload?.url ?? '/profilo',
+      tag: args.event_type,
+    },
+  });
+  if (error) return { ok: false, reason: error.message ?? 'push_invoke_failed' };
+  const result = data as { ok: boolean; reason?: string; sent?: number };
+  if (!result?.ok) return { ok: false, reason: result?.reason ?? 'push_failed' };
+  if ((result.sent ?? 0) === 0) return { ok: false, reason: 'no_subscriptions' };
+  return { ok: true };
 }
 
 async function dispatchOwner(args: OwnerSendArgs) {

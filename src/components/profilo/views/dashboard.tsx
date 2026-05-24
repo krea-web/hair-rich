@@ -6,6 +6,7 @@ import { formatPrice } from "@/lib/format";
 import { handleClientLink } from "@/lib/clientRouter";
 import { BirthdayBanner } from "../_shared/BirthdayBanner";
 import { LoyaltyProgress } from "../_shared/LoyaltyProgress";
+import { PushOptInPrompt } from "@/components/ui/PushOptInPrompt";
 import { fetchMyAppointmentsWithDetails, type AppointmentWithDetails } from "@/lib/supabase/queries";
 import { useCurrentCustomer } from "@/lib/supabase/me";
 import { useBookingDrawer } from "@/lib/store";
@@ -154,8 +155,9 @@ export default function ProfiloDashboardPage() {
                 </button>
             </motion.div>
 
-            {/* Birthday + loyalty */}
+            {/* Birthday + loyalty + push opt-in */}
             <div className="mt-8 md:mt-10 space-y-4 md:space-y-5">
+                <PushOptInPrompt />
                 <BirthdayBanner />
                 <LoyaltyProgress />
             </div>
