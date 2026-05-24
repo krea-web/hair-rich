@@ -737,82 +737,108 @@ Multi-sede, Apple Maps, SEO tracker interno, Uptime monitor, Dashboard TV, Listi
 
 ---
 
-## ✅ Checklist attivazione produzione (Chat 1 + Chat 2 + Chat 3)
+## ✅ Checklist unica di attivazione produzione (Chat 1 + 2 + 3)
 
-Lista unica e ordinata: tutto quello che il titolare/dev-ops deve fare per accendere il sistema dopo i merge delle 3 chat. Seguire dall'alto verso il basso — ogni step sblocca i successivi.
+Una sola lista ordinata. Fai tutto in sequenza, dall'alto verso il basso. Ogni step abilita i successivi.
 
-### 1. Database — applicare le migrations Supabase
+### Step 1 — Account esterni (fare prima di tutto)
 
-Da `supabase/migrations/`, in ordine cronologico (Supabase CLI o Dashboard → SQL Editor):
+Aprire tutti gli account servono i token/keys nei prossimi step.
 
-```bash
-# Chat 1 — Foundation
-20260523_0021_skills_config.sql
-20260523_0022_customer_consents.sql
-20260523_0023_customer_notification_preferences.sql
-20260523_0024_notifications_sent.sql
-20260523_0025_activity_log.sql
-20260523_0026_admin_inbox_items.sql
-20260523_0027_cms_message_templates.sql
-20260523_0028_salon_settings_router_config.sql
-20260523_0029_customer_appointment_rpcs.sql
+- [ ] **Gmail dedicato** — `hairrich.olbia@gmail.com`, attivare 2FA, generare App Password da `https://myaccount.google.com/apppasswords` (16 caratteri). _~5 min_
+- [ ] **Telegram bot** — chattare con `@BotFather` → `/newbot` → salvare il token. Poi inviare `/start` al bot dal proprio Telegram. _~5 min_
+- [ ] **OpenAI API key** — `https://platform.openai.com/api-keys` → carta di credito (budget €10/mese sufficiente). _~10 min_
+- [ ] **Google Cloud project** — `https://console.cloud.google.com` → nuovo progetto Hair Rich → abilitare API: Google Calendar, Google Business Profile, Maps Booking. Creare OAuth 2.0 client (Web app). Redirect URI: `https://fznzfmgfsijhzjqcwmyt.supabase.co/functions/v1/gcal-oauth`. _~30 min_
+- [ ] **Web Push VAPID keys** — `npx web-push generate-vapid-keys` da terminale, salvare entrambe le chiavi. _~2 min_
+- [ ] **(Opzionale) Reserve with Google** — submission a `https://developers.google.com/maps-booking` (review 1-2 settimane). Solo se vuoi il pulsante "Prenota" diretto sul profilo Google. _~30 min + attesa_
 
-# Chat 2 — Booking + customer experience
-20260524_0030_waitlist.sql
-20260524_0031_salon_settings_waitlist_config.sql
-20260524_0032_waitlist_rpcs.sql
-20260524_0033_waitlist_owner_template.sql
-20260524_0034_packages_surveys_pushes_noshow.sql
-20260524_0035_package_credit_rpcs.sql
-20260524_0036_package_reminder_templates.sql
-20260524_0037_push_and_survey_templates.sql
-20260524_0038_staff_gcal_tokens.sql
-20260524_0039_gbp_sync.sql
-20260524_0040_reserve_with_google.sql
+### Step 2 — Applicare le migrations Supabase (39 totali, ordine cronologico)
 
-# Chat 3 — Marketing + AI (range 0041-0049+)
-20260524_0041_review_requests.sql
-20260524_0046_birthday_helpers.sql
-20260524_0049_last_minute_audience.sql
-# … altre Chat 3 quando atterrano
+Dashboard Supabase → SQL Editor (oppure `supabase db push`):
+
+```
+# Foundation Chat 1 (9)
+20260523_0021_skills_config.sql                          → 101 skill_keys + 2 always-ON
+20260523_0022_customer_consents.sql                      → GDPR ledger
+20260523_0023_customer_notification_preferences.sql      → JSONB customer prefs
+20260523_0024_notifications_sent.sql                     → Router audit log
+20260523_0025_activity_log.sql                           → Triggers 19 tabelle
+20260523_0026_admin_inbox_items.sql                      → Inbox + realtime
+20260523_0027_cms_message_templates.sql                  → 29 template Router
+20260523_0028_salon_settings_router_config.sql           → owner_telegram, quiet hours
+20260523_0029_customer_appointment_rpcs.sql              → cancel + reschedule cliente
+
+# Booking experience Chat 2 (11)
+20260524_0030_waitlist.sql                               → waitlist + soft-reserve
+20260524_0031_salon_settings_waitlist_config.sql         → token validity adattiva
+20260524_0032_waitlist_rpcs.sql                          → match + notify
+20260524_0033_waitlist_owner_template.sql                → cms template
+20260524_0034_packages_surveys_pushes_noshow.sql         → 4 nuove tabelle
+20260524_0035_package_credit_rpcs.sql                    → fn_sell_package / redeem
+20260524_0036_package_reminder_templates.sql             → scadenza 30/7/1gg
+20260524_0037_push_and_survey_templates.sql              → push + NPS
+20260524_0038_staff_gcal_tokens.sql                      → Google OAuth tokens
+20260524_0039_gbp_sync.sql                               → orari su GBP
+20260524_0040_reserve_with_google.sql                    → RWG feed schema
+
+# Marketing + AI Chat 3 (14)
+20260524_0038_coupons_ecosystem.sql                      → coupon meta + QR + referrals
+20260524_0039_loyalty.sql                                → loyalty config + ledger
+20260524_0040_customer_segments.sql                      → 7 segmenti auto + manuali
+20260524_0041_review_requests.sql                        → token + smart routing
+20260524_0042_ai_reports.sql                             → ai_reports + ai_content_drafts
+20260524_0043_suppliers.sql                              → fornitori + ordini + soglie stock
+20260524_0044_saved_searches.sql                         → query builder + 5 template
+20260524_0045_referral_customer_rpcs.sql                 → RPCs lato cliente referral
+20260524_0046_birthday_helpers.sql                       → fn_customers_birthday_today
+20260524_0047_reactivation_helpers.sql                   → fn_reactivation_candidates
+20260524_0048_reviews_helpers.sql                        → fn_review_request_candidates
+20260524_0049_last_minute_audience.sql                   → fn_last_minute_promo_audience
+20260524_0050_bookings_drop.sql                          → threshold + snapshot RPC
+20260524_0051_cms_templates_fix.sql                      → re-seed template marketing
 ```
 
-Verifica: `select count(*) from skills_config;` → deve restituire 101.
+**Verifiche post-migration**:
+- `select count(*) from skills_config;` → 101
+- `select count(*) from cms_blocks;` → ≥35 template
+- `select count(*) from saved_searches where is_template;` → 5
 
-### 2. Secrets — `supabase secrets set ...`
+### Step 3 — Secrets Supabase
 
-Una sola volta, prima del deploy delle Edge Function:
+Dashboard → Project Settings → Edge Functions → Secrets (o `supabase secrets set`):
 
 ```bash
-# Gmail SMTP (Router · canale email)
-supabase secrets set GMAIL_USER=hairrich.olbia@gmail.com
-supabase secrets set GMAIL_APP_PASSWORD=<app-password 16 char>
+# Router · canale email
+GMAIL_USER=hairrich.olbia@gmail.com
+GMAIL_APP_PASSWORD=<16 char generato in step 1>
 
-# Telegram bot (Router · canale owner + canale cliente opzionale)
-supabase secrets set TELEGRAM_BOT_TOKEN=<token da @BotFather>
+# Router · canale owner Telegram
+TELEGRAM_BOT_TOKEN=<token da @BotFather>
 
-# OpenAI (AI no-show outreach + Chat 3 weekly suggestions/monthly reports)
-supabase secrets set OPENAI_API_KEY=sk-...
+# AI (no-show outreach + content gen + weekly/monthly reports)
+OPENAI_API_KEY=sk-...
 
-# Web Push (Chat 2 · canale push)
-supabase secrets set VAPID_PUBLIC_KEY=<base64url>
-supabase secrets set VAPID_PRIVATE_KEY=<base64url>
-supabase secrets set VAPID_SUBJECT=mailto:owner@hairrich.it
-# Generare con: npx web-push generate-vapid-keys
+# Web Push
+VAPID_PUBLIC_KEY=<base64url>
+VAPID_PRIVATE_KEY=<base64url>
+VAPID_SUBJECT=mailto:hairrich.olbia@gmail.com
 
-# Google OAuth (gcal-sync + gbp-hours-sync)
-supabase secrets set GOOGLE_CLIENT_ID=<GCP client id>
-supabase secrets set GOOGLE_CLIENT_SECRET=<GCP client secret>
-supabase secrets set GOOGLE_OAUTH_REDIRECT=https://fznzfmgfsijhzjqcwmyt.supabase.co/functions/v1/gcal-oauth
+# Google OAuth (Calendar + Business Profile + Reserve)
+GOOGLE_CLIENT_ID=<da GCP>
+GOOGLE_CLIENT_SECRET=<da GCP>
+GOOGLE_OAUTH_REDIRECT=https://fznzfmgfsijhzjqcwmyt.supabase.co/functions/v1/gcal-oauth
 
-# URL pubblico (usato in confirm_url / survey_url / coupon_url)
-supabase secrets set PUBLIC_SITE_URL=https://hair-rich.it
+# Link-back nei messaggi (cancel/recensione/coupon)
+PUBLIC_SITE_URL=https://hairricholbia.com
 ```
 
-### 3. Edge Functions — deploy
+### Step 4 — Deploy delle 21 Edge Functions
 
 ```bash
+# Foundation Router (Chat 1)
 supabase functions deploy notifications-router
+
+# Booking experience (Chat 2)
 supabase functions deploy waitlist-matcher
 supabase functions deploy ai-noshow-draft
 supabase functions deploy package-expiry-reminders
@@ -823,93 +849,103 @@ supabase functions deploy gcal-sync
 supabase functions deploy gbp-hours-sync
 supabase functions deploy rwg-feed
 supabase functions deploy rwg-booking-server
-# Chat 3
+
+# Marketing + AI (Chat 3)
 supabase functions deploy birthday-sender
 supabase functions deploy reactivation-sender
 supabase functions deploy reviews-harvester
+supabase functions deploy last-minute-promo
+supabase functions deploy segments-classifier
 supabase functions deploy bookings-drop-alert
 supabase functions deploy stock-low-alert
-supabase functions deploy last-minute-promo
+supabase functions deploy ai-content-generator
 supabase functions deploy ai-weekly-suggestions
 supabase functions deploy ai-monthly-report
-supabase functions deploy ai-content-generator
-supabase functions deploy segments-classifier
 ```
 
-### 4. Cron schedule (Supabase Dashboard → Edge Functions → Schedule)
+### Step 5 — Cron schedules (Dashboard → Edge Functions → Schedule)
 
-| Funzione | Cron | Motivo |
+| Funzione | Cron | Cosa fa |
 |---|---|---|
-| `waitlist-matcher` | `*/15 * * * *` | Match candidati cancellati |
-| `post-visit-survey-sender` | `*/30 * * * *` | Sondaggio NPS post-visita |
-| `package-expiry-reminders` | `0 9 * * *` | Reminder scadenze 30/7/1d |
-| `gcal-sync` | `*/10 * * * *` | Sync staff calendar bidirezionale |
+| `waitlist-matcher` | `*/15 * * * *` | Match cancellati → primi in coda |
+| `reviews-harvester` | `*/30 * * * *` | Richiesta recensione 2h post-visita |
+| `post-visit-survey-sender` | `*/30 * * * *` | Sondaggio NPS privato |
+| `gcal-sync` | `*/10 * * * *` | Sync bidirezionale staff calendar |
+| `stock-low-alert` | `0 8 * * *` | Alert scorte basse |
+| `birthday-sender` | `0 9 * * *` | Auguri + coupon -20% |
+| `package-expiry-reminders` | `0 9 * * *` | Reminder pacchetti 30/7/1gg |
+| `segments-classifier` | `0 4 * * *` | Riclassifica segmenti clienti |
 | `gbp-hours-sync` | `0 3 * * *` | Push orari + chiusure su Google |
-| `birthday-sender` | `0 9 * * *` | Auguri + coupon compleanno |
-| `reactivation-sender` | `0 10 * * MON` | Win-back >90gg |
-| `reviews-harvester` | `*/30 * * * *` | Richiesta recensione post-visita |
-| `bookings-drop-alert` | `0 9 * * MON` | Alert calo settimanale |
-| `stock-low-alert` | `0 8 * * *` | Soglie minime scorte |
-| `ai-weekly-suggestions` | `0 9 * * MON` | Suggerimenti AI settimanali |
-| `ai-monthly-report` | `0 9 1 * *` | Report mensile titolare |
-| `segments-classifier` | `0 4 * * *` | Riclassificazione segmenti clienti |
+| `bookings-drop-alert` | `0 9 * * 1` | Alert calo prenotazioni settimanale |
+| `reactivation-sender` | `0 10 * * 1` | Win-back clienti >90gg |
+| `ai-weekly-suggestions` | `0 9 * * 1` | 3-5 azioni AI ogni lunedì |
+| `ai-monthly-report` | `0 9 1 * *` | Report mensile 1° del mese |
 
-### 5. Configurazione titolare in `/admin/impostazioni`
+`last-minute-promo`, `ai-content-generator`, `gcal-oauth`, `push-sender`, `notifications-router`, `ai-noshow-draft`, `rwg-feed`, `rwg-booking-server` → **NESSUN cron**, sono on-demand (invocate da admin o altri trigger).
 
-Dopo il login admin, sezione "Notifiche & Comunicazioni":
+### Step 6 — Setup titolare in `/admin/impostazioni`
 
-1. **Telegram chat ID titolare** — il titolare scrive `/start` al bot creato in step 2, poi va su `https://api.telegram.org/bot<TOKEN>/getUpdates` per leggere il `chat.id`. Inserirlo in `owner_telegram_chat_id`.
-2. **Eventuali chat ID delegati** (`owner_telegram_extra_chat_ids`) — stesso flusso per staff/consulenti.
-3. **Quiet hours** — default 22:00-08:00, modificabile.
-4. **Channel priority cliente** — default `whatsapp → push → email → sms`, riordinabile.
-5. **`multi_channel_critical`** — ON per default (waitlist match va su più canali).
-6. **`cancel_min_hours`** — default 4, regola la finestra entro cui il cliente può autocancellare.
+Login admin, sezione "Notifiche & Comunicazioni":
 
-### 6. Skills Hub — accendere le feature una a una
+1. **`owner_telegram_chat_id`** — leggere il proprio chat ID da `https://api.telegram.org/bot<TOKEN>/getUpdates` dopo aver fatto `/start` al bot.
+2. **`owner_telegram_extra_chat_ids`** — stesso flusso per staff/delegati (opzionale).
+3. **Quiet hours** — default 22:00→08:00.
+4. **Channel priority** — default `whatsapp → push → email → sms` (riordinabile).
+5. **`multi_channel_critical`** — ON: eventi waitlist <1h vanno su più canali.
+6. **`cancel_min_hours`** — default 4, finestra autocancellazione cliente.
+7. **`google_place_id`** + **`google_review_url`** — per il Reviews Harvester (#62).
+8. **`reviews_cooldown_days`** (90) + **`reviews_request_delay_min`** (120) — anti-spam recensioni.
+9. **`bookings_drop_threshold_pct`** (20) — soglia alert calo settimanale.
+10. **`push_vapid_public_key`** — la chiave pubblica generata in step 1.
 
-Su `/admin/funzionalita`, tutte le skill partono `enabled=false`. Accendere solo quelle desiderate. Ordine consigliato di rollout:
+### Step 7 — Skills Hub `/admin/funzionalita` (rollout graduale)
 
-1. **Indispensabili (sempre ON)**: `admin_inbox`, `gdpr_consents`, `activity_log` — sono normativi/infrastruttura.
-2. **Foundation cliente (settimana 1)**: `customer_onboarding`, `whatsapp_reminders` (o `telegram_alerts_enabled`).
-3. **Booking experience (settimana 2)**: `waitlist_enabled`, `smart_upsell`, `post_visit_survey_enabled`.
-4. **Vendite (settimana 3)**: `packages_enabled`, `coupons_enabled`, `loyalty_enabled`, `referrals_enabled`.
-5. **Marketing automation (settimana 4)**: `birthday_campaign`, `reactivation_campaigns`, `reviews_harvester`, `customer_segments`.
-6. **Avanzate (mese 2+)**: `push_enabled`, `staff_gcal_sync`, `google_hours_sync`, `last_minute_promo`, `noshow_outreach`, `qr_promotions`, `suppliers_directory`, `stock_alerts`, `ai_content_generator`, `weekly_suggestions_enabled`, `monthly_report_enabled`, `bookings_drop_alert`, `advanced_customer_search`, `google_reserve`.
+Tutte le 101 skill partono OFF (eccetto `gdpr_consents` e `admin_inbox`, sempre ON). Accendere a ondate:
 
-Per ogni skill: leggere description + example nel modale, attivare il toggle, configurare i parametri (rate-limit, soglie, threshold) nella stessa schermata.
+- **Settimana 1 — Foundation**: `customer_onboarding`, `telegram_owner_alerts`, `whatsapp_reminders`
+- **Settimana 2 — Booking**: `waitlist`, `smart_upsell`, `post_visit_survey`, `staff_gcal_sync`
+- **Settimana 3 — Vendite**: `coupons`, `service_packages`, `loyalty`, `referrals`
+- **Settimana 4 — Marketing**: `reviews_harvester`, `birthday_campaign`, `reactivation_campaigns`, `customer_segments`
+- **Mese 2 — Avanzate**: `web_push`, `google_hours_sync`, `google_reserve`, `noshow_outreach`, `qr_promotions`, `suppliers_directory`, `stock_alerts`, `last_minute_promo`, `bookings_drop_alert`, `advanced_customer_search`, `activity_log`
+- **Mese 3 — AI premium**: `ai_content_generator`, `ai_weekly_suggestions`, `ai_monthly_report`
 
-### 7. Integrazioni esterne (richiedono account titolare)
+Per ogni skill: aprire il modale, leggere l'esempio italiano, configurare parametri (soglie/cooldown), confermare.
 
-| Servizio | Step | Tempo |
-|---|---|---|
-| **Gmail SMTP** | Account Gmail + 2FA + App Password generata da `https://myaccount.google.com/apppasswords` | 5 min |
-| **Telegram Bot** | `@BotFather` → `/newbot` → salvare token → `/start` al bot | 5 min |
-| **Google Cloud OAuth** | Console GCP → progetto → OAuth consent screen (external) → credentials → OAuth 2.0 client (Web). Redirect URI = `<SUPABASE_URL>/functions/v1/gcal-oauth` | 30 min |
-| **Google Calendar (per staff)** | Ogni operatore visita `/admin/staff/<id>/connect-gcal` → consenso Google → token salvato in `staff_gcal_tokens` | 2 min/operatore |
-| **Google Business Profile** | OAuth come sopra con scope `business.manage`. Inserire `location_id` (formato `accounts/X/locations/Y`) nella riga `salon_gbp_tokens` | 15 min |
-| **Reserve with Google** | Application al [Reserve with Google partner program](https://developers.google.com/maps-booking) | 1-2 settimane review |
-| **OpenAI API** | Account OpenAI Platform → API keys → carta di credito (~€10 budget mensile sufficiente) | 10 min |
-| **Web Push VAPID** | `npx web-push generate-vapid-keys` localmente → public key in `salon_settings.push_vapid_public_key` + private key nei secrets | 5 min |
+### Step 8 — Connessioni OAuth per-utente
 
-### 8. Test finale prima del lancio
+- **Google Calendar** — ogni barber: visitare `/admin/staff/<id>/connect-gcal` → consenso Google → token in `staff_gcal_tokens`. _~2 min/operatore_
+- **Google Business Profile** — solo titolare: visitare endpoint OAuth `gcal-oauth?scope=business.manage` → inserire `location_id` (`accounts/X/locations/Y`) in `salon_gbp_tokens`. _~10 min_
+- **Reserve with Google** — solo dopo approvazione partner. Configurare feed URL nel partner portal puntando a `/functions/v1/rwg-feed`.
 
-1. `npm run build` verde con tutte le 60+ pagine.
-2. `/admin/funzionalita` mostra 101 skill, tutte le scelte attivate sono ON.
-3. Inviare una notifica di test da `/admin/inbox` (azione "Test Router") → email arriva a indirizzo di prova + Telegram al titolare.
-4. Cancellare un appuntamento di test in `/profilo/appuntamenti` con lead-time >3h → entro 15 min, primo in waitlist (entry di prova) riceve match.
-5. Confermare lo slot via link nel messaggio → `appointments.status = booked`, `customer_packages.credits_remaining` decrementato se applicabile.
-6. Eseguire manualmente `gbp-hours-sync` → orari aggiornati sul profilo Google entro 5 min.
-7. Lighthouse desktop > 85 su `/`, `/servizi`, `/lavori`, `/prodotti`.
+### Step 9 — Test end-to-end (pre-lancio)
 
-### 9. Operatività ricorrente
+1. `npm run build` → 68+ pagine verdi.
+2. `/admin/funzionalita` → 101 skill visibili.
+3. **Router test**: notifica manuale da `/admin/inbox` → email + Telegram ricevuti.
+4. **Booking + coupon**: prenotare con codice `WELCOME-XXXX` (creato in `/admin/gamification`) → vedere sconto in summary → conferma → riga in `coupon_redemptions`.
+5. **Waitlist**: cliente cancella appointment >3h prima → entro 15 min, primo in lista riceve token → conferma → `appointments` aggiornato.
+6. **Reviews Harvester**: chiudere un appuntamento di test → entro 30 min messaggio cliente con link `/recensione/[token]` → 😊 redirect Google, 😞 form interno → riga in `admin_inbox_items`.
+7. **Referral**: utente A genera codice in `/profilo/referral` → utente B si registra con quel codice → coupon AMICO-XXXX → B completa primo appuntamento → A riceve GRAZIE-XXXX automatico.
+8. **AI content**: caricare foto in `/admin/contenuti-ai` → 3 caption + hashtag generati.
+9. **QR Promo**: generare batch 10 codici → stampa anteprima → scan QR su mobile apre `/coupon/[code]` con auto-copy.
+10. **GBP sync**: cambiare un orario in `/admin/impostazioni` → entro 5 min visibile sul profilo Google.
+11. Lighthouse desktop ≥85 su `/`, `/servizi`, `/lavori`, `/prodotti`.
 
-- **Backup**: Supabase fa snapshot daily, ma il titolare può anche scaricare CSV mensili da `/admin/clienti` → "Export CSV".
-- **Monitoraggio**: l'inbox `/admin/inbox` è la fonte di verità per tutto ciò che è successo nel sistema (notifiche inviate, cancellazioni, waitlist match, alert).
+### Step 10 — Operatività ricorrente
+
+- **Backup**: Supabase fa snapshot giornalieri automatici. Export CSV manuale da `/admin/clienti` quando serve.
+- **Inbox `/admin/inbox`**: fonte di verità di tutto ciò che il sistema fa.
+- **`/admin/log`**: audit trail completo per debugging post-mortem.
 - **Costi mensili attesi**:
   - Supabase Pro: ~€25
   - Gmail SMTP: gratis
   - Telegram Bot: gratis
-  - OpenAI API: ~€5-10 (sondaggi + report mensile + caption AI)
-  - Web Push: gratis
-  - Google APIs: gratis nei free tier (Calendar, Business Profile, Reserve)
-  - **Totale**: ~€30-35/mese
+  - OpenAI: ~€5-10 (AI weekly + monthly + content gen + no-show drafts)
+  - Web Push, Google Calendar, GBP, Reserve: gratis
+  - **Totale: ~€30-35/mese**
+
+### Step 11 — Cose che NON sono ancora pronte (rinviate)
+
+- `whatsapp_business_api` (#10) e `whatsapp_reminders` (#1): richiedono approvazione Meta Business + template — circa 1 mese di setup, NON inclusa nel codice.
+- `sms_notifications` (#2): nessun gateway integrato, da scegliere (Twilio/MessageBird) a posteriori se serve fallback.
+- `fatture_in_cloud` (#81): integrazione opzionale per commercialista, da fare on-demand.
