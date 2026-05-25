@@ -42,6 +42,47 @@ const QUIET_HOURS_BYPASS = new Set<string>([
   'owner_tech_error',
 ]);
 
+// Map event_type → required consent_type (customer_consents ledger).
+// Events that are purely transactional/service (cancellation by salon,
+// waitlist response to own request, package receipt) do NOT require a
+// consent grant — refusing them would be hostile to the customer.
+const EVENT_REQUIRED_CONSENT: Record<string, string> = {
+  // Marketing-class — require explicit marketing consent
+  birthday: 'marketing',
+  reactivation: 'marketing',
+  last_minute_promo: 'marketing',
+  coupon_assigned: 'marketing',
+  review_request: 'marketing',
+  post_visit_survey: 'marketing',
+  // Reminder-class — require reminder consent (which is the "consigliato"
+  // pre-checked option in onboarding; customer can still revoke)
+  appointment_reminder: 'appointment_reminders',
+  appointment_reminder_short: 'appointment_reminders',
+  appointment_confirmation: 'appointment_reminders',
+  // Referral-class
+  referral_credit_earned: 'referral_program',
+  // Transactional (NO consent needed)
+  // - appointment_cancelled_by_salon
+  // - waitlist_match
+  // - package_purchased
+  // - package_expiring
+};
+
+async function hasGrantedConsent(
+  supabase: ReturnType<typeof getSupabase>,
+  customerId: string,
+  consentType: string,
+): Promise<boolean> {
+  const { data } = await supabase
+    .from('customer_consents_current')
+    .select('granted')
+    .eq('customer_id', customerId)
+    .eq('consent_type', consentType)
+    .maybeSingle();
+  if (!data) return false;
+  return Boolean((data as { granted: boolean }).granted);
+}
+
 interface CustomerRow {
   id: string;
   email: string | null;
@@ -171,6 +212,18 @@ async function dispatchCustomer(args: CustomerSendArgs) {
 
   if (isOptedOut(customer, args.event_type)) {
     return { ok: false, reason: 'opt_out', skipped: 'opt_out' };
+  }
+
+  // GDPR consent gate — block marketing/reminder/referral events when the
+  // customer has not granted (or has revoked) the matching consent type.
+  // Transactional events (waitlist response, cancellation by salon, package
+  // receipts) intentionally skip this check.
+  const requiredConsent = EVENT_REQUIRED_CONSENT[args.event_type];
+  if (requiredConsent) {
+    const granted = await hasGrantedConsent(supabase, customer.id, requiredConsent);
+    if (!granted) {
+      return { ok: false, reason: 'consent_missing', skipped: 'consent_missing' };
+    }
   }
 
   if (
