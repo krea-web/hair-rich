@@ -10,10 +10,19 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { corsHeaders } from '../_shared/cors.ts';
 import { getSupabase } from '../_shared/supabaseAdmin.ts';
+import { acquireCronLock, todayKey } from '../_shared/cronLock.ts';
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   const supabase = getSupabase();
+
+  const lockPeriod = todayKey();
+  if (!(await acquireCronLock(supabase, 'segments-classifier', lockPeriod))) {
+    return new Response(
+      JSON.stringify({ ok: true, skipped: 'already_ran_for_period', period: lockPeriod }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
 
   const { data: skill } = await supabase
     .from('skills_config')

@@ -15,6 +15,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { corsHeaders } from '../_shared/cors.ts';
 import { getSupabase } from '../_shared/supabaseAdmin.ts';
+import { acquireCronLock, todayKey } from '../_shared/cronLock.ts';
 
 const MILESTONES = [30, 7, 1];
 
@@ -22,6 +23,15 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   const supabase = getSupabase();
+
+  const lockPeriod = todayKey();
+  if (!(await acquireCronLock(supabase, 'package-expiry-reminders', lockPeriod))) {
+    return new Response(
+      JSON.stringify({ ok: true, skipped: 'already_ran_for_period', period: lockPeriod }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+
   const summary = {
     started_at: new Date().toISOString(),
     candidates: 0,

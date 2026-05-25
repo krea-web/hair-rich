@@ -15,6 +15,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { corsHeaders } from '../_shared/cors.ts';
 import { getSupabase } from '../_shared/supabaseAdmin.ts';
+import { acquireCronLock, bucket30Key } from '../_shared/cronLock.ts';
 
 const EVENT_TYPE = 'review_request';
 const SITE_URL = Deno.env.get('PUBLIC_SITE_URL') ?? 'https://hairrich.it';
@@ -31,6 +32,14 @@ interface Candidate {
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   const supabase = getSupabase();
+
+  const lockPeriod = bucket30Key();
+  if (!(await acquireCronLock(supabase, 'reviews-harvester', lockPeriod))) {
+    return new Response(
+      JSON.stringify({ ok: true, skipped: 'already_ran_for_period', period: lockPeriod }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
 
   const { data: skill } = await supabase
     .from('skills_config')

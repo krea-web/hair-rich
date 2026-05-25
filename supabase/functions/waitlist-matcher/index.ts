@@ -15,6 +15,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { corsHeaders } from '../_shared/cors.ts';
 import { getSupabase } from '../_shared/supabaseAdmin.ts';
+import { acquireCronLock, bucket15Key } from '../_shared/cronLock.ts';
 
 interface MatchedEntry {
   id: string;
@@ -36,6 +37,15 @@ serve(async (req) => {
   }
 
   const supabase = getSupabase();
+
+  const lockPeriod = bucket15Key();
+  if (!(await acquireCronLock(supabase, 'waitlist-matcher', lockPeriod))) {
+    return new Response(
+      JSON.stringify({ ok: true, skipped: 'already_ran_for_period', period: lockPeriod }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+
   const startedAt = new Date().toISOString();
   const summary = {
     started_at: startedAt,

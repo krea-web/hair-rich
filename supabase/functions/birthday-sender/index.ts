@@ -13,6 +13,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { corsHeaders } from '../_shared/cors.ts';
 import { getSupabase } from '../_shared/supabaseAdmin.ts';
+import { acquireCronLock, todayKey } from '../_shared/cronLock.ts';
 
 const EVENT_TYPE = 'birthday_greeting';
 const COUPON_VALIDITY_DAYS = 7;
@@ -28,6 +29,16 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   const supabase = getSupabase();
+
+  // 0. Idempotency lock — at most one run per calendar day.
+  const lockPeriod = todayKey();
+  const lockAcquired = await acquireCronLock(supabase, 'birthday-sender', lockPeriod);
+  if (!lockAcquired) {
+    return new Response(
+      JSON.stringify({ ok: true, skipped: 'already_ran_for_period', period: lockPeriod }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
 
   // 1. Feature flag check
   const { data: skill } = await supabase

@@ -12,12 +12,21 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { corsHeaders } from '../_shared/cors.ts';
 import { getSupabase } from '../_shared/supabaseAdmin.ts';
+import { acquireCronLock, isoWeekKey } from '../_shared/cronLock.ts';
 
 const MODEL = 'gpt-4o-mini';
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   const supabase = getSupabase();
+
+  const lockPeriod = isoWeekKey();
+  if (!(await acquireCronLock(supabase, 'ai-weekly-suggestions', lockPeriod))) {
+    return new Response(
+      JSON.stringify({ ok: true, skipped: 'already_ran_for_period', period: lockPeriod }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
 
   const { data: skill } = await supabase
     .from('skills_config')
