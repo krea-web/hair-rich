@@ -34,6 +34,7 @@ import AdminClientiCercaPage from "./views/clienti-cerca";
 import AdminContenutiAiPage from "./views/contenuti-ai";
 import AdminFornitoriPage from "./views/fornitori";
 import AdminQrPromoPage from "./views/qr-promo";
+import AdminSalutePage from "./views/salute";
 
 function pickView(pathname: string) {
     const p = pathname.replace(/\/$/, "");
@@ -94,6 +95,8 @@ function pickView(pathname: string) {
             return <AdminFornitoriPage />;
         case "/admin/qr-promo":
             return <AdminQrPromoPage />;
+        case "/admin/salute":
+            return <AdminSalutePage />;
         default:
             return (
                 <div className="p-12 text-center text-silver">

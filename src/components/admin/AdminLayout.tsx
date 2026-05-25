@@ -17,6 +17,7 @@ const MAIN_MENU = [
     { href: "/admin/clienti-no-show", label: "No-show", icon: "svg-users" },
     { href: "/admin/ordini", label: "Ordini & Cassa", icon: "svg-wallet" },
     { href: "/admin/foto-risultati", label: "Foto risultato", icon: "svg-camera" },
+    { href: "/admin/salute", label: "Salute sistema", icon: "svg-pulse" },
 ];
 
 const SETTINGS_MENU = [
@@ -115,6 +116,12 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                     <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
                         <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
                         <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
+                    </svg>
+                );
+            case "svg-pulse":
+                return (
+                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
                     </svg>
                 );
         }
