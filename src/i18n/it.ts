@@ -545,27 +545,57 @@ export const it: Dict = {
         backHome: "← Torna alla home",
         privacy: {
             title: "Informativa sulla Privacy",
-            lastUpdate: "Ultimo aggiornamento: Maggio 2026",
+            lastUpdate: "Versione policy: 2026-05-23 · Ultimo aggiornamento: Maggio 2026",
             sections: [
                 {
                     heading: "1. Titolare del trattamento",
                     body:
-                        "Il titolare del trattamento dei dati è Hair Rich Olbia, con sede in Via Regina Elena 33/A, Olbia (SS).",
+                        "Il titolare del trattamento è Hair Rich Olbia, con sede in Via Regina Elena 33/A, Olbia (SS). Per qualsiasi richiesta relativa ai tuoi dati personali puoi scriverci a info@hairrich.it.",
                 },
                 {
-                    heading: "2. Finalità del trattamento",
+                    heading: "2. Base giuridica e finalità",
                     body:
-                        "I dati forniti verranno utilizzati esclusivamente per la gestione delle prenotazioni, l'erogazione dei servizi richiesti e, previo consenso esplicito, per comunicazioni di marketing.",
+                        "Trattiamo i tuoi dati personali in conformità al Regolamento UE 2016/679 (GDPR) e al Codice Privacy italiano. Le finalità sono: (a) esecuzione del contratto di servizio (gestione prenotazioni, erogazione tagli e trattamenti, ricevute) ai sensi dell'art. 6.1.b GDPR; (b) finalità ulteriori basate sul tuo consenso esplicito (art. 6.1.a), elencate al punto 3.",
                 },
                 {
-                    heading: "3. Condivisione dei dati",
+                    heading: "3. Consensi separati e revocabili",
                     body:
-                        "I tuoi dati non verranno ceduti a terzi per scopi promozionali. Potranno essere condivisi con fornitori di servizi essenziali (sistemi di prenotazione, invio SMS) rigorosamente conformi al GDPR.",
+                        "Al primo accesso all'area cliente ti chiediamo cinque consensi distinti, ognuno facoltativo e revocabile in qualsiasi momento da /profilo → Impostazioni. Ogni grant/revoca viene registrato nel nostro audit log immutabile con timestamp, versione policy mostrata, IP e user agent. I cinque consensi sono: (1) Marketing e promozioni — sconti, anteprime, newsletter; (2) Promemoria appuntamenti — messaggio 24h e 2h prima del taglio; (3) Foto prima/dopo — archivio visibile solo a te in area personale; (4) Profilazione comportamentale — campagne mirate basate sulla storia visite (compleanno, riattivazione); (5) Programma referral — partecipazione al passaparola.",
                 },
                 {
-                    heading: "4. I tuoi diritti",
+                    heading: "4. Categorie di dati trattati",
                     body:
-                        "Hai il diritto di accedere, rettificare o richiedere la cancellazione dei tuoi dati ('Diritto all'Oblio') in ogni momento tramite la tua Area Personale o contattandoci via email.",
+                        "Dati identificativi (nome, cognome), contatti (email, telefono), data di nascita (solo se conferita per consenso 4), storico appuntamenti, foto pre/post (solo con consenso 3), preferenze di servizio, codici referral generati o utilizzati, consensi prestati e revocati con relative date.",
+                },
+                {
+                    heading: "5. Conservazione dei dati",
+                    body:
+                        "Conserviamo i dati per la durata del rapporto e per i 10 anni successivi richiesti dalla normativa fiscale (D.P.R. 600/1973). Le foto pre/post vengono eliminate entro 24 mesi dall'ultima visita salvo richiesta del cliente di conservazione estesa. Il ledger dei consensi è conservato a tempo indeterminato come prova del consenso ai sensi dell'art. 7.1 GDPR.",
+                },
+                {
+                    heading: "6. Destinatari e responsabili esterni",
+                    body:
+                        "I tuoi dati non vengono ceduti a terzi per scopi commerciali. Sono ospitati su Supabase (server UE — Francoforte) e possono essere processati da: Google Workspace (invio email transazionali), Telegram (notifiche al titolare per cancellazioni e ordini), OpenAI (solo testi anonimizzati per generazione automatica di bozze al titolare, mai PII). Tutti i fornitori sono GDPR-compliant e accessibili in sub-DPA su richiesta.",
+                },
+                {
+                    heading: "7. Trasferimenti extra-UE",
+                    body:
+                        "OpenAI è basato negli Stati Uniti. Il trasferimento avviene sulla base delle Standard Contractual Clauses (SCC) della Commissione Europea ed è limitato a dati strettamente anonimizzati. Per ogni altra elaborazione, i dati restano nell'Unione Europea.",
+                },
+                {
+                    heading: "8. I tuoi diritti GDPR",
+                    body:
+                        "Hai diritto a: accedere ai tuoi dati (art. 15), rettificarli (art. 16), cancellarli — diritto all'oblio (art. 17), limitarne il trattamento (art. 18), riceverli in formato portabile (art. 20 — disponibile come export JSON da /profilo → Impostazioni), opporti al trattamento (art. 21), revocare i consensi senza che ciò pregiudichi i trattamenti pregressi (art. 7.3). Puoi esercitare questi diritti scrivendo a info@hairrich.it. Hai inoltre diritto di proporre reclamo al Garante per la Protezione dei Dati Personali (www.garanteprivacy.it).",
+                },
+                {
+                    heading: "9. Sicurezza",
+                    body:
+                        "Adottiamo misure tecniche e organizzative adeguate: connessioni cifrate TLS, Row Level Security a livello database, autenticazione a due fattori per il personale, audit log immutabile di tutte le modifiche ai dati sensibili. Le password non vengono mai memorizzate in chiaro.",
+                },
+                {
+                    heading: "10. Modifiche all'informativa",
+                    body:
+                        "Eventuali modifiche sostanziali ti verranno comunicate al login successivo e ti chiederemo di rinnovare i consensi sulla nuova versione. La versione corrente è indicata in alto su questa pagina.",
                 },
             ],
         },
@@ -576,17 +606,27 @@ export const it: Dict = {
                 {
                     heading: "Cosa sono i cookie?",
                     body:
-                        "I cookie sono piccoli file di testo che vengono salvati sul tuo dispositivo quando visiti il nostro sito Web.",
+                        "I cookie sono piccoli file di testo memorizzati sul tuo dispositivo per far funzionare correttamente alcune funzionalità del sito. Insieme ai cookie, su questo sito utilizziamo anche localStorage e service worker (per la modalità offline / installazione PWA).",
                 },
                 {
-                    heading: "Cookie essenziali",
+                    heading: "Cookie strettamente necessari",
                     body:
-                        "Utilizziamo cookie essenziali (First-Party) per mantenere attiva la tua sessione di accesso e per far funzionare correttamente il carrello e il booking engine. Questi cookie non richiedono un preventivo consenso in quanto indispensabili.",
+                        "Utilizziamo cookie First-Party essenziali per: (1) mantenere attiva la sessione di accesso (Supabase Auth); (2) ricordare i prodotti nel carrello; (3) salvare lo stato del booking drawer durante la prenotazione; (4) memorizzare la lingua preferita. Questi cookie non richiedono consenso preventivo (art. 6.1.b GDPR) in quanto indispensabili al servizio richiesto.",
+                },
+                {
+                    heading: "Notifiche push del browser",
+                    body:
+                        "Se hai attivato le notifiche push (opt-in esplicito dal prompt del browser), salviamo un endpoint anonimo che ci permette di inviarti promemoria appuntamenti. Puoi disattivarle in qualsiasi momento dalle impostazioni del browser o da /profilo → Impostazioni.",
                 },
                 {
                     heading: "Cookie analitici e marketing",
                     body:
-                        "Potremmo utilizzare script analitici anonimizzati in futuro, per i quali chiederemo il tuo consenso esplicito prima dell'attivazione.",
+                        "Al momento NON utilizziamo Google Analytics né script di tracking terzi. Se in futuro li attiveremo, te lo chiederemo con un banner di consenso esplicito prima del loro caricamento. Non vediamo alcun cookie commerciale finché non lo abiliti.",
+                },
+                {
+                    heading: "Come disattivarli",
+                    body:
+                        "Puoi cancellare i cookie e i dati locali dal pannello del tuo browser. Tieni presente che disattivando i cookie essenziali, login e carrello smettono di funzionare.",
                 },
             ],
         },
@@ -597,17 +637,37 @@ export const it: Dict = {
                 {
                     heading: "1. Prenotazioni",
                     body:
-                        "Le prenotazioni effettuate sul sito sono vincolanti. Accettando questo regolamento ti impegni a presentarti all'appuntamento all'orario stabilito.",
+                        "Le prenotazioni effettuate dall'area online sono vincolanti dal momento della conferma. Ti chiediamo di presentarti puntuale: in caso di ritardo superiore ai 10 minuti potremmo dover accorciare il servizio o riprogrammare l'appuntamento per non penalizzare i clienti successivi.",
                 },
                 {
-                    heading: "2. Cancellazione e No-Show",
+                    heading: "2. Cancellazione e modifica",
                     body:
-                        "Ti preghiamo di cancellare o modificare il tuo appuntamento con almeno 12 ore di preavviso. In caso di mancata presentazione reiterata ('No-Show') ci riserviamo il diritto di limitare le prenotazioni future o sanzionare il Trust Score del tuo account.",
+                        "Puoi cancellare o spostare il tuo appuntamento gratuitamente da /profilo → Appuntamenti con almeno 4 ore di preavviso (la soglia esatta è configurabile dal salone ed è sempre indicata al momento della cancellazione). Sotto la soglia minima non è possibile cancellare in autonomia: contatta il salone via telefono o WhatsApp.",
                 },
                 {
-                    heading: "3. Prezzi e pagamenti",
+                    heading: "3. Mancata presentazione (no-show)",
                     body:
-                        "I prezzi indicati nel Booking Engine e nello Shop sono espressi in Euro (€) e sono finali. Il pagamento dei servizi si effettua generalmente in salone post-erogazione.",
+                        "Non utilizziamo black-list automatiche né penalità automatiche. In caso di assenza ti contatteremo personalmente, con un messaggio empatico, per capire cosa è successo e ripianificare. Una storia ripetuta di no-show senza preavviso ci darà la facoltà — a discrezione del titolare — di richiedere un acconto per le prenotazioni future.",
+                },
+                {
+                    heading: "4. Pacchetti prepagati",
+                    body:
+                        "I pacchetti (es. 5 tagli) si acquistano direttamente in salone (cash, POS o bonifico). Riceverai una ricevuta digitale via email. Ogni credito ha una validità indicata nella conferma. I crediti non utilizzati alla scadenza si considerano consumati. In caso di chiusura prolungata del salone, le scadenze vengono automaticamente estese del periodo equivalente.",
+                },
+                {
+                    heading: "5. Coupon e programmi fedeltà",
+                    body:
+                        "Coupon, sconti compleanno, programmi loyalty e referral sono strumenti facoltativi attivati o disattivati a discrezione del salone. Quando attivi, le condizioni d'uso specifiche (validità, importo minimo, cumulabilità) sono indicate sul singolo coupon. I crediti maturati non sono convertibili in denaro.",
+                },
+                {
+                    heading: "6. Prezzi e pagamenti",
+                    body:
+                        "I prezzi indicati nel booking engine e nello shop sono in Euro (€), IVA inclusa, e sono finali. Il pagamento dei servizi avviene in salone al termine dell'erogazione tramite contanti, POS contactless o bonifico. Non gestiamo pagamenti online per i servizi.",
+                },
+                {
+                    heading: "7. Foro competente",
+                    body:
+                        "Per ogni controversia derivante dall'uso del sito o dai servizi è competente in via esclusiva il Foro di Tempio Pausania. Si applica la legge italiana.",
                 },
             ],
         },

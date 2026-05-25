@@ -523,27 +523,57 @@ export const fr: Dict = {
         backHome: "← Retour à l'accueil",
         privacy: {
             title: "Politique de confidentialité",
-            lastUpdate: "Dernière mise à jour : Mai 2026",
+            lastUpdate: "Version de la politique : 2026-05-23 · Dernière mise à jour : Mai 2026",
             sections: [
                 {
                     heading: "1. Responsable du traitement",
                     body:
-                        "Le responsable du traitement est Hair Rich Olbia, situé Via Regina Elena 33/A, Olbia (SS), Italie.",
+                        "Le responsable du traitement est Hair Rich Olbia, Via Regina Elena 33/A, Olbia (SS), Italie. Pour toute demande relative à vos données personnelles, écrivez à info@hairrich.it.",
                 },
                 {
-                    heading: "2. Finalité du traitement",
+                    heading: "2. Base juridique et finalités",
                     body:
-                        "Les données fournies seront utilisées exclusivement pour la gestion des réservations, la prestation des services demandés et, avec consentement explicite, pour des communications marketing.",
+                        "Nous traitons vos données conformément au Règlement UE 2016/679 (RGPD) et au Code de la vie privée italien. Finalités : (a) exécution du contrat de service (gestion des réservations, prestation, reçus) au titre de l'art. 6.1.b RGPD ; (b) finalités complémentaires basées sur votre consentement explicite (art. 6.1.a), détaillées au point 3.",
                 },
                 {
-                    heading: "3. Partage des données",
+                    heading: "3. Consentements séparés et révocables",
                     body:
-                        "Vos données ne seront pas cédées à des tiers à des fins promotionnelles. Elles peuvent être partagées avec des prestataires essentiels (systèmes de réservation, envoi de SMS) strictement conformes au RGPD.",
+                        "Lors de votre première connexion à l'espace client nous demandons cinq consentements distincts, chacun facultatif et révocable à tout moment depuis /profilo → Paramètres. Chaque accord/révocation est enregistré dans notre journal d'audit immuable avec horodatage, version de la politique affichée, IP et user agent. Les cinq consentements : (1) Marketing et promotions ; (2) Rappels de rendez-vous (messages 24h et 2h avant) ; (3) Photos avant/après (archive privée) ; (4) Profilage comportemental (campagnes ciblées anniversaire, réactivation) ; (5) Programme de parrainage.",
                 },
                 {
-                    heading: "4. Vos droits",
+                    heading: "4. Catégories de données",
                     body:
-                        "Vous avez le droit d'accéder, de rectifier ou de demander la suppression de vos données ('Droit à l'oubli') à tout moment via votre Espace Personnel ou en nous contactant par email.",
+                        "Données d'identification (nom, prénom), contact (email, téléphone), date de naissance (uniquement avec consentement 4), historique des rendez-vous, photos avant/après (uniquement avec consentement 3), préférences de service, codes de parrainage, consentements accordés et révoqués avec leurs horodatages.",
+                },
+                {
+                    heading: "5. Conservation des données",
+                    body:
+                        "Nous conservons les données pour la durée de la relation et les 10 années suivantes requises par la réglementation fiscale italienne (D.P.R. 600/1973). Les photos avant/après sont supprimées dans les 24 mois suivant la dernière visite sauf demande de conservation prolongée. Le journal des consentements est conservé indéfiniment comme preuve de consentement (art. 7.1 RGPD).",
+                },
+                {
+                    heading: "6. Destinataires et sous-traitants",
+                    body:
+                        "Vos données ne sont pas cédées à des tiers à des fins commerciales. Hébergées sur Supabase (serveurs UE — Francfort), elles peuvent être traitées par : Google Workspace (emails transactionnels), Telegram (notifications au gérant), OpenAI (uniquement textes anonymisés pour brouillons IA destinés au gérant, jamais de données personnelles). Tous les prestataires sont conformes au RGPD ; sous-DPA disponibles sur demande.",
+                },
+                {
+                    heading: "7. Transferts hors UE",
+                    body:
+                        "OpenAI est basé aux États-Unis. Le transfert s'appuie sur les Clauses Contractuelles Types (CCT) de la Commission européenne et est limité à des données strictement anonymisées. Pour tout autre traitement, les données restent dans l'Union européenne.",
+                },
+                {
+                    heading: "8. Vos droits RGPD",
+                    body:
+                        "Droit d'accès (art. 15), de rectification (art. 16), d'effacement — droit à l'oubli (art. 17), de limitation (art. 18), de portabilité (art. 20 — export JSON depuis /profilo → Paramètres), d'opposition (art. 21), de retrait du consentement sans préjudice des traitements antérieurs (art. 7.3). Écrivez à info@hairrich.it pour exercer ces droits. Vous pouvez également déposer plainte auprès de l'autorité italienne (www.garanteprivacy.it).",
+                },
+                {
+                    heading: "9. Sécurité",
+                    body:
+                        "Mesures techniques et organisationnelles adéquates : connexions chiffrées TLS, Row Level Security au niveau base de données, authentification à deux facteurs pour le personnel, journal d'audit immuable. Les mots de passe ne sont jamais stockés en clair.",
+                },
+                {
+                    heading: "10. Modifications de la politique",
+                    body:
+                        "Les modifications substantielles vous seront communiquées à la connexion suivante et nous vous demanderons de renouveler les consentements sur la nouvelle version. La version actuelle est indiquée en haut de cette page.",
                 },
             ],
         },
@@ -554,17 +584,27 @@ export const fr: Dict = {
                 {
                     heading: "Que sont les cookies ?",
                     body:
-                        "Les cookies sont de petits fichiers texte enregistrés sur votre appareil lorsque vous visitez notre site Web.",
+                        "Les cookies sont de petits fichiers texte enregistrés sur votre appareil. Avec les cookies, ce site utilise également le localStorage et les service workers (mode hors ligne / installation PWA).",
                 },
                 {
-                    heading: "Cookies essentiels",
+                    heading: "Cookies strictement nécessaires",
                     body:
-                        "Nous utilisons des cookies essentiels (First-Party) pour maintenir votre session active et faire fonctionner le panier et le moteur de réservation. Ils ne nécessitent pas de consentement préalable car ils sont indispensables.",
+                        "Nous utilisons des cookies essentiels First-Party pour : (1) maintenir votre session de connexion (Supabase Auth) ; (2) mémoriser les produits du panier ; (3) sauvegarder l'état du tiroir de réservation ; (4) mémoriser votre langue préférée. Ces cookies ne nécessitent pas de consentement préalable (art. 6.1.b RGPD) car indispensables au service demandé.",
+                },
+                {
+                    heading: "Notifications push du navigateur",
+                    body:
+                        "Si vous activez les notifications push (opt-in explicite via le navigateur), nous enregistrons un endpoint anonyme nous permettant d'envoyer des rappels de rendez-vous. Désactivable à tout moment dans les paramètres du navigateur ou depuis /profilo → Paramètres.",
                 },
                 {
                     heading: "Cookies analytiques et marketing",
                     body:
-                        "Nous pourrions utiliser à l'avenir des scripts analytiques anonymisés, pour lesquels nous demanderons votre consentement explicite avant activation.",
+                        "Nous n'utilisons actuellement PAS Google Analytics ni de scripts de tracking tiers. Si nous les activons à l'avenir, nous demanderons votre consentement explicite avant chargement.",
+                },
+                {
+                    heading: "Comment les désactiver",
+                    body:
+                        "Vous pouvez effacer les cookies et données locales depuis votre navigateur. Notez que désactiver les cookies essentiels casse la connexion et le panier.",
                 },
             ],
         },
@@ -575,17 +615,37 @@ export const fr: Dict = {
                 {
                     heading: "1. Réservations",
                     body:
-                        "Les réservations effectuées sur le site sont contraignantes. En acceptant ce règlement, vous vous engagez à vous présenter à l'heure convenue.",
+                        "Les réservations effectuées en ligne sont contraignantes dès leur confirmation. Soyez ponctuel : en cas de retard de plus de 10 minutes nous pourrions raccourcir la prestation ou reprogrammer pour ne pas pénaliser les clients suivants.",
                 },
                 {
-                    heading: "2. Annulation et No-Show",
+                    heading: "2. Annulation et modification",
                     body:
-                        "Merci d'annuler ou de modifier votre rendez-vous au moins 12 heures à l'avance. En cas de 'No-Show' répété, nous nous réservons le droit de limiter les réservations futures ou de pénaliser le Trust Score de votre compte.",
+                        "Vous pouvez annuler ou déplacer votre rendez-vous gratuitement depuis /profilo → Rendez-vous avec au moins 4 heures de préavis (seuil configurable par le salon, toujours indiqué au moment de l'annulation). Sous le seuil minimum l'annulation en libre-service est désactivée : contactez le salon par téléphone ou WhatsApp.",
                 },
                 {
-                    heading: "3. Prix et paiements",
+                    heading: "3. Absence non signalée (no-show)",
                     body:
-                        "Les prix indiqués dans le moteur de réservation et la boutique sont en euros (€) et finaux. Le paiement des services s'effectue généralement en caisse après prestation.",
+                        "Pas de liste noire automatique ni de pénalités automatiques. En cas d'absence nous vous contactons personnellement, avec un message empathique, pour comprendre et reprogrammer. Un historique répété de no-show sans préavis nous donne la faculté — à la discrétion du gérant — de demander un acompte pour les futures réservations.",
+                },
+                {
+                    heading: "4. Forfaits prépayés",
+                    body:
+                        "Les forfaits (ex. 5 coupes) s'achètent directement au salon (espèces, carte, virement). Vous recevez un reçu numérique par email. Chaque crédit a une validité indiquée dans la confirmation. Les crédits non utilisés à l'expiration sont considérés comme consommés. En cas de fermeture prolongée du salon, les expirations sont automatiquement prolongées.",
+                },
+                {
+                    heading: "5. Coupons et programmes fidélité",
+                    body:
+                        "Coupons, remises anniversaire, fidélité et parrainage sont des fonctionnalités optionnelles activées ou désactivées à la discrétion du salon. Lorsqu'activées, les conditions spécifiques sont indiquées sur chaque coupon. Les crédits accumulés ne sont pas convertibles en numéraire.",
+                },
+                {
+                    heading: "6. Prix et paiement",
+                    body:
+                        "Les prix sont en euros (€), TVA incluse, et finaux. Le paiement des prestations s'effectue en salon après la prestation en espèces, carte sans contact ou virement. Nous ne gérons pas le paiement en ligne pour les services.",
+                },
+                {
+                    heading: "7. Juridiction compétente",
+                    body:
+                        "Pour tout litige relatif à l'utilisation du site ou des services, le Tribunal de Tempio Pausania a une compétence exclusive. La loi italienne s'applique.",
                 },
             ],
         },

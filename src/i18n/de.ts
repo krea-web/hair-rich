@@ -522,27 +522,57 @@ export const de: Dict = {
         backHome: "← Zurück zur Startseite",
         privacy: {
             title: "Datenschutzerklärung",
-            lastUpdate: "Letzte Aktualisierung: Mai 2026",
+            lastUpdate: "Richtlinien-Version: 2026-05-23 · Letzte Aktualisierung: Mai 2026",
             sections: [
                 {
                     heading: "1. Verantwortlicher",
                     body:
-                        "Verantwortlicher für die Datenverarbeitung ist Hair Rich Olbia, Via Regina Elena 33/A, Olbia (SS), Italien.",
+                        "Verantwortlicher ist Hair Rich Olbia, Via Regina Elena 33/A, Olbia (SS), Italien. Für jede Anfrage zu deinen personenbezogenen Daten schreibe an info@hairrich.it.",
                 },
                 {
-                    heading: "2. Zweck der Verarbeitung",
+                    heading: "2. Rechtsgrundlage und Zwecke",
                     body:
-                        "Die bereitgestellten Daten werden ausschließlich für die Verwaltung von Buchungen, die Erbringung der angeforderten Dienste und, mit ausdrücklicher Zustimmung, für Marketing-Mitteilungen verwendet.",
+                        "Wir verarbeiten deine Daten gemäß EU-Verordnung 2016/679 (DSGVO) und dem italienischen Datenschutzkodex. Zwecke: (a) Erfüllung des Dienstleistungsvertrags (Buchungsverwaltung, Leistungserbringung, Belege) nach Art. 6.1.b DSGVO; (b) weitere Zwecke auf Grundlage deiner ausdrücklichen Einwilligung (Art. 6.1.a), siehe Punkt 3.",
                 },
                 {
-                    heading: "3. Datenweitergabe",
+                    heading: "3. Separate, widerrufbare Einwilligungen",
                     body:
-                        "Deine Daten werden nicht zu Werbezwecken an Dritte weitergegeben. Sie können an essenzielle Dienstleister (Buchungssysteme, SMS-Versand) weitergegeben werden, die strikt DSGVO-konform sind.",
+                        "Beim ersten Login fragen wir fünf getrennte Einwilligungen ab, jede freiwillig und jederzeit widerrufbar unter /profilo → Einstellungen. Jede Erteilung/jeder Widerruf wird in unserem unveränderlichen Audit-Log mit Zeitstempel, gezeigter Richtlinien-Version, IP und User Agent festgehalten. Die fünf Einwilligungen: (1) Marketing & Aktionen; (2) Terminerinnerungen (Nachricht 24h und 2h vorher); (3) Vorher/Nachher-Fotos (privates Archiv); (4) Verhaltensbasiertes Profiling (Geburtstags-/Reaktivierungs-Kampagnen); (5) Empfehlungsprogramm.",
                 },
                 {
-                    heading: "4. Deine Rechte",
+                    heading: "4. Datenkategorien",
                     body:
-                        "Du hast jederzeit das Recht auf Zugang, Berichtigung oder Löschung deiner Daten ('Recht auf Vergessenwerden') über deinen persönlichen Bereich oder per E-Mail.",
+                        "Identifikationsdaten (Name), Kontakt (E-Mail, Telefon), Geburtsdatum (nur mit Einwilligung 4), Terminhistorie, Vorher/Nachher-Fotos (nur mit Einwilligung 3), Servicepräferenzen, Empfehlungscodes, Einwilligungen mit Zeitstempel.",
+                },
+                {
+                    heading: "5. Datenaufbewahrung",
+                    body:
+                        "Wir speichern Daten für die Dauer der Geschäftsbeziehung und die 10 darauffolgenden Jahre, die von der italienischen Steuergesetzgebung (D.P.R. 600/1973) gefordert werden. Fotos werden 24 Monate nach dem letzten Besuch gelöscht, sofern keine längere Aufbewahrung gewünscht wird. Das Einwilligungs-Log wird unbefristet als Nachweis der Einwilligung (Art. 7.1 DSGVO) aufbewahrt.",
+                },
+                {
+                    heading: "6. Empfänger und Auftragsverarbeiter",
+                    body:
+                        "Deine Daten werden nicht zu kommerziellen Zwecken an Dritte verkauft. Sie werden auf Supabase gehostet (EU-Server — Frankfurt) und können verarbeitet werden von: Google Workspace (transaktionale E-Mails), Telegram (Inhaber-Benachrichtigungen), OpenAI (nur anonymisierte Texte für KI-Entwürfe an den Inhaber, niemals personenbezogene Daten). Alle Anbieter sind DSGVO-konform; Unter-AVV auf Anfrage.",
+                },
+                {
+                    heading: "7. Übermittlung außerhalb der EU",
+                    body:
+                        "OpenAI hat den Sitz in den USA. Die Übermittlung erfolgt auf Basis der Standardvertragsklauseln (SCC) der Europäischen Kommission und ist auf streng anonymisierte Daten beschränkt. Bei jeder anderen Verarbeitung bleiben die Daten in der EU.",
+                },
+                {
+                    heading: "8. Deine DSGVO-Rechte",
+                    body:
+                        "Recht auf Auskunft (Art. 15), Berichtigung (Art. 16), Löschung — Recht auf Vergessenwerden (Art. 17), Einschränkung (Art. 18), Datenübertragbarkeit (Art. 20 — JSON-Export unter /profilo → Einstellungen), Widerspruch (Art. 21), Widerruf der Einwilligung ohne Auswirkung auf vorhergehende Verarbeitungen (Art. 7.3). Schreibe an info@hairrich.it. Du hast außerdem das Recht, Beschwerde bei der italienischen Datenschutzbehörde (www.garanteprivacy.it) einzulegen.",
+                },
+                {
+                    heading: "9. Sicherheit",
+                    body:
+                        "Wir setzen angemessene technische und organisatorische Maßnahmen ein: TLS-verschlüsselte Verbindungen, Row Level Security auf Datenbankebene, Zwei-Faktor-Authentifizierung für das Personal, unveränderliches Audit-Log aller Änderungen sensibler Daten. Passwörter werden niemals im Klartext gespeichert.",
+                },
+                {
+                    heading: "10. Änderungen der Richtlinie",
+                    body:
+                        "Wesentliche Änderungen werden beim nächsten Login mitgeteilt und wir bitten dich, die Einwilligungen für die neue Version zu erneuern. Die aktuelle Version steht oben auf dieser Seite.",
                 },
             ],
         },
@@ -553,17 +583,27 @@ export const de: Dict = {
                 {
                     heading: "Was sind Cookies?",
                     body:
-                        "Cookies sind kleine Textdateien, die auf deinem Gerät gespeichert werden, wenn du unsere Website besuchst.",
+                        "Cookies sind kleine Textdateien, die auf deinem Gerät gespeichert werden. Neben Cookies nutzt diese Seite auch localStorage und Service Worker (Offline-Modus / PWA-Installation).",
                 },
                 {
-                    heading: "Essenzielle Cookies",
+                    heading: "Streng notwendige Cookies",
                     body:
-                        "Wir verwenden essenzielle First-Party-Cookies, um deine Anmelde-Sitzung aktiv zu halten und den Warenkorb sowie die Buchungs-Engine funktionsfähig zu halten. Sie erfordern keine vorherige Zustimmung, da sie unverzichtbar sind.",
+                        "Wir verwenden essenzielle First-Party-Cookies, um: (1) deine Login-Sitzung aktiv zu halten (Supabase Auth); (2) Warenkorb-Artikel zu merken; (3) den Buchungs-Drawer-Status zu speichern; (4) deine Sprache zu speichern. Diese Cookies benötigen keine vorherige Zustimmung (Art. 6.1.b DSGVO), da sie für den angeforderten Dienst unerlässlich sind.",
+                },
+                {
+                    heading: "Browser-Push-Benachrichtigungen",
+                    body:
+                        "Wenn du Push-Benachrichtigungen aktivierst (ausdrückliches Browser-Opt-in), speichern wir einen anonymen Endpunkt, mit dem wir Terminerinnerungen senden können. Jederzeit in den Browsereinstellungen oder unter /profilo → Einstellungen deaktivierbar.",
                 },
                 {
                     heading: "Analyse- und Marketing-Cookies",
                     body:
-                        "Wir könnten in Zukunft anonymisierte Analyse-Skripte verwenden, für die wir vor Aktivierung um deine ausdrückliche Zustimmung bitten werden.",
+                        "Wir verwenden derzeit KEIN Google Analytics oder andere Tracking-Skripte. Sollten wir sie in Zukunft aktivieren, fragen wir vorher ausdrücklich um Zustimmung.",
+                },
+                {
+                    heading: "Wie du sie deaktivierst",
+                    body:
+                        "Cookies und lokale Daten können im Browser gelöscht werden. Beachte, dass das Deaktivieren essenzieller Cookies Login und Warenkorb außer Betrieb setzt.",
                 },
             ],
         },
@@ -574,17 +614,37 @@ export const de: Dict = {
                 {
                     heading: "1. Buchungen",
                     body:
-                        "Über die Website vorgenommene Buchungen sind verbindlich. Mit Annahme dieser Bedingungen verpflichtest du dich, zur vereinbarten Zeit zu erscheinen.",
+                        "Online vorgenommene Buchungen sind ab Bestätigung verbindlich. Bitte sei pünktlich: bei einer Verspätung von mehr als 10 Minuten kann die Leistung verkürzt oder verschoben werden, um nachfolgende Kunden nicht zu benachteiligen.",
                 },
                 {
-                    heading: "2. Stornierung und No-Show",
+                    heading: "2. Stornierung und Verschiebung",
                     body:
-                        "Bitte storniere oder ändere deinen Termin mindestens 12 Stunden im Voraus. Bei wiederholtem 'No-Show' behalten wir uns das Recht vor, zukünftige Buchungen einzuschränken oder den Trust Score deines Kontos zu beeinflussen.",
+                        "Du kannst deinen Termin kostenlos unter /profilo → Termine mit mindestens 4 Stunden Vorlaufzeit stornieren oder verschieben (genauer Wert vom Salon konfigurierbar, beim Stornieren immer angezeigt). Unter der Mindestschwelle ist die Selbstbedienung deaktiviert: kontaktiere den Salon per Telefon oder WhatsApp.",
                 },
                 {
-                    heading: "3. Preise und Zahlungen",
+                    heading: "3. Nichterscheinen (No-Show)",
                     body:
-                        "Die in der Buchungs-Engine und im Shop angegebenen Preise sind in Euro (€) und endgültig. Die Zahlung erfolgt in der Regel an der Kasse nach Erbringung der Leistung.",
+                        "Wir verwenden keine automatischen Sperrlisten oder automatische Strafen. Bei Abwesenheit kontaktieren wir dich persönlich mit einer empathischen Nachricht, um zu verstehen und neu zu planen. Eine wiederholte Historie ohne Vorankündigung gibt uns das Recht — nach Ermessen des Inhabers — eine Anzahlung für zukünftige Buchungen zu verlangen.",
+                },
+                {
+                    heading: "4. Vorausbezahlte Pakete",
+                    body:
+                        "Pakete (z.B. 5 Schnitte) werden direkt im Salon erworben (Bar, Karte, Überweisung). Du erhältst einen digitalen Beleg per E-Mail. Jedes Guthaben hat eine in der Bestätigung angegebene Gültigkeit. Nicht genutzte Guthaben gelten bei Ablauf als verbraucht. Bei längerer Salonschließung werden die Ablaufdaten automatisch verlängert.",
+                },
+                {
+                    heading: "5. Coupons und Treueprogramme",
+                    body:
+                        "Coupons, Geburtstagsrabatte, Treue- und Empfehlungsprogramme sind optionale Funktionen, die nach Ermessen des Salons aktiviert oder deaktiviert werden. Wenn aktiv, werden die spezifischen Bedingungen auf jedem Coupon angegeben. Erworbene Guthaben können nicht in Bargeld umgewandelt werden.",
+                },
+                {
+                    heading: "6. Preise und Zahlung",
+                    body:
+                        "Die Preise sind in Euro (€), inkl. MwSt. und endgültig. Die Zahlung der Leistungen erfolgt im Salon nach Leistungserbringung per Bar, kontaktloser Karte oder Überweisung. Wir bieten keine Online-Zahlung für Dienstleistungen an.",
+                },
+                {
+                    heading: "7. Zuständiges Gericht",
+                    body:
+                        "Für alle Streitigkeiten aus der Nutzung der Website oder der Dienste ist ausschließlich das Gericht von Tempio Pausania zuständig. Es gilt italienisches Recht.",
                 },
             ],
         },

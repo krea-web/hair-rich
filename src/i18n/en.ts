@@ -518,27 +518,57 @@ export const en: Dict = {
         backHome: "← Back home",
         privacy: {
             title: "Privacy Policy",
-            lastUpdate: "Last update: May 2026",
+            lastUpdate: "Policy version: 2026-05-23 · Last update: May 2026",
             sections: [
                 {
                     heading: "1. Data controller",
                     body:
-                        "The data controller is Hair Rich Olbia, based at Via Regina Elena 33/A, Olbia (SS), Italy.",
+                        "The data controller is Hair Rich Olbia, based at Via Regina Elena 33/A, Olbia (SS), Italy. For any request related to your personal data, write to info@hairrich.it.",
                 },
                 {
-                    heading: "2. Purpose of processing",
+                    heading: "2. Legal basis and purpose",
                     body:
-                        "Provided data will be used exclusively to manage bookings, deliver requested services and, with explicit consent, for marketing communications.",
+                        "We process your personal data in compliance with EU Regulation 2016/679 (GDPR) and the Italian Privacy Code. Purposes: (a) execution of the service contract (booking management, haircut and treatment delivery, receipts) under Art. 6.1.b GDPR; (b) further purposes based on your explicit consent (Art. 6.1.a), listed in section 3.",
                 },
                 {
-                    heading: "3. Data sharing",
+                    heading: "3. Separate, revocable consents",
                     body:
-                        "Your data won't be sold to third parties for promotional purposes. They may be shared with essential service providers (booking systems, SMS delivery) strictly GDPR-compliant.",
+                        "On your first login to the customer area we ask five distinct consents, each optional and revocable at any time from /profilo → Settings. Every grant/revoke is recorded in our immutable audit ledger with timestamp, policy version shown, IP and user agent. The five consents: (1) Marketing & promotions — offers, previews, newsletter; (2) Appointment reminders — message 24h and 2h before; (3) Before/after photos — archive visible only to you in your personal area; (4) Behavioral profiling — targeted campaigns based on visit history (birthday, reactivation); (5) Referral program — participation in word-of-mouth.",
                 },
                 {
-                    heading: "4. Your rights",
+                    heading: "4. Data categories",
                     body:
-                        "You can access, correct or request deletion of your data ('Right to be forgotten') at any time via your Personal Area or by contacting us by email.",
+                        "Identification data (first name, last name), contact (email, phone), date of birth (only if provided under consent 4), appointment history, before/after photos (only with consent 3), service preferences, referral codes generated or used, consents granted and revoked with timestamps.",
+                },
+                {
+                    heading: "5. Data retention",
+                    body:
+                        "We retain data for the duration of the relationship and for the 10 following years required by tax regulations (D.P.R. 600/1973). Before/after photos are deleted within 24 months of last visit unless extended retention is requested. The consents ledger is retained indefinitely as proof of consent under Art. 7.1 GDPR.",
+                },
+                {
+                    heading: "6. Recipients and external processors",
+                    body:
+                        "Your data is not sold to third parties for commercial purposes. It is hosted on Supabase (EU servers — Frankfurt) and may be processed by: Google Workspace (transactional email), Telegram (notifications to the owner for cancellations and orders), OpenAI (only anonymized text for owner-facing AI drafts, never PII). All providers are GDPR-compliant; sub-DPAs available on request.",
+                },
+                {
+                    heading: "7. Non-EU transfers",
+                    body:
+                        "OpenAI is US-based. Transfer relies on the European Commission's Standard Contractual Clauses (SCC) and is limited to strictly anonymized data. For every other processing, data stays within the European Union.",
+                },
+                {
+                    heading: "8. Your GDPR rights",
+                    body:
+                        "You have the right to: access your data (Art. 15), correct it (Art. 16), erase it — right to be forgotten (Art. 17), restrict processing (Art. 18), receive it in portable format (Art. 20 — available as JSON export from /profilo → Settings), object to processing (Art. 21), revoke consents without affecting prior processing (Art. 7.3). To exercise these rights write to info@hairrich.it. You also have the right to lodge a complaint with the Italian Data Protection Authority (www.garanteprivacy.it).",
+                },
+                {
+                    heading: "9. Security",
+                    body:
+                        "We adopt appropriate technical and organizational measures: TLS-encrypted connections, Row Level Security at the database level, two-factor authentication for staff, immutable audit log of all changes to sensitive data. Passwords are never stored in plaintext.",
+                },
+                {
+                    heading: "10. Policy changes",
+                    body:
+                        "Material changes will be communicated at next login and we will ask you to renew consents on the new version. Current version is shown at the top of this page.",
                 },
             ],
         },
@@ -549,17 +579,27 @@ export const en: Dict = {
                 {
                     heading: "What are cookies?",
                     body:
-                        "Cookies are small text files saved on your device when you visit our website.",
+                        "Cookies are small text files stored on your device to enable certain site functionality. Alongside cookies, this site also uses localStorage and service workers (for offline mode / PWA install).",
                 },
                 {
-                    heading: "Essential cookies",
+                    heading: "Strictly necessary cookies",
                     body:
-                        "We use first-party essential cookies to keep your login session active and to make the cart and booking engine work. They don't require prior consent as they are indispensable.",
+                        "We use essential first-party cookies to: (1) keep your login session active (Supabase Auth); (2) remember items in your cart; (3) save booking drawer state during checkout; (4) store your preferred language. These cookies don't require prior consent (Art. 6.1.b GDPR) as they are indispensable to the requested service.",
+                },
+                {
+                    heading: "Browser push notifications",
+                    body:
+                        "If you enable push notifications (explicit browser opt-in), we store an anonymous endpoint allowing us to send appointment reminders. You can disable them anytime from browser settings or /profilo → Settings.",
                 },
                 {
                     heading: "Analytics & marketing cookies",
                     body:
-                        "We may use anonymized analytics scripts in the future, for which we'll ask explicit consent before activation.",
+                        "We currently do NOT use Google Analytics or third-party tracking scripts. If we enable them in the future we will ask via an explicit consent banner before loading. No commercial cookie is set until you enable it.",
+                },
+                {
+                    heading: "How to disable them",
+                    body:
+                        "You can clear cookies and local data from your browser panel. Note that disabling essential cookies breaks login and cart.",
                 },
             ],
         },
@@ -570,17 +610,37 @@ export const en: Dict = {
                 {
                     heading: "1. Bookings",
                     body:
-                        "Bookings made on the site are binding. Accepting these terms commits you to attend the appointment at the agreed time.",
+                        "Bookings made online are binding from the moment of confirmation. Please be punctual: if you arrive more than 10 minutes late we may need to shorten the service or reschedule to avoid penalizing later clients.",
                 },
                 {
-                    heading: "2. Cancellation & No-Show",
+                    heading: "2. Cancellation and rescheduling",
                     body:
-                        "Please cancel or change your appointment at least 12 hours in advance. In case of repeated 'No-Show', we reserve the right to limit future bookings or impact your account's Trust Score.",
+                        "You can cancel or move your appointment for free from /profilo → Appointments with at least 4 hours' notice (the exact threshold is salon-configurable and always shown at cancel time). Under the minimum window self-service cancellation is disabled: contact the salon by phone or WhatsApp.",
                 },
                 {
-                    heading: "3. Prices & payments",
+                    heading: "3. No-show",
                     body:
-                        "Prices in the Booking Engine and Shop are in Euro (€) and final. Payment for services is generally made at the counter after delivery.",
+                        "We do not use automatic blacklists or automatic penalties. In case of absence we will contact you personally with an empathetic message to understand what happened and reschedule. A repeated no-show history without notice gives us the right — at owner's discretion — to request a deposit for future bookings.",
+                },
+                {
+                    heading: "4. Prepaid packages",
+                    body:
+                        "Packages (e.g. 5 cuts) are purchased directly in salon (cash, card or wire transfer). You receive a digital receipt by email. Each credit has a validity shown in the confirmation. Unused credits at expiry are considered consumed. In case of extended salon closure, expiries are automatically extended by the equivalent period.",
+                },
+                {
+                    heading: "5. Coupons and loyalty programs",
+                    body:
+                        "Coupons, birthday discounts, loyalty and referral programs are optional features enabled or disabled at the salon's discretion. When active, specific use conditions (validity, minimum spend, combinability) are shown on each coupon. Accrued credits are not convertible to cash.",
+                },
+                {
+                    heading: "6. Prices and payment",
+                    body:
+                        "Prices shown in the booking engine and shop are in Euro (€), VAT included, and final. Service payment is made in salon at the end of delivery via cash, contactless card or wire transfer. We do not handle online payment for services.",
+                },
+                {
+                    heading: "7. Competent court",
+                    body:
+                        "For any dispute arising from use of the site or services, the Court of Tempio Pausania has exclusive jurisdiction. Italian law applies.",
                 },
             ],
         },
