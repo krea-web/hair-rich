@@ -12,6 +12,11 @@ import {
     type SkillCategory,
     type SkillStatus,
 } from "@/lib/skills/registry";
+import {
+    checkSkillReadiness,
+    loadReadinessContext,
+    type ReadinessResult,
+} from "@/lib/skills/readiness";
 
 interface SkillRow {
     skill_key: string;
@@ -38,20 +43,29 @@ export default function AdminSkillsHubPage() {
     const [state, setState] = useState<StateFilter>("all");
     const [search, setSearch] = useState("");
     const [confirmDisable, setConfirmDisable] = useState<Skill | null>(null);
+    const [warnIncomplete, setWarnIncomplete] = useState<{ skill: Skill; readiness: ReadinessResult } | null>(null);
     const [togglingKey, setTogglingKey] = useState<string | null>(null);
+    const [readinessMap, setReadinessMap] = useState<Map<string, ReadinessResult>>(new Map());
     const addToast = useToastStore((s) => s.addToast);
 
     const load = useCallback(async () => {
         setLoading(true);
         try {
             const supabase = createClient();
-            const { data, error } = await supabase
-                .from("skills_config")
-                .select("skill_key, enabled, enabled_at, usage_count, last_used_at");
+            const [{ data, error }, ctx] = await Promise.all([
+                supabase
+                    .from("skills_config")
+                    .select("skill_key, enabled, enabled_at, usage_count, last_used_at"),
+                loadReadinessContext(supabase),
+            ]);
             if (error) throw error;
             const map = new Map<string, SkillRow>();
             for (const r of (data ?? []) as SkillRow[]) map.set(r.skill_key, r);
             setRows(map);
+
+            const rmap = new Map<string, ReadinessResult>();
+            for (const s of SKILLS) rmap.set(s.key, checkSkillReadiness(s, ctx));
+            setReadinessMap(rmap);
         } catch (e: any) {
             addToast(`Errore: ${e?.message ?? "?"}`, "error");
         } finally {
@@ -136,7 +150,19 @@ export default function AdminSkillsHubPage() {
             setConfirmDisable(skill);
             return;
         }
+        // Warn before enabling a skill whose external deps aren't ready.
+        const r = readinessMap.get(skill.key);
+        if (r && r.status === "incomplete") {
+            setWarnIncomplete({ skill, readiness: r });
+            return;
+        }
         void persistToggle(skill, true);
+    };
+
+    const confirmEnableAnyway = async () => {
+        if (!warnIncomplete) return;
+        await persistToggle(warnIncomplete.skill, true);
+        setWarnIncomplete(null);
     };
 
     const confirmAndDisable = async () => {
@@ -241,6 +267,7 @@ export default function AdminSkillsHubPage() {
                                         key={s.key}
                                         skill={s}
                                         row={rows.get(s.key) ?? null}
+                                        readiness={readinessMap.get(s.key)}
                                         toggling={togglingKey === s.key}
                                         onToggle={() => handleToggle(s)}
                                     />
@@ -259,6 +286,14 @@ export default function AdminSkillsHubPage() {
                         onConfirm={confirmAndDisable}
                     />
                 )}
+                {warnIncomplete && (
+                    <WarnIncompleteModal
+                        skill={warnIncomplete.skill}
+                        readiness={warnIncomplete.readiness}
+                        onCancel={() => setWarnIncomplete(null)}
+                        onConfirm={confirmEnableAnyway}
+                    />
+                )}
             </AnimatePresence>
         </div>
     );
@@ -267,16 +302,20 @@ export default function AdminSkillsHubPage() {
 function SkillCard({
     skill,
     row,
+    readiness,
     toggling,
     onToggle,
 }: {
     skill: Skill;
     row: SkillRow | null;
+    readiness?: ReadinessResult;
     toggling: boolean;
     onToggle: () => void;
 }) {
     const isOn = Boolean(row?.enabled);
     const status = skill.status;
+    const incomplete = readiness?.status === "incomplete";
+    const unverifiable = readiness?.status === "unverifiable";
 
     const statusBadge =
         status === "recommended" ? (
@@ -323,6 +362,27 @@ function SkillCard({
                 <p className="text-xs text-silver-dark italic leading-snug bg-black-2/50 rounded-md px-3 py-2 border-l-2 border-accent-warm/40">
                     {skill.exampleIT}
                 </p>
+            )}
+
+            {incomplete && (
+                <div className="text-xs bg-amber-500/10 border-l-2 border-amber-400 text-amber-200 rounded-md px-3 py-2 leading-snug">
+                    <div className="font-body font-semibold text-amber-300 text-[10px] uppercase tracking-[0.2em] mb-1">
+                        ⚠️ Configurazione incompleta
+                    </div>
+                    Manca: {readiness!.missing.join(", ")}.
+                    {readiness!.hint && (
+                        <div className="mt-1 text-amber-200/70">{readiness!.hint}</div>
+                    )}
+                </div>
+            )}
+
+            {unverifiable && !isOn && (
+                <div className="text-xs bg-blue-500/10 border-l-2 border-blue-400 text-blue-200 rounded-md px-3 py-2 leading-snug">
+                    <div className="font-body font-semibold text-blue-300 text-[10px] uppercase tracking-[0.2em] mb-1">
+                        ℹ️ Setup esterno richiesto
+                    </div>
+                    {readiness!.hint}
+                </div>
             )}
 
             {skill.benefitIT && (
@@ -379,6 +439,67 @@ function Toggle({
                 }`}
             />
         </button>
+    );
+}
+
+function WarnIncompleteModal({
+    skill,
+    readiness,
+    onCancel,
+    onConfirm,
+}: {
+    skill: Skill;
+    readiness: ReadinessResult;
+    onCancel: () => void;
+    onConfirm: () => void;
+}) {
+    return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={onCancel}
+        >
+            <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-carbon border border-amber-400/40 rounded-[var(--radius-md)] p-6 max-w-md w-full space-y-4"
+            >
+                <div className="flex items-start gap-3">
+                    <span className="text-3xl">⚠️</span>
+                    <div>
+                        <h3 className="text-display text-xl text-warm-white">
+                            {skill.nameIT}: configurazione incompleta
+                        </h3>
+                        <p className="text-sm text-warm-white-muted mt-2">
+                            Manca ancora: <strong className="text-amber-300">{readiness.missing.join(", ")}</strong>.
+                            Se attivi adesso, la funzionalità sarà ON ma non potrà eseguire fino a quando non
+                            completi la configurazione.
+                        </p>
+                        {readiness.hint && (
+                            <p className="text-xs text-silver-dark mt-2 italic">{readiness.hint}</p>
+                        )}
+                    </div>
+                </div>
+                <div className="flex justify-end gap-2 pt-2">
+                    <button
+                        onClick={onCancel}
+                        className="px-4 py-2 border border-line text-warm-white rounded-full text-[10px] uppercase tracking-[0.25em]"
+                    >
+                        Configura prima
+                    </button>
+                    <button
+                        onClick={onConfirm}
+                        className="px-6 py-2.5 bg-amber-400 text-black rounded-full text-[11px] uppercase tracking-[0.25em] font-body font-semibold"
+                    >
+                        Attiva comunque
+                    </button>
+                </div>
+            </motion.div>
+        </motion.div>
     );
 }
 
