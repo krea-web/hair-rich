@@ -164,5 +164,12 @@ export function AdminApp() {
         );
     }
 
+    // The onboarding wizard owns the whole viewport — bypass the sidebar
+    // so first-time setup isn't visually cluttered by nav links the owner
+    // doesn't understand yet.
+    if (pathname.startsWith("/admin/onboarding")) {
+        return pickView(pathname);
+    }
+
     return <AdminLayout>{pickView(pathname)}</AdminLayout>;
 }
