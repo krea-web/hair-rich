@@ -30,9 +30,9 @@ Cliente reale: barbiere a Olbia. Sito in italiano, multilingua (it/en/fr/de).
 - ✅ **Cron idempotency lock** + Sentry client + 3 Playwright E2E spec
 - ✅ **3 GitHub Actions**: deploy Edge Functions, E2E, migrations lint
 - ✅ **Login admin operativo**: site_url corretto, redirect adaptive (admin → /admin)
-- ⚠️ **Edge Functions NON ancora deployate** sul cloud Supabase (codice c'è, deploy manuale o via tag git)
-- ⚠️ **Cron NON ancora schedulati** in produzione
-- ⚠️ **Secrets Gmail/Telegram/OpenAI** da configurare via `supabase secrets set`
+- ✅ **27 Edge Functions deployate** in produzione (ACTIVE)
+- ✅ **12 cron jobs schedulati** via pg_cron + pg_net (ACTIVE)
+- ⚠️ **Secrets Gmail/Telegram/OpenAI** ancora da configurare — vedi `docs/PRODUCTION-CHECKLIST.md`
 
 ## Decisioni strategiche prese
 
