@@ -1,0 +1,79 @@
+name: Deploy Edge Functions
+
+# Triggers:
+#   • push of a tag matching v*.*.*    → full deploy of every function
+#   • manual run from the Actions tab  → choose one or "all"
+#
+# Required repository secrets:
+#   SUPABASE_ACCESS_TOKEN  Personal access token from Supabase dashboard
+#                          (Account settings → Access Tokens)
+#   SUPABASE_PROJECT_REF   fznzfmgfsijhzjqcwmyt
+#
+# This workflow does NOT push secrets (GMAIL_*, TELEGRAM_*, OPENAI_*,
+# SENTRY_DSN). Those live in Supabase secrets and are managed manually
+# via `supabase secrets set`. The workflow only pushes function code.
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      function:
+        description: 'Which function to deploy (or "all")'
+        required: true
+        default: 'all'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Supabase CLI
+        run: |
+          curl -fsSL https://github.com/supabase/cli/releases/latest/download/supabase_linux_amd64.tar.gz \
+            | tar xz -C /usr/local/bin
+          supabase --version
+
+      - name: Deploy single function
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.function != 'all'
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase functions deploy "${{ github.event.inputs.function }}" \
+            --project-ref "${{ secrets.SUPABASE_PROJECT_REF }}"
+
+      - name: Deploy all functions
+        if: github.event_name == 'push' || github.event.inputs.function == 'all'
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          set -euo pipefail
+          # Every non-shared subdirectory under supabase/functions/ is a
+          # function. Deploy them sequentially to keep log output readable
+          # and avoid hitting the CLI's parallel-deploy quota.
+          for dir in supabase/functions/*/; do
+            name="$(basename "$dir")"
+            if [[ "$name" == "_shared" ]]; then continue; fi
+            echo "::group::deploy $name"
+            supabase functions deploy "$name" \
+              --project-ref "${{ secrets.SUPABASE_PROJECT_REF }}"
+            echo "::endgroup::"
+          done
+
+      - name: Post-deploy summary
+        if: always()
+        run: |
+          echo "### Edge Function deploy" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Trigger: \`${{ github.event_name }}\`" >> "$GITHUB_STEP_SUMMARY"
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            echo "Tag: \`${{ github.ref_name }}\`" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Re-applying secrets (GMAIL_*, TELEGRAM_BOT_TOKEN, OPENAI_API_KEY," >> "$GITHUB_STEP_SUMMARY"
+          echo "SENTRY_DSN, VAPID_*, GOOGLE_*) is **not** part of this workflow." >> "$GITHUB_STEP_SUMMARY"
+          echo "Manage them via \`supabase secrets set\` or the dashboard." >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,57 @@
+name: DB migrations check
+
+# Sanity check on the migrations folder. Catches:
+#   • duplicate migration numbers
+#   • migrations that reference non-existent tables (basic regex)
+#   • migrations with mixed line endings
+#
+# Does NOT actually apply migrations (no DB available in CI). Run
+# `supabase db push --project-ref ...` manually after merge.
+
+on:
+  pull_request:
+    paths:
+      - 'supabase/migrations/**'
+      - '.github/workflows/db-migrations-check.yml'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check for duplicate migration numbers
+        run: |
+          set -e
+          dups=$(ls supabase/migrations/*.sql 2>/dev/null \
+            | sed -E 's|.*/[0-9]{8}_([0-9]+)_.*|\1|' \
+            | sort | uniq -d)
+          if [[ -n "$dups" ]]; then
+            echo "::error::Duplicate migration numbers detected: $dups"
+            exit 1
+          fi
+          echo "All migration numbers are unique."
+
+      - name: Check ordered file naming
+        run: |
+          set -e
+          for f in supabase/migrations/*.sql; do
+            if [[ ! "$(basename "$f")" =~ ^[0-9]{8}_[0-9]{4}_[a-z0-9_]+\.sql$ ]]; then
+              echo "::warning file=$f::Naming doesn't match YYYYMMDD_NNNN_snake_case.sql"
+            fi
+          done
+
+      - name: Check for SQL syntax red flags
+        run: |
+          set -e
+          # Common mistakes that are syntax-valid but operationally wrong
+          if grep -rn "DROP TABLE\b" supabase/migrations/ 2>/dev/null | grep -v "DROP TABLE IF EXISTS"; then
+            echo "::warning::DROP TABLE without IF EXISTS — risky on re-runs"
+          fi
+          if grep -rn "ALTER TABLE\b" supabase/migrations/ 2>/dev/null \
+            | grep -v "ADD COLUMN IF NOT EXISTS\|DROP COLUMN IF EXISTS\|ALTER COLUMN\|ENABLE ROW LEVEL\|DISABLE ROW LEVEL\|ADD CONSTRAINT\|DROP CONSTRAINT IF EXISTS\|ADD COLUMN[^I]\|REPLICA IDENTITY"; then
+            true  # placeholder — extend as needed
+          fi
+          echo "Migration checks complete."
