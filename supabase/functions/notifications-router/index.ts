@@ -29,6 +29,7 @@ import {
 import { pickChannels, isOptedOut, isQuietHours } from './preferences.ts';
 import { sendViaGmail } from './channels/gmail.ts';
 import { sendViaTelegram } from './channels/telegram.ts';
+import { captureException } from '../_shared/sentry.ts';
 
 type Channel = 'whatsapp' | 'push' | 'email' | 'sms' | 'telegram';
 
@@ -679,6 +680,10 @@ serve(async (req) => {
       status: 400,
     });
   } catch (err) {
+    await captureException(err, {
+      function_name: 'notifications-router',
+      extra: { url: req.url, method: req.method },
+    });
     return new Response(
       JSON.stringify({ ok: false, reason: (err as Error).message ?? 'unhandled_error' }),
       {
