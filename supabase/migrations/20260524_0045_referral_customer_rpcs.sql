@@ -88,7 +88,7 @@ GRANT EXECUTE ON FUNCTION fn_my_referral_stats() TO authenticated;
 CREATE OR REPLACE FUNCTION fn_referral_by_code(p_code text)
 RETURNS jsonb LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = public AS $$
 DECLARE
-  v_referrer record;
+  v_referrer_name text;
   v_credit_cents int;
   v_skill_enabled boolean;
 BEGIN
@@ -98,19 +98,19 @@ BEGIN
   END IF;
 
   SELECT r.credit_cents, c.first_name
-    INTO v_credit_cents, v_referrer
+    INTO v_credit_cents, v_referrer_name
     FROM referrals r
     JOIN customers c ON c.id = r.referrer_customer_id
    WHERE r.code = upper(trim(p_code))
    LIMIT 1;
 
-  IF v_referrer.first_name IS NULL THEN
+  IF v_referrer_name IS NULL THEN
     RETURN jsonb_build_object('found', false);
   END IF;
 
   RETURN jsonb_build_object(
     'found', true,
-    'referrer_first_name', v_referrer.first_name,
+    'referrer_first_name', v_referrer_name,
     'reward_for_invitee_cents', v_credit_cents
   );
 END $$;
