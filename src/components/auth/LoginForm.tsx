@@ -61,7 +61,7 @@ export function LoginForm() {
         setAuthError(null);
         try {
             const supabase = createClient();
-            const { error } =
+            const { error, data: verifyData } =
                 method === "email"
                     ? await supabase.auth.verifyOtp({
                           email: identifier,
@@ -74,6 +74,28 @@ export function LoginForm() {
                           type: "sms",
                       });
             if (error) throw error;
+
+            // Honour ?next= query param when present; otherwise route
+            // admins to /admin and customers to /profilo.
+            const params = new URLSearchParams(window.location.search);
+            const explicitNext = params.get("next");
+            if (explicitNext && explicitNext.startsWith("/")) {
+                window.location.href = explicitNext;
+                return;
+            }
+
+            const userId = verifyData?.user?.id;
+            if (userId) {
+                const { data: adminRow } = await supabase
+                    .from("admins")
+                    .select("user_id")
+                    .eq("user_id", userId)
+                    .maybeSingle();
+                if (adminRow) {
+                    window.location.href = "/admin";
+                    return;
+                }
+            }
             window.location.href = "/profilo";
         } catch (e: any) {
             setAuthError(e?.message ?? "Codice non valido");
