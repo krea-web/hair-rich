@@ -5,6 +5,50 @@
 Salon site + booking engine + e-commerce + auth + admin gestionale.
 Cliente reale: barbiere a Olbia. Sito in italiano, multilingua (it/en/fr/de).
 
+> **Strategic context (aggiornato 2026-05-26)**: questo repo è di fatto il
+> **template "salon-platform"**, e Hair Rich Olbia è l'istanza di test #1
+> ("Full tier" con tutte le skill sbloccate). Il piano commerciale è
+> vendere il gestionale ad altri parrucchieri/barbieri/estetisti/centri
+> massaggi italiani in 3 pacchetti (Vetrina €19/mese, Pro €29, Full €50),
+> con customer-site brandizzato per cliente e gestionale unificato a
+> template. Il fork in repo `salon-template` separato avviene quando
+> arriva il **primo cliente non-Hair Rich**.
+
+---
+
+## Stato corrente (snapshot)
+
+- ✅ **Sito pubblico**: completo (50+ pagine), 4 lingue, brandizzato Hair Rich
+- ✅ **Gestionale admin**: 29 view operative, sidebar completa
+- ✅ **Skills Hub**: 101 toggle in DB, 2 sempre-ON (gdpr_consents, admin_inbox)
+- ✅ **Notification Router**: bifurcated customer/owner, GDPR-gated, Gmail+Telegram channels, 50 template messaggi seeded
+- ✅ **Audit log automatico**: triggers su 19 tabelle critiche
+- ✅ **Inbox admin realtime** con badge sidebar
+- ✅ **System Health dashboard** `/admin/salute`
+- ✅ **Hardware catalog** `/admin/hardware` (11 dispositivi censiti, prezzi reali)
+- ✅ **52 migrations applicate in produzione** (DB pop. con 52 tabelle, 55 funzioni)
+- ✅ **Cron idempotency lock** + Sentry client + 3 Playwright E2E spec
+- ✅ **3 GitHub Actions**: deploy Edge Functions, E2E, migrations lint
+- ✅ **Login admin operativo**: site_url corretto, redirect adaptive (admin → /admin)
+- ⚠️ **Edge Functions NON ancora deployate** sul cloud Supabase (codice c'è, deploy manuale o via tag git)
+- ⚠️ **Cron NON ancora schedulati** in produzione
+- ⚠️ **Secrets Gmail/Telegram/OpenAI** da configurare via `supabase secrets set`
+
+## Decisioni strategiche prese
+
+- **Multi-location: Opzione A** — ogni sede = Supabase project + Vercel deploy separati, stesso repo
+- **Hair Rich = "Full tier"**: tutte le 101 skill sbloccate, lui sceglie quali accendere
+- **Fiscale italiano**: deferred per Hair Rich (usa RT esterna, Olivetti modello TBD); scaffolding template fa parte di Fase 3
+- **Hardware**: catalog UI fatto, plugin attivi `on_request` (build quando primo cliente lo chiede)
+- **Salon onboarding seed script**: da costruire (Fase 2)
+- **Nuoro**: parte solo dopo aver finito Olbia + scaffolding template
+
+## Open questions
+
+- **Modello RT Olivetti di Hair Rich?** Determina se Path A (integrazione read-only) è fattibile o si skippa
+- **Hair Rich vende mai B2B (yacht/hotel)?** Determina priorità di Fatture in Cloud integration
+- **Stripe Terminal vs SumUp Air come primo POS plugin?** SumUp consigliato (più diffuso in IT)
+
 ---
 
 ## Stack
@@ -949,3 +993,181 @@ Per ogni skill: aprire il modale, leggere l'esempio italiano, configurare parame
 - `whatsapp_business_api` (#10) e `whatsapp_reminders` (#1): richiedono approvazione Meta Business + template — circa 1 mese di setup, NON inclusa nel codice.
 - `sms_notifications` (#2): nessun gateway integrato, da scegliere (Twilio/MessageBird) a posteriori se serve fallback.
 - `fatture_in_cloud` (#81): integrazione opzionale per commercialista, da fare on-demand.
+
+---
+
+# 🗺️ Roadmap prossime sessioni (post Chat 1+2+3)
+
+Dopo le 3 chat originali + il polish round dei 12 item + il deploy migrations + il fix login,
+il prodotto è funzionalmente al ~85% per Hair Rich e al ~60% per la **productizzazione SaaS**.
+La roadmap sotto è suddivisa in 4 sessioni di lavoro, sequenziali ma indipendenti tra loro.
+
+> **Convenzione**: ogni sessione è un commit-set autonomo. Si committa + pusha a fine task come
+> nelle 3 chat originali. Le sessioni A e B sono prioritarie (Hair Rich da finire);
+> C e D si pianificano in seguito.
+
+## Sessione A — Completamento Hair Rich (~25-35h)
+
+Obiettivo: portare Hair Rich Olbia al 100% operativo e dare al titolare un prodotto vero da testare.
+
+### A1. Gestionale: gap residui (8-12h)
+- **`/admin/cms`**: editor TipTap reale sui `cms_blocks` (manca implementazione full)
+- **`/admin/gamification`**: refinement editor coupon con anteprima
+- **`/admin/agenda`**: drag&drop completo (RPC `fn_admin_reschedule_appointment` esiste)
+- **`/admin/agenda-week`**: print PDF settimanale
+- **`/admin/staff`**: editor orari settimanali (`working_hours`) inline
+
+### A2. Portal Staff (12-16h) — NUOVO
+**Concept**: ogni operatore (Cristian, ...) ha un proprio login con vista limitata.
+Non vede agenda colleghi, dati clienti completi, contabilità. Vede solo:
+- I suoi appuntamenti di oggi + settimana
+- I suoi clienti recenti (last 30 days)
+- I suoi incassi giornalieri (no aggregati salone)
+- Richiesta ferie/permessi → finisce nell'admin inbox del titolare
+- Foto pre/post solo per i suoi appuntamenti
+- Timbratura entrata/uscita semplice
+
+Nuove route in `src/pages/staff/[...slug].astro`:
+- `/staff` → dashboard "oggi"
+- `/staff/appuntamenti` → i suoi (passati/futuri)
+- `/staff/clienti` → solo quelli che ha servito
+- `/staff/incassi` → suoi soldi + commissione (% configurabile)
+- `/staff/ferie` → richiesta giorni off
+- `/staff/timbratura` → entrata/uscita giornaliera
+
+DB:
+- Nuova tabella `staff_clock_entries` (id, staff_id, type 'in'/'out', occurred_at, location_id)
+- Nuova tabella `staff_time_off_requests` (id, staff_id, starts_at, ends_at, reason, status, approved_by, decided_at)
+- View `staff_my_appointments` con RLS che filtra per `auth.uid()` → staff_id
+
+RLS:
+- Operatore vede solo i propri dati (proprio staff_id collegato via `staff.user_id`)
+- Non può vedere `customers` complete — solo nome/cognome/telefono dei suoi
+- Non può vedere `orders` se non quelle dei suoi appointments
+
+### A3. Customer site: arricchimento `/profilo` (6-8h)
+- **`/profilo/dashboard`**: hero card "prossimo appuntamento" animata + countdown
+- **`/profilo/storia`**: gallery foto pre/post di tutti gli appuntamenti
+- **`/profilo/preferenze`**: barber preferito, servizio abituale, lingua, notification preferences UI completa
+- **`/profilo/credito`**: pacchetti attivi + coupon disponibili + crediti referral in un unico posto
+- **`/profilo/referral`**: refinement UI (share buttons WA/SMS, copy link, lista invitati con stato)
+- **`/profilo/recensioni`**: lista delle recensioni che il cliente ha lasciato (su Google e in privato)
+
+---
+
+## Sessione B — Productization layer (~30-45h)
+
+Obiettivo: rendere il repo davvero clonabile per il prossimo salone. Tutto rimane in
+`hair-rich/` come "instance 1", ma con la disciplina del template.
+
+### B1. Multi-tier mapping in DB (4h)
+- Migration `ALTER TABLE skills_config ADD COLUMN min_tier text` ('vetrina'/'pro'/'full')
+- Migration `ALTER TABLE salon_settings ADD COLUMN current_tier text` (default 'full' per Hair Rich)
+- Skills Hub UI: skills con `min_tier > current_tier` mostrate lockate con CTA "Upgrade"
+- Default seed: ogni skill mappata al suo tier appropriato (dai 100 dipendenti digitali del pricing-saloni.html)
+
+### B2. Salon onboarding seed script (16-20h)
+File `scripts/onboard_salon.py`:
+1. Input: nome salone, slug, email titolare, indirizzo, palette colori (3 hex), logo url
+2. Crea nuovo Supabase project via Management API
+3. Applica le 52+ migrations
+4. Seed: salon_settings + 1 admin user + 3 servizi default + 1 staff
+5. Seed CMS blocks con copy generica
+6. Crea storage bucket + carica logo + carica placeholder photos
+7. Output: env vars per il deploy Vercel + URL admin
+
+### B3. Estrazione Hair Rich-specific (8-12h)
+Audit completo del codice per spostare in DB / cms_blocks tutto quello che oggi è hardcoded:
+- "HAIR RICH OLBIA" in header/footer → cms_blocks
+- "Via Regina Elena 33/A" → salon_settings
+- Foto staff (Cristian) → Supabase storage `staff_avatars/{staff_id}.webp`
+- Colori (#0a0a0a, accent-warm) → CSS custom properties driven da salon_settings.theme jsonb
+- Font choices (Fraunces, Inter) → salon_settings.theme.fonts
+- 3 servizi (Taglio €20, Barba €10, Combo €30) → seed data, già OK
+- Manifesto "Il taglio è un'arte" → cms_blocks
+- 12 foto portfolio → Supabase storage per-instance
+
+### B4. Multi-location architecture base (per Nuoro futuro) (2-4h)
+- `salon_settings`: aggiungere `parent_brand_id text` opzionale per Hair Rich → Olbia/Nuoro
+- Documentare in CLAUDE.md la procedura "duplicate Supabase for new location"
+- Lasciare singleton constraint per ora (un salone = una Supabase) → cambio quando arriva sede #3
+
+---
+
+## Sessione C — Hardware plugins (~30-50h)
+
+Obiettivo: passare dal catalog informativo a integrazioni reali per i primi cliente che le chiedono.
+
+### C1. POS bridge architecture (8-12h)
+- Migration: tabelle `pos_terminals` + `pos_transactions`
+- Edge Function `pos-bridge` con plugin pattern
+- UI `/admin/cassa` → tab "Hardware connessi" che mostra terminali paired + bottone "Aggiungi"
+
+### C2. SumUp Air plugin (12-16h) — priorità 1
+- Pairing flow via Web Bluetooth
+- Charge / refund / status endpoint
+- Wire con `orders` table per riconciliazione automatica
+
+### C3. Stripe Terminal plugin (12-16h) — priorità 2
+- Stripe Connect account
+- Terminal SDK integration
+- Funziona anche su iPhone (a differenza di SumUp)
+
+### C4. Stampante termica (Star Micronics) (8-10h)
+- Web Bluetooth pairing
+- ESC/POS command builder
+- Use cases: pre-conto, ricevuta cortesia, ordini per dipendenti
+
+### C5. Scanner barcode + cassetto contante (4-6h)
+- WebHID per scanner USB → integrato in `/admin/prodotti` per scarico magazzino
+- ESC/POS drawer kick comando legato a stampante
+
+---
+
+## Sessione D — Fiscale + HR (~50-70h)
+
+Obiettivo: rendere il template legalmente venduibile in Italia oltre Hair Rich.
+
+### D1. Fatture in Cloud integration (16-20h)
+- Skill `fatture_in_cloud` (#81)
+- Edge Function `fic-bridge`: crea/invia fatture B2B via API
+- UI `/admin/fiscale/fatture` con elenco emesse + creator
+- Trigger: quando `orders.requires_fattura = true` → crea fattura via FiC
+
+### D2. Liquidazione IVA + export commercialista (12h)
+- View con calcolo IVA trimestrale per aliquota
+- Export CSV nel formato richiesto dal commercialista del cliente
+
+### D3. RT integration (Custom Q3X — first priority) (16-24h)
+- Skill `rt_custom`
+- Discovery API REST locale del dispositivo
+- Read-only mirror: legge incassi giornalieri e li mostra in `/admin/cassa`
+- Skip per Hair Rich finché non sappiamo il modello Olivetti
+
+### D4. HR / Cassa giornaliera (16-24h)
+- Migration `staff_timeclocks` + `daily_cash_reconciliation`
+- View `/admin/cassa/chiusura` per chiusura cassa giornaliera
+- View `/admin/staff/commissioni` per calcolo commissioni
+- Export P&L mensile (CSV/PDF)
+
+---
+
+## Ordine consigliato di esecuzione
+
+1. **Sessione A** — completa Hair Rich. Il titolare ha un prodotto completo per testare.
+2. **Sessione B** — productization. Il repo è clonabile per il prossimo salone.
+3. **Sessione C** (parziale: solo C1 + C2) — primo POS reale quando un cliente lo chiede.
+4. **Sessione D** (D1 + D2) — fattura elettronica + IVA quando primo cliente B2B chiede.
+5. **Sessione D** (D3 + D4 + Sessione C completa) — quando il prodotto è venduto a >5 saloni.
+
+---
+
+## Convenzioni operative ferme
+
+- Ogni nuova feature passa per Skills Hub (tabella `skills_config` + registro in `src/lib/skills/registry.ts`)
+- Ogni nuova migration ha la numerazione `YYYYMMDD_NNNN_snake_case.sql` con NNNN globale ascending
+- Ogni Edge Function cron usa `acquireCronLock` da `_shared/cronLock.ts`
+- Ogni Edge Function che può fallire usa `captureException` da `_shared/sentry.ts`
+- Il Router rispetta i consensi GDPR (eventi marketing/reminder/referral controllano `customer_consents_current`)
+- Il customer site mantiene branding Hair Rich; il gestionale è già "neutro" template-ready
+- Prezzi hardware nel catalog: solo prezzi reali del fornitore, zero ricarico, link a sito ufficiale

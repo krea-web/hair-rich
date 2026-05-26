@@ -33,6 +33,7 @@ const SETTINGS_MENU = [
     { href: "/admin/contenuti-ai", label: "Contenuti AI" },
     { href: "/admin/fornitori", label: "Fornitori" },
     { href: "/admin/qr-promo", label: "QR promozioni" },
+    { href: "/admin/hardware", label: "Hardware & POS" },
     { href: "/admin/funzionalita", label: "Funzionalità (Skills Hub)" },
     { href: "/admin/log", label: "Log attività" },
     { href: "/admin/impostazioni", label: "Impostazioni Salone" },
