@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useClientPath, handleClientLink } from "@/lib/clientRouter";
 import { useAdminNotifyStore, useAdminInboxStore } from "@/lib/store";
+import { useBrand } from "@/lib/brand";
 
 const MAIN_MENU = [
     { href: "/admin", label: "Dashboard", icon: "svg-dash" },
@@ -45,6 +46,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
     const newBookingsCount = useAdminNotifyStore((s) => s.newBookingsCount);
     const markSeen = useAdminNotifyStore((s) => s.markSeen);
     const inboxUnreadCount = useAdminInboxStore((s) => s.unreadCount);
+    const { brand } = useBrand();
 
     useEffect(() => {
         // Visiting the agenda clears the unseen-new-bookings counter.
@@ -136,7 +138,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
     return (
         <div className="flex h-[100dvh] bg-black text-warm-white selection:bg-carbon selection:text-warm-white overflow-hidden">
             <div className="lg:hidden fixed top-0 w-full h-14 bg-carbon border-b border-line flex items-center justify-between px-4 z-40">
-                <a href="/admin" onClick={handleClientLink} className="text-display text-sm tracking-[0.2em]">HAIR RICH ADMIN</a>
+                <a href="/admin" onClick={handleClientLink} className="text-display text-sm tracking-[0.2em]">{brand.adminTitle}</a>
                 <button onClick={() => setSidebarOpen(!isSidebarOpen)} className="p-2">
                     <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
                         <line x1="3" y1="12" x2="21" y2="12" />
@@ -158,9 +160,9 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                         <div className="p-4 flex items-center justify-between group cursor-pointer hover:bg-carbon-2 transition-colors">
                             <div className="flex items-center gap-3">
                                 <div className="w-6 h-6 bg-accent-warm text-black rounded flex items-center justify-center font-bold text-xs uppercase">
-                                    O
+                                    {brand.location.charAt(0)}
                                 </div>
-                                <span className="font-body text-sm font-semibold truncate">Hair Rich Olbia</span>
+                                <span className="font-body text-sm font-semibold truncate">{brand.fullName}</span>
                             </div>
                             <svg viewBox="0 0 24 24" className="w-4 h-4 text-silver-dark opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor">
                                 <path d="m6 9 6 6 6-6" />

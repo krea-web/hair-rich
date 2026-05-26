@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useClientPath, handleClientLink } from "@/lib/clientRouter";
+import { useBrand } from "@/lib/brand";
 
 interface StaffMe {
     id: string;
@@ -23,6 +24,7 @@ const MENU = [
 export function StaffLayout({ me, children }: { me: StaffMe; children: ReactNode }) {
     const pathname = useClientPath();
     const [isSidebarOpen, setSidebarOpen] = useState(false);
+    const { brand } = useBrand();
 
     const closeAndNav = (e: React.MouseEvent<HTMLAnchorElement>) => {
         setSidebarOpen(false);
@@ -41,7 +43,7 @@ export function StaffLayout({ me, children }: { me: StaffMe; children: ReactNode
         <div className="flex h-[100dvh] bg-black text-warm-white selection:bg-carbon selection:text-warm-white overflow-hidden">
             <div className="lg:hidden fixed top-0 w-full h-14 bg-carbon border-b border-line flex items-center justify-between px-4 z-40">
                 <a href="/staff" onClick={handleClientLink} className="text-display text-sm tracking-[0.2em]">
-                    HAIR RICH STAFF
+                    {brand.staffTitle}
                 </a>
                 <button onClick={() => setSidebarOpen(!isSidebarOpen)} className="p-2" aria-label="Menu">
                     <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">

@@ -1,0 +1,50 @@
+# Esempio config per onboard_salon.py
+# Salva una copia con i dati reali del salone, NON committarla con i valori reali
+
+# Identificativo tecnico (lowercase, no spazi). Usato per nome Vercel project, file env, parent_brand_id.
+brand: bellezza-cagliari
+
+# Nome brand visualizzato (può essere uguale al nome del salone se non ci sono più sedi)
+brand_name: Bellezza
+
+# Sede / città
+location_name: Cagliari
+
+# Nome completo usato in header, email, ecc.
+full_name: Bellezza Cagliari
+display_name: Bellezza Cagliari
+
+# Email del titolare. Se è già registrata su Supabase Auth del progetto, viene promossa ad admin automaticamente.
+owner_email: info@bellezzacagliari.it
+
+# Pacchetto sottoscritto: vetrina | pro | full
+tier: pro
+
+# Contatti
+phone: "+39 070 1234567"
+email: info@bellezzacagliari.it
+address: Via Roma 12
+city: Cagliari
+province: CA
+postal_code: "09100"
+
+# Branding personalizzato (override del default Hair Rich)
+theme:
+  accent_color: "#C8A2C8"
+  accent_color_warm: "#C8A2C8"
+  font_display: "Playfair Display"
+  font_body: "Source Sans Pro"
+
+# Configurazione Supabase
+# Region disponibili: eu-central-1 (Francoforte), eu-west-1 (Irlanda), ecc. Consiglio EU per GDPR.
+region: eu-central-1
+
+# Password forte del DB Postgres (min 8 char, mix di lettere+numeri+simboli)
+# Salvala nel password manager — serve per psql/PgAdmin diretti
+db_password: "ChangeMeStrongPassword!42"
+
+# Organization ID di Supabase (lo trovi in https://supabase.com/dashboard/account/teams)
+org_id: "abcd1234-org-id"
+
+# URL del sito Vercel (opzionale — se non specificato, default è <brand>.vercel.app)
+site_url: https://bellezzacagliari.it

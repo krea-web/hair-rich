@@ -24,7 +24,23 @@ interface SkillRow {
     enabled_at: string | null;
     usage_count: number;
     last_used_at: string | null;
+    min_tier: "vetrina" | "pro" | "full";
+    can_use: boolean;
 }
+
+type Tier = "vetrina" | "pro" | "full";
+
+const TIER_LABELS: Record<Tier, string> = {
+    vetrina: "Vetrina",
+    pro: "Pro",
+    full: "Full",
+};
+
+const TIER_PRICES: Record<Tier, string> = {
+    vetrina: "€19/mese",
+    pro: "€29/mese",
+    full: "€50/mese",
+};
 
 type StateFilter = "all" | "enabled" | "disabled" | "recommended" | "in_development";
 
@@ -38,6 +54,7 @@ const STATE_LABELS: Record<StateFilter, string> = {
 
 export default function AdminSkillsHubPage() {
     const [rows, setRows] = useState<Map<string, SkillRow>>(new Map());
+    const [salonTier, setSalonTier] = useState<Tier>("full");
     const [loading, setLoading] = useState(true);
     const [category, setCategory] = useState<SkillCategory | "all">("all");
     const [state, setState] = useState<StateFilter>("all");
@@ -52,16 +69,19 @@ export default function AdminSkillsHubPage() {
         setLoading(true);
         try {
             const supabase = createClient();
-            const [{ data, error }, ctx] = await Promise.all([
+            const [skillsResp, ctx, salonResp] = await Promise.all([
                 supabase
-                    .from("skills_config")
-                    .select("skill_key, enabled, enabled_at, usage_count, last_used_at"),
+                    .from("skills_with_access")
+                    .select("skill_key, enabled, enabled_at, usage_count, last_used_at, min_tier, can_use, salon_tier"),
                 loadReadinessContext(supabase),
+                supabase.from("salon_settings").select("current_tier").limit(1).maybeSingle(),
             ]);
-            if (error) throw error;
+            if (skillsResp.error) throw skillsResp.error;
             const map = new Map<string, SkillRow>();
-            for (const r of (data ?? []) as SkillRow[]) map.set(r.skill_key, r);
+            for (const r of (skillsResp.data ?? []) as SkillRow[]) map.set(r.skill_key, r);
             setRows(map);
+            const tier = ((salonResp.data as any)?.current_tier as Tier) ?? "full";
+            setSalonTier(tier);
 
             const rmap = new Map<string, ReadinessResult>();
             for (const s of SKILLS) rmap.set(s.key, checkSkillReadiness(s, ctx));
@@ -145,12 +165,20 @@ export default function AdminSkillsHubPage() {
             addToast("Questa funzionalità è infrastruttura — non può essere disattivata", "info");
             return;
         }
-        const isOn = Boolean(rows.get(skill.key)?.enabled);
+        const row = rows.get(skill.key);
+        const isOn = Boolean(row?.enabled);
+        // Block enable if tier doesn't allow it
+        if (!isOn && row && !row.can_use) {
+            addToast(
+                `Questa funzionalità richiede il pacchetto ${TIER_LABELS[row.min_tier]}. Aggiorna il tier.`,
+                "info",
+            );
+            return;
+        }
         if (isOn) {
             setConfirmDisable(skill);
             return;
         }
-        // Warn before enabling a skill whose external deps aren't ready.
         const r = readinessMap.get(skill.key);
         if (r && r.status === "incomplete") {
             setWarnIncomplete({ skill, readiness: r });
@@ -182,10 +210,19 @@ export default function AdminSkillsHubPage() {
                     Tutte le funzionalità digitali del gestionale in un solo posto.
                     Accendi solo quelle che vuoi usare — il sistema lavora silenzioso per il resto.
                 </p>
-                <div className="mt-4 text-sm text-silver-dark">
-                    <span className="text-accent-warm font-semibold tabular-nums">{counts.enabled}</span>
-                    {" attive su "}
-                    <span className="text-warm-white tabular-nums">{counts.total}</span>
+                <div className="mt-4 flex items-center gap-4 flex-wrap text-sm">
+                    <span className="text-silver-dark">
+                        <span className="text-accent-warm font-semibold tabular-nums">{counts.enabled}</span>
+                        {" attive su "}
+                        <span className="text-warm-white tabular-nums">{counts.total}</span>
+                    </span>
+                    <span className="text-silver-dark">·</span>
+                    <span className="text-silver-dark">
+                        Pacchetto:{" "}
+                        <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-accent-warm/15 border border-accent-warm/30 text-accent-warm rounded-full text-[10px] uppercase tracking-[0.25em] font-body font-semibold">
+                            {TIER_LABELS[salonTier]} · {TIER_PRICES[salonTier]}
+                        </span>
+                    </span>
                 </div>
             </motion.div>
 
@@ -316,6 +353,7 @@ function SkillCard({
     const status = skill.status;
     const incomplete = readiness?.status === "incomplete";
     const unverifiable = readiness?.status === "unverifiable";
+    const tierLocked = row !== null && !row.can_use && !isOn;
 
     const statusBadge =
         status === "recommended" ? (
@@ -353,7 +391,17 @@ function SkillCard({
                         {statusBadge}
                     </div>
                 </div>
-                <Toggle on={isOn} disabled={toggling || skill.alwaysOn} onClick={onToggle} />
+                {tierLocked ? (
+                    <button
+                        type="button"
+                        onClick={onToggle}
+                        className="shrink-0 px-3 py-1.5 border border-purple-400/40 text-purple-300 rounded-full text-[10px] uppercase tracking-[0.25em] font-body font-semibold hover:bg-purple-500/10"
+                    >
+                        🔒
+                    </button>
+                ) : (
+                    <Toggle on={isOn} disabled={toggling || skill.alwaysOn} onClick={onToggle} />
+                )}
             </div>
 
             <p className="text-sm text-warm-white-muted leading-snug">{skill.descriptionIT}</p>
@@ -376,12 +424,22 @@ function SkillCard({
                 </div>
             )}
 
-            {unverifiable && !isOn && (
+            {unverifiable && !isOn && !tierLocked && (
                 <div className="text-xs bg-blue-500/10 border-l-2 border-blue-400 text-blue-200 rounded-md px-3 py-2 leading-snug">
                     <div className="font-body font-semibold text-blue-300 text-[10px] uppercase tracking-[0.2em] mb-1">
                         ℹ️ Setup esterno richiesto
                     </div>
                     {readiness!.hint}
+                </div>
+            )}
+
+            {tierLocked && row && (
+                <div className="text-xs bg-purple-500/10 border-l-2 border-purple-400 text-purple-200 rounded-md px-3 py-2 leading-snug">
+                    <div className="font-body font-semibold text-purple-300 text-[10px] uppercase tracking-[0.2em] mb-1">
+                        🔒 Richiede pacchetto {TIER_LABELS[row.min_tier]}
+                    </div>
+                    Aggiorna il tuo pacchetto a {TIER_LABELS[row.min_tier]} ({TIER_PRICES[row.min_tier]}) per
+                    sbloccare questa funzionalità.
                 </div>
             )}
 
