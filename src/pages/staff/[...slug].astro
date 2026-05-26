@@ -1,0 +1,20 @@
+---
+import RootLayout from "../../layouts/RootLayout.astro";
+import { StaffApp } from "../../components/staff/StaffApp";
+
+export function getStaticPaths() {
+  const routes = [
+    undefined,
+    "appuntamenti",
+    "clienti",
+    "incassi",
+    "ferie",
+    "timbratura",
+  ];
+  return routes.map((slug) => ({ params: { slug } }));
+}
+---
+
+<RootLayout title="Staff · Hair Rich Olbia" noindex={true}>
+  <StaffApp client:only="react" />
+</RootLayout>
