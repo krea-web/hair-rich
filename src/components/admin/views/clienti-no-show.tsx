@@ -105,8 +105,8 @@ export default function AdminClientiNoShowPage() {
                 </p>
             </header>
 
-            <div className="rounded-[var(--radius-md)] border border-line overflow-hidden">
-                <table className="w-full text-sm">
+            <div className="rounded-[var(--radius-md)] border border-line overflow-x-auto">
+                <table className="w-full text-sm min-w-[720px]">
                     <thead className="bg-black-2">
                         <tr className="text-left text-[10px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold">
                             <th className="px-4 py-3">Cliente</th>

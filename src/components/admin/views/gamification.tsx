@@ -878,7 +878,8 @@ function ReferralsTab() {
                     <code className="text-accent-warm">/profilo/referral</code>.
                 </p>
             ) : (
-                <table className="w-full text-sm">
+                <div className="overflow-x-auto">
+                <table className="w-full text-sm min-w-[640px]">
                     <thead>
                         <tr className="text-left text-silver-dark text-[10px] uppercase tracking-[0.25em] border-b border-line">
                             <th className="py-3">Referrer</th>
@@ -922,6 +923,7 @@ function ReferralsTab() {
                         ))}
                     </tbody>
                 </table>
+                </div>
             )}
         </div>
     );

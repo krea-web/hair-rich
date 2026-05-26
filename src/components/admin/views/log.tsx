@@ -251,8 +251,8 @@ export default function AdminLogPage() {
             ) : rows.length === 0 ? (
                 <div className="text-center text-silver-dark py-12">Nessun evento corrisponde ai filtri.</div>
             ) : (
-                <div className="bg-carbon border border-line rounded-[var(--radius-md)] overflow-hidden">
-                    <table className="w-full text-sm">
+                <div className="bg-carbon border border-line rounded-[var(--radius-md)] overflow-x-auto">
+                    <table className="w-full text-sm min-w-[640px]">
                         <thead className="bg-black-2 text-[10px] uppercase tracking-[0.2em] text-silver-dark">
                             <tr>
                                 <th className="px-3 py-2 text-left font-body font-semibold">Quando</th>
