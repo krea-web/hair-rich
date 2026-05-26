@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useToastStore } from "@/lib/store";
@@ -26,6 +26,7 @@ export default function AdminStaffPage() {
     const [stats, setStats] = useState<Record<string, StaffStats>>({});
     const [loading, setLoading] = useState(true);
     const [savingId, setSavingId] = useState<string | null>(null);
+    const [hoursEditor, setHoursEditor] = useState<{ id: string; name: string } | null>(null);
     const addToast = useToastStore((s) => s.addToast);
 
     const load = useCallback(async () => {
@@ -216,6 +217,12 @@ export default function AdminStaffPage() {
                                             <span className="text-[10px] uppercase tracking-[0.25em] font-body font-semibold text-silver-dark">
                                                 {s.is_active ? "Disponibile per il booking" : "Sospeso"}
                                             </span>
+                                            <button
+                                                onClick={() => setHoursEditor({ id: s.id, name: s.name })}
+                                                className="ml-auto text-[10px] uppercase tracking-[0.25em] text-accent-warm hover:text-warm-white font-body font-semibold border border-accent-warm/40 rounded-full px-3 py-1.5 transition-colors"
+                                            >
+                                                Orari settimana
+                                            </button>
                                         </div>
 
                                         <div className="mt-3">
@@ -267,7 +274,259 @@ export default function AdminStaffPage() {
                     })}
                 </div>
             )}
+
+            <AnimatePresence>
+                {hoursEditor && (
+                    <WeeklyHoursModal
+                        staffId={hoursEditor.id}
+                        staffName={hoursEditor.name}
+                        onClose={() => setHoursEditor(null)}
+                    />
+                )}
+            </AnimatePresence>
         </div>
+    );
+}
+
+interface WeeklyHoursRow {
+    weekday: number;
+    start_time: string;
+    end_time: string;
+}
+
+const WEEKDAY_LABELS = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"];
+
+function WeeklyHoursModal({
+    staffId,
+    staffName,
+    onClose,
+}: {
+    staffId: string;
+    staffName: string;
+    onClose: () => void;
+}) {
+    // 7-slot array: index 0 = Monday (weekday=1), ... 6 = Sunday (weekday=0)
+    // DB stores weekday 0-6 with Sun=0 historically; we present Mon-first.
+    // We'll map: idx 0..6 → weekday (1,2,3,4,5,6,0)
+    const idxToWeekday = (i: number) => (i === 6 ? 0 : i + 1);
+    const weekdayToIdx = (w: number) => (w === 0 ? 6 : w - 1);
+
+    const [rows, setRows] = useState<(WeeklyHoursRow | null)[]>([null, null, null, null, null, null, null]);
+    const [loading, setLoading] = useState(true);
+    const [busy, setBusy] = useState(false);
+    const addToast = useToastStore((s) => s.addToast);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const supabase = createClient();
+                const { data, error } = await supabase
+                    .from("working_hours")
+                    .select("weekday, start_time, end_time")
+                    .eq("staff_id", staffId);
+                if (error) throw error;
+                const next: (WeeklyHoursRow | null)[] = [null, null, null, null, null, null, null];
+                for (const r of (data ?? []) as WeeklyHoursRow[]) {
+                    next[weekdayToIdx(r.weekday)] = {
+                        weekday: r.weekday,
+                        start_time: r.start_time.slice(0, 5),
+                        end_time: r.end_time.slice(0, 5),
+                    };
+                }
+                setRows(next);
+            } catch (e: any) {
+                addToast(`Errore: ${e?.message ?? "?"}`, "error");
+            } finally {
+                setLoading(false);
+            }
+        })();
+    }, [staffId, addToast]);
+
+    const toggleDay = (idx: number) => {
+        setRows((prev) => {
+            const next = [...prev];
+            if (next[idx]) {
+                next[idx] = null;
+            } else {
+                next[idx] = {
+                    weekday: idxToWeekday(idx),
+                    start_time: "09:00",
+                    end_time: "19:00",
+                };
+            }
+            return next;
+        });
+    };
+
+    const updateTime = (idx: number, field: "start_time" | "end_time", value: string) => {
+        setRows((prev) => {
+            const next = [...prev];
+            const cur = next[idx];
+            if (!cur) return prev;
+            next[idx] = { ...cur, [field]: value };
+            return next;
+        });
+    };
+
+    const save = async () => {
+        if (busy) return;
+        setBusy(true);
+        try {
+            const supabase = createClient();
+            await supabase.from("working_hours").delete().eq("staff_id", staffId);
+
+            const toInsert = rows
+                .filter((r): r is WeeklyHoursRow => r !== null)
+                .map((r) => ({
+                    staff_id: staffId,
+                    weekday: r.weekday,
+                    start_time: r.start_time,
+                    end_time: r.end_time,
+                }));
+
+            if (toInsert.length > 0) {
+                const { error } = await supabase.from("working_hours").insert(toInsert);
+                if (error) throw error;
+            }
+            addToast("Orari salvati", "success");
+            onClose();
+        } catch (e: any) {
+            addToast(`Errore: ${e?.message ?? "?"}`, "error");
+        } finally {
+            setBusy(false);
+        }
+    };
+
+    const applyMondayToAll = () => {
+        const mon = rows[0];
+        if (!mon) {
+            addToast("Imposta prima il lunedì", "info");
+            return;
+        }
+        setRows((prev) =>
+            prev.map((_, i) => ({
+                weekday: idxToWeekday(i),
+                start_time: mon.start_time,
+                end_time: mon.end_time,
+            })),
+        );
+    };
+
+    return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+        >
+            <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-carbon border border-line rounded-[var(--radius-md)] p-6 max-w-xl w-full max-h-[90dvh] overflow-y-auto space-y-4"
+            >
+                <div className="flex items-start justify-between gap-3">
+                    <div>
+                        <span className="text-display-alt text-lg text-accent-warm">Orari settimana</span>
+                        <h3 className="text-display text-2xl text-warm-white tracking-tight">{staffName}</h3>
+                        <p className="text-xs text-warm-white-muted mt-1">
+                            Solo i giorni attivi sono prenotabili. Bottone "Copia da lunedì" replica
+                            gli stessi orari su tutta la settimana.
+                        </p>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="text-silver-dark hover:text-warm-white text-xl px-2"
+                        aria-label="Chiudi"
+                    >
+                        ×
+                    </button>
+                </div>
+
+                {loading ? (
+                    <div className="space-y-2">
+                        {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+                            <div key={i} className="h-14 bg-black-2 border border-line rounded-md animate-pulse" />
+                        ))}
+                    </div>
+                ) : (
+                    <>
+                        <div className="space-y-2">
+                            {rows.map((row, idx) => {
+                                const active = row !== null;
+                                return (
+                                    <div
+                                        key={idx}
+                                        className={`flex items-center gap-3 p-3 rounded-md border transition-colors ${
+                                            active
+                                                ? "bg-black-2 border-line"
+                                                : "bg-black-2/30 border-line/50"
+                                        }`}
+                                    >
+                                        <button
+                                            onClick={() => toggleDay(idx)}
+                                            className={`w-12 text-[10px] uppercase tracking-[0.2em] font-body font-semibold py-1.5 rounded-full border ${
+                                                active
+                                                    ? "bg-accent-warm text-black border-accent-warm"
+                                                    : "border-line text-silver"
+                                            }`}
+                                        >
+                                            {WEEKDAY_LABELS[idx]}
+                                        </button>
+                                        {active && row ? (
+                                            <>
+                                                <input
+                                                    type="time"
+                                                    value={row.start_time}
+                                                    onChange={(e) => updateTime(idx, "start_time", e.target.value)}
+                                                    className="bg-black border border-line rounded-md px-2 py-1.5 text-warm-white font-mono text-sm"
+                                                />
+                                                <span className="text-silver-dark">→</span>
+                                                <input
+                                                    type="time"
+                                                    value={row.end_time}
+                                                    onChange={(e) => updateTime(idx, "end_time", e.target.value)}
+                                                    className="bg-black border border-line rounded-md px-2 py-1.5 text-warm-white font-mono text-sm"
+                                                />
+                                            </>
+                                        ) : (
+                                            <span className="text-xs text-silver-dark italic">Chiuso</span>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        <button
+                            onClick={applyMondayToAll}
+                            disabled={!rows[0]}
+                            className="text-[10px] uppercase tracking-[0.25em] text-accent-warm hover:text-warm-white font-body font-semibold disabled:opacity-40"
+                        >
+                            Copia lunedì su tutti i giorni
+                        </button>
+
+                        <div className="flex justify-end gap-2 pt-2 border-t border-line">
+                            <button
+                                onClick={onClose}
+                                disabled={busy}
+                                className="px-4 py-2 border border-line text-warm-white rounded-full text-[10px] uppercase tracking-[0.25em]"
+                            >
+                                Annulla
+                            </button>
+                            <button
+                                onClick={save}
+                                disabled={busy}
+                                className="px-6 py-2.5 bg-accent-warm text-black rounded-full text-[11px] uppercase tracking-[0.25em] font-body font-semibold disabled:opacity-50"
+                            >
+                                {busy ? "Salvataggio…" : "Salva orari"}
+                            </button>
+                        </div>
+                    </>
+                )}
+            </motion.div>
+        </motion.div>
     );
 }
 
