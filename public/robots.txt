@@ -1,6 +1,13 @@
 User-agent: *
 Allow: /
 Disallow: /admin/
+Disallow: /staff/
 Disallow: /profilo/
+Disallow: /r/
+Disallow: /i/
+Disallow: /recensione/
+Disallow: /sondaggio/
+Disallow: /coupon/
 
-Sitemap: https://www.hairricholbia.com/sitemap-index.xml
+# Update questa riga quando il dominio cliente sostituisce hair-rich.vercel.app
+Sitemap: https://hair-rich.vercel.app/sitemap-index.xml

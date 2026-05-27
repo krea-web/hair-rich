@@ -1,12 +1,27 @@
 ---
 import "../styles/globals.css";
 import { getLangFromUrl, getAlternates, useTranslations, LOCALE_META } from "@/i18n";
+import JsonLd from "@/components/seo/JsonLd.astro";
+
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+interface Breadcrumb {
+  name: string;
+  url: string;
+}
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
   noindex?: boolean;
+  /** Aggiunge FAQPage schema markup (es. su /contatti e /servizi) */
+  faqItems?: FaqItem[];
+  /** Aggiunge BreadcrumbList schema markup (pagine non-home) */
+  breadcrumbs?: Breadcrumb[];
 }
 
 const lang = getLangFromUrl(Astro.url);
@@ -34,8 +49,10 @@ const defaultDescription =
 const {
   title = defaultTitle,
   description = defaultDescription,
-  image = `/og-${lang}.png`,
+  image = "/og-image.png",
   noindex = false,
+  faqItems = [],
+  breadcrumbs = [],
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
@@ -129,6 +146,13 @@ const localeKeywords: Record<string, string> = {
         };
       window.plausible.lang = lang;
     </script>
+
+    {/* Structured data: LocalBusiness + Services + optional FAQ/Breadcrumbs */}
+    <JsonLd
+      includeFaq={faqItems.length > 0}
+      faqItems={faqItems}
+      breadcrumbs={breadcrumbs}
+    />
 
     {/* Service Worker registration (PWA) — solo in produzione (https) */}
     <script is:inline>

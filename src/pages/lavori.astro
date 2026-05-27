@@ -18,6 +18,10 @@ import { ProductDrawer } from "../components/shop/ProductDrawer";
 <RootLayout
   title="Portfolio · Hair Rich Olbia"
   description="Galleria completa di tagli, fade, barbe e styling realizzati da Hair Rich Olbia. Trasformazioni prima/dopo, filtri per categoria, archive editorial."
+  breadcrumbs={[
+    { name: "Home", url: "https://hair-rich.vercel.app/" },
+    { name: "Lavori", url: "https://hair-rich.vercel.app/lavori/" },
+  ]}
 >
   <SiteHeader client:load />
   <MobileTopBar client:load />

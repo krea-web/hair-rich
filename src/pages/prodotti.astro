@@ -37,6 +37,10 @@ const FAQ = [
 <RootLayout
   title="Prodotti · Hair Rich Olbia"
   description="Pomate, cere, oli barba, strumenti e accessori selezionati da Hair Rich Olbia. Prenoti online, paghi e ritiri in salone."
+  breadcrumbs={[
+    { name: "Home", url: "https://hair-rich.vercel.app/" },
+    { name: "Prodotti", url: "https://hair-rich.vercel.app/prodotti/" },
+  ]}
 >
   <SiteHeader client:load />
   <MobileTopBar client:load />

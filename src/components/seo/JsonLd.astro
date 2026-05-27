@@ -1,0 +1,176 @@
+---
+/**
+ * Schema.org JSON-LD per Hair Rich.
+ *
+ * Emette uno script LocalBusiness/HairSalon nel <head> di ogni pagina,
+ * più Service per il servizio fornito + opening hours + geo.
+ *
+ * Optional props:
+ *   - includeFaq: include un FAQPage schema basato su `faqItems`
+ *   - faqItems: array di { question, answer } (richiesto se includeFaq)
+ *   - breadcrumbs: array di { name, url } per BreadcrumbList
+ *
+ * I dati LocalBusiness/Service sono hardcoded da src/lib/constants.ts.
+ * Quando il sito sarà multi-tenant (un Supabase per salone), questi
+ * valori verranno letti da salon_settings via server-side fetch.
+ */
+
+import { SITE } from "@/lib/constants";
+
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+interface Breadcrumb {
+  name: string;
+  url: string;
+}
+
+interface Props {
+  includeFaq?: boolean;
+  faqItems?: FaqItem[];
+  breadcrumbs?: Breadcrumb[];
+}
+
+const { includeFaq = false, faqItems = [], breadcrumbs = [] } = Astro.props;
+
+const businessId = `${SITE.url}/#hairsalon`;
+
+const localBusiness = {
+  "@context": "https://schema.org",
+  "@type": "HairSalon",
+  "@id": businessId,
+  name: "Hair Rich Olbia",
+  description:
+    "Barbiere premium a Olbia. Taglio uomo, barba, trattamenti esclusivi. Prenotazione online disponibile 24/7.",
+  url: SITE.url,
+  telephone: `+39 ${SITE.phone}`,
+  email: SITE.email,
+  image: `${SITE.url}/og-image.png`,
+  logo: `${SITE.url}/hairrich-logoesteso.png`,
+  priceRange: "€€",
+  currenciesAccepted: "EUR",
+  paymentAccepted: "Cash, Credit Card, Debit Card",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Via Regina Elena 33/A",
+    addressLocality: "Olbia",
+    addressRegion: "SS",
+    postalCode: "07026",
+    addressCountry: "IT",
+  },
+  geo: {
+    "@type": "GeoCoordinates",
+    latitude: 40.9230,
+    longitude: 9.4980,
+  },
+  areaServed: [
+    { "@type": "City", name: "Olbia" },
+    { "@type": "City", name: "Porto Cervo" },
+    { "@type": "City", name: "Golfo Aranci" },
+    { "@type": "AdministrativeArea", name: "Costa Smeralda" },
+  ],
+  openingHoursSpecification: [
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+      opens: "09:00",
+      closes: "19:00",
+    },
+  ],
+  sameAs: [SITE.instagram],
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Servizi Hair Rich",
+    itemListElement: [
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "Taglio capelli uomo",
+          description: "Taglio classico personalizzato, lavaggio incluso. Durata 30 minuti.",
+          provider: { "@id": businessId },
+          serviceType: "Haircut",
+        },
+        price: "20",
+        priceCurrency: "EUR",
+      },
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "Taglio barba",
+          description: "Rifinitura barba con rasoio e olio nutriente. Durata 30 minuti.",
+          provider: { "@id": businessId },
+          serviceType: "BeardTrim",
+        },
+        price: "10",
+        priceCurrency: "EUR",
+      },
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "Taglio + Barba (Combo)",
+          description: "Pacchetto completo: taglio capelli + rifinitura barba. Durata 60 minuti.",
+          provider: { "@id": businessId },
+          serviceType: "HaircutAndBeardTrim",
+        },
+        price: "30",
+        priceCurrency: "EUR",
+      },
+    ],
+  },
+  potentialAction: {
+    "@type": "ReserveAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: `${SITE.url}/?action=book`,
+      inLanguage: ["it", "en", "fr", "de"],
+      actionPlatform: [
+        "http://schema.org/DesktopWebPlatform",
+        "http://schema.org/MobileWebPlatform",
+      ],
+    },
+    result: {
+      "@type": "Reservation",
+      name: "Prenotazione appuntamento Hair Rich Olbia",
+    },
+  },
+};
+
+const faqSchema =
+  includeFaq && faqItems.length > 0
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: faqItems.map((q) => ({
+          "@type": "Question",
+          name: q.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: q.answer,
+          },
+        })),
+      }
+    : null;
+
+const breadcrumbSchema =
+  breadcrumbs.length > 0
+    ? {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: breadcrumbs.map((b, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: b.name,
+          item: b.url,
+        })),
+      }
+    : null;
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(localBusiness)} />
+{faqSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}
+{breadcrumbSchema && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />}

@@ -26,6 +26,10 @@ const mapsHref =
 <RootLayout
   title="Contatti · Hair Rich Olbia"
   description="Telefono, WhatsApp, email e indirizzo di Hair Rich Olbia. Per prenotare un taglio usa il booking online; questo form è dedicato a collaborazioni, stampa e proposte fornitori."
+  breadcrumbs={[
+    { name: "Home", url: "https://hair-rich.vercel.app/" },
+    { name: "Contatti", url: "https://hair-rich.vercel.app/contatti/" },
+  ]}
 >
   <SiteHeader client:load />
   <MobileTopBar client:load />
