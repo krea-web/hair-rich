@@ -32,7 +32,8 @@ Cliente reale: barbiere a Olbia. Sito in italiano, multilingua (it/en/fr/de).
 - ✅ **Login admin operativo**: site_url corretto, redirect adaptive (admin → /admin)
 - ✅ **27 Edge Functions deployate** in produzione (ACTIVE)
 - ✅ **12 cron jobs schedulati** via pg_cron + pg_net (ACTIVE)
-- ⚠️ **Secrets Gmail/Telegram/OpenAI** ancora da configurare — vedi `docs/PRODUCTION-CHECKLIST.md`
+- ⏸️ **Go-live rinviato a dopo la presentazione di lunedì 1 giugno** — secrets Gmail/Telegram/OpenAI da configurare quando il cliente li conferma. Vedi `docs/PRODUCTION-CHECKLIST.md`
+- 🔨 **Sprint finale verso lunedì 1 giugno**: Sessioni E1 (Desktop UX) + E2 (SEO) + E3 (Polish) — piano completo in `~/.claude/plans/aspetta-per-il-go-tidy-treehouse.md`
 
 ## Decisioni strategiche prese
 
@@ -48,6 +49,64 @@ Cliente reale: barbiere a Olbia. Sito in italiano, multilingua (it/en/fr/de).
 - **Modello RT Olivetti di Hair Rich?** Determina se Path A (integrazione read-only) è fattibile o si skippa
 - **Hair Rich vende mai B2B (yacht/hotel)?** Determina priorità di Fatture in Cloud integration
 - **Stripe Terminal vs SumUp Air come primo POS plugin?** SumUp consigliato (più diffuso in IT)
+- **Dominio definitivo:** ancora da comprare. Per ora `PUBLIC_SITE_URL` resta env var, niente hardcoded nel codice
+
+---
+
+## 🏁 Sprint finale verso presentazione lunedì 1 giugno 2026
+
+Piano completo in `~/.claude/plans/aspetta-per-il-go-tidy-treehouse.md`.
+Sintesi:
+
+### Sessione E1 — Desktop UX rebalance (priorità massima, ~10-12h)
+
+15+ componenti `src/components/landing/*` si fermano a breakpoint `md:` (768px) senza
+scalare a `lg:`/`xl:` → su monitor 1920px tutto si vede stretto. Pattern di fix sistematico:
+- `gap-X md:gap-Y` → aggiungere `lg:gap-Z xl:gap-W` (Z≈1.5×Y, W≈2×Y)
+- `py-X md:py-Y` → aggiungere `lg:py-Z xl:py-W` (hero: `py-16 md:py-32 lg:py-40 xl:py-48`)
+- Font hero `text-[Xvw] md:text-[Yvw] lg:text-[Zvw]` → aggiungere `xl:text-[W]vw` con W≈0.85×Z
+- Max-width fissi (es. `max-w-[420px]`) → scalare con `lg:max-w-[500px] xl:max-w-[600px]`
+
+Componenti da rivisitare: HeroSection, ServicesSection, ManifestoSection, TeamSection,
+WhyUsSection, GallerySection, ReviewsSection, ServicesHero, PortfolioHero, ShopHero,
+ProductCatalog, StyleQuiz, HomeServiceFocus, Footer.
+
+### Sessione E2 — SEO refinement (~5-7h)
+
+- **E2.1 P0**: JSON-LD schema markup (LocalBusiness + BarberShop + Service ×3 + FAQPage +
+  BreadcrumbList) in nuovi componenti `src/components/seo/JsonLd*.astro` mountati da
+  `src/layouts/RootLayout.astro`. Letti da `salon_settings` + `services` + `cms_blocks`
+  via fetch server-side a build time
+- **E2.2 P1**: OG image brandizzata 1200×630 unica per tutte e 4 le lingue → `public/og-image.png`
+- **E2.3 P1**: `&display=swap` su Google Fonts; robots.txt sitemap URL via env var; meta
+  description specifica per /login + /registrazione
+- **E2.4 P2**: per-page metadata audit (legal pages, recensione/[token], coupon/[code])
+- **E2.5 P2**: lazy loading + `astro:assets` <Image /> sulle gallery e hero non-LCP
+
+### Sessione E3 — Polish + assets (~3-5h)
+
+- LoginForm bg da Unsplash → asset locale Hair Rich
+- i18n DE check (potenziali stringhe italiane lasciate)
+- Manifest icon + favicon variants verify
+- Lighthouse 6 pagine, target Performance ≥85, SEO ≥95, A11y ≥90, BP ≥95
+- Manual click-through end-to-end con regression mobile
+
+### Sequence operativa
+
+| Quando | Sessione |
+|---|---|
+| Mer 27 sera | E1 partial (HeroSection + ServicesSection + Manifest + Footer) |
+| Gio 28 | E1 complete + E2.1 JSON-LD |
+| Ven 29 mattina | E2.2-E2.5 |
+| Ven 29 pomeriggio | E3.1-E3.3 |
+| Sab/Dom | E3.4 Lighthouse + spot fixes |
+| Dom sera | E3.5 click-through end-to-end |
+| Lun mattina | last-mile fixes |
+
+### File che NON vengono toccati durante lo sprint
+
+Edge Functions, migrations DB, admin views, staff portal, customer profile, Notification
+Router — già funzionali. Fix solo se Lighthouse li segnala.
 
 ---
 
