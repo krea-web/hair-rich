@@ -39,7 +39,7 @@ export const de: Dict = {
         titleA: "BARBER",
         titleB: "STUDIO",
         body:
-            "Seit acht Jahren ist es unsere Mission, deine Identität zu formen. Schnitt, Bart und exklusive Servizio im Herzen von Olbia.",
+            "Seit acht Jahren ist es unsere Mission, deine Identität zu formen. Schnitt, Bart und exklusive Behandlungen im Herzen von Olbia.",
         primaryCta: "Jetzt buchen",
         secondaryCta: "Services entdecken",
         captionEyebrow: "Premium",
@@ -443,7 +443,7 @@ export const de: Dict = {
         appointments: {
             eyebrow: "Deine",
             title: "Termine.",
-            intro: "Verwalte zukünftige Buchungen oder schau dir den Verlauf von Schnitten, Bart und Servizion an.",
+            intro: "Verwalte zukünftige Buchungen oder schau dir den Verlauf von Schnitten, Bart und Behandlungen an.",
             new: "Neu",
             filters: { all: "Alle", confirmed: "Bestätigt", completed: "Abgeschlossen", cancelled: "Storniert" },
             count: (n) => (n === 1 ? "1 Termin" : `${n} Termine`),

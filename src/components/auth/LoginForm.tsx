@@ -6,6 +6,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginEmailSchema, loginPhoneSchema, otpSchema } from "@/lib/validation";
 import { createClient } from "@/lib/supabase/client";
+import { assetImageUrl } from "@/lib/supabase/queries";
+
+const LOGIN_BG_URL = assetImageUrl("salone-esterno.webp", {
+    width: 2070,
+    quality: 70,
+    format: "webp",
+});
 
 type LoginMethod = "email" | "phone";
 type LoginStep = "method" | "input" | "otp";
@@ -126,7 +133,11 @@ export function LoginForm() {
     return (
         <div className="min-h-[100dvh] flex flex-col md:flex-row bg-black selection:bg-carbon selection:text-warm-white">
             <div className="hidden md:flex flex-1 relative bg-carbon overflow-hidden border-r border-line">
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1621605815971-fbc98d665033?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-40 mix-blend-luminosity grayscale"></div>
+                <div
+                    className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-luminosity grayscale"
+                    style={{ backgroundImage: `url('${LOGIN_BG_URL}')` }}
+                />
+
                 <div className="absolute inset-0 bg-radial-[ellipse_at_center] from-transparent via-transparent to-black/80" />
                 <div className="absolute inset-0 opacity-10 mix-blend-overlay bg-[url('data:image/svg+xml,%3Csvg viewBox=%220 0 512 512%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22512%22 height=%22512%22 filter=%22url(%23noise)%22 opacity=%221%22/%3E%3C/svg%3E')]"></div>
 

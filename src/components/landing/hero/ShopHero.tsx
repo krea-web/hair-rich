@@ -104,6 +104,8 @@ export function ShopHero() {
                     alt=""
                     className="absolute inset-0 w-full h-full object-cover opacity-25 grayscale"
                     loading="eager"
+                    decoding="async"
+                    fetchPriority="high"
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-black via-black/70 to-black" />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/40 to-black/60" />
