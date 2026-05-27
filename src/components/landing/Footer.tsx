@@ -127,7 +127,7 @@ export function Footer() {
                     — never centred. The min-height keeps the photo readable
                     while the CTA sits in its lower-third so the eye lands on
                     "salone visibile" first, then on "Prenota ora". */}
-                <div className="relative max-w-4xl mx-auto px-6 md:px-12 lg:px-20 pt-32 md:pt-48 pb-10 md:pb-14 flex items-end justify-center min-h-[55vh] md:min-h-[65vh]">
+                <div className="relative max-w-4xl mx-auto px-6 md:px-12 lg:px-20 pt-24 md:pt-32 lg:pt-36 xl:pt-40 pb-10 md:pb-12 lg:pb-14 flex items-end justify-center min-h-[50vh] md:min-h-[58vh] lg:min-h-[52vh] xl:min-h-[48vh]">
                     <button
                         onClick={openDrawer}
                         className="cta-shine cta-pulse group inline-flex items-center justify-center gap-3 md:gap-4 px-10 md:px-14 py-5 md:py-6 bg-accent-warm text-black rounded-full text-sm md:text-lg uppercase tracking-[0.3em] font-body font-semibold active:scale-95 hover:scale-[1.03] transition-transform shadow-[0_24px_70px_-15px_rgba(212,165,116,0.65)]"
@@ -142,7 +142,7 @@ export function Footer() {
 
             {/* ── BLOCK 2 · DOVE + ORARI ──────────────────────────────────────── */}
             <div className="border-b border-line">
-                <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 py-14 md:py-20 lg:py-24 xl:py-28 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 lg:gap-20 xl:gap-24">
+                <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 py-14 md:py-18 lg:py-20 xl:py-24 2xl:py-28 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 lg:gap-20 xl:gap-24">
                     {/* Dove */}
                     <div>
                         <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
@@ -228,7 +228,7 @@ export function Footer() {
                     naviga
                 </div>
 
-                <div className="relative max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 py-14 md:py-20 lg:py-24 xl:py-28">
+                <div className="relative max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 py-14 md:py-18 lg:py-20 xl:py-24 2xl:py-28">
                     {/* Header — eyebrow + brand blurb side by side on desktop */}
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 lg:gap-14 xl:gap-16 mb-10 md:mb-14 lg:mb-20">
                         <div className="md:col-span-5">
@@ -323,7 +323,7 @@ export function Footer() {
             {/* pb extra on mobile so the legal links clear the fixed
                MobileBottomBar (≈70-80px including safe-area). Desktop
                keeps the normal padding since no bar there. */}
-            <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 pt-7 pb-[calc(env(safe-area-inset-bottom,0px)+96px)] md:pb-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 pt-7 pb-[calc(env(safe-area-inset-bottom,0px)+96px)] md:pb-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <p className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
                     © {currentYear} Hair Rich Olbia · P.IVA 0000000000
                 </p>

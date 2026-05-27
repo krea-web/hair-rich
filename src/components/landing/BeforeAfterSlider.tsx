@@ -26,7 +26,7 @@ interface Props {
 
 export function BeforeAfterSlider({ pair = REAL_PAIR }: Props) {
     return (
-        <section className="relative py-20 md:py-32 px-6 md:px-12 lg:px-20 bg-black-2 border-y border-line overflow-hidden">
+        <section className="relative py-16 md:py-24 lg:py-28 xl:py-32 2xl:py-36 px-6 md:px-12 lg:px-20 bg-black-2 border-y border-line overflow-hidden">
             <div className="max-w-3xl mx-auto">
                 <div className="mb-12 md:mb-16 text-center md:text-left">
                     <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">

@@ -15,7 +15,7 @@ export function MapSection() {
         <section
             id="dove-siamo"
             aria-label={t.map.eyebrow}
-            className="relative py-16 md:py-32 lg:py-40 xl:py-48 px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 bg-black overflow-hidden"
+            className="relative py-16 md:py-24 lg:py-28 xl:py-32 2xl:py-36 px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 bg-black overflow-hidden"
         >
             <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 xl:gap-20 items-start">

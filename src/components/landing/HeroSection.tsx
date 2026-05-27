@@ -168,7 +168,7 @@ export function HeroSection() {
                dentro l'hero. */}
 
             {/* Hero content */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-8 lg:gap-12 xl:gap-16 px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 pt-20 md:pt-32 lg:pt-40 xl:pt-48 pb-12 md:pb-20 lg:pb-28 min-h-[70dvh] md:min-h-[100dvh] lg:min-h-[85vh] xl:min-h-[80vh] 2xl:min-h-[75vh] max-w-[1920px] mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-8 lg:gap-12 xl:gap-16 px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 pt-20 md:pt-28 lg:pt-32 xl:pt-36 2xl:pt-40 pb-16 md:pb-20 lg:pb-24 xl:pb-28 min-h-[70dvh] md:min-h-[100dvh] lg:min-h-[85vh] xl:min-h-[80vh] 2xl:min-h-[75vh] max-w-[1920px] mx-auto">
                 <div className="md:col-span-7 flex flex-col justify-center">
                     <HeroTextBlock />
                 </div>

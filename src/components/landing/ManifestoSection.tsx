@@ -19,7 +19,7 @@ export function ManifestoSection() {
     return (
         <section
             id="about"
-            className="relative py-16 md:py-32 lg:py-40 xl:py-48 px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 bg-black-2 overflow-hidden"
+            className="relative py-16 md:py-24 lg:py-28 xl:py-32 2xl:py-36 px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 bg-black-2 overflow-hidden"
             aria-label={t.about.eyebrow}
         >
             <div className="absolute top-12 right-6 md:right-12 text-display-alt text-[20vw] md:text-[15vw] lg:text-[13vw] xl:text-[11vw] 2xl:text-[9.5vw] text-warm-white/[0.03] leading-none pointer-events-none select-none">

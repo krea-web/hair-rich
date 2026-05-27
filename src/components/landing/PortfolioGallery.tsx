@@ -83,7 +83,7 @@ export function PortfolioGallery() {
     };
 
     return (
-        <section className="relative py-20 md:py-32 px-6 md:px-12 lg:px-20 bg-black overflow-hidden">
+        <section className="relative py-16 md:py-24 lg:py-28 xl:py-32 2xl:py-36 px-6 md:px-12 lg:px-20 bg-black overflow-hidden">
             <div className="max-w-7xl mx-auto">
                 <div className="flex flex-col gap-10 mb-12 md:mb-16">
                     <div className="max-w-2xl">

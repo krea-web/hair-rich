@@ -18,7 +18,7 @@ export function FAQAccordion({ eyebrow, title, items }: Props) {
     const [openIdx, setOpenIdx] = useState<number | null>(0);
 
     return (
-        <section className="relative py-20 md:py-28 px-6 md:px-12 lg:px-20 bg-black overflow-hidden">
+        <section className="relative py-16 md:py-24 lg:py-28 xl:py-32 2xl:py-36 px-6 md:px-12 lg:px-20 bg-black overflow-hidden">
             <div className="max-w-3xl mx-auto">
                 <div className="mb-10 md:mb-14 text-center">
                     <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">

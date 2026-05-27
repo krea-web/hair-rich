@@ -50,7 +50,7 @@ export function TeamHero() {
                 Cast
             </div>
 
-            <div className="relative max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 pt-28 md:pt-40 lg:pt-48 xl:pt-56 pb-12 md:pb-24 lg:pb-32 min-h-[80vh] md:min-h-[90vh]">
+            <div className="relative max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 pt-24 md:pt-32 lg:pt-36 xl:pt-40 2xl:pt-44 pb-16 md:pb-24 lg:pb-28 xl:pb-32 min-h-[80vh] md:min-h-[85vh] lg:min-h-[78vh] xl:min-h-[72vh] 2xl:min-h-[68vh]">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}

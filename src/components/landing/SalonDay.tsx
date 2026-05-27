@@ -48,7 +48,7 @@ const TIMELINE: TimelineEntry[] = [
  */
 export function SalonDay() {
     return (
-        <section className="relative py-20 md:py-32 px-6 md:px-12 lg:px-20 bg-black-2 border-y border-line overflow-hidden">
+        <section className="relative py-16 md:py-24 lg:py-28 xl:py-32 2xl:py-36 px-6 md:px-12 lg:px-20 bg-black-2 border-y border-line overflow-hidden">
             <div
                 aria-hidden="true"
                 className="absolute -top-20 right-0 text-display-alt text-[32vw] md:text-[18vw] text-warm-white/[0.02] leading-none pointer-events-none select-none whitespace-nowrap"

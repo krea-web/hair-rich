@@ -63,7 +63,7 @@ export function PageHero({
                 {titleA}
             </div>
 
-            <div className="relative max-w-7xl mx-auto px-6 md:px-12 lg:px-20 pt-24 md:pt-44 pb-10 md:pb-24 min-h-[55vh] md:min-h-[85vh] flex flex-col justify-end">
+            <div className="relative max-w-7xl mx-auto px-6 md:px-12 lg:px-20 pt-24 md:pt-32 lg:pt-36 xl:pt-40 pb-12 md:pb-20 lg:pb-24 min-h-[55vh] md:min-h-[72vh] lg:min-h-[64vh] xl:min-h-[58vh] flex flex-col justify-end">
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}

@@ -13,7 +13,7 @@ export function BookingSection() {
         <section
             id="booking"
             aria-label={t.nav.booking}
-            className="relative py-16 md:py-32 lg:py-40 xl:py-48 px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 bg-black overflow-hidden"
+            className="relative py-16 md:py-24 lg:py-28 xl:py-32 2xl:py-36 px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 bg-black overflow-hidden"
         >
             {/* Editorial mark */}
             <div className="absolute -top-20 -left-10 text-display-alt text-[20vw] md:text-[15vw] text-warm-white/[0.025] leading-none pointer-events-none select-none">
