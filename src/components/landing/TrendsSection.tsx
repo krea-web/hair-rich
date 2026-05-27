@@ -19,9 +19,9 @@ export function TrendsSection() {
         >
             <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16 lg:gap-20 xl:gap-24 items-start">
                 {/* ── Left: image with sticker ─────────────────────────────── */}
-                <div className="md:col-span-5 md:sticky md:top-24">
+                <div className="md:col-span-5 md:sticky md:top-24 lg:top-28 xl:top-32 2xl:top-40">
                     <motion.div
-                        className="relative aspect-[4/5] rounded-[var(--radius-md)] overflow-hidden"
+                        className="relative aspect-[4/5] max-h-[560px] lg:max-h-[640px] xl:max-h-[720px] 2xl:max-h-[800px] mx-auto rounded-[var(--radius-md)] overflow-hidden"
                         initial={{ opacity: 0, x: -30 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true, margin: "-80px" }}

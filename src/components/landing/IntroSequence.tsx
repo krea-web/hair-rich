@@ -195,8 +195,8 @@ export function IntroSequence() {
             aria-label="Intro"
             data-intro-sequence
         >
-            <div className="h-[110vh] md:h-[120vh]">
-                <div className="sticky top-0 h-[100dvh] overflow-hidden bg-black">
+            <div className="h-[110vh] md:h-[120vh] lg:h-[95vh] xl:h-[85vh] 2xl:h-[80vh]">
+                <div className="sticky top-0 h-[100dvh] lg:h-[90vh] xl:h-[85vh] 2xl:h-[80vh] overflow-hidden bg-black">
                     {/* Skip button — desktop only (mobile users just scroll past). */}
                     <button
                         onClick={handleSkip}
@@ -216,7 +216,7 @@ export function IntroSequence() {
                        the canvas width so the subject doesn't bloat across a
                        16:9 viewport. */}
                     <div className="absolute inset-0 pt-[68px] md:pt-[80px]">
-                        <div className="w-full h-full mx-auto md:max-w-xl lg:max-w-2xl">
+                        <div className="w-full h-full mx-auto md:max-w-xl lg:max-w-2xl xl:max-w-3xl 2xl:max-w-4xl">
                             <canvas
                                 ref={canvasRef}
                                 className="w-full h-full block"

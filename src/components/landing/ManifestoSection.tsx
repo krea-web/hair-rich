@@ -22,14 +22,14 @@ export function ManifestoSection() {
             className="relative py-16 md:py-32 lg:py-40 xl:py-48 px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 bg-black-2 overflow-hidden"
             aria-label={t.about.eyebrow}
         >
-            <div className="absolute top-12 right-6 md:right-12 text-display-alt text-[20vw] md:text-[15vw] lg:text-[13vw] xl:text-[11vw] text-warm-white/[0.03] leading-none pointer-events-none select-none">
+            <div className="absolute top-12 right-6 md:right-12 text-display-alt text-[20vw] md:text-[15vw] lg:text-[13vw] xl:text-[11vw] 2xl:text-[9.5vw] text-warm-white/[0.03] leading-none pointer-events-none select-none">
                 Studio
             </div>
 
             <div className="relative max-w-7xl 2xl:max-w-[1600px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 lg:gap-20 xl:gap-24 items-center">
                 <div className="md:col-span-6 relative">
                     <motion.div
-                        className="relative aspect-[4/5] w-full"
+                        className="relative aspect-[4/5] w-full max-h-[640px] lg:max-h-[720px] xl:max-h-[800px] 2xl:max-h-[880px] mx-auto"
                         initial={{ opacity: 0, x: -40 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true, margin: "-100px" }}
@@ -46,7 +46,7 @@ export function ManifestoSection() {
                     </motion.div>
 
                     <motion.div
-                        className="absolute -bottom-8 -right-4 md:-right-12 w-[45%] aspect-[3/4] border-4 border-black-2 rounded-[var(--radius-md)] overflow-hidden shadow-[0_30px_60px_-20px_rgba(0,0,0,0.9)]"
+                        className="absolute -bottom-8 -right-4 md:-right-12 lg:-right-16 xl:-right-20 w-[45%] lg:w-[40%] xl:w-[36%] 2xl:w-[34%] aspect-[3/4] border-4 border-black-2 rounded-[var(--radius-md)] overflow-hidden shadow-[0_30px_60px_-20px_rgba(0,0,0,0.9)]"
                         initial={{ opacity: 0, scale: 0.9, y: 30 }}
                         whileInView={{ opacity: 1, scale: 1, y: 0 }}
                         viewport={{ once: true, margin: "-100px" }}

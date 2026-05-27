@@ -55,7 +55,7 @@ export function PricingSection() {
         >
             <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16 lg:gap-20 xl:gap-24">
                 {/* ── Left aside image + intro ─────────────────────────────── */}
-                <div className="md:col-span-4 md:sticky md:top-24 self-start">
+                <div className="md:col-span-4 md:sticky md:top-24 lg:top-28 xl:top-32 2xl:top-40 self-start">
                     <EditorialHeading
                         eyebrow={t.pricing.eyebrow}
                         title={
@@ -70,7 +70,7 @@ export function PricingSection() {
                     </p>
 
                     <motion.div
-                        className="mt-10 relative aspect-[4/5] rounded-[var(--radius-md)] overflow-hidden"
+                        className="mt-10 relative aspect-[4/5] max-h-[520px] lg:max-h-[600px] xl:max-h-[680px] 2xl:max-h-[760px] rounded-[var(--radius-md)] overflow-hidden"
                         initial={{ opacity: 0, scale: 0.95 }}
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}

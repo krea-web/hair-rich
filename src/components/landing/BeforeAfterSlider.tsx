@@ -152,7 +152,7 @@ function Compare({ pair }: { pair: Pair }) {
                     if (e.key === "ArrowLeft") setPos((p) => Math.max(0, p - 5));
                     if (e.key === "ArrowRight") setPos((p) => Math.min(100, p + 5));
                 }}
-                className="relative aspect-[3/4] w-full rounded-[var(--radius-md)] border border-line overflow-hidden cursor-ew-resize select-none focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-accent-warm"
+                className="relative aspect-[3/4] lg:aspect-[4/5] xl:aspect-[1/1] w-full max-h-[640px] lg:max-h-[720px] xl:max-h-[760px] 2xl:max-h-[800px] mx-auto rounded-[var(--radius-md)] border border-line overflow-hidden cursor-ew-resize select-none focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-accent-warm"
                 style={{
                     WebkitUserSelect: "none",
                     userSelect: "none",

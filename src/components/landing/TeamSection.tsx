@@ -40,7 +40,7 @@ export function TeamSection() {
                         viewport={{ once: true, margin: "-80px" }}
                         transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
                     >
-                        <div className="relative aspect-[3/4]">
+                        <div className="relative aspect-[3/4] max-h-[640px] lg:max-h-[720px] xl:max-h-[800px] 2xl:max-h-[880px] mx-auto">
                             <SmartImage
                                 src={assetImageUrl(FEATURED_IMG, { width: 1200, quality: 82, format: "webp" })}
                                 srcSet={assetImageSrcset(FEATURED_IMG, 82)}
@@ -53,7 +53,7 @@ export function TeamSection() {
 
                         {/* Years badge */}
                         <motion.div
-                            className="absolute -top-6 -right-6 md:-right-12 bg-accent-warm text-black w-32 h-32 rounded-full flex flex-col items-center justify-center shadow-[0_20px_50px_-15px_rgba(212,165,116,0.4)]"
+                            className="absolute -top-6 -right-6 md:-right-12 lg:-right-14 xl:-right-16 bg-accent-warm text-black w-32 h-32 lg:w-36 lg:h-36 xl:w-40 xl:h-40 rounded-full flex flex-col items-center justify-center shadow-[0_20px_50px_-15px_rgba(212,165,116,0.4)]"
                             initial={{ opacity: 0, scale: 0.5, rotate: -45 }}
                             whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
                             viewport={{ once: true }}
@@ -199,7 +199,7 @@ export function TeamSection() {
                             viewport={{ once: true, margin: "-80px" }}
                             transition={{ duration: 1, delay: i * 0.1, ease: [0.25, 0.1, 0.25, 1] }}
                         >
-                            <div className="relative aspect-[3/4]">
+                            <div className="relative aspect-[3/4] max-h-[520px] lg:max-h-[580px] xl:max-h-[640px]">
                                 <SmartImage
                                     src={assetImageUrl(m.img, { width: 1200, quality: 82, format: "webp" })}
                                     srcSet={assetImageSrcset(m.img, 82)}

@@ -168,7 +168,7 @@ export function HeroSection() {
                dentro l'hero. */}
 
             {/* Hero content */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-8 lg:gap-12 xl:gap-16 px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 pt-20 md:pt-32 lg:pt-40 xl:pt-48 pb-12 md:pb-20 lg:pb-28 min-h-[70dvh] md:min-h-[100dvh] max-w-[1920px] mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-8 lg:gap-12 xl:gap-16 px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 pt-20 md:pt-32 lg:pt-40 xl:pt-48 pb-12 md:pb-20 lg:pb-28 min-h-[70dvh] md:min-h-[100dvh] lg:min-h-[85vh] xl:min-h-[80vh] 2xl:min-h-[75vh] max-w-[1920px] mx-auto">
                 <div className="md:col-span-7 flex flex-col justify-center">
                     <HeroTextBlock />
                 </div>
@@ -178,7 +178,7 @@ export function HeroSection() {
                    room. */}
                 <div className="hidden md:block md:col-span-5 relative">
                     <motion.div
-                        className="sticky top-32 aspect-[4/5] w-full"
+                        className="sticky top-32 lg:top-28 xl:top-32 2xl:top-40 aspect-[4/5] lg:aspect-[5/6] xl:aspect-[4/5] w-full max-h-[600px] lg:max-h-[680px] xl:max-h-[750px] 2xl:max-h-[820px] mx-auto"
                         initial={{ opacity: 0, scale: 0.96 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1], delay: 0.2 }}

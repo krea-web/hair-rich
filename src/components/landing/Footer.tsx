@@ -118,7 +118,7 @@ export function Footer() {
                 {/* Decorative editorial watermark */}
                 <div
                     aria-hidden="true"
-                    className="absolute -bottom-10 right-2 md:right-8 text-display-alt text-[28vw] md:text-[14vw] text-warm-white/[0.05] leading-none pointer-events-none select-none"
+                    className="absolute -bottom-10 right-2 md:right-8 text-display-alt text-[28vw] md:text-[14vw] lg:text-[12vw] xl:text-[10vw] 2xl:text-[9vw] text-warm-white/[0.05] leading-none pointer-events-none select-none"
                 >
                     rich
                 </div>
@@ -223,7 +223,7 @@ export function Footer() {
                 {/* Watermark behind the index */}
                 <div
                     aria-hidden="true"
-                    className="absolute -bottom-12 -right-4 md:-right-10 text-display-alt text-[40vw] md:text-[18vw] text-warm-white/[0.035] leading-none pointer-events-none select-none tracking-tighter"
+                    className="absolute -bottom-12 -right-4 md:-right-10 text-display-alt text-[40vw] md:text-[18vw] lg:text-[15vw] xl:text-[13vw] 2xl:text-[11vw] text-warm-white/[0.035] leading-none pointer-events-none select-none tracking-tighter"
                 >
                     naviga
                 </div>

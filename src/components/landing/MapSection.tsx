@@ -111,7 +111,7 @@ export function MapSection() {
                             title={`${SITE.name} · ${SITE.address}`}
                             loading="lazy"
                             referrerPolicy="no-referrer-when-downgrade"
-                            className="w-full h-[360px] md:h-[480px] block bg-carbon-2 grayscale-[40%] contrast-[1.05]"
+                            className="w-full h-[360px] md:h-[480px] lg:h-[560px] xl:h-[640px] 2xl:h-[720px] block bg-carbon-2 grayscale-[40%] contrast-[1.05]"
                         />
                         {/* Subtle frame tint to match the editorial palette */}
                         <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-accent-warm/15 rounded-[var(--radius-lg)]" />
