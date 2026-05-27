@@ -33,7 +33,18 @@ Cliente reale: barbiere a Olbia. Sito in italiano, multilingua (it/en/fr/de).
 - ✅ **27 Edge Functions deployate** in produzione (ACTIVE)
 - ✅ **12 cron jobs schedulati** via pg_cron + pg_net (ACTIVE)
 - ⏸️ **Go-live rinviato a dopo la presentazione di lunedì 1 giugno** — secrets Gmail/Telegram/OpenAI da configurare quando il cliente li conferma. Vedi `docs/PRODUCTION-CHECKLIST.md`
-- 🔨 **Sprint finale verso lunedì 1 giugno**: Sessioni E1 (Desktop UX) + E2 (SEO) + E3 (Polish) — piano completo in `~/.claude/plans/aspetta-per-il-go-tidy-treehouse.md`
+- ✅ **Sprint finale completato (eccetto Lighthouse + manual click-through)**:
+  - **E1 Desktop UX**: 23 file landing rebalanced con `lg:`/`xl:`/`2xl:` breakpoint scaling (commit `5ee3f76`)
+  - **E2.1 JSON-LD**: HairSalon schema + Service ×3 + FAQ + Breadcrumb su 5 pagine (commit `1746a12`)
+  - **E2.3 SEO quick wins**: robots.txt esteso, OG fallback unico, font-display=swap già presente (commit `1746a12`)
+  - **E2.4 Breadcrumbs**: lavori/prodotti/team/contatti/servizi (commit `1746a12`)
+  - **E2.5 Image perf**: decoding + fetchPriority sui hero LCP (commit `4a78499`)
+  - **E3.1 LoginForm bg**: da Unsplash a `salone-esterno.webp` Supabase (commit `4a78499`)
+  - **E3.2 DE i18n**: rimossi italianismi residui (commit `4a78499`)
+  - **E3.3 Manifest**: verificato (icon-192/512/maskable/apple-icon + og 1200×630 OK)
+  - **E2.2 OG image**: già esistente in `public/og-image.png` 1200×630 ✓
+- ⏳ **E3.4 Lighthouse audit**: audit statico OK; full Lighthouse va eseguito lunedì mattina con browser
+- ⏳ **E3.5 Manual click-through**: da fare sabato/domenica
 
 ## Decisioni strategiche prese
 
