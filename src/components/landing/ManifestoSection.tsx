@@ -19,14 +19,14 @@ export function ManifestoSection() {
     return (
         <section
             id="about"
-            className="relative py-16 md:py-32 px-6 md:px-12 lg:px-20 bg-black-2 overflow-hidden"
+            className="relative py-16 md:py-32 lg:py-40 xl:py-48 px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 bg-black-2 overflow-hidden"
             aria-label={t.about.eyebrow}
         >
-            <div className="absolute top-12 right-6 md:right-12 text-display-alt text-[20vw] md:text-[15vw] text-warm-white/[0.03] leading-none pointer-events-none select-none">
+            <div className="absolute top-12 right-6 md:right-12 text-display-alt text-[20vw] md:text-[15vw] lg:text-[13vw] xl:text-[11vw] text-warm-white/[0.03] leading-none pointer-events-none select-none">
                 Studio
             </div>
 
-            <div className="relative max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 items-center">
+            <div className="relative max-w-7xl 2xl:max-w-[1600px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 lg:gap-20 xl:gap-24 items-center">
                 <div className="md:col-span-6 relative">
                     <motion.div
                         className="relative aspect-[4/5] w-full"

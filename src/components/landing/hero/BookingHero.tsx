@@ -101,8 +101,8 @@ export function BookingHero() {
                 className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_30%,rgba(212,165,116,0.18),transparent_55%)]"
             />
 
-            <div className="relative max-w-7xl mx-auto px-6 md:px-12 lg:px-20 pt-28 md:pt-40 pb-12 md:pb-24 min-h-[80vh] md:min-h-[90vh]">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            <div className="relative max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 pt-28 md:pt-40 lg:pt-48 xl:pt-56 pb-12 md:pb-24 lg:pb-32 min-h-[80vh] md:min-h-[90vh]">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-16 items-center">
                     {/* Left — title */}
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}

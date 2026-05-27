@@ -142,7 +142,7 @@ export function Footer() {
 
             {/* ── BLOCK 2 · DOVE + ORARI ──────────────────────────────────────── */}
             <div className="border-b border-line">
-                <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 py-14 md:py-20 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
+                <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 py-14 md:py-20 lg:py-24 xl:py-28 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 lg:gap-20 xl:gap-24">
                     {/* Dove */}
                     <div>
                         <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
@@ -228,9 +228,9 @@ export function Footer() {
                     naviga
                 </div>
 
-                <div className="relative max-w-7xl mx-auto px-6 md:px-12 lg:px-20 py-14 md:py-20">
+                <div className="relative max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 py-14 md:py-20 lg:py-24 xl:py-28">
                     {/* Header — eyebrow + brand blurb side by side on desktop */}
-                    <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 mb-10 md:mb-14">
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 lg:gap-14 xl:gap-16 mb-10 md:mb-14 lg:mb-20">
                         <div className="md:col-span-5">
                             <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
                                 Indice
@@ -252,7 +252,7 @@ export function Footer() {
                     </div>
 
                     {/* Big editorial index — 5 numbered cards */}
-                    <nav aria-label="Pagine del sito" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 md:gap-3">
+                    <nav aria-label="Pagine del sito" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 md:gap-3 lg:gap-4 xl:gap-5">
                         {NAV_LINKS.map((l, i) => (
                             <a
                                 key={l.href}
@@ -323,7 +323,7 @@ export function Footer() {
             {/* pb extra on mobile so the legal links clear the fixed
                MobileBottomBar (≈70-80px including safe-area). Desktop
                keeps the normal padding since no bar there. */}
-            <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 pt-7 pb-[calc(env(safe-area-inset-bottom,0px)+96px)] md:pb-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 pt-7 pb-[calc(env(safe-area-inset-bottom,0px)+96px)] md:pb-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <p className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
                     © {currentYear} Hair Rich Olbia · P.IVA 0000000000
                 </p>

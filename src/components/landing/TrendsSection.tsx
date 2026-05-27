@@ -15,9 +15,9 @@ export function TrendsSection() {
         <section
             id="tips"
             aria-label={t.trends.eyebrow}
-            className="relative py-16 md:py-32 px-6 md:px-12 lg:px-20 bg-black overflow-hidden"
+            className="relative py-16 md:py-32 lg:py-40 xl:py-48 px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 bg-black overflow-hidden"
         >
-            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16 items-start">
+            <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16 lg:gap-20 xl:gap-24 items-start">
                 {/* ── Left: image with sticker ─────────────────────────────── */}
                 <div className="md:col-span-5 md:sticky md:top-24">
                     <motion.div

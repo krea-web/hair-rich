@@ -13,7 +13,7 @@ export function BookingSection() {
         <section
             id="booking"
             aria-label={t.nav.booking}
-            className="relative py-16 md:py-32 px-6 md:px-12 lg:px-20 bg-black overflow-hidden"
+            className="relative py-16 md:py-32 lg:py-40 xl:py-48 px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 bg-black overflow-hidden"
         >
             {/* Editorial mark */}
             <div className="absolute -top-20 -left-10 text-display-alt text-[20vw] md:text-[15vw] text-warm-white/[0.025] leading-none pointer-events-none select-none">
@@ -34,7 +34,7 @@ export function BookingSection() {
                 transition={{ duration: 1.2 }}
             />
 
-            <div className="relative max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16 items-start">
+            <div className="relative max-w-7xl 2xl:max-w-[1600px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16 lg:gap-20 xl:gap-24 items-start">
                 {/* ── Left: title + info ──────────────────────────────────── */}
                 <div className="md:col-span-5 md:sticky md:top-24">
                     <EditorialHeading

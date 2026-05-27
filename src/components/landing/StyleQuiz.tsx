@@ -64,7 +64,7 @@ export function StyleQuiz() {
     return (
         <section
             id="costruisci"
-            className="relative py-16 md:py-28 px-6 md:px-12 lg:px-20 bg-black-2 border-y border-line overflow-hidden"
+            className="relative py-16 md:py-28 lg:py-36 xl:py-40 px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 bg-black-2 border-y border-line overflow-hidden"
         >
             {/* Editorial watermark */}
             <div
@@ -74,7 +74,7 @@ export function StyleQuiz() {
                 scegli
             </div>
 
-            <div className="relative max-w-6xl mx-auto">
+            <div className="relative max-w-6xl xl:max-w-7xl 2xl:max-w-[1600px] mx-auto">
                 <div className="max-w-2xl">
                     <span className="text-[10px] uppercase tracking-[0.5em] text-accent-warm font-body font-semibold">
                         Costruisci il tuo servizio
@@ -96,7 +96,7 @@ export function StyleQuiz() {
                         hidden: {},
                         visible: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
                     }}
-                    className="mt-10 md:mt-14 grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5"
+                    className="mt-10 md:mt-14 lg:mt-16 grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5 lg:gap-8 xl:gap-10"
                 >
                     {(services.length > 0
                         ? services

@@ -23,13 +23,13 @@ interface Props {
 export function FeaturedWork({ image, badge, title, subtitle, body, meta }: Props) {
     return (
         <section className="relative bg-black overflow-hidden">
-            <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 pt-16 md:pt-24 pb-20 md:pb-28">
+            <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 pt-16 md:pt-24 lg:pt-32 xl:pt-40 pb-20 md:pb-28 lg:pb-36 xl:pb-44">
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-50px" }}
                     transition={{ duration: 0.7 }}
-                    className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-end"
+                    className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-16 items-end"
                 >
                     {/* Photo — natural aspect, no crop. The card grows to the
                         image's intrinsic ratio so the subject is preserved. */}

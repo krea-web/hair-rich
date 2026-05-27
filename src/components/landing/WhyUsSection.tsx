@@ -26,9 +26,9 @@ export function WhyUsSection() {
     return (
         <section
             aria-label={t.whyUs.titleA}
-            className="relative py-16 md:py-32 px-6 md:px-12 lg:px-20 bg-black-2 overflow-hidden"
+            className="relative py-16 md:py-32 lg:py-40 xl:py-48 px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 bg-black-2 overflow-hidden"
         >
-            <div className="max-w-7xl mx-auto">
+            <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto">
                 <EditorialHeading
                     align="center"
                     eyebrow={t.whyUs.eyebrow}
@@ -40,7 +40,7 @@ export function WhyUsSection() {
                     className="mx-auto"
                 />
 
-                <div className="mt-16 md:mt-24 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 items-center">
+                <div className="mt-16 md:mt-24 lg:mt-32 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 lg:gap-20 xl:gap-24 items-center">
                     {/* ── Left features ────────────────────────────────────── */}
                     <div className="md:col-span-4 space-y-12 md:text-right">
                         {FEATURES.slice(0, 2).map((f, i) => (
@@ -75,7 +75,7 @@ export function WhyUsSection() {
                         viewport={{ once: true, margin: "-80px" }}
                         transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
                     >
-                        <div className="relative aspect-square w-full max-w-[420px] mx-auto">
+                        <div className="relative aspect-square w-full max-w-[420px] lg:max-w-[500px] xl:max-w-[560px] mx-auto">
                             {/* Outer rotating ring */}
                             <motion.div
                                 className="absolute inset-0 rounded-full border border-accent-warm/30 pointer-events-none"

@@ -20,8 +20,8 @@ const TEASER_IMAGES = [
 export function PortfolioHero() {
     return (
         <section className="relative bg-black overflow-hidden border-b border-line">
-            <div className="relative max-w-7xl mx-auto px-6 md:px-12 lg:px-20 pt-24 md:pt-40 pb-12 md:pb-24 min-h-[80vh] md:min-h-[90vh]">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            <div className="relative max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 pt-24 md:pt-40 lg:pt-48 xl:pt-56 pb-12 md:pb-24 lg:pb-32 min-h-[80vh] md:min-h-[90vh]">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-16 items-start">
                     {/* Left column — text */}
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
@@ -89,7 +89,7 @@ export function PortfolioHero() {
                             hidden: {},
                             visible: { transition: { staggerChildren: 0.1, delayChildren: 0.3 } },
                         }}
-                        className="lg:col-span-5 grid grid-cols-2 gap-2 md:gap-3"
+                        className="lg:col-span-5 grid grid-cols-2 gap-2 md:gap-3 lg:gap-5 xl:gap-6"
                     >
                         {TEASER_IMAGES.slice(0, 4).map((path, i) => {
                             const offsetClass = i % 2 === 0 ? "lg:translate-y-6" : "";

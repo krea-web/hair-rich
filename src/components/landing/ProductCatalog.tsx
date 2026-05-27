@@ -60,10 +60,10 @@ export function ProductCatalog() {
     };
 
     return (
-        <section id="catalog" className="relative py-16 md:py-24 px-6 md:px-12 lg:px-20 bg-black scroll-mt-20">
-            <div className="max-w-7xl mx-auto">
+        <section id="catalog" className="relative py-16 md:py-24 lg:py-32 xl:py-40 px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 bg-black scroll-mt-20">
+            <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto">
                 {/* Filter chips */}
-                <div className="flex flex-nowrap overflow-x-auto gap-2 md:gap-3 -mx-6 px-6 md:mx-0 md:px-0 md:flex-wrap scrollbar-hide pb-2 md:pb-0">
+                <div className="flex flex-nowrap overflow-x-auto gap-2 md:gap-3 lg:gap-4 -mx-6 px-6 md:mx-0 md:px-0 md:flex-wrap scrollbar-hide pb-2 md:pb-0">
                     {CATEGORIES.map((c) => {
                         const active = category === c.key;
                         const count =
@@ -95,7 +95,7 @@ export function ProductCatalog() {
                 </div>
 
                 {/* Grid */}
-                <div className="mt-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                <div className="mt-10 lg:mt-14 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8 xl:gap-10">
                     {loading &&
                         Array.from({ length: 8 }).map((_, i) => (
                             <div

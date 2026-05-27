@@ -42,7 +42,7 @@ export function HomeServiceFocus() {
                 domicilio
             </div>
 
-            <div className="relative max-w-5xl mx-auto px-6 md:px-12 lg:px-20 py-20 md:py-32">
+            <div className="relative max-w-5xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 py-20 md:py-32 lg:py-40 xl:py-48">
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -73,7 +73,7 @@ export function HomeServiceFocus() {
                     </p>
 
                     {/* Three quick facts */}
-                    <dl className="mt-8 md:mt-10 grid grid-cols-3 gap-3 md:gap-6 max-w-lg">
+                    <dl className="mt-8 md:mt-10 lg:mt-12 grid grid-cols-3 gap-3 md:gap-6 lg:gap-10 xl:gap-12 max-w-lg lg:max-w-2xl xl:max-w-3xl">
                         {[
                             { v: "24h", l: "Sopralluogo" },
                             { v: "VIP", l: "Setup completo" },

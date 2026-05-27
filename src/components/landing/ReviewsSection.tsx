@@ -90,7 +90,7 @@ export function ReviewsSection() {
         <section
             id="recensioni"
             aria-label={t.reviews.eyebrow}
-            className="relative py-16 md:py-32 px-6 md:px-12 lg:px-20 overflow-hidden"
+            className="relative py-16 md:py-32 lg:py-40 xl:py-48 px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 overflow-hidden"
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
         >
@@ -108,7 +108,7 @@ export function ReviewsSection() {
                 <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/60" />
             </div>
 
-            <div className="relative max-w-5xl mx-auto text-center">
+            <div className="relative max-w-5xl lg:max-w-6xl xl:max-w-7xl mx-auto text-center">
                 <motion.span
                     className="text-display-alt text-3xl md:text-4xl text-accent-warm"
                     initial={{ opacity: 0, y: 20 }}
@@ -119,7 +119,7 @@ export function ReviewsSection() {
                     {t.reviews.eyebrow}
                 </motion.span>
                 <motion.h2
-                    className="mt-2 text-display text-3xl md:text-5xl text-warm-white tracking-tight"
+                    className="mt-2 text-display text-3xl md:text-5xl lg:text-6xl xl:text-7xl text-warm-white tracking-tight"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -141,12 +141,12 @@ export function ReviewsSection() {
                             {/* Big quote mark */}
                             <span
                                 aria-hidden="true"
-                                className="absolute -top-12 left-1/2 -translate-x-1/2 text-display-alt text-[120px] md:text-[180px] text-accent-warm/15 leading-none select-none pointer-events-none"
+                                className="absolute -top-12 left-1/2 -translate-x-1/2 text-display-alt text-[120px] md:text-[180px] lg:text-[220px] xl:text-[260px] text-accent-warm/15 leading-none select-none pointer-events-none"
                             >
                                 &ldquo;
                             </span>
 
-                            <blockquote className="relative text-display-alt text-2xl md:text-4xl text-warm-white leading-snug max-w-3xl mx-auto">
+                            <blockquote className="relative text-display-alt text-2xl md:text-4xl lg:text-5xl xl:text-6xl text-warm-white leading-snug max-w-3xl lg:max-w-4xl xl:max-w-5xl mx-auto">
                                 {r.text}
                             </blockquote>
 

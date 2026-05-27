@@ -45,10 +45,10 @@ export function ServicesSection() {
         <section
             id="servizi"
             aria-label="Servizi"
-            className="relative py-16 md:py-32 px-6 md:px-12 lg:px-20 bg-black overflow-hidden"
+            className="relative py-16 md:py-32 lg:py-40 xl:py-48 px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 bg-black overflow-hidden"
         >
-            <div className="max-w-7xl mx-auto">
-                <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-12 md:mb-20">
+            <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto">
+                <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-12 md:mb-20 lg:mb-24">
                     <EditorialHeading
                         eyebrow={t.services.eyebrow}
                         title={
@@ -75,7 +75,7 @@ export function ServicesSection() {
                        bucket. The middle card carries a gold-accent border
                        instead of a y-offset so neighbouring cards never
                        overlap on any breakpoint. */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 items-stretch">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 lg:gap-8 xl:gap-10 items-stretch">
                     {t.services.items.map((cat, i) => {
                         const highlight = i === HIGHLIGHT_INDEX;
                         const isDomicilio = i === DOMICILIO_INDEX;

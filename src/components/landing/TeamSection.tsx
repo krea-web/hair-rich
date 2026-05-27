@@ -19,9 +19,9 @@ export function TeamSection() {
         <section
             id="team"
             aria-label={t.team.titleA + " " + t.team.titleB}
-            className="relative py-16 md:py-32 px-6 md:px-12 lg:px-20 bg-black overflow-hidden"
+            className="relative py-16 md:py-32 lg:py-40 xl:py-48 px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 bg-black overflow-hidden"
         >
-            <div className="max-w-7xl mx-auto">
+            <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto">
                 <EditorialHeading
                     eyebrow={t.team.eyebrow}
                     title={
@@ -32,7 +32,7 @@ export function TeamSection() {
                 />
 
                 {/* ── Featured Master ────────────────────────────────────────── */}
-                <div className="mt-16 md:mt-20 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 items-end">
+                <div className="mt-16 md:mt-20 lg:mt-24 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 lg:gap-20 xl:gap-24 items-end">
                     <motion.div
                         className="md:col-span-5 relative"
                         initial={{ opacity: 0, y: 40 }}
@@ -130,7 +130,7 @@ export function TeamSection() {
                 {TEAM.map((m, i) => (
                     <div
                         key={m.name}
-                        className="mt-20 md:mt-32 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 items-end"
+                        className="mt-20 md:mt-32 lg:mt-40 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 lg:gap-20 xl:gap-24 items-end"
                     >
                         {/* Bio (sx) */}
                         <div className="md:col-span-7 md:order-1 md:pr-8 order-2">

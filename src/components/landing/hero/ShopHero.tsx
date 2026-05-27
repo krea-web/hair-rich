@@ -117,8 +117,8 @@ export function ShopHero() {
                 06
             </div>
 
-            <div className="relative max-w-7xl mx-auto px-6 md:px-12 lg:px-20 pt-24 md:pt-40 pb-16 md:pb-28 min-h-[80vh] md:min-h-[90vh]">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+            <div className="relative max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 pt-24 md:pt-40 lg:pt-48 xl:pt-56 pb-16 md:pb-28 lg:pb-32 min-h-[80vh] md:min-h-[90vh]">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 xl:gap-16 items-center">
                     {/* Title block */}
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
@@ -206,7 +206,7 @@ export function ShopHero() {
                             hidden: {},
                             visible: { transition: { staggerChildren: 0.12, delayChildren: 0.35 } },
                         }}
-                        className="lg:col-span-5 grid grid-cols-2 gap-3 md:gap-4"
+                        className="lg:col-span-5 grid grid-cols-2 gap-3 md:gap-4 lg:gap-6 xl:gap-8"
                     >
                         {CATEGORY_CARDS.map((c, i) => {
                             const count = counts[c.key];

@@ -46,7 +46,7 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
                 {["BARBER", "STUDIO"].map((word, i) => (
                     <motion.span
                         key={word}
-                        className="block text-[13vw] md:text-[8.5vw] lg:text-[7.5vw]"
+                        className="block text-[13vw] md:text-[8.5vw] lg:text-[7.5vw] xl:text-[6.5vw] 2xl:text-[6vw]"
                         variants={{
                             hidden: { opacity: 0, y: 60, clipPath: "inset(100% 0 0 0)" },
                             visible: {
@@ -63,7 +63,7 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
             </motion.h1>
 
             <motion.p
-                className="mt-6 md:mt-8 max-w-md mx-auto md:mx-0 text-warm-white-muted text-sm md:text-lg leading-relaxed font-body"
+                className="mt-6 md:mt-8 lg:mt-10 max-w-md lg:max-w-xl xl:max-w-2xl mx-auto md:mx-0 text-warm-white-muted text-sm md:text-lg lg:text-xl leading-relaxed font-body"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -132,7 +132,7 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
             </motion.div>
 
             <motion.dl
-                className="hidden md:grid mt-12 grid-cols-3 gap-8 max-w-md"
+                className="hidden md:grid mt-12 lg:mt-16 grid-cols-3 gap-8 lg:gap-12 xl:gap-16 max-w-md lg:max-w-2xl xl:max-w-3xl"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
@@ -168,7 +168,7 @@ export function HeroSection() {
                dentro l'hero. */}
 
             {/* Hero content */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-8 lg:gap-12 px-6 md:px-12 lg:px-20 pt-20 md:pt-32 pb-12 md:pb-20 min-h-[70dvh] md:min-h-[100dvh]">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-8 lg:gap-12 xl:gap-16 px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 pt-20 md:pt-32 lg:pt-40 xl:pt-48 pb-12 md:pb-20 lg:pb-28 min-h-[70dvh] md:min-h-[100dvh] max-w-[1920px] mx-auto">
                 <div className="md:col-span-7 flex flex-col justify-center">
                     <HeroTextBlock />
                 </div>

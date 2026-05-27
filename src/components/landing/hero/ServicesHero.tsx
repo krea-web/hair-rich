@@ -36,7 +36,7 @@ export function ServicesHero() {
                 01
             </div>
 
-            <div className="relative max-w-5xl mx-auto px-6 md:px-12 lg:px-20 pt-28 md:pt-44 pb-16 md:pb-24 min-h-[70vh] md:min-h-[80vh] flex flex-col items-center justify-end text-center">
+            <div className="relative max-w-5xl lg:max-w-6xl xl:max-w-7xl mx-auto px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 pt-28 md:pt-44 lg:pt-48 xl:pt-56 pb-16 md:pb-24 lg:pb-32 min-h-[70vh] md:min-h-[80vh] flex flex-col items-center justify-end text-center">
                 {/* Eyebrow live-availability chip */}
                 <motion.div
                     initial={{ opacity: 0, y: 16 }}
@@ -90,7 +90,7 @@ export function ServicesHero() {
                         hidden: {},
                         visible: { transition: { staggerChildren: 0.08, delayChildren: 0.85 } },
                     }}
-                    className="mt-10 md:mt-14 grid grid-cols-3 gap-4 md:gap-8 max-w-xl"
+                    className="mt-10 md:mt-14 lg:mt-16 grid grid-cols-3 gap-4 md:gap-8 lg:gap-12 xl:gap-16 max-w-xl lg:max-w-2xl xl:max-w-3xl"
                 >
                     {[
                         { v: "60s", l: "Booking online" },

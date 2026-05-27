@@ -50,7 +50,7 @@ export function TeamHero() {
                 Cast
             </div>
 
-            <div className="relative max-w-7xl mx-auto px-6 md:px-12 lg:px-20 pt-28 md:pt-40 pb-12 md:pb-24 min-h-[80vh] md:min-h-[90vh]">
+            <div className="relative max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-20 xl:px-28 2xl:px-36 pt-28 md:pt-40 lg:pt-48 xl:pt-56 pb-12 md:pb-24 lg:pb-32 min-h-[80vh] md:min-h-[90vh]">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -77,7 +77,7 @@ export function TeamHero() {
                         hidden: {},
                         visible: { transition: { staggerChildren: 0.12, delayChildren: 0.4 } },
                     }}
-                    className="mt-10 md:mt-16 flex items-center justify-center gap-3 md:gap-6"
+                    className="mt-10 md:mt-16 lg:mt-20 flex items-center justify-center gap-3 md:gap-6 lg:gap-10 xl:gap-14"
                 >
                     {(staff.length > 0
                         ? staff
