@@ -33,12 +33,34 @@ export function navigate(href: string): void {
     window.scrollTo(0, 0);
 }
 
+// SPA scopes: only catch-all Astro pages route client-side. Outside of
+// these prefixes every navigation must be a full browser navigation so
+// the destination Astro page actually loads. Without this guard a
+// "client link" from /team to /team/cristian would only swap the URL
+// via pushState and leave the visitor stuck on the TeamShowcase view.
+const SPA_PREFIXES = ["/admin", "/profilo", "/staff"];
+
+function inSameSpaScope(href: string): boolean {
+    if (typeof window === "undefined") return false;
+    const cur = window.location.pathname;
+    for (const prefix of SPA_PREFIXES) {
+        if (
+            (href === prefix || href.startsWith(prefix + "/")) &&
+            (cur === prefix || cur.startsWith(prefix + "/"))
+        ) {
+            return true;
+        }
+    }
+    return false;
+}
+
 export function handleClientLink(e: MouseEvent<HTMLAnchorElement>): void {
     const target = e.currentTarget;
     const href = target.getAttribute("href");
     if (!href || !href.startsWith("/")) return;
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     if (target.target === "_blank") return;
+    if (!inSameSpaScope(href)) return; // let the browser do a full navigation
     e.preventDefault();
     navigate(href);
 }

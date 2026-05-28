@@ -119,7 +119,7 @@ export function ShopHero() {
                 06
             </div>
 
-            <div className="relative max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 pt-20 md:pt-24 lg:pt-28 xl:pt-32 2xl:pt-36 pb-12 md:pb-16 lg:pb-20 xl:pb-24 min-h-[70vh] md:min-h-[75vh] lg:min-h-[62vh] xl:min-h-[58vh] 2xl:min-h-[55vh]">
+            <div className="relative max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 pt-20 md:pt-24 lg:pt-28 xl:pt-32 2xl:pt-36 pb-12 md:pb-16 lg:pb-20 xl:pb-24 min-h-[70vh] md:min-h-[75vh] lg:min-h-[52vh] xl:min-h-[48vh] 2xl:min-h-[45vh]">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 xl:gap-16 items-center">
                     {/* Title block */}
                     <motion.div
@@ -135,7 +135,7 @@ export function ShopHero() {
                             </span>
                         </div>
 
-                        <h1 className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-7xl xl:text-[5.5rem] 2xl:text-[6rem] text-warm-white tracking-tight leading-[0.92]">
+                        <h1 className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-5xl xl:text-6xl 2xl:text-7xl text-warm-white tracking-tight leading-[0.92]">
                             Quello che usiamo
                             <br />
                             <em className="text-display-alt not-italic text-silver">

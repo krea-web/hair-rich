@@ -146,7 +146,7 @@ export function ReviewsSection() {
                                 &ldquo;
                             </span>
 
-                            <blockquote className="relative text-display-alt text-2xl md:text-4xl lg:text-5xl xl:text-6xl text-warm-white leading-snug max-w-3xl lg:max-w-4xl xl:max-w-5xl mx-auto">
+                            <blockquote className="relative text-display-alt text-2xl md:text-3xl lg:text-3xl xl:text-4xl 2xl:text-4xl text-warm-white leading-snug max-w-3xl lg:max-w-4xl xl:max-w-5xl mx-auto">
                                 {r.text}
                             </blockquote>
 

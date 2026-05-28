@@ -46,7 +46,7 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
                 {["BARBER", "STUDIO"].map((word, i) => (
                     <motion.span
                         key={word}
-                        className="block text-[13vw] md:text-[8.5vw] lg:text-[6vw] xl:text-[5.2vw] 2xl:text-[4.8vw]"
+                        className="block text-[13vw] md:text-[8.5vw] lg:text-[5vw] xl:text-[4.4vw] 2xl:text-[4vw]"
                         variants={{
                             hidden: { opacity: 0, y: 60, clipPath: "inset(100% 0 0 0)" },
                             visible: {
@@ -168,7 +168,7 @@ export function HeroSection() {
                dentro l'hero. */}
 
             {/* Hero content */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-8 lg:gap-12 xl:gap-16 px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 pt-16 md:pt-20 lg:pt-24 xl:pt-28 2xl:pt-32 pb-12 md:pb-16 lg:pb-18 xl:pb-20 min-h-[70dvh] md:min-h-[85dvh] lg:min-h-[68vh] xl:min-h-[62vh] 2xl:min-h-[58vh] max-w-[1920px] mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-8 lg:gap-12 xl:gap-16 px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 pt-16 md:pt-20 lg:pt-24 xl:pt-28 2xl:pt-32 pb-12 md:pb-16 lg:pb-18 xl:pb-20 min-h-[70dvh] md:min-h-[85dvh] lg:min-h-[58vh] xl:min-h-[52vh] 2xl:min-h-[48vh] max-w-[1920px] mx-auto">
                 <div className="md:col-span-7 flex flex-col justify-center">
                     <HeroTextBlock />
                 </div>

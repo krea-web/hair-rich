@@ -101,7 +101,7 @@ export function BookingHero() {
                 className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_30%,rgba(212,165,116,0.18),transparent_55%)]"
             />
 
-            <div className="relative max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 pt-20 md:pt-24 lg:pt-28 xl:pt-32 2xl:pt-36 pb-12 md:pb-16 lg:pb-20 xl:pb-24 min-h-[70vh] md:min-h-[75vh] lg:min-h-[62vh] xl:min-h-[58vh] 2xl:min-h-[55vh]">
+            <div className="relative max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 pt-20 md:pt-24 lg:pt-28 xl:pt-32 2xl:pt-36 pb-12 md:pb-16 lg:pb-20 xl:pb-24 min-h-[70vh] md:min-h-[75vh] lg:min-h-[52vh] xl:min-h-[48vh] 2xl:min-h-[45vh]">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-16 items-center">
                     {/* Left — title */}
                     <motion.div
@@ -119,7 +119,7 @@ export function BookingHero() {
                                 Slot live · 365 giorni
                             </span>
                         </div>
-                        <h1 className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-6xl xl:text-7xl 2xl:text-8xl text-warm-white tracking-tight leading-[0.95]">
+                        <h1 className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-5xl xl:text-6xl 2xl:text-7xl text-warm-white tracking-tight leading-[0.95]">
                             Prenota in
                             <br />
                             <em className="text-display-alt not-italic text-silver">

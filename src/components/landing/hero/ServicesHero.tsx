@@ -37,7 +37,7 @@ export function ServicesHero() {
                 01
             </div>
 
-            <div className="relative max-w-5xl lg:max-w-6xl xl:max-w-7xl mx-auto px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 pt-20 md:pt-24 lg:pt-28 xl:pt-32 2xl:pt-36 pb-16 md:pb-24 lg:pb-32 min-h-[65vh] md:min-h-[70vh] lg:min-h-[58vh] xl:min-h-[54vh] 2xl:min-h-[52vh] flex flex-col items-center justify-end text-center">
+            <div className="relative max-w-5xl lg:max-w-6xl xl:max-w-7xl mx-auto px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 pt-20 md:pt-24 lg:pt-28 xl:pt-32 2xl:pt-36 pb-16 md:pb-24 lg:pb-32 min-h-[65vh] md:min-h-[70vh] lg:min-h-[48vh] xl:min-h-[44vh] 2xl:min-h-[42vh] flex flex-col items-center justify-end text-center">
                 {/* Eyebrow live-availability chip */}
                 <motion.div
                     initial={{ opacity: 0, y: 16 }}
@@ -56,7 +56,7 @@ export function ServicesHero() {
                     initial={{ opacity: 0, y: 24 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.9, ease: [0.25, 0.1, 0.25, 1], delay: 0.2 }}
-                    className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-6xl xl:text-7xl 2xl:text-[5rem] text-warm-white tracking-tight leading-[0.92] max-w-3xl"
+                    className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-5xl xl:text-6xl 2xl:text-7xl text-warm-white tracking-tight leading-[0.92] max-w-3xl"
                 >
                     Tre servizi.
                     <br />
