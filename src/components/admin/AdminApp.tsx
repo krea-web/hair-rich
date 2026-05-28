@@ -36,6 +36,11 @@ import AdminFornitoriPage from "./views/fornitori";
 import AdminQrPromoPage from "./views/qr-promo";
 import AdminSalutePage from "./views/salute";
 import AdminHardwarePage from "./views/hardware";
+// Staff-portal views surfaced as /admin/* routes (cantiere 8): impiegati
+// e titolare entrano da uno stesso URL space, niente più portal separato.
+import StaffTimbraturaPage from "../staff/views/timbratura";
+import StaffFeriePage from "../staff/views/ferie";
+import StaffMyAppointmentsPage from "../staff/views/appuntamenti";
 
 export type AdminRoleLevel = "owner" | "manager" | "staff";
 
@@ -46,10 +51,13 @@ const EMPLOYEE_ALLOWED: ReadonlySet<string> = new Set([
     "/admin",
     "/admin/agenda",
     "/admin/agenda-week",
+    "/admin/agenda-mia",
     "/admin/clienti",
     "/admin/clienti-cerca",
     "/admin/foto-risultati",
     "/admin/chiusure",
+    "/admin/timbratura",
+    "/admin/ferie",
 ]);
 
 function isFullAccess(role: AdminRoleLevel): boolean {
@@ -119,6 +127,12 @@ function pickView(pathname: string) {
             return <AdminSalutePage />;
         case "/admin/hardware":
             return <AdminHardwarePage />;
+        case "/admin/timbratura":
+            return <StaffTimbraturaPage />;
+        case "/admin/ferie":
+            return <StaffFeriePage />;
+        case "/admin/agenda-mia":
+            return <StaffMyAppointmentsPage />;
         default:
             return (
                 <div className="p-12 text-center text-silver">

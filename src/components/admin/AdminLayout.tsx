@@ -11,8 +11,11 @@ const MAIN_MENU = [
     { href: "/admin", label: "Dashboard", icon: "svg-dash" },
     { href: "/admin/inbox", label: "Inbox", icon: "svg-inbox" },
     { href: "/admin/agenda", label: "Agenda", icon: "svg-calendar" },
+    { href: "/admin/agenda-mia", label: "Le mie prenotazioni", icon: "svg-calendar" },
     { href: "/admin/waitlist", label: "Lista d'attesa", icon: "svg-pause" },
     { href: "/admin/chiusure", label: "Chiusure & ferie", icon: "svg-pause" },
+    { href: "/admin/timbratura", label: "Timbratura", icon: "svg-pause" },
+    { href: "/admin/ferie", label: "Le mie ferie", icon: "svg-pause" },
     { href: "/admin/statistiche", label: "Statistiche", icon: "svg-chart" },
     { href: "/admin/clienti", label: "Clienti", icon: "svg-users" },
     { href: "/admin/clienti-cerca", label: "Ricerca avanzata", icon: "svg-users" },
@@ -30,10 +33,13 @@ const EMPLOYEE_VOICES: ReadonlySet<string> = new Set([
     "/admin",
     "/admin/agenda",
     "/admin/agenda-week",
+    "/admin/agenda-mia",
     "/admin/chiusure",
     "/admin/clienti",
     "/admin/clienti-cerca",
     "/admin/foto-risultati",
+    "/admin/timbratura",
+    "/admin/ferie",
 ]);
 
 const SETTINGS_MENU = [

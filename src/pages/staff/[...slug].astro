@@ -1,6 +1,8 @@
 ---
-import RootLayout from "../../layouts/RootLayout.astro";
-import { StaffApp } from "../../components/staff/StaffApp";
+// Cantiere 8: /staff è stato unificato dentro /admin. Questa page resta
+// solo come redirect compatibile per i bookmark vecchi (es. workflow
+// installati dal titolare prima del merge). Ogni slot mappa al suo
+// equivalente in /admin.
 
 export function getStaticPaths() {
   const routes = [
@@ -13,8 +15,43 @@ export function getStaticPaths() {
   ];
   return routes.map((slug) => ({ params: { slug } }));
 }
+
+const TARGET_MAP: Record<string, string> = {
+  "": "/admin",
+  appuntamenti: "/admin/agenda-mia",
+  clienti: "/admin/clienti",
+  incassi: "/admin",
+  ferie: "/admin/ferie",
+  timbratura: "/admin/timbratura",
+};
+
+const slug = (Astro.params.slug ?? "") as string;
+const target = TARGET_MAP[slug] ?? "/admin";
 ---
 
-<RootLayout title="Staff · Hair Rich Olbia" noindex={true}>
-  <StaffApp client:only="react" />
-</RootLayout>
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <title>Reindirizzamento — Hair Rich</title>
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+    <meta name="robots" content="noindex,nofollow" />
+    <link rel="canonical" href={target} />
+    <style>
+      body { margin: 0; background: #000; color: #f4efe6; font-family: system-ui, -apple-system, sans-serif; }
+      .wrap { min-height: 100dvh; display: grid; place-items: center; padding: 2rem; text-align: center; }
+      a { color: #d4a574; }
+    </style>
+    <script define:vars={{ target }}>
+      window.location.replace(target);
+    </script>
+  </head>
+  <body>
+    <div class="wrap">
+      <div>
+        <p>Reindirizzamento al gestionale…</p>
+        <p><a href={target}>Clicca qui se non avviene automaticamente</a></p>
+      </div>
+    </div>
+  </body>
+</html>
