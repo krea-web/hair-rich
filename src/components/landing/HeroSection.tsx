@@ -2,14 +2,16 @@
 
 import { motion } from "framer-motion";
 import { Wordmark } from "./_shared/Wordmark";
-import { AvailabilityPulse } from "./_shared/AvailabilityPulse";
 import { BookingCtaButton } from "@/components/ui/BookingCtaButton";
-import { NextSlotWidget } from "./NextSlotWidget";
-import { OpenNowBadge } from "./_shared/OpenNowBadge";
 import { useT } from "@/i18n/useLang";
 
 const HERO_PHOTO = "/hero-seq/frame_001.webp";
 
+// Hero pulita: Wordmark + "The" + BARBER STUDIO + payoff + 1 sola CTA.
+// Trust badges, metric cards, NextSlot, OpenNow, secondary CTA sono
+// stati rimossi perché su PC creavano un'accozzaglia che la utente non
+// voleva. La booking CTA resta unica e dominante; gli altri segnali
+// (open now, rating, indirizzo) vivono in sezioni dedicate più sotto.
 function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
     const { t } = useT();
     return (
@@ -18,13 +20,13 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
                 <Wordmark
                     variant="mark"
                     size="lg"
-                    className="mb-4 md:mb-10 [&>img]:h-40 md:[&>img]:h-64 lg:[&>img]:h-80 opacity-95 drop-shadow-[0_0_28px_rgba(212,165,116,0.25)]"
+                    className="mb-4 md:mb-8 [&>img]:h-32 md:[&>img]:h-48 lg:[&>img]:h-56 xl:[&>img]:h-64 opacity-95 drop-shadow-[0_0_24px_rgba(212,165,116,0.22)]"
                     animated
                 />
             )}
 
             <motion.span
-                className="text-display-alt text-2xl md:text-4xl text-accent-warm mb-2"
+                className="text-display-alt text-2xl md:text-3xl lg:text-2xl xl:text-3xl text-accent-warm mb-1"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -46,7 +48,7 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
                 {["BARBER", "STUDIO"].map((word, i) => (
                     <motion.span
                         key={word}
-                        className="block text-[13vw] md:text-[8.5vw] lg:text-[5vw] xl:text-[4.4vw] 2xl:text-[4vw]"
+                        className="block text-[13vw] md:text-[8.5vw] lg:text-[4vw] xl:text-[3.5vw] 2xl:text-[3.2vw]"
                         variants={{
                             hidden: { opacity: 0, y: 60, clipPath: "inset(100% 0 0 0)" },
                             visible: {
@@ -63,7 +65,7 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
             </motion.h1>
 
             <motion.p
-                className="mt-6 md:mt-8 lg:mt-10 max-w-md lg:max-w-xl xl:max-w-2xl mx-auto md:mx-0 text-warm-white-muted text-sm md:text-lg lg:text-xl leading-relaxed font-body"
+                className="mt-5 md:mt-6 lg:mt-7 max-w-md lg:max-w-lg xl:max-w-xl mx-auto md:mx-0 text-warm-white-muted text-sm md:text-base lg:text-base xl:text-lg leading-relaxed font-body"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -74,89 +76,14 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
             </motion.p>
 
             <motion.div
-                className="mt-7 md:mt-10 flex flex-wrap items-center justify-center md:justify-start gap-4 md:gap-5"
+                className="mt-6 md:mt-8 flex items-center justify-center md:justify-start"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 0.8 }}
             >
                 <BookingCtaButton label={t.hero.primaryCta} />
-                {/* "Servizi" secondary: desktop only. On mobile the hero stays
-                    focused on the single booking CTA — the bottom-nav already
-                    surfaces Servizi from every screen. */}
-                <a
-                    href="/servizi"
-                    className="hidden md:inline-flex items-center gap-3 border border-line text-warm-white px-8 py-4 rounded-full font-body font-semibold text-sm uppercase tracking-[0.2em] transition-colors hover:border-warm-white hover:bg-warm-white/5"
-                >
-                    {t.hero.secondaryCta}
-                </a>
             </motion.div>
-
-            {/* Prossimo slot + Open Now: desktop only. Mobile hero stays
-                CTA-only — extra chips fragment the call to action. */}
-            <div className="hidden md:flex mt-5 md:mt-6 flex-wrap items-center gap-3">
-                <NextSlotWidget />
-                <OpenNowBadge />
-            </div>
-
-            {/* Trust badges (rating + certified + premium) — hidden mobile */}
-            <motion.div
-                className="hidden md:flex mt-12 flex-wrap items-center gap-3"
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.95 }}
-            >
-                <a
-                    href="#recensioni"
-                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-line bg-black/30 backdrop-blur-md hover:border-accent-warm transition-colors group"
-                    aria-label={t.badges.rating}
-                >
-                    <span className="text-accent-warm" aria-hidden="true">★</span>
-                    <span className="text-[10px] md:text-xs uppercase tracking-[0.25em] font-body font-semibold text-warm-white whitespace-nowrap">
-                        {t.badges.rating}
-                    </span>
-                </a>
-                <span
-                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-line bg-black/30 backdrop-blur-md"
-                    aria-label={t.badges.certified}
-                >
-                    <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-accent-warm" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m9 12.75 3 3 6-6m1.5-2.25c0 5-7.5 9-7.5 9s-7.5-4-7.5-9V5.25l7.5-2.5 7.5 2.5v2.25Z" />
-                    </svg>
-                    <span className="text-[10px] md:text-xs uppercase tracking-[0.25em] font-body font-semibold text-warm-white whitespace-nowrap">
-                        {t.badges.certified}
-                    </span>
-                </span>
-                <AvailabilityPulse variant="ribbon" />
-            </motion.div>
-
-            <motion.dl
-                className="hidden md:grid mt-12 lg:mt-16 grid-cols-3 gap-8 lg:gap-12 xl:gap-16 max-w-md lg:max-w-2xl xl:max-w-3xl"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 1, delay: 1.4 }}
-            >
-                <div>
-                    <dt className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
-                        {t.hero.info.open}
-                    </dt>
-                    <dd className="text-warm-white text-sm font-body mt-1">{t.hero.openHours}</dd>
-                </div>
-                <div>
-                    <dt className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
-                        {t.hero.info.phone}
-                    </dt>
-                    <dd className="text-warm-white text-sm font-body mt-1">0789·1891049</dd>
-                </div>
-                <div>
-                    <dt className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
-                        {t.hero.info.location}
-                    </dt>
-                    <dd className="text-warm-white text-sm font-body mt-1">Via Regina Elena</dd>
-                </div>
-            </motion.dl>
         </div>
     );
 }
@@ -168,7 +95,7 @@ export function HeroSection() {
                dentro l'hero. */}
 
             {/* Hero content */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-8 lg:gap-12 xl:gap-16 px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 pt-16 md:pt-20 lg:pt-24 xl:pt-28 2xl:pt-32 pb-12 md:pb-16 lg:pb-18 xl:pb-20 min-h-[70dvh] md:min-h-[85dvh] lg:min-h-[58vh] xl:min-h-[52vh] 2xl:min-h-[48vh] max-w-[1920px] mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-8 lg:gap-12 xl:gap-16 px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 pt-16 md:pt-20 lg:pt-24 xl:pt-28 2xl:pt-32 pb-12 md:pb-16 lg:pb-18 xl:pb-20 min-h-[70dvh] md:min-h-[85dvh] lg:min-h-[50vh] xl:min-h-[46vh] 2xl:min-h-[42vh] max-w-[1920px] mx-auto">
                 <div className="md:col-span-7 flex flex-col justify-center">
                     <HeroTextBlock />
                 </div>

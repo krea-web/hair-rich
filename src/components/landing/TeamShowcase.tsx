@@ -43,7 +43,7 @@ export function TeamShowcase() {
     };
 
     return (
-        <section className="relative py-12 md:py-16 lg:py-20 xl:py-24 2xl:py-28 px-6 md:px-12 lg:px-20 bg-black overflow-hidden">
+        <section className="relative py-12 md:py-16 lg:py-20 xl:py-24 2xl:py-28 px-6 md:px-12 lg:px-20 bg-black">
             <div className="max-w-6xl mx-auto">
                 <div className="mb-16 md:mb-24 max-w-3xl">
                     <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
