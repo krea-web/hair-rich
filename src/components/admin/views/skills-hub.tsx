@@ -17,6 +17,7 @@ import {
     loadReadinessContext,
     type ReadinessResult,
 } from "@/lib/skills/readiness";
+import { SkillTutorialModal } from "@/components/admin/skills/SkillTutorialModal";
 
 interface SkillRow {
     skill_key: string;
@@ -63,6 +64,7 @@ export default function AdminSkillsHubPage() {
     const [warnIncomplete, setWarnIncomplete] = useState<{ skill: Skill; readiness: ReadinessResult } | null>(null);
     const [togglingKey, setTogglingKey] = useState<string | null>(null);
     const [readinessMap, setReadinessMap] = useState<Map<string, ReadinessResult>>(new Map());
+    const [tutorialFor, setTutorialFor] = useState<Skill | null>(null);
     const addToast = useToastStore((s) => s.addToast);
 
     const load = useCallback(async () => {
@@ -307,6 +309,7 @@ export default function AdminSkillsHubPage() {
                                         readiness={readinessMap.get(s.key)}
                                         toggling={togglingKey === s.key}
                                         onToggle={() => handleToggle(s)}
+                                        onShowTutorial={() => setTutorialFor(s)}
                                     />
                                 ))}
                             </div>
@@ -316,6 +319,18 @@ export default function AdminSkillsHubPage() {
             )}
 
             <AnimatePresence>
+                {tutorialFor && (
+                    <SkillTutorialModal
+                        skill={tutorialFor}
+                        enabled={rows.get(tutorialFor.key)?.enabled ?? false}
+                        onClose={() => setTutorialFor(null)}
+                        onToggle={() => {
+                            const skill = tutorialFor;
+                            setTutorialFor(null);
+                            handleToggle(skill);
+                        }}
+                    />
+                )}
                 {confirmDisable && (
                     <ConfirmDisableModal
                         skill={confirmDisable}
@@ -342,12 +357,14 @@ function SkillCard({
     readiness,
     toggling,
     onToggle,
+    onShowTutorial,
 }: {
     skill: Skill;
     row: SkillRow | null;
     readiness?: ReadinessResult;
     toggling: boolean;
     onToggle: () => void;
+    onShowTutorial: () => void;
 }) {
     const isOn = Boolean(row?.enabled);
     const status = skill.status;
@@ -448,6 +465,17 @@ function SkillCard({
                     💰 {skill.benefitIT}
                 </p>
             )}
+
+            <button
+                type="button"
+                onClick={onShowTutorial}
+                className="text-[10px] uppercase tracking-[0.25em] text-accent-warm hover:text-warm-white font-body font-semibold inline-flex items-center gap-1.5 self-start transition-colors"
+            >
+                <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+                </svg>
+                Apri guida completa
+            </button>
 
             <div className="mt-auto pt-3 border-t border-line flex items-center justify-between text-[10px] uppercase tracking-[0.2em] font-body font-semibold text-silver-dark">
                 <span>{skill.effortHours}h effort</span>
