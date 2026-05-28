@@ -60,7 +60,7 @@ export function ProductCatalog() {
     };
 
     return (
-        <section id="catalog" className="relative py-16 md:py-24 lg:py-28 xl:py-32 2xl:py-36 px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 bg-black scroll-mt-20">
+        <section id="catalog" className="relative py-12 md:py-16 lg:py-20 xl:py-24 2xl:py-28 px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 bg-black scroll-mt-20">
             <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto">
                 {/* Filter chips */}
                 <div className="flex flex-nowrap overflow-x-auto gap-2 md:gap-3 lg:gap-4 -mx-6 px-6 md:mx-0 md:px-0 md:flex-wrap scrollbar-hide pb-2 md:pb-0">

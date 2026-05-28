@@ -37,7 +37,7 @@ export function ServicesHero() {
                 01
             </div>
 
-            <div className="relative max-w-5xl lg:max-w-6xl xl:max-w-7xl mx-auto px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 pt-24 md:pt-32 lg:pt-36 xl:pt-40 2xl:pt-44 pb-16 md:pb-24 lg:pb-32 min-h-[70vh] md:min-h-[78vh] lg:min-h-[72vh] xl:min-h-[68vh] 2xl:min-h-[64vh] flex flex-col items-center justify-end text-center">
+            <div className="relative max-w-5xl lg:max-w-6xl xl:max-w-7xl mx-auto px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 pt-20 md:pt-24 lg:pt-28 xl:pt-32 2xl:pt-36 pb-16 md:pb-24 lg:pb-32 min-h-[65vh] md:min-h-[70vh] lg:min-h-[58vh] xl:min-h-[54vh] 2xl:min-h-[52vh] flex flex-col items-center justify-end text-center">
                 {/* Eyebrow live-availability chip */}
                 <motion.div
                     initial={{ opacity: 0, y: 16 }}

@@ -64,7 +64,7 @@ const TRUST = [
  */
 export function BookingReassurance() {
     return (
-        <section className="relative py-16 md:py-24 lg:py-28 xl:py-32 2xl:py-36 px-6 md:px-12 lg:px-20 bg-black-2 border-y border-line">
+        <section className="relative py-12 md:py-16 lg:py-20 xl:py-24 2xl:py-28 px-6 md:px-12 lg:px-20 bg-black-2 border-y border-line">
             <div className="max-w-6xl mx-auto">
                 <div className="mb-12 md:mb-16 max-w-2xl">
                     <span className="text-[10px] uppercase tracking-[0.5em] text-accent-warm font-body font-semibold">

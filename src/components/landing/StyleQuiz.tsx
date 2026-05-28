@@ -64,7 +64,7 @@ export function StyleQuiz() {
     return (
         <section
             id="costruisci"
-            className="relative py-16 md:py-24 lg:py-28 xl:py-32 2xl:py-36 px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 bg-black-2 border-y border-line overflow-hidden"
+            className="relative py-12 md:py-16 lg:py-20 xl:py-24 2xl:py-28 px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 bg-black-2 border-y border-line overflow-hidden"
         >
             {/* Editorial watermark */}
             <div

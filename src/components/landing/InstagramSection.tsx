@@ -44,7 +44,7 @@ export function InstagramSection() {
     return (
         <section
             aria-label="Instagram · @hair_rich_"
-            className="relative py-16 md:py-24 lg:py-28 xl:py-32 2xl:py-36 px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 bg-black-2 overflow-hidden border-y border-line"
+            className="relative py-12 md:py-16 lg:py-20 xl:py-24 2xl:py-28 px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 bg-black-2 overflow-hidden border-y border-line"
         >
             {/* Editorial watermark */}
             <div

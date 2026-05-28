@@ -23,7 +23,7 @@ interface Props {
 export function FeaturedWork({ image, badge, title, subtitle, body, meta }: Props) {
     return (
         <section className="relative bg-black overflow-hidden">
-            <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 pt-16 md:pt-20 lg:pt-24 xl:pt-28 2xl:pt-32 pb-16 md:pb-24 lg:pb-28 xl:pb-32 2xl:pb-36">
+            <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 pt-16 md:pt-20 lg:pt-24 xl:pt-28 2xl:pt-32 pb-12 md:pb-16 lg:pb-20 xl:pb-24 2xl:pb-36">
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}

@@ -51,8 +51,8 @@ export function IntroSequence() {
     //           section ends, so when the user scrolls past, the welcome
     //           is the last thing visible and the hero slides in
     //           immediately behind it — no black tail.
-    const frameIndex = useTransform(scrollYProgress, [0, 0.85], [1, FRAME_COUNT]);
-    const hintOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
+    const frameIndex = useTransform(scrollYProgress, [0, 1], [1, FRAME_COUNT]);
+    const hintOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
     const lang = useLang();
 
     // Auth detect: choose Benvenuto / Bentornato. Best-effort, defaults to
@@ -198,7 +198,7 @@ export function IntroSequence() {
             aria-label="Intro"
             data-intro-sequence
         >
-            <div className="h-[180vh] md:h-[200vh] lg:h-[200vh] xl:h-[185vh] 2xl:h-[175vh]">
+            <div className="h-[150vh] md:h-[160vh] lg:h-[150vh] xl:h-[145vh] 2xl:h-[140vh]">
                 <div className="sticky top-0 h-[100dvh] overflow-hidden bg-black">
                     {/* Skip button — desktop only (mobile users just scroll past). */}
                     <button

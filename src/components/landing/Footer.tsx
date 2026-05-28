@@ -127,7 +127,7 @@ export function Footer() {
                     — never centred. The min-height keeps the photo readable
                     while the CTA sits in its lower-third so the eye lands on
                     "salone visibile" first, then on "Prenota ora". */}
-                <div className="relative max-w-4xl mx-auto px-6 md:px-12 lg:px-20 pt-24 md:pt-32 lg:pt-36 xl:pt-40 pb-10 md:pb-12 lg:pb-14 flex items-end justify-center min-h-[50vh] md:min-h-[58vh] lg:min-h-[52vh] xl:min-h-[48vh]">
+                <div className="relative max-w-4xl mx-auto px-6 md:px-12 lg:px-20 pt-20 md:pt-24 lg:pt-28 xl:pt-32 pb-10 md:pb-12 flex items-end justify-center min-h-[42vh] md:min-h-[48vh] lg:min-h-[44vh] xl:min-h-[42vh]">
                     <button
                         onClick={openDrawer}
                         className="cta-shine cta-pulse group inline-flex items-center justify-center gap-3 md:gap-4 px-10 md:px-14 py-5 md:py-6 bg-accent-warm text-black rounded-full text-sm md:text-lg uppercase tracking-[0.3em] font-body font-semibold active:scale-95 hover:scale-[1.03] transition-transform shadow-[0_24px_70px_-15px_rgba(212,165,116,0.65)]"
@@ -142,7 +142,7 @@ export function Footer() {
 
             {/* ── BLOCK 2 · DOVE + ORARI ──────────────────────────────────────── */}
             <div className="border-b border-line">
-                <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 py-14 md:py-18 lg:py-20 xl:py-24 2xl:py-28 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 lg:gap-20 xl:gap-24">
+                <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 py-10 md:py-14 lg:py-16 xl:py-20 2xl:py-24 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 lg:gap-20 xl:gap-24">
                     {/* Dove */}
                     <div>
                         <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
@@ -228,7 +228,7 @@ export function Footer() {
                     naviga
                 </div>
 
-                <div className="relative max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 py-14 md:py-18 lg:py-20 xl:py-24 2xl:py-28">
+                <div className="relative max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 py-10 md:py-14 lg:py-16 xl:py-20 2xl:py-24">
                     {/* Header — eyebrow + brand blurb side by side on desktop */}
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 lg:gap-14 xl:gap-16 mb-10 md:mb-14 lg:mb-20">
                         <div className="md:col-span-5">
