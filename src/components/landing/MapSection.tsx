@@ -19,7 +19,7 @@ export function MapSection() {
         >
             <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 xl:gap-20 items-start">
-                    <div className="lg:col-span-4">
+                    <div className="lg:col-span-5">
                         <EditorialHeading
                             eyebrow={t.map.eyebrow}
                             title={
@@ -100,7 +100,7 @@ export function MapSection() {
                     </div>
 
                     <motion.div
-                        className="lg:col-span-8 relative rounded-[var(--radius-lg)] overflow-hidden border border-line"
+                        className="lg:col-span-7 xl:col-span-7 relative rounded-[var(--radius-lg)] overflow-hidden border border-line"
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-100px" }}
@@ -111,7 +111,7 @@ export function MapSection() {
                             title={`${SITE.name} · ${SITE.address}`}
                             loading="lazy"
                             referrerPolicy="no-referrer-when-downgrade"
-                            className="w-full h-[360px] md:h-[480px] lg:h-[560px] xl:h-[640px] 2xl:h-[720px] block bg-carbon-2 grayscale-[40%] contrast-[1.05]"
+                            className="w-full h-[360px] md:h-[440px] lg:h-[420px] xl:h-[460px] 2xl:h-[500px] block bg-carbon-2 grayscale-[40%] contrast-[1.05]"
                         />
                         {/* Subtle frame tint to match the editorial palette */}
                         <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-accent-warm/15 rounded-[var(--radius-lg)]" />

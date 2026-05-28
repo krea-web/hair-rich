@@ -26,22 +26,29 @@ interface Props {
 
 export function BeforeAfterSlider({ pair = REAL_PAIR }: Props) {
     return (
-        <section className="relative py-12 md:py-16 lg:py-20 xl:py-24 2xl:py-28 px-6 md:px-12 lg:px-20 bg-black-2 border-y border-line overflow-hidden">
-            <div className="max-w-3xl mx-auto">
-                <div className="mb-12 md:mb-16 text-center md:text-left">
+        <section className="relative py-12 md:py-16 lg:py-20 xl:py-24 2xl:py-28 px-6 md:px-12 lg:px-20 bg-black-2 border-y border-line">
+            {/* Layout: mobile stacked (testo sopra, foto sotto, come prima).
+                lg+ 2 colonne: foto a sinistra, testo a destra. Foto cappata
+                con max-h così tutto entra in un viewport PC senza scroll. */}
+            <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 xl:gap-16 items-center">
+                {/* Foto SX */}
+                <div className="order-2 lg:order-1 lg:col-span-7">
+                    <Compare pair={pair} />
+                </div>
+
+                {/* Testo DX */}
+                <div className="order-1 lg:order-2 lg:col-span-5 text-center lg:text-left">
                     <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
                         Trasformazione
                     </span>
-                    <h2 className="text-display text-4xl md:text-6xl lg:text-5xl xl:text-5xl 2xl:text-6xl text-warm-white tracking-tight mt-3 leading-[1.05]">
+                    <h2 className="text-display text-4xl md:text-6xl lg:text-4xl xl:text-5xl 2xl:text-5xl text-warm-white tracking-tight mt-3 leading-[1.05]">
                         Prima e dopo, senza filtri.
                     </h2>
-                    <p className="mt-5 text-warm-white-muted text-base md:text-lg leading-relaxed">
+                    <p className="mt-5 text-warm-white-muted text-base md:text-lg lg:text-base xl:text-lg leading-relaxed max-w-md mx-auto lg:mx-0">
                         Trascina il cursore per vedere il cambiamento. Stessa luce, stessa angolazione,
                         zero ritocco digitale.
                     </p>
                 </div>
-
-                <Compare pair={pair} />
             </div>
         </section>
     );
@@ -152,7 +159,7 @@ function Compare({ pair }: { pair: Pair }) {
                     if (e.key === "ArrowLeft") setPos((p) => Math.max(0, p - 5));
                     if (e.key === "ArrowRight") setPos((p) => Math.min(100, p + 5));
                 }}
-                className="relative aspect-[3/4] lg:aspect-[4/5] xl:aspect-[1/1] w-full max-h-[640px] lg:max-h-[720px] xl:max-h-[760px] 2xl:max-h-[800px] mx-auto rounded-[var(--radius-md)] border border-line overflow-hidden cursor-ew-resize select-none focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-accent-warm"
+                className="relative aspect-[3/4] lg:aspect-[4/5] w-full max-h-[640px] lg:max-h-[460px] xl:max-h-[520px] 2xl:max-h-[580px] mx-auto rounded-[var(--radius-md)] border border-line overflow-hidden cursor-ew-resize select-none focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-accent-warm"
                 style={{
                     WebkitUserSelect: "none",
                     userSelect: "none",
