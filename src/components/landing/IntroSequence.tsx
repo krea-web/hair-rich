@@ -51,8 +51,8 @@ export function IntroSequence() {
     //           section ends, so when the user scrolls past, the welcome
     //           is the last thing visible and the hero slides in
     //           immediately behind it — no black tail.
-    const frameIndex = useTransform(scrollYProgress, [0, 0.60], [1, FRAME_COUNT]);
-    const hintOpacity = useTransform(scrollYProgress, [0, 0.10], [1, 0]);
+    const frameIndex = useTransform(scrollYProgress, [0, 0.85], [1, FRAME_COUNT]);
+    const hintOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
     const lang = useLang();
 
     // Auth detect: choose Benvenuto / Bentornato. Best-effort, defaults to
@@ -105,14 +105,16 @@ export function IntroSequence() {
         };
     }, []);
 
-    // Source frames are now per-frame cropped (script: scripts/crop-intro-
+    // Source frames are per-frame cropped (script: scripts/crop-intro-
     // frames.mjs). Each frame's natural height varies — it equals the
-    // vertical extent of the subject + a tiny bottom padding. Drawing logic
-    // is therefore the simplest possible: top-anchor each cropped frame at
-    // (0, 0), scaled to fit the canvas width. The result: the subject sits
-    // at the top of the viewport and the black space below shrinks as the
-    // subject rises across frames, leaving room for the welcome word to
-    // breathe in the lower half without fighting an arbitrary void.
+    // vertical extent of the subject + a tiny bottom padding. The frame
+    // motion itself already encodes the scissors rising: every cropped
+    // frame places the subject slightly higher within its own bounding
+    // box than the previous one. We therefore center the scaled frame
+    // inside the canvas — on a landscape PC viewport this keeps the
+    // subject visually anchored rather than leaving an asymmetric black
+    // void below, while on a portrait phone viewport the subject already
+    // fills the canvas so the centering offset collapses to ~0.
     const drawFrame = (img?: HTMLImageElement) => {
         if (!img || !img.naturalWidth || !canvasRef.current) return;
         const canvas = canvasRef.current;
@@ -123,7 +125,8 @@ export function IntroSequence() {
         const scale = canvas.width / img.naturalWidth;
         const w = canvas.width;
         const h = img.naturalHeight * scale;
-        ctx.drawImage(img, 0, 0, w, h);
+        const y = Math.max(0, (canvas.height - h) / 2);
+        ctx.drawImage(img, 0, y, w, h);
     };
 
     useMotionValueEvent(frameIndex, "change", (latest) => {
@@ -195,8 +198,8 @@ export function IntroSequence() {
             aria-label="Intro"
             data-intro-sequence
         >
-            <div className="h-[110vh] md:h-[120vh] lg:h-[95vh] xl:h-[85vh] 2xl:h-[80vh]">
-                <div className="sticky top-0 h-[100dvh] lg:h-[90vh] xl:h-[85vh] 2xl:h-[80vh] overflow-hidden bg-black">
+            <div className="h-[180vh] md:h-[200vh] lg:h-[200vh] xl:h-[185vh] 2xl:h-[175vh]">
+                <div className="sticky top-0 h-[100dvh] overflow-hidden bg-black">
                     {/* Skip button — desktop only (mobile users just scroll past). */}
                     <button
                         onClick={handleSkip}
@@ -216,7 +219,7 @@ export function IntroSequence() {
                        the canvas width so the subject doesn't bloat across a
                        16:9 viewport. */}
                     <div className="absolute inset-0 pt-[68px] md:pt-[80px]">
-                        <div className="w-full h-full mx-auto md:max-w-xl lg:max-w-2xl xl:max-w-3xl 2xl:max-w-4xl">
+                        <div className="w-full h-full mx-auto md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-3xl">
                             <canvas
                                 ref={canvasRef}
                                 className="w-full h-full block"
