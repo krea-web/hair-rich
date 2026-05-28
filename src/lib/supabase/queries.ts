@@ -100,6 +100,30 @@ export async function fetchStaff(): Promise<Staff[]> {
     return (data ?? []) as Staff[];
 }
 
+export async function fetchStaffForTeamPage(): Promise<Staff[]> {
+    const supabase = createClient();
+    const { data, error } = await supabase
+        .from("staff")
+        .select("*")
+        .eq("is_active", true)
+        .eq("show_on_team_page", true)
+        .order("sort_order");
+    if (error) throw error;
+    return (data ?? []) as Staff[];
+}
+
+export async function fetchStaffBySlug(slug: string): Promise<Staff | null> {
+    const supabase = createClient();
+    const { data, error } = await supabase
+        .from("staff")
+        .select("*")
+        .eq("slug", slug)
+        .eq("is_active", true)
+        .maybeSingle();
+    if (error) throw error;
+    return (data as Staff | null) ?? null;
+}
+
 export async function fetchPortfolio(): Promise<PortfolioImage[]> {
     const supabase = createClient();
     const { data, error } = await supabase

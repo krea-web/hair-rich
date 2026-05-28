@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prezzi — Gestionale Salone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #0e0e0e;
+    --white: #fafaf8;
+    --cream: #f5f2ec;
+    --green: #2a6b4f;
+    --green-light: #e8f2ed;
+    --green-mid: #3d8b64;
+    --gold: #c9a84c;
+    --gold-light: #f9f3e3;
+    --muted: #7a7a72;
+    --border: rgba(0,0,0,0.10);
+    --serif: 'Playfair Display', Georgia, serif;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--white);
+    color: var(--black);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    padding: 72px 24px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse at top, rgba(42,107,79,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .eyebrow {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 16px;
+  }
+  .header h1 {
+    font-family: var(--serif);
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 400;
+    color: var(--black);
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+  .header h1 em {
+    font-style: italic;
+    color: var(--green);
+  }
+  .header p {
+    font-size: 16px;
+    color: var(--muted);
+    font-weight: 300;
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  /* PAYMENT NOTE */
+  .payment-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    margin: 32px auto 0;
+    max-width: 560px;
+    background: var(--green-light);
+    border-radius: 12px;
+    padding: 14px 24px;
+    font-size: 13px;
+    color: var(--green);
+    font-weight: 400;
+  }
+  .payment-note .pipe { color: rgba(42,107,79,0.3); }
+  .payment-note strong { font-weight: 500; }
+
+  /* GRID */
+  .plans-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    max-width: 1040px;
+    margin: 56px auto 0;
+    padding: 0 24px;
+  }
+
+  /* PLAN CARD */
+  .plan {
+    border: 1px solid var(--border);
+    border-right: none;
+    padding: 40px 32px 36px;
+    position: relative;
+    background: var(--white);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  .plan:first-child { border-radius: 16px 0 0 16px; }
+  .plan:last-child { border-radius: 0 16px 16px 0; border-right: 1px solid var(--border); }
+  .plan.featured {
+    background: var(--black);
+    border-color: var(--black);
+    z-index: 2;
+    transform: scaleY(1.018);
+    border-radius: 16px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.18);
+  }
+  .plan.featured + .plan { border-left: none; }
+
+  /* PLAN TOP */
+  .plan-tag {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    color: var(--muted);
+  }
+  .plan.featured .plan-tag { color: rgba(255,255,255,0.45); }
+
+  .plan-name {
+    font-family: var(--serif);
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--black);
+    margin-bottom: 6px;
+  }
+  .plan.featured .plan-name { color: var(--white); }
+
+  .plan-tagline {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 28px;
+    font-weight: 300;
+    line-height: 1.5;
+  }
+  .plan.featured .plan-tagline { color: rgba(255,255,255,0.5); }
+
+  /* PRICING */
+  .plan-pricing {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 0;
+    margin-bottom: 28px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .plan.featured .plan-pricing {
+    border-color: rgba(255,255,255,0.1);
+  }
+  .price-block {}
+  .price-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .plan.featured .price-label { color: rgba(255,255,255,0.4); }
+  .price-amount {
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--black);
+    line-height: 1;
+  }
+  .plan.featured .price-amount { color: var(--white); }
+  .price-amount.monthly {
+    color: var(--green);
+  }
+  .plan.featured .price-amount.monthly { color: #7ecfa5; }
+  .price-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+  .plan.featured .price-sub { color: rgba(255,255,255,0.35); }
+  .price-split {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .plan.featured .price-split { color: rgba(255,255,255,0.3); }
+
+  /* FEATURES */
+  .features-section { flex: 1; }
+  .features-group-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+    margin-top: 20px;
+  }
+  .features-group-label:first-child { margin-top: 0; }
+  .plan.featured .features-group-label { color: rgba(255,255,255,0.35); }
+
+  .feat-list { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+  .feat-list li {
+    font-size: 13.5px;
+    color: #3a3a38;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-weight: 300;
+    line-height: 1.4;
+  }
+  .plan.featured .feat-list li { color: rgba(255,255,255,0.75); }
+  .feat-check {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--green-light);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .plan.featured .feat-check { background: rgba(126,207,165,0.15); }
+  .feat-check::after {
+    content: '';
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+  .plan.featured .feat-check::after { background: #7ecfa5; }
+
+  /* SEO BADGE */
+  .seo-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+  .seo-pill.base { background: var(--green-light); color: var(--green); }
+  .seo-pill.mid { background: var(--gold-light); color: #8a6520; }
+  .seo-pill.full { background: rgba(42,107,79,0.12); color: #7ecfa5; }
+  .seo-pill svg { width: 10px; height: 10px; }
+
+  /* CTA */
+  .plan-cta {
+    display: block;
+    width: 100%;
+    margin-top: 28px;
+    padding: 13px;
+    border-radius: 10px;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    border: 1.5px solid var(--black);
+    background: transparent;
+    color: var(--black);
+    transition: background 0.2s, color 0.2s;
+    text-decoration: none;
+  }
+  .plan-cta:hover { background: var(--black); color: var(--white); }
+  .plan.featured .plan-cta {
+    background: var(--white);
+    color: var(--black);
+    border-color: var(--white);
+  }
+  .plan.featured .plan-cta:hover { background: #e0e0d8; }
+
+  /* ADDONS SECTION */
+  .addons-wrap { max-width: 1040px; margin: 72px auto 0; padding: 0 24px 100px; }
+  .addons-top { margin-bottom: 32px; }
+  .addons-top h2 { font-family: var(--serif); font-size: clamp(26px,4vw,38px); font-weight: 400; margin-bottom: 8px; }
+  .addons-top h2 em { font-style: italic; color: var(--green); }
+  .addons-top p { font-size: 15px; color: var(--muted); font-weight: 300; }
+  .addons-count { display: inline-block; background: var(--black); color: var(--white); font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; margin-left: 10px; vertical-align: middle; }
+
+  .addons-controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 28px; }
+  .view-tabs { display: flex; background: var(--cream); border-radius: 10px; padding: 3px; gap: 2px; }
+  .view-tab { font-size: 12px; font-weight: 500; padding: 7px 16px; border-radius: 8px; cursor: pointer; border: none; background: transparent; color: var(--muted); transition: all 0.18s; }
+  .view-tab.active { background: var(--white); color: var(--black); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+  .search-box { flex: 1; min-width: 180px; }
+  .search-box input { width: 100%; padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; font-family: var(--sans); font-size: 13px; background: var(--white); color: var(--black); outline: none; }
+  .search-box input:focus { border-color: rgba(42,107,79,0.4); }
+  .group-filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 24px; }
+  .gf-btn { font-size: 11px; font-weight: 500; padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border); background: var(--white); color: var(--muted); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+  .gf-btn.active, .gf-btn:hover { background: var(--black); color: var(--white); border-color: var(--black); }
+
+  .group-section { margin-bottom: 36px; }
+  .group-label { font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  .group-label-count { background: var(--cream); color: var(--muted); font-size: 10px; padding: 2px 8px; border-radius: 10px; }
+
+  .addons-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+
+  .addon-card { border: 1px solid var(--border); border-radius: 12px; padding: 18px 18px 14px; background: var(--white); transition: border-color 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; gap: 0; }
+  .addon-card:hover { border-color: rgba(42,107,79,0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+  .addon-card.hidden { display: none; }
+  .addon-card-top { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+  .addon-icon { font-size: 20px; line-height: 1; flex-shrink: 0; margin-top: 2px; }
+  .addon-name { font-family: var(--serif); font-size: 14px; font-weight: 400; color: var(--black); line-height: 1.3; }
+  .addon-desc { font-size: 12px; color: var(--muted); font-weight: 300; line-height: 1.6; margin-bottom: 12px; }
+
+  .addon-client-info, .addon-dev-info { display: flex; flex-direction: column; gap: 8px; margin-top: auto; padding-top: 12px; border-top: 1px solid var(--border); }
+  .info-row { display: flex; flex-direction: column; gap: 3px; }
+  .info-lbl { font-size: 10px; font-weight: 500; letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted); }
+  .info-val { font-size: 11.5px; color: #3a3a38; font-weight: 300; line-height: 1.5; }
+  .info-val strong { font-weight: 500; color: var(--black); }
+  .tipo-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 500; padding: 3px 9px; border-radius: 20px; }
+  .tipo-badge.interno { background: var(--green-light); color: var(--green); }
+  .tipo-badge.separato { background: var(--gold-light); color: #7a5c1e; }
+  .tech-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 500; padding: 3px 9px; border-radius: 20px; }
+  .tech-badge.n8n { background: #fff0e6; color: #c05a00; }
+  .tech-badge.supabase { background: #e6f0ff; color: #1a4fa0; }
+  .tech-badge.backend { background: #f0e6ff; color: #6a1fa0; }
+
+  .addon-price-row { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .addon-pill { font-size: 10px; font-weight: 500; padding: 3px 9px; border-radius: 20px; }
+  .addon-pill.setup { background: var(--gold-light); color: #7a5c1e; }
+  .addon-pill.monthly { background: var(--green-light); color: var(--green); }
+
+  .no-results { text-align: center; padding: 40px; color: var(--muted); font-size: 14px; display: none; }
+
+  /* STACK BADGE */
+  .stack-row {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .stack-label { font-size: 11px; color: var(--muted); font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; }
+  .stack-chip {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: var(--cream);
+    letter-spacing: 0.02em;
+  }
+
+  /* GESTIONALE SECTION */
+  .gestionale-wrap {
+    max-width: 1040px;
+    margin: 72px auto 0;
+    padding: 0 24px;
+  }
+  .gestionale-header { margin-bottom: 40px; }
+  .gestionale-title {
+    font-family: var(--serif);
+    font-size: clamp(26px, 4vw, 38px);
+    font-weight: 400;
+    color: var(--black);
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+  .gestionale-title em { font-style: italic; color: var(--green); }
+  .gestionale-subtitle {
+    font-size: 15px;
+    color: var(--muted);
+    font-weight: 300;
+    max-width: 460px;
+  }
+  .gestionale-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .gestionale-card {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 26px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: var(--white);
+  }
+  .gestionale-card.featured-g {
+    background: var(--black);
+    border-color: var(--black);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.14);
+  }
+  .gestionale-card-top {}
+  .gestionale-plan-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .gestionale-plan-name {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--black);
+    margin-bottom: 6px;
+  }
+  .gestionale-summary {
+    font-size: 13px;
+    color: var(--green);
+    font-weight: 400;
+    line-height: 1.5;
+    font-style: italic;
+  }
+  .gestionale-body {
+    font-size: 13.5px;
+    color: #4a4a46;
+    font-weight: 300;
+    line-height: 1.75;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+  .gestionale-body strong { font-weight: 500; color: var(--black); }
+  .gestionale-includes { margin-top: auto; }
+  .gestionale-includes-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .gestionale-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .g-pill {
+    font-size: 11px;
+    font-weight: 400;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: var(--cream);
+    color: #4a4a46;
+    border: 1px solid var(--border);
+  }
+  .g-pill.dark {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.6);
+    border-color: rgba(255,255,255,0.1);
+  }
+  @media (max-width: 780px) {
+    .gestionale-grid { grid-template-columns: 1fr; }
+    .gestionale-card.featured-g { box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .plan { animation: fadeUp 0.5s ease both; }
+  .plan:nth-child(1) { animation-delay: 0.05s; }
+  .plan:nth-child(2) { animation-delay: 0.1s; }
+  .plan:nth-child(3) { animation-delay: 0.15s; }
+  .addon-card { animation: fadeUp 0.5s ease both; }
+  .addon-card:nth-child(1) { animation-delay: 0.15s; }
+  .addon-card:nth-child(2) { animation-delay: 0.2s; }
+  .addon-card:nth-child(3) { animation-delay: 0.25s; }
+  .addon-card:nth-child(4) { animation-delay: 0.3s; }
+
+  /* RESPONSIVE */
+  @media (max-width: 780px) {
+    .plans-grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .plan, .plan:first-child, .plan:last-child, .plan.featured {
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      transform: none;
+      box-shadow: none;
+    }
+    .plan.featured {
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    }
+    .addons-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .addons-compatible { margin-left: 0; }
+    .payment-note { flex-direction: column; gap: 8px; text-align: center; }
+    .payment-note .pipe { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="eyebrow">Gestionale per salone</div>
+  <h1>Il tuo salone <em>online</em>,<br>senza complicazioni.</h1>
+  <p>Sito professionale, prenotazioni automatiche e gestione clienti. Scegli il pacchetto giusto per la tua attività.</p>
+
+  <div class="payment-note">
+    <span>💳 <strong>50% alla firma</strong> · 50% al go-live</span>
+    <span class="pipe">|</span>
+    <span>🚀 <strong>Live in 7–14 giorni</strong></span>
+    <span class="pipe">|</span>
+    <span>📦 <strong>Hosting e aggiornamenti inclusi</strong></span>
+  </div>
+</div>
+
+<div class="plans-grid">
+
+  <!-- VETRINA -->
+  <div class="plan">
+    <div class="plan-tag">Pacchetto 01</div>
+    <div class="plan-name">Vetrina</div>
+    <div class="plan-tagline">La tua presenza online con prenotazioni automatiche e gestione base.</div>
+
+    <div class="plan-pricing">
+      <div class="price-block">
+        <div class="price-label">Setup</div>
+        <div class="price-amount">€600</div>
+        <div class="price-split">€300 ora · €300 al lancio</div>
+      </div>
+      <div class="price-block">
+        <div class="price-label">Canone</div>
+        <div class="price-amount monthly">€19<span style="font-size:14px;font-weight:300">/mese</span></div>
+        <div class="price-sub">hosting incluso</div>
+      </div>
+    </div>
+
+    <div class="features-section">
+      <span class="seo-pill base">
+        <svg viewBox="0 0 10 10" fill="currentColor"><circle cx="5" cy="5" r="4"/></svg>
+        SEO Base
+      </span>
+
+      <div class="features-group-label">Sito & Prenotazioni</div>
+      <ul class="feat-list">
+        <li><span class="feat-check"></span>Fino a <strong>5 pagine</strong> personalizzate</li>
+        <li><span class="feat-check"></span>Sito web completo e brandizzato</li>
+        <li><span class="feat-check"></span>Booking engine con calendario</li>
+        <li><span class="feat-check"></span>Gestione servizi e prezzi</li>
+        <li><span class="feat-check"></span>Notifiche email automatiche</li>
+        <li><span class="feat-check"></span>Mobile-first responsive</li>
+      </ul>
+
+      <div class="features-group-label">Gestionale Base</div>
+      <ul class="feat-list">
+        <li><span class="feat-check"></span>Dashboard appuntamenti</li>
+        <li><span class="feat-check"></span>Gestione 1–3 operatori</li>
+        <li><span class="feat-check"></span>Blocco orari e ferie</li>
+      </ul>
+
+      <div class="features-group-label">SEO & Visibilità</div>
+      <ul class="feat-list">
+        <li><span class="feat-check"></span>Meta tag ottimizzati</li>
+        <li><span class="feat-check"></span>Schema.org LocalBusiness</li>
+        <li><span class="feat-check"></span>Google Sitemap</li>
+      </ul>
+    </div>
+
+    <a href="#" class="plan-cta">Inizia con Vetrina</a>
+  </div>
+
+  <!-- PRO -->
+  <div class="plan featured">
+    <div class="plan-tag">Pacchetto 02 · Più scelto</div>
+    <div class="plan-name">Pro</div>
+    <div class="plan-tagline">Profili cliente, storico appuntamenti e una presenza SEO che ti fa trovare.</div>
+
+    <div class="plan-pricing">
+      <div class="price-block">
+        <div class="price-label">Setup</div>
+        <div class="price-amount">€800</div>
+        <div class="price-split">€400 ora · €400 al lancio</div>
+      </div>
+      <div class="price-block">
+        <div class="price-label">Canone</div>
+        <div class="price-amount monthly">€29<span style="font-size:14px;font-weight:300">/mese</span></div>
+        <div class="price-sub">hosting incluso</div>
+      </div>
+    </div>
+
+    <div class="features-section">
+      <span class="seo-pill mid">
+        <svg viewBox="0 0 10 10" fill="currentColor"><circle cx="5" cy="5" r="4"/></svg>
+        SEO Medio
+      </span>
+
+      <div class="features-group-label">Tutto di Vetrina, più:</div>
+      <ul class="feat-list">
+        <li><span class="feat-check"></span>Fino a <strong>15 pagine</strong> personalizzate</li>
+        <li><span class="feat-check"></span>Area cliente con autenticazione</li>
+        <li><span class="feat-check"></span>Storico appuntamenti personale</li>
+        <li><span class="feat-check"></span>Preferenze e note sul cliente</li>
+        <li><span class="feat-check"></span>Gestione fino a 6 operatori</li>
+      </ul>
+
+      <div class="features-group-label">Gestionale Medio</div>
+      <ul class="feat-list">
+        <li><span class="feat-check"></span>CRM clienti con schede</li>
+        <li><span class="feat-check"></span>Report prenotazioni mensili</li>
+        <li><span class="feat-check"></span>Gestione listino avanzato</li>
+      </ul>
+
+      <div class="features-group-label">SEO & Visibilità</div>
+      <ul class="feat-list">
+        <li><span class="feat-check"></span>Tutto il Base</li>
+        <li><span class="feat-check"></span>Pagine servizi ottimizzate</li>
+        <li><span class="feat-check"></span>Google Business integrato</li>
+        <li><span class="feat-check"></span>Velocità Core Web Vitals</li>
+      </ul>
+    </div>
+
+    <a href="#" class="plan-cta">Inizia con Pro</a>
+  </div>
+
+  <!-- FULL -->
+  <div class="plan">
+    <div class="plan-tag">Pacchetto 03</div>
+    <div class="plan-name">Full</div>
+    <div class="plan-tagline">La soluzione completa con vendita prodotti online e gestionale professionale.</div>
+
+    <div class="plan-pricing">
+      <div class="price-block">
+        <div class="price-label">Setup</div>
+        <div class="price-amount">€1.000</div>
+        <div class="price-split">€500 ora · €500 al lancio</div>
+      </div>
+      <div class="price-block">
+        <div class="price-label">Canone</div>
+        <div class="price-amount monthly">€50<span style="font-size:14px;font-weight:300">/mese</span></div>
+        <div class="price-sub">hosting incluso</div>
+      </div>
+    </div>
+
+    <div class="features-section">
+      <span class="seo-pill full">
+        <svg viewBox="0 0 10 10" fill="currentColor"><circle cx="5" cy="5" r="4"/></svg>
+        SEO Full
+      </span>
+
+      <div class="features-group-label">Tutto di Pro, più:</div>
+      <ul class="feat-list">
+        <li><span class="feat-check"></span><strong>Pagine illimitate</strong></li>
+        <li><span class="feat-check"></span>E-commerce prodotti del salone</li>
+        <li><span class="feat-check"></span>Pagamenti Stripe o Mollie</li>
+        <li><span class="feat-check"></span>Gestione magazzino e varianti</li>
+        <li><span class="feat-check"></span>Operatori illimitati</li>
+      </ul>
+
+      <div class="features-group-label">Gestionale Full</div>
+      <ul class="feat-list">
+        <li><span class="feat-check"></span>Analytics vendite + prenotazioni</li>
+        <li><span class="feat-check"></span>Fatturazione automatica clienti</li>
+        <li><span class="feat-check"></span>Export dati CSV/PDF</li>
+      </ul>
+
+      <div class="features-group-label">SEO & Visibilità</div>
+      <ul class="feat-list">
+        <li><span class="feat-check"></span>Tutto il Medio</li>
+        <li><span class="feat-check"></span>SEO prodotti e categorie</li>
+        <li><span class="feat-check"></span>Schema.org Product + Review</li>
+        <li><span class="feat-check"></span>Sitemap dinamica aggiornata</li>
+      </ul>
+    </div>
+
+    <a href="#" class="plan-cta">Inizia con Full</a>
+  </div>
+
+</div>
+
+<!-- GESTIONALE DETAIL -->
+<div class="gestionale-wrap">
+  <div class="gestionale-header">
+    <div class="eyebrow" style="text-align:left;margin-bottom:8px">Cosa include ogni gestionale</div>
+    <h2 class="gestionale-title">Tre livelli, <em>tre strumenti diversi.</em></h2>
+    <p class="gestionale-subtitle">Non è solo una questione di funzioni in più — è il tipo di controllo che hai sulla tua attività.</p>
+  </div>
+
+  <div class="gestionale-grid">
+
+    <div class="gestionale-card">
+      <div class="gestionale-card-top">
+        <div class="gestionale-plan-label">Vetrina · €600</div>
+        <div class="gestionale-plan-name">Gestionale Base</div>
+        <div class="gestionale-summary">Per chi vuole smettere di gestire le prenotazioni su WhatsApp.</div>
+      </div>
+      <div class="gestionale-body">
+        <p>Il titolare accede a una dashboard semplice dove vede tutti gli appuntamenti del giorno e della settimana. Può gestire fino a <strong>3 operatori</strong>, ognuno con i propri orari, e bloccare fasce di indisponibilità o ferie.</p>
+        <p>Gestisce il catalogo servizi con nome, durata e prezzo. Ogni nuova prenotazione arriva via notifica email. Non c'è una scheda cliente: il sistema registra nome, email e telefono solo ai fini della prenotazione, senza costruire uno storico.</p>
+      </div>
+      <div class="gestionale-includes">
+        <div class="gestionale-includes-label">In sintesi</div>
+        <div class="gestionale-pills">
+          <span class="g-pill">Calendario</span>
+          <span class="g-pill">Prenotazioni</span>
+          <span class="g-pill">Catalogo servizi</span>
+          <span class="g-pill">3 operatori</span>
+          <span class="g-pill">Notifiche email</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="gestionale-card featured-g">
+      <div class="gestionale-card-top">
+        <div class="gestionale-plan-label" style="color:rgba(255,255,255,0.4)">Pro · €800</div>
+        <div class="gestionale-plan-name" style="color:#fff">Gestionale Medio</div>
+        <div class="gestionale-summary" style="color:rgba(255,255,255,0.55)">Per chi vuole conoscere i propri clienti e gestire un'attività strutturata.</div>
+      </div>
+      <div class="gestionale-body" style="color:rgba(255,255,255,0.72)">
+        <p>Ogni persona che prenota ha una <strong style="color:#7ecfa5">scheda personale</strong>: nome, contatto, storico completo degli appuntamenti, note private dell'operatore (allergie, preferenze di prodotto, capelli sensibili). Il titolare vede quante volte è venuto un cliente, cosa ha fatto e quando.</p>
+        <p>Fino a <strong style="color:#7ecfa5">6 operatori</strong> con orari e servizi differenziati. Listino flessibile: prezzi diversi per operatore, promozioni temporanee. A fine mese il sistema genera automaticamente un <strong style="color:#7ecfa5">report</strong> con prenotazioni, servizi top, fasce orarie di punta e clienti nuovi vs ricorrenti.</p>
+      </div>
+      <div class="gestionale-includes">
+        <div class="gestionale-includes-label" style="color:rgba(255,255,255,0.35)">In sintesi</div>
+        <div class="gestionale-pills">
+          <span class="g-pill dark">Tutto il Base</span>
+          <span class="g-pill dark">Schede cliente</span>
+          <span class="g-pill dark">Storico</span>
+          <span class="g-pill dark">Note operatore</span>
+          <span class="g-pill dark">Report mensile</span>
+          <span class="g-pill dark">Listino avanzato</span>
+          <span class="g-pill dark">6 operatori</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="gestionale-card">
+      <div class="gestionale-card-top">
+        <div class="gestionale-plan-label">Full · €1.000</div>
+        <div class="gestionale-plan-name">Gestionale Full</div>
+        <div class="gestionale-summary">Per chi vuole anche vendere mentre il salone è chiuso.</div>
+      </div>
+      <div class="gestionale-body">
+        <p>Il titolare carica prodotti (shampoo, trattamenti, accessori) con foto, descrizione, varianti e quantità in magazzino. I clienti li acquistano direttamente dal sito con pagamento online via <strong>Stripe o Mollie</strong>. Il sistema avvisa quando un prodotto sta esaurendo.</p>
+        <p>Gli operatori sono <strong>illimitati</strong>. Le analytics unificano prenotazioni e vendite: fatturato totale, prodotti più venduti, valore medio per cliente. I dati sono esportabili in CSV o PDF per la contabilità. Riepilogo fiscale per cliente su richiesta.</p>
+      </div>
+      <div class="gestionale-includes">
+        <div class="gestionale-includes-label">In sintesi</div>
+        <div class="gestionale-pills">
+          <span class="g-pill">Tutto il Pro</span>
+          <span class="g-pill">E-commerce</span>
+          <span class="g-pill">Pagamenti online</span>
+          <span class="g-pill">Magazzino</span>
+          <span class="g-pill">Analytics unificate</span>
+          <span class="g-pill">Export contabile</span>
+          <span class="g-pill">Operatori illimitati</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- STACK -->
+<div class="stack-row" style="margin-top:40px; margin-bottom:48px;">
+  <span class="stack-label">Stack</span>
+  <span class="stack-chip">Astro</span>
+  <span class="stack-chip">Supabase</span>
+  <span class="stack-chip">n8n</span>
+  <span class="stack-chip">Vercel</span>
+  <span class="stack-chip">Stripe / Mollie</span>
+</div>
+
+<!-- ADDONS -->
+<div class="addons-wrap">
+  <div class="addons-top">
+    <div class="eyebrow" style="text-align:left;margin-bottom:8px">Add-on disponibili</div>
+    <h2>Dipendenti Digitali <em>al lavoro</em> <span class="addons-count">100</span></h2>
+    <p>Automazioni intelligenti da aggiungere a qualsiasi pacchetto. Setup e canone mensile da valutare per ciascuno.</p>
+  </div>
+
+  <div class="addons-controls">
+    <div class="view-tabs">
+      <button class="view-tab active" data-view="cliente">👤 Vista Cliente</button>
+      <button class="view-tab" data-view="dev">⚙️ Vista Sviluppatore</button>
+    </div>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Cerca dipendente..." autocomplete="off">
+    </div>
+  </div>
+
+  <div class="group-filters" id="groupFilters">
+    <button class="gf-btn active" data-group="tutti">Tutti</button>
+    <button class="gf-btn" data-group="comunicazione">Comunicazione</button>
+    <button class="gf-btn" data-group="booking">Booking</button>
+    <button class="gf-btn" data-group="ai">AI & Intelligenza</button>
+    <button class="gf-btn" data-group="analytics">Analytics</button>
+    <button class="gf-btn" data-group="clienti">Gestione Clienti</button>
+    <button class="gf-btn" data-group="team">Gestione Team</button>
+    <button class="gf-btn" data-group="marketing">Marketing & Social</button>
+    <button class="gf-btn" data-group="revenue">Vendite & Revenue</button>
+    <button class="gf-btn" data-group="integrazioni">Integrazioni</button>
+    <button class="gf-btn" data-group="avanzata">Gestione Avanzata</button>
+  </div>
+
+  <div id="addonsContainer"></div>
+  <div class="no-results" id="noResults">Nessun dipendente trovato per questa ricerca.</div>
+</div>
+
+<script>
+const DD = [
+  // COMUNICAZIONE & REMINDER
+  {g:'comunicazione',i:'💬',n:'Reminder WhatsApp',d:'Promemoria automatici via WhatsApp 24h e 1h prima dell\'appuntamento.',tipo:'separato',esempio:'Maria ha prenotato per venerdì. Giovedì sera riceve un reminder, venerdì mattina un secondo. Non dimentica, il salone non perde il posto.',roi:'8 no-show in meno/mese × €35 = +€280/mese',tech:'n8n',dev:'Trigger: INSERT su appointments → n8n calcola timing → nodo WhatsApp Cloud API → log su tabella message_log'},
+  {g:'comunicazione',i:'📩',n:'Notifiche SMS',d:'Conferme e reminder via SMS per clienti che non usano WhatsApp.',tipo:'separato',esempio:'Cliente anziano senza smartphone riceve SMS di conferma appuntamento e promemoria il giorno prima.',roi:'Riduce no-show del 25% anche sulla clientela meno digitale. +€150/mese stimati.',tech:'n8n',dev:'Trigger: nuovo appuntamento → n8n → Twilio SMS node → log invio'},
+  {g:'comunicazione',i:'🔄',n:'Promemoria Rinnovo',d:'Ricorda ai clienti quando è il momento di tornare in base alla frequenza storica.',tipo:'separato',esempio:'Lucia fa la piega ogni 3 settimane. Il sistema calcola la data e le manda un WhatsApp il giorno giusto con link di prenotazione.',roi:'Recupera 4-6 appuntamenti/mese passivi. +€175/mese medio.',tech:'n8n',dev:'Scheduled trigger settimanale → query Supabase clienti con ultima visita > X giorni → WhatsApp + email'},
+  {g:'comunicazione',i:'🎂',n:'Birthday Campaign',d:'Messaggio di auguri con offerta esclusiva automatica il giorno del compleanno.',tipo:'separato',esempio:'Il compleanno di Giulia è il 15 marzo. Il sistema manda un messaggio con uno sconto del 20% valido per 7 giorni.',roi:'Tasso di riscatto stimato 30%. 20 clienti/mese = 6 prenotazioni extra = +€210/mese.',tech:'n8n',dev:'Scheduled trigger ogni mattina → query Supabase clienti con birthdate = oggi → WhatsApp + email'},
+  {g:'comunicazione',i:'🎯',n:'Campagne Riattivazione',d:'Identifica clienti inattivi da 30+ giorni e invia offerte personalizzate automatiche.',tipo:'separato',esempio:'50 clienti non tornano da 45 giorni. Il sistema li contatta con un\'offerta: "Mancavi! 15% di sconto sul prossimo appuntamento."',roi:'Tasso risposta 15% = 7-8 appuntamenti recuperati. +€260/mese.',tech:'n8n',dev:'Scheduled mensile → query Supabase clienti inattivi → segmenta → WhatsApp/email con offerta dinamica'},
+  {g:'comunicazione',i:'📣',n:'Promo Last Minute',d:'Riempie i buchi in agenda con offerte automatiche ai clienti disponibili.',tipo:'separato',esempio:'Un operatore ha 2 ore libere domani pomeriggio. Il sistema manda un\'offerta a 15 clienti abituali con prenotazione in un clic.',roi:'Riempie il 60% dei buchi. 3 slot recuperati/settimana × €35 = +€420/mese.',tech:'n8n',dev:'Trigger manuale o scheduled → analisi gap agenda Supabase → WhatsApp broadcast lista clienti target'},
+  {g:'comunicazione',i:'💌',n:'Newsletter Automatica',d:'Newsletter mensile con promozioni e novità del salone generata automaticamente.',tipo:'separato',esempio:'Ogni primo del mese i clienti ricevono una email con i servizi del mese, un consiglio capelli e un\'offerta limitata.',roi:'Open rate email salone ~35%. 1 prenotazione ogni 20 email = +€175/mese su lista 100 clienti.',tech:'n8n',dev:'Scheduled trigger mensile → n8n genera contenuto via AI → Resend/Mailgun → tracking aperture'},
+  {g:'comunicazione',i:'🌱',n:'Campagne Stagionali',d:'Promozioni automatiche legate alle stagioni: estate, Natale, San Valentino, Pasqua.',tipo:'separato',esempio:'Il 1° dicembre parte automaticamente la campagna "Regalo di Natale": gift card e trattamenti speciali via email e WhatsApp.',roi:'Le campagne stagionali generano picchi del 20-30% sul fatturato del periodo. +€400-800/campagna.',tech:'n8n',dev:'Scheduled trigger a date fisse annuali → template campagna → invio multicanale → report conversioni'},
+  {g:'comunicazione',i:'🔔',n:'Notifiche Push Web',d:'Notifiche push direttamente sul telefono dei clienti senza app.',tipo:'separato',esempio:'"Ciao! Oggi abbiamo 2 posti liberi alle 16:00. Prenota ora →" — arriva sul lock screen anche senza aprire il sito.',roi:'CTR push medio 8%. Su 200 iscritti = 16 click/invio. 30% prenota = +€168/campagna.',tech:'backend',dev:'Service Worker registrato nel frontend → Supabase Edge Function invia payload via Web Push API (VAPID)'},
+  {g:'comunicazione',i:'✅',n:'WhatsApp Business API',d:'Numero WhatsApp Business ufficiale con spunta verde per tutti i messaggi del salone.',tipo:'separato',esempio:'I messaggi arrivano da "Salone Rossella ✓" invece di un numero anonimo. Il tasso di apertura sale dal 60% al 90%.',roi:'Aumento tasso apertura +30% su tutti i messaggi = impatto diretto su ogni campagna attiva.',tech:'n8n',dev:'Setup Meta Business Account + numero verificato → tutti i nodi WhatsApp n8n usano le credenziali API ufficiali'},
+
+  // PRENOTAZIONE & BOOKING
+  {g:'booking',i:'⏳',n:'Waitlist Manager',d:'Gestisce la lista d\'attesa: se qualcuno cancella, avvisa il primo in lista in automatico.',tipo:'interno',esempio:'Cancellazione alle 18:00 di martedì. Il sistema avvisa immediatamente il primo in lista con un link per confermare entro 30 minuti.',roi:'Recupera il 70% delle cancellazioni. 4 slot/mese = +€140/mese.',tech:'supabase',dev:'Realtime subscription su status appuntamento → UPDATE cancellato → query waitlist → trigger n8n notifica'},
+  {g:'booking',i:'📲',n:'QR Code Check-in',d:'Il cliente scansiona un QR all\'arrivo: l\'appuntamento si segna come confermato.',tipo:'interno',esempio:'Rossella arriva in salone, scansiona il QR alla reception. L\'appuntamento diventa "in corso" e l\'operatore riceve una notifica.',roi:'Elimina il tempo di check-in manuale: risparmio 2 min × 20 appuntamenti/giorno = 40 min operativi recuperati.',tech:'backend',dev:'QR codifica URL con token appointment_id → Supabase Edge Function verifica token → UPDATE status → realtime notify'},
+  {g:'booking',i:'💳',n:'Deposito Anticipo',d:'Richiede un deposito online al momento della prenotazione per ridurre disdette.',tipo:'interno',esempio:'Prenotazione per colorazione da €80: il sistema richiede €15 di deposito via Stripe. Chi paga non si dimentica.',roi:'No-show scendono dell\'80% sulle prenotazioni con deposito. Risparmio €200/mese su appuntamenti lunghi.',tech:'backend',dev:'Checkout Stripe alla conferma prenotazione → webhook Stripe → Supabase aggiorna stato pagamento → conferma email'},
+  {g:'booking',i:'🤳',n:'Booking da Instagram',d:'Link di prenotazione diretta nella bio e nelle storie Instagram.',tipo:'separato',esempio:'Una follower vede un Reel di un colore, clicca il link in bio e prenota senza uscire dall\'app in 45 secondi.',roi:'Converte i follower in clienti reali. 5% dei follower attivi al mese = prenotazioni dirette da social.',tech:'n8n',dev:'Link tracciato con UTM → landing page prenotazione → n8n registra sorgente → analytics conversione social'},
+  {g:'booking',i:'💡',n:'Preventivo Automatico',d:'Il cliente risponde a poche domande e riceve un preventivo via email prima di prenotare.',tipo:'separato',esempio:'Cliente chiede preventivo per keratin. Risponde a 4 domande (lunghezza, tipo capello, ecc.) e riceve il prezzo preciso via email.',roi:'Riduce le telefonate di preventivo del 60%. Risparmio 30 min/giorno dell\'operatore.',tech:'n8n',dev:'Form multi-step sul sito → n8n raccoglie risposte → logica di calcolo preventivo → email con PDF preventivo + CTA prenotazione'},
+  {g:'booking',i:'💬',n:'Chatbot Prenotazioni',d:'Widget di chat che guida il cliente nella prenotazione senza intervento umano.',tipo:'separato',esempio:'Alle 23:00 un cliente apre il sito e chatta: "Voglio tagliare i capelli sabato mattina." Il bot mostra disponibilità e completa la prenotazione.',roi:'Cattura prenotazioni fuori orario (18-30% del totale). +€350/mese stimati su 10 prenotazioni notturne.',tech:'n8n',dev:'Widget JS nel frontend → webhook n8n → parsing intento AI (Claude/GPT) → query disponibilità Supabase → conferma'},
+  {g:'booking',i:'📱',n:'Bot Telegram Prenotazioni',d:'Prenotazione completa via Telegram bot senza aprire il sito.',tipo:'separato',esempio:'/prenota → il bot mostra servizi → sceglie giorno/ora → conferma. Tutto in Telegram in meno di 2 minuti.',roi:'Canale aggiuntivo: cattura clienti Telegram-first. +4-6 prenotazioni/mese senza effort.',tech:'n8n',dev:'n8n Telegram trigger → FSM conversazionale → query Supabase disponibilità → INSERT appuntamento → conferma'},
+  {g:'booking',i:'🤖',n:'Agente Preventivi WhatsApp',d:'Risponde su WhatsApp, calcola il preventivo e propone date disponibili.',tipo:'separato',esempio:'Cliente scrive "quanto costa il balayage?" Il bot risponde con domande, calcola il costo e propone 3 date libere.',roi:'Converte il 25% delle richieste WhatsApp in prenotazione diretta. +8 appuntamenti/mese.',tech:'n8n',dev:'WhatsApp webhook → n8n → Claude AI per parsing → logica prezzi → query Supabase slots → risposta strutturata'},
+  {g:'booking',i:'🔗',n:'Booking da Google',d:'Pulsante "Prenota" direttamente dal profilo Google Business.',tipo:'separato',esempio:'Un cliente cerca "parrucchiere Olbia" su Google, vede il profilo e clicca "Prenota" senza passare dal sito.',roi:'Il 40% delle ricerche locali porta a un\'azione. Aggiungere booking diretto aumenta conversioni del 20%.',tech:'n8n',dev:'Google Reserve API → n8n sync disponibilità → conferma bidirezionale con Supabase'},
+  {g:'booking',i:'📊',n:'Analisi Abbandono Prenotazione',d:'Traccia chi inizia una prenotazione e non la completa, poi li ricontatta.',tipo:'interno',esempio:'Un cliente arriva al passaggio pagamento e chiude la pagina. Dopo 2 ore riceve un WhatsApp: "Hai lasciato qualcosa a metà!"',roi:'Recovery rate abbandono ~15%. 10 recuperi/mese × €35 = +€350/mese.',tech:'supabase',dev:'Evento JS beforeunload → INSERT booking_attempts → Supabase scheduled function controlla incompleti → trigger n8n ricontatto'},
+
+  // AI & INTELLIGENZA
+  {g:'ai',i:'🤖',n:'Receptionist AI',d:'Risponde ai messaggi clienti, conferma appuntamenti e gestisce FAQ, h24.',tipo:'separato',esempio:'Domenica alle 22:00 un cliente chiede "avete posto mercoledì pomeriggio?". Il bot risponde con le disponibilità reali e propone la prenotazione.',roi:'Gestisce il 70% delle richieste senza intervento umano. Risparmio 1h/giorno del titolare = valore ~€25/giorno.',tech:'n8n',dev:'WhatsApp/Telegram webhook → Claude AI con context saloni → query Supabase → risposta naturale + azione'},
+  {g:'ai',i:'💇',n:'Consulenza Capelli AI',d:'Raccoglie foto e preferenze prima dell\'appuntamento e suggerisce il trattamento più adatto.',tipo:'separato',esempio:'Il giorno prima, il cliente riceve un link per caricare una foto e rispondere a 5 domande. L\'operatore arriva preparato con il piano già pronto.',roi:'Riduce i tempi di consulenza in salone del 30%. +4 appuntamenti extra/settimana gestibili.',tech:'n8n',dev:'Form con upload foto → Supabase Storage → Claude vision analisi capello → PDF scheda tecnica → email operatore'},
+  {g:'ai',i:'🧠',n:'Suggerimenti AI Gestionale',d:'Analizza i dati del salone e suggerisce azioni concrete ogni settimana.',tipo:'interno',esempio:'"Questa settimana il martedì pomeriggio è sempre vuoto. Prova a offrire uno sconto del 10% per quella fascia oraria."',roi:'Ottimizzare l\'agenda aumenta il fatturato del 10-15%. Su €10k/mese = +€1.000-1.500/mese potenziali.',tech:'backend',dev:'Supabase Edge Function schedulata → aggrega dati → API Claude analisi → INSERT suggestions → dashboard card'},
+  {g:'ai',i:'😊',n:'Analisi Sentiment Recensioni',d:'Monitora il tono delle recensioni online e avvisa il titolare per i feedback negativi.',tipo:'separato',esempio:'"Attenzione: nuova recensione 2 stelle su Google - risposta consigliata entro 24h" — con bozza di risposta già pronta.',roi:'Rispondere alle recensioni negative entro 24h recupera il 33% della fiducia. Protegge il rating Google.',tech:'n8n',dev:'Scheduled scraping Google/Facebook reviews → sentiment Claude → se negativo: alert Telegram + bozza risposta'},
+  {g:'ai',i:'🎨',n:'Generatore Contenuti AI',d:'Crea caption Instagram, testi promozioni e risposte a recensioni in tono coerente col brand.',tipo:'separato',esempio:'Il titolare fotografa il lavoro fatto. Carica la foto e riceve 3 caption pronte per Instagram con hashtag e CTA.',roi:'Risparmio 2h/settimana di copywriting. Frequenza post aumenta da 2 a 5/settimana = reach +150%.',tech:'n8n',dev:'Trigger webhook (form o bot) → immagine → Claude vision + brand tone system prompt → 3 varianti → email/Telegram'},
+  {g:'ai',i:'🎙️',n:'Risponditore Vocale AI',d:'Risponde alle chiamate perse con un messaggio vocale e invia link prenotazione via SMS.',tipo:'separato',esempio:'Chiamata persa alle 14:30. Entro 1 minuto il chiamante riceve: "Ciao, hai chiamato il Salone Rossella! Prenota qui →"',roi:'Il 60% dei clienti che chiama e non trova risposta non richiama. Recuperare 5 chiamate/mese = +€175.',tech:'n8n',dev:'Twilio call webhook missed → n8n → TTS messaggio vocale → SMS con link prenotazione tracciato'},
+  {g:'ai',i:'📆',n:'Calendario Editoriale AI',d:'Genera ogni mese un piano editoriale completo per i social del salone.',tipo:'separato',esempio:'Il 1° del mese arriva via email: "Ecco il piano di maggio — 12 post, 4 Reels, 3 Stories. Testi e orari già pronti."',roi:'Coerenza social aumenta follower +20%/mese. Ogni 100 follower = ~2 clienti nuovi.',tech:'n8n',dev:'Scheduled mensile → Claude genera piano editoriale JSON → n8n formatta → email PDF + Google Sheets condiviso'},
+  {g:'ai',i:'📈',n:'Previsione Domanda',d:'Prevede quante prenotazioni arriveranno la settimana prossima per ottimizzare turni.',tipo:'interno',esempio:'"La prossima settimana si prevede un +25% di prenotazioni rispetto alla media, probabilmente per le lauree. Considera turni estesi venerdì."',roi:'Ottimizzazione turni evita straordinari non pianificati e ore vuote. Risparmio €200/mese stimato.',tech:'backend',dev:'Supabase Edge Function → query storico appuntamenti + stagionalità → algoritmo ARIMA semplificato → store forecast'},
+  {g:'ai',i:'💰',n:'Ottimizzatore Prezzi AI',d:'Suggerisce aggiustamenti di prezzo in base alla domanda e ai dati storici.',tipo:'interno',esempio:'"Il sabato mattina è sempre pieno. Potresti aumentare i prezzi del 10% in quella fascia senza perdere clienti."',roi:'Aumentare prezzi del 5% nelle fasce sature = +€500/mese su fatturato di €10k.',tech:'backend',dev:'Edge Function analisi elasticità domanda → confronto fill rate per fascia → suggerimenti con confidence score'},
+  {g:'ai',i:'💬',n:'Chatbot Instagram DM',d:'Risponde automaticamente ai messaggi diretti Instagram e propone prenotazioni.',tipo:'separato',esempio:'Un follower commenta "quanto costa il colore?" Il bot risponde in DM con prezzi e un link per prenotare.',roi:'+10 conversazioni/giorno gestite automaticamente. Conversione DM→prenotazione stimata 8%.',tech:'n8n',dev:'Instagram Graph API webhook → n8n → Claude parsing intento → risposta + link tracciato → log Supabase'},
+
+  // ANALYTICS & REPORT
+  {g:'analytics',i:'📊',n:'Report Mensile AI',d:'Report automatico ogni mese: clienti nuovi, servizi top, ore di punta e suggerimenti.',tipo:'interno',esempio:'Il 1° del mese il titolare trova in inbox: "Aprile: +12 clienti nuovi, servizio top: colorazione, fascia più piena: martedì 10-13."',roi:'Decisioni data-driven. I saloni che monitorano i KPI crescono il 20% più velocemente.',tech:'n8n',dev:'Scheduled 1° del mese → query Supabase aggregata → Claude genera narrative report → PDF via Resend'},
+  {g:'analytics',i:'📈',n:'Performance Operatori',d:'Dashboard con i KPI di ogni operatore: appuntamenti, servizi top, soddisfazione.',tipo:'interno',esempio:'Il titolare vede che Marco ha un tasso di ritorno clienti del 85% mentre Lucia dell\'60% — può fare coaching mirato.',roi:'Aumentare il tasso di ritorno del 10% = +€1.200/mese su 30 clienti ricorrenti.',tech:'supabase',dev:'View materializzata Supabase con aggregati per operatore → aggiornamento giornaliero → dashboard realtime'},
+  {g:'analytics',i:'🏆',n:'Classifica Operatori',d:'Classifica mensile interna per motivazione e crescita del team.',tipo:'interno',esempio:'"Maggio: 1° Marco (92 appuntamenti, 4.9⭐), 2° Lucia (78 app, 4.7⭐), 3° Sara (65 app, 4.8⭐)"',roi:'Gamification aumenta produttività team del 15%. +€900/mese su team da 3 operatori.',tech:'supabase',dev:'Stored procedure Supabase ranking mensile → INSERT leaderboard → trigger notifica operatori via n8n'},
+  {g:'analytics',i:'🗺️',n:'Heatmap Clienti',d:'Visualizza su mappa da quali zone arrivano i clienti per decisioni marketing.',tipo:'interno',esempio:'"Il 40% dei clienti viene da Olbia centro, 25% da Porto Rotondo. Conviene fare pubblicità là."',roi:'Targetizzare la pubblicità locale riduce il costo per acquisizione del 30%.',tech:'supabase',dev:'Geocoding indirizzi clienti via API → INSERT coordinates → dashboard mappa D3.js/Leaflet con realtime Supabase'},
+  {g:'analytics',i:'🧮',n:'Report Fiscale Trimestrale',d:'Riepilogo ricavi per servizio e operatore pronto per il commercialista.',tipo:'interno',esempio:'Fine trimestre: PDF con ricavi divisi per categoria, IVA separata, confronto col trimestre precedente. Pronto da inviare.',roi:'Risparmio 3h/trimestre di lavoro amministrativo. Valore: €75-150/trimestre.',tech:'n8n',dev:'Scheduled trimestrale → query Supabase fatturato aggregato → template PDF → Resend al commercialista'},
+  {g:'analytics',i:'📉',n:'Alert Calo Prenotazioni',d:'Avvisa il titolare se le prenotazioni calano significativamente rispetto alla media.',tipo:'interno',esempio:'"Attenzione: questa settimana -30% prenotazioni rispetto alla media. Potrebbe essere il momento di una campagna riattivazione."',roi:'Intervento tempestivo evita settimane vuote. Valore: recupero €500-1.000/settimana.',tech:'n8n',dev:'Scheduled settimanale → query Supabase count appuntamenti → calcola delta → se delta > soglia: Telegram alert + suggerimento'},
+  {g:'analytics',i:'⏰',n:'Analisi Orari di Punta',d:'Identifica le fasce orarie più e meno redditizie per ottimizzare l\'agenda.',tipo:'interno',esempio:'"Il giovedì 14-16 è il momento meno efficiente. Considera di spostare le pulizie o introdurre promozioni."',roi:'Ottimizzare 2 ore/giorno = +€70/giorno × 22 giorni = +€1.540/mese potenziali.',tech:'supabase',dev:'View aggregata per fascia oraria e giorno settimana → calcola fill rate e revenue/slot → dashboard heatmap'},
+  {g:'analytics',i:'📡',n:'Tracciamento UTM Campagne',d:'Traccia da quale canale arriva ogni prenotazione per misurare il ROI del marketing.',tipo:'interno',esempio:'"La campagna Instagram di marzo ha generato 23 prenotazioni per €805 di fatturato, spesa: €150. ROI: 437%."',roi:'Sapere cosa funziona permette di raddoppiare il budget sul canale giusto.',tech:'backend',dev:'UTM params catturati al booking → INSERT source in appointments → dashboard aggregata per canale → export CSV'},
+  {g:'analytics',i:'📊',n:'Integrazione Google Analytics',d:'Invia eventi di prenotazione e acquisto a GA4 per analytics complete.',tipo:'interno',esempio:'GA4 mostra: "20 utenti hanno iniziato la prenotazione, 14 l\'hanno completata. Funnel: drop del 30% al passaggio data."',roi:'Ottimizzare il funnel di prenotazione aumenta le conversioni del 10-20%.',tech:'backend',dev:'Measurement Protocol GA4 → eventi purchase/begin_checkout inviati server-side da Edge Function → no adblocker'},
+  {g:'analytics',i:'💹',n:'Previsione Incassi Mensile',d:'Stima il fatturato del mese in corso basandosi sulle prenotazioni già fatte.',tipo:'interno',esempio:'"Al 15 del mese hai già €4.200 confermati. Proiezione fine mese: €8.800 (+5% vs mese scorso)."',roi:'Pianificazione finanziaria più precisa. Evita sorprese e migliora la gestione del cash flow.',tech:'backend',dev:'Edge Function: appuntamenti confermati × ticket medio storico per servizio + fattore stagionale → store forecast'},
+
+  // GESTIONE CLIENTI
+  {g:'clienti',i:'📝',n:'Scheda Tecnica Cliente',d:'Registra formula colore, ossidante, tempi di posa e reazioni per ogni cliente.',tipo:'interno',esempio:'Giulia arriva: l\'operatore apre la scheda e vede "Maschera nutriente + 6% ossidante, 35 min, sensibile alle radici". Zero domande, massima precisione.',roi:'Elimina errori di trattamento e aumenta fiducia del cliente. Retention +15% stimata.',tech:'supabase',dev:'Tabella client_technical_cards con JSONB per dati flessibili → RLS per operatore → versioning con history'},
+  {g:'clienti',i:'🎟️',n:'Fidelity & Punti',d:'Sistema di raccolta punti automatico: ogni appuntamento accumula punti convertibili.',tipo:'interno',esempio:'Dopo 10 appuntamenti, Marta ha 500 punti. Riceve automaticamente: "Hai diritto a una piega gratuita!" con link di prenotazione.',roi:'I programmi fedeltà aumentano la frequenza visite del 20%. +€800/mese su 40 clienti fidelizzati.',tech:'supabase',dev:'Trigger Supabase su INSERT appuntamento completato → calcola punti → UPDATE loyalty_balance → soglia raggiunta → n8n reward'},
+  {g:'clienti',i:'🎫',n:'Gestione Abbonamenti',d:'Crea e vende pacchetti prepagati (10 pieghe, abbonamento mensile). Crediti scalati automaticamente.',tipo:'interno',esempio:'Cliente acquista "Pacchetto 10 tagli €290" invece di €35 × 10 = €350. Paga ora, viene regolarmente. Tutti contenti.',roi:'Anticipo di cassa immediato + retention garantita. 10 abbonamenti × €290 = €2.900 incassati subito.',tech:'supabase',dev:'Tabella subscriptions con credits → decremento automatico via trigger su check-in → alert crediti in esaurimento'},
+  {g:'clienti',i:'🎁',n:'Gift Card Digitali',d:'I clienti acquistano e inviano gift card digitali direttamente dal sito.',tipo:'interno',esempio:'Marco regala a sua moglie una gift card da €80 per Natale. La acquista online, lei riceve il codice via email e prenota quando vuole.',roi:'Le gift card hanno un margine del 30-40% in più per mancato utilizzo parziale. Ottimo per le festività.',tech:'supabase',dev:'Tabella gift_cards con UUID token → Stripe checkout → email automatica con QR → riscatto via Supabase Edge Function'},
+  {g:'clienti',i:'🎪',n:'Gestione Coupon & Sconti',d:'Crea, distribuisce e traccia codici sconto monouso o a tempo limitato.',tipo:'interno',esempio:'"ESTATE25" — 25% di sconto valido per 72 ore, solo 20 utilizzi disponibili. Si esaurisce in 6 ore.',roi:'Promozioni tracciabili con ROI misurabile. Evita sconti "infiniti" non controllati.',tech:'supabase',dev:'Tabella coupons con rules JSONB (max_uses, expiry, service_ids) → validation Edge Function → INSERT redemption'},
+  {g:'clienti',i:'🚫',n:'Lista Nera Automatica',d:'Blocca le prenotazioni di clienti con troppi no-show senza preavviso.',tipo:'interno',esempio:'Dopo 3 no-show non giustificati, il sistema blocca automaticamente le prenotazioni online di quel cliente e avvisa il titolare.',roi:'Elimina i clienti non affidabili. Ogni no-show costa €35 + slot perso. Risparmio €105/mese su 3 blocchi.',tech:'supabase',dev:'Trigger su no-show → UPDATE no_show_count → se > soglia: INSERT blacklist → RLS blocca booking → alert titolare n8n'},
+  {g:'clienti',i:'🔐',n:'Gestione Consensi GDPR',d:'Raccoglie e archivia digitalmente i consensi privacy di ogni cliente.',tipo:'interno',esempio:'Al primo accesso, ogni cliente firma digitalmente il consenso. Il PDF viene archiviato nel profilo. Niente fogli persi.',roi:'Conformità GDPR evita sanzioni (min €2.000). Valore assicurativo immediato.',tech:'supabase',dev:'Form consenso con firma digitale canvas → PDF generato server-side → Supabase Storage → timestamp e IP log'},
+  {g:'clienti',i:'📸',n:'Archivio Foto Clienti',d:'Archivia foto prima/dopo per ogni cliente nel loro profilo.',tipo:'interno',esempio:'L\'operatore scatta foto al lavoro finito. Si salva nel profilo della cliente con data e servizio. Consultabile alla visita successiva.',roi:'Riferimento visivo = meno fraintendimenti. Soddisfazione cliente +20%.',tech:'supabase',dev:'Upload foto → Supabase Storage con policy per operatore → link nel record cliente → thumbnail automatica'},
+  {g:'clienti',i:'⚠️',n:'Gestione Allergeni',d:'Registra allergie e controindicazioni per ogni cliente con alert prima del trattamento.',tipo:'interno',esempio:'Prima di applicare il colore a Francesca, l\'operatore vede l\'alert: "Allergia al PPD — usare solo colorazioni naturali."',roi:'Previene incidenti. Valore: responsabilità legale evitata + fiducia cliente.',tech:'supabase',dev:'Tabella client_medical_notes con RLS solo operatori → alert popup nella dashboard se flag allergeni attivo'},
+  {g:'clienti',i:'🏷️',n:'Segmentazione Clienti',d:'Classifica automaticamente i clienti: nuovi, abituali, VIP, a rischio abbandono.',tipo:'interno',esempio:'Dashboard mostra: 12 VIP, 45 abituali, 23 nuovi, 8 a rischio. Ogni segmento può ricevere comunicazioni diverse.',roi:'Comunicazioni mirate hanno un tasso di conversione 3× superiore a quelle generiche.',tech:'supabase',dev:'Stored procedure settimanale → calcola RFM score per cliente → UPDATE segment → disponibile per filtri campagne'},
+
+  // GESTIONE TEAM
+  {g:'team',i:'🕐',n:'Gestione Turni Operatori',d:'Pianifica i turni con calendario condiviso che aggiorna le disponibilità in tempo reale.',tipo:'interno',esempio:'Il titolare sposta il turno di Marco al giovedì. Automaticamente spariscono le disponibilità del martedì per i clienti online.',roi:'Elimina i conflitti di agenda. Risparmio 30 min/giorno di gestione manuale.',tech:'supabase',dev:'Tabella shifts → trigger UPDATE disponibilità → Supabase Realtime propagazione al booking calendar nel frontend'},
+  {g:'team',i:'📅',n:'Sync Google Calendar',d:'Sincronizza gli appuntamenti con il Google Calendar personale di ogni operatore.',tipo:'interno',esempio:'Marco ha l\'appuntamento delle 10:00 nel suo Google Calendar personale. Se cancella lì, si cancella anche dal gestionale.',roi:'Zero doppie prenotazioni. Risparmio 15 min/giorno di aggiornamenti manuali per operatore.',tech:'n8n',dev:'Trigger Supabase su INSERT/UPDATE appuntamento → n8n → Google Calendar API → sync bidirezionale con gestione conflitti'},
+  {g:'team',i:'🖨️',n:'Stampa Agenda Giornaliera',d:'Genera e invia ogni mattina un PDF stampabile con l\'agenda completa del giorno.',tipo:'interno',esempio:'Alle 8:00 ogni operatore riceve via WhatsApp il PDF della giornata: 8 clienti, servizi, note speciali, gap liberi.',roi:'Ottimizza la preparazione giornaliera. Risparmio 20 min/mattina × 22 giorni = 7h/mese.',tech:'n8n',dev:'Scheduled 7:30 ogni giorno → query Supabase agenda del giorno → Puppeteer PDF → Resend/WhatsApp a ogni operatore'},
+  {g:'team',i:'💰',n:'Simulatore Guadagno Operatore',d:'Mostra a ogni operatore il suo guadagno stimato in base agli appuntamenti confermati.',tipo:'interno',esempio:'Venerdì mattina Sara vede: "Questa settimana hai già €420 garantiti. Con gli slot liberi del pomeriggio puoi arrivare a €560."',roi:'Motivazione diretta degli operatori. Team motivato = 10% più produttivo.',tech:'supabase',dev:'View per operatore: COUNT appuntamenti × commissione configurabile → dashboard personale operatore → aggiornamento realtime'},
+  {g:'team',i:'🔑',n:'Gestione Permessi Operatori',d:'Controlla cosa può vedere e fare ogni operatore nel gestionale.',tipo:'interno',esempio:'Marco vede solo la sua agenda. Il titolare vede tutto. Il receptionist può prenotare ma non accedere ai dati finanziari.',roi:'Sicurezza dati e privacy clienti garantita. Conformità GDPR migliorata.',tech:'supabase',dev:'Supabase RLS policies per role (owner/operator/receptionist) → Row Level Security su ogni tabella sensibile'},
+  {g:'team',i:'📱',n:'Dashboard Mobile Operatore',d:'App PWA per operatori: agenda, schede clienti e note dal telefono.',tipo:'interno',esempio:'Marco è in pausa. Dal telefono controlla il cliente delle 15:00, legge le note "capelli fini, vuole volume" e si prepara.',roi:'Operatori più preparati = clienti più soddisfatti. Servizio premium percepito.',tech:'supabase',dev:'PWA con Astro + Supabase Auth → RLS per operatore → offline-first con Service Worker per agenda giornaliera'},
+  {g:'team',i:'⚙️',n:'Onboarding Operatore Automatico',d:'Guida il nuovo operatore nel setup del profilo e delle disponibilità in automatico.',tipo:'interno',esempio:'Nuovo operatore aggiunto → riceve email con link → in 10 minuti configura orari, servizi e foto profilo da solo.',roi:'Risparmio 2h di onboarding manuale per ogni nuovo operatore.',tech:'n8n',dev:'Trigger INSERT nuovo operatore → n8n genera token onboarding → email con link → wizard multi-step → completamento'},
+  {g:'team',i:'📋',n:'Log Attività Gestionale',d:'Registra ogni azione nel gestionale: chi ha modificato cosa e quando.',tipo:'interno',esempio:'"15 maggio ore 11:23 - Marco ha spostato l\'appuntamento di Giulia dal 16 al 18 maggio."',roi:'Trasparenza totale. Risolve dispute e protegge il titolare in caso di contestazioni.',tech:'supabase',dev:'Trigger AFTER UPDATE/DELETE su tabelle principali → INSERT audit_log con user_id, action, old_data JSONB, timestamp'},
+  {g:'team',i:'📆',n:'Calendario Ferie Automatico',d:'Gli operatori richiedono ferie dall\'app, il titolare approva e l\'agenda si aggiorna.',tipo:'interno',esempio:'Sara richiede ferie dal 10 al 15 agosto. Il titolare approva su telefono. Automaticamente quei giorni spariscono dalla disponibilità online.',roi:'Elimina errori di ferie non comunicate. Zero prenotazioni in giorni di chiusura.',tech:'supabase',dev:'Tabella leave_requests → workflow approvazione → trigger UPDATE sulla tabella shifts → propagazione booking calendar'},
+  {g:'team',i:'💬',n:'Chat Interna Team',d:'Canale di comunicazione interno tra operatori e titolare integrato con Telegram.',tipo:'separato',esempio:'Il titolare scrive nel gruppo Telegram del salone: "Domani chiudo alle 17, spostate gli appuntamenti del tardo pomeriggio." Letto da tutti.',roi:'Comunicazione immediata senza WhatsApp personali. Separazione lavoro/vita privata.',tech:'n8n',dev:'Bot Telegram dedicato al team → n8n gestisce comandi → integrazione con eventi gestionale (nuove prenotazioni, cancellazioni)'},
+
+  // MARKETING & SOCIAL
+  {g:'marketing',i:'📱',n:'Social Scheduler',d:'Programma e pubblica contenuti su Instagram e Facebook automaticamente.',tipo:'separato',esempio:'Il titolare carica 5 foto domenica. Il sistema le pubblica una ogni giorno alle 10:30, l\'orario di maggior engagement.',roi:'Frequenza 5 post/settimana vs 1 = reach ×4. Ogni 100 follower guadagnati = ~2 clienti nuovi.',tech:'n8n',dev:'n8n scheduler + Meta Graph API → POST a pagina/profilo → log pubblicazione → notifica conferma'},
+  {g:'marketing',i:'⭐',n:'Review Harvester',d:'Richiede una recensione Google automaticamente dopo ogni appuntamento completato.',tipo:'separato',esempio:'2 ore dopo il taglio, Lucia riceve: "Come è andata? Lascia una recensione →" con link diretto alla pagina Google.',roi:'Da 3.8 a 4.5 stelle = +35% click dal profilo Google. 1 stella in più = +10% prenotazioni locali.',tech:'n8n',dev:'Trigger appuntamento completato → delay 2h → WhatsApp/email con link Google Review tracciato → log risposta'},
+  {g:'marketing',i:'🗣️',n:'Raccolta Testimonianze',d:'Invita i clienti soddisfatti a lasciare una testimonianza scritta o video.',tipo:'separato',esempio:'Dopo un balayage perfetto, il cliente riceve un link per registrare un video-testimonianza di 30 secondi direttamente dal telefono.',roi:'Le video-testimonianze aumentano il tasso di conversione della pagina web del 25%.',tech:'n8n',dev:'Trigger post-appuntamento → link a form con video upload → Supabase Storage → approvazione titolare → embed automatico sito'},
+  {g:'marketing',i:'📸',n:'Gallery Before/After',d:'Pubblica automaticamente le foto prima/dopo condivise dai clienti.',tipo:'separato',esempio:'L\'operatore scatta le foto, le carica e il sistema le pubblica in galleria sul sito e propone il post su Instagram.',roi:'La gallery aumenta il tempo di permanenza sul sito del 40% e la fiducia del cliente.',tech:'n8n',dev:'Upload foto coppia → Supabase Storage → moderation check → INSERT gallery → n8n post Instagram carousel'},
+  {g:'marketing',i:'🤝',n:'Referral Automatico',d:'I clienti soddisfatti portano amici con link tracciato e ricevono sconti automatici.',tipo:'separato',esempio:'Marta porta un\'amica. L\'amica prenota con il link di Marta. Entrambe ricevono automaticamente uno sconto del 15%.',roi:'Il referral marketing costa 5× meno dell\'advertising. Ogni cliente referral ha LTV 25% superiore.',tech:'n8n',dev:'Tabella referrals con codice univoco → tracking prenotazione originante → trigger sconto su entrambi → analytics'},
+  {g:'marketing',i:'📡',n:'Integrazione Meta Ads',d:'Invia dati di conversione a Meta per ottimizzare le campagne Facebook/Instagram.',tipo:'separato',esempio:'Facebook sa che chi prenota un\'appuntamento ha le caratteristiche di "Lucia, 32 anni, Olbia". Trova altri come lei.',roi:'Campagne ottimizzate con dati reali abbassano il costo per prenotazione del 40%.',tech:'n8n',dev:'Conversions API Meta → n8n invia eventi (PageView, Lead, Purchase) server-side → hashed PII → no cookie blocking'},
+  {g:'marketing',i:'💬',n:'Bot Risposta Commenti Social',d:'Risponde automaticamente ai commenti Instagram con risposte pertinenti.',tipo:'separato',esempio:'Qualcuno commenta "Quanto costa il colore?" Il bot risponde "Dai €45! Prenota qui →" e sposta in DM per i dettagli.',roi:'Ogni commento senza risposta è un potenziale cliente perso. Risposta immediata = +8% conversione.',tech:'n8n',dev:'Instagram Graph API webhook per commenti → Claude classifica intento → risposta predefinita o AI → log'},
+  {g:'marketing',i:'🔗',n:'Link in Bio Dinamico',d:'Pagina link-in-bio con prenotazione, prodotti, orari e promo sempre aggiornata.',tipo:'interno',esempio:'Un\'unica pagina mobile: "Prenota", "Vedi prezzi", "Acquista prodotti", "Scrivici". Si aggiorna da gestionale senza toccare nulla.',roi:'Eliminare attrito tra social e prenotazione aumenta le conversioni dal 3% al 8%.',tech:'backend',dev:'Pagina Astro SSR con dati Supabase → aggiornamento realtime → tracciamento click per UTM source'},
+  {g:'marketing',i:'📱',n:'Integrazione TikTok',d:'Link di prenotazione diretto dal profilo TikTok con tracciamento conversioni.',tipo:'separato',esempio:'Un video virale mostra un balayage. La bio dice "Prenota qui →". Il link traccia quante prenotazioni vengono dai TikTok.',roi:'TikTok ha il più alto engagement per i saloni. 1 video viral = 50+ richieste prenotazione.',tech:'n8n',dev:'TikTok Business API → pixel eventi → n8n sync conversioni → analytics sorgente nel gestionale'},
+  {g:'marketing',i:'📲',n:'Alert Telegram Titolare',d:'Notifica il titolare su Telegram per ogni evento importante: nuova prenotazione, cancellazione, recensione.',tipo:'separato',esempio:'"🟢 Nuova prenotazione: Giulia Rossi — Colorazione — Venerdì 16 alle 10:00 con Marco."',roi:'Titolare sempre aggiornato anche fuori dal salone. Zero prenotazioni perse per mancata risposta.',tech:'n8n',dev:'Trigger Supabase su eventi chiave → n8n → Telegram Bot API con messaggi formattati e azioni rapide inline keyboard'},
+
+  // VENDITE & REVENUE
+  {g:'revenue',i:'🛒',n:'Upsell Intelligente',d:'Suggerisce trattamenti complementari durante o dopo la prenotazione.',tipo:'separato',esempio:'Dopo aver prenotato un taglio, il cliente vede: "Aggiungi una maschera nutriente (+€15) — i nostri clienti la adorano con questo servizio."',roi:'Il 20% accetta l\'upsell. 80 appuntamenti/mese × 20% × €15 = +€240/mese.',tech:'n8n',dev:'Post-booking trigger → n8n query servizi complementari da Supabase → email/WhatsApp con link add-on prenotazione'},
+  {g:'revenue',i:'📋',n:'Sondaggio Post-Visita',d:'Sondaggio di soddisfazione automatico dopo ogni appuntamento.',tipo:'separato',esempio:'2 ore dopo: "Come è andato il tuo appuntamento? (1-5 ⭐)" — 3 domande, 30 secondi. Risultati nel dashboard.',roi:'NPS alto = più referral naturali. Rilevare insoddisfazione subito permette di correggere prima della recensione pubblica.',tech:'n8n',dev:'Trigger appuntamento completato → delay → form 3 domande → INSERT survey_results → dashboard analytics → alert se score < 3'},
+  {g:'revenue',i:'💸',n:'Bot Recupero Crediti',d:'Contatta automaticamente i clienti con fatture non pagate o depositi non completati.',tipo:'separato',esempio:'"Ciao! Risulta un pagamento in sospeso di €15 per l\'appuntamento del 5 maggio. Puoi saldare qui →"',roi:'Recupera il 60% dei pagamenti sospesi. Su €300/mese di insoluti = +€180 recuperati.',tech:'n8n',dev:'Scheduled giornaliero → query Supabase pagamenti pending → WhatsApp con link Stripe → UPDATE su pagamento ricevuto'},
+  {g:'revenue',i:'📅',n:'Gestione Listino Stagionale',d:'Adatta automaticamente i prezzi in base alla stagione configurata.',tipo:'interno',esempio:'"Estate 2025: +10% su tutti i servizi colore dal 1 giugno al 31 agosto." Il listino si aggiorna da solo.',roi:'Applicare prezzi stagionali aumenta il fatturato estivo del 10% senza perdere clienti.',tech:'supabase',dev:'Tabella price_rules con date_range e multiplier → Edge Function price_calculator → applicata in tempo reale al booking'},
+  {g:'revenue',i:'📦',n:'Scorte & Riordino',d:'Monitora il magazzino e avvisa quando un prodotto sta esaurendo.',tipo:'interno',esempio:'"Attenzione: shampoo cheratina sceso sotto 5 unità. Ordine automatico inviato al fornitore?"',roi:'Mai restare senza prodotti durante il servizio. Evita cancellazioni last minute per mancanza materiale.',tech:'n8n',dev:'Trigger Supabase su decremento stock < threshold → n8n alert Telegram → opzionale: webhook API fornitore per riordino'},
+  {g:'revenue',i:'🏠',n:'Rubrica Fornitori',d:'Centralizza contatti fornitori con storico ordini e listini.',tipo:'interno',esempio:'Il titolare cerca "Wella" e vede: ultimo ordine 15 aprile, prezzo concordato €45 per kit, contatto commerciale: Mario.',roi:'Risparmio 30 min/settimana di ricerca contatti. Negoziazione prezzi più efficace con storico documentato.',tech:'supabase',dev:'Tabella suppliers + orders con JSONB prodotti → ricerca full-text Supabase → integrazione futura con email automatica ordine'},
+  {g:'revenue',i:'🛠️',n:'Manutenzione Attrezzature',d:'Promemoria periodici per la manutenzione di phon, poltrone e macchinari.',tipo:'separato',esempio:'"Promemoria: sterilizzatore — manutenzione programmata il 1° di ogni mese. Ultimo intervento: 1 aprile."',roi:'Manutenzione preventiva evita guasti costosi (€200-500) e fermi attività.',tech:'n8n',dev:'Tabella equipment con maintenance_interval → Scheduled trigger → calcola prossima scadenza → alert Telegram/email'},
+  {g:'revenue',i:'🔁',n:'Follow-up Post-Acquisto',d:'Ricontatta i clienti che hanno acquistato prodotti online per upsell e fidelizzazione.',tipo:'separato',esempio:'3 giorni dopo l\'acquisto dello shampoo: "Come ti trovi con il nuovo shampoo? Qui i trattamenti consigliati abbinati →"',roi:'Il follow-up post-acquisto genera il 20% del fatturato e-commerce aggiuntivo.',tech:'n8n',dev:'Trigger ORDER completato → delay 3 giorni → n8n email personalizzata con prodotti correlati da Supabase'},
+  {g:'revenue',i:'💡',n:'Widget Prezzi Dinamici',d:'Mostra prezzi aggiornati in tempo reale sul sito, incluse promozioni attive.',tipo:'interno',esempio:'Il titolare attiva una promo del 20% dal gestionale. In 30 secondi il sito mostra i nuovi prezzi barrati con lo sconto.',roi:'Prezzi sempre corretti = zero aspettative disattese. Riduce cancellazioni da "costo diverso dal preventivo".',tech:'backend',dev:'Supabase Edge Function serve prezzi + active_promotions → frontend Astro con ISR 60 secondi → prezzi barrati automatici'},
+  {g:'revenue',i:'⚙️',n:'Onboarding Cliente Automatico',d:'Guida il nuovo cliente nel completare il profilo con preferenze e allergie.',tipo:'interno',esempio:'Prima prenotazione → email: "Benvenuta! Completa il tuo profilo (2 min) per aiutarci a servirti meglio →" Con foto e note.',roi:'Profili completi = operatori più preparati = soddisfazione +15% dalla prima visita.',tech:'n8n',dev:'Trigger primo INSERT cliente → delay 10 min → n8n email onboarding → form Supabase → UPDATE profile_complete flag'},
+
+  // INTEGRAZIONI
+  {g:'integrazioni',i:'🧾',n:'Integrazione Fatture in Cloud',d:'Ogni pagamento genera automaticamente una fattura su Fatture in Cloud.',tipo:'separato',esempio:'Pagamento ricevuto alle 11:00. Alle 11:01 la fattura è già su Fatture in Cloud, numerata e conforme. Zero lavoro manuale.',roi:'Risparmio 2h/settimana di fatturazione manuale. Conformità fiscale garantita.',tech:'n8n',dev:'Webhook Stripe/Mollie su payment_intent.succeeded → n8n → Fatture in Cloud API → crea fattura → link in Supabase'},
+  {g:'integrazioni',i:'💾',n:'Backup & Export Dati',d:'Esporta automaticamente tutti i dati su Google Drive ogni settimana.',tipo:'interno',esempio:'Ogni domenica alle 3:00 un CSV completo di clienti, appuntamenti e vendite viene salvato su Google Drive del titolare.',roi:'Protezione totale da perdita dati. Valore: priceless.',tech:'n8n',dev:'Scheduled domenicale → query Supabase full export → CSV/JSON → Google Drive node n8n → folder organizzata per mese'},
+  {g:'integrazioni',i:'🕑',n:'Aggiornamento Orari Google',d:'Sincronizza gli orari su Google Business Profile quando cambiano nel gestionale.',tipo:'separato',esempio:'Il salone chiude il martedì per ferie. Il titolare aggiorna nel gestionale. Google Business mostra "chiuso martedì" automaticamente.',roi:'Zero clienti che arrivano quando è chiuso. Recensioni negative per "trovato chiuso" azzerate.',tech:'n8n',dev:'Trigger UPDATE su business_hours Supabase → n8n → Google My Business API PATCH → conferma sincronizzazione'},
+  {g:'integrazioni',i:'📌',n:'Monitoraggio Posizione SEO',d:'Traccia la posizione Google per le keyword principali e invia report settimanale.',tipo:'separato',esempio:'"Settimana 20: "parrucchiere Olbia" → posizione 3 (era 5). "salone capelli Olbia" → posizione 7."',roi:'Monitorare il SEO identifica opportunità di crescita. Salire di 1 posizione = +15-20% click.',tech:'n8n',dev:'Scheduled settimanale → Google Search Console API → estrai posizioni keyword → confronta con settimana precedente → report Telegram'},
+  {g:'integrazioni',i:'🗺️',n:'Integrazione Apple Maps',d:'Mantiene aggiornate le informazioni del salone su Apple Maps.',tipo:'separato',esempio:'Gli utenti iPhone trovano il salone su Apple Maps con orari corretti, foto aggiornate e link di prenotazione.',roi:'Il 30% degli utenti mobile usa Apple Maps. Visibilità su questo canale = +15% di scoperte locali.',tech:'n8n',dev:'Apple Maps Connect API → n8n sync dati business → foto, orari, URL prenotazione → update settimanale automatico'},
+  {g:'integrazioni',i:'💳',n:'Integrazione Pagamenti POS',d:'Sincronizza i pagamenti fisici del POS con il gestionale.',tipo:'interno',esempio:'Cliente paga in contanti alla cassa. L\'operatore registra il pagamento sul POS: automaticamente si aggiorna il report del gestionale.',roi:'Vista unificata di tutti gli incassi (online + fisici) in tempo reale. Contabilità senza discrepanze.',tech:'backend',dev:'Integrazione SumUp/Square API → webhook su transazione → Edge Function → UPDATE appointment payment_status + INSERT transaction'},
+  {g:'integrazioni',i:'📡',n:'Monitoraggio Uptime Sito',d:'Avvisa il titolare se il sito è offline o lento.',tipo:'separato',esempio:'"⚠️ Il sito è offline da 5 minuti." — alert immediato su Telegram. Il problema viene risolto prima che i clienti lo notino.',roi:'Ogni ora offline = prenotazioni perse. Con traffico di 50 visit/giorno = ~2 prenotazioni/ora mancate.',tech:'n8n',dev:'Scheduled ogni 5 minuti → HTTP request al sito → se timeout/5xx: Telegram alert + email → log downtime Supabase'},
+  {g:'integrazioni',i:'📄',n:'Generatore QR Promozioni',d:'Genera QR code stampabili per promozioni fisiche (volantini, cartoline, vetrina).',tipo:'interno',esempio:'Promo "Porta un amico": QR code stampato in 20 copie, ognuno con codice univoco tracciabile. Si sa esattamente quante persone lo usano.',roi:'Campagne fisiche tracciabili come quelle digitali. ROI misurabile anche su volantini.',tech:'backend',dev:'Edge Function genera QR con qrcode library → unico codice per campagna → PNG scaricabile → tracking scansioni via redirect'},
+  {g:'integrazioni',i:'📺',n:'Dashboard TV Salone',d:'Mostra in tempo reale su un TV l\'agenda del giorno e le promozioni attive.',tipo:'interno',esempio:'Il TV alla reception mostra: "Prossimi: Giulia (10:30, colore, Marco) — Marta (11:00, taglio, Sara)". Si aggiorna da solo.',roi:'Aspetto professionale e operatori sempre sincronizzati senza chiamate interne.',tech:'supabase',dev:'Pagina Astro fullscreen → Supabase Realtime subscription → auto-refresh ogni 30 sec → nessun login necessario (token read-only)'},
+  {g:'integrazioni',i:'📦',n:'Integrazione Corriere Spedizioni',d:'Gestisce le spedizioni dei prodotti e-commerce con tracking automatico.',tipo:'separato',esempio:'Cliente ordina shampoo online. Riceve automaticamente: conferma ordine, link tracking GLS, notifica alla consegna.',roi:'E-commerce senza gestione manuale spedizioni. Risparmio 1h/giorno per chi vende prodotti online.',tech:'n8n',dev:'Trigger ORDER pagato → n8n → API GLS/SDA per etichetta → link tracking → email cliente → UPDATE order_status Supabase'},
+
+  // GESTIONE AVANZATA
+  {g:'avanzata',i:'🌍',n:'Assistente Multilingua',d:'Gestisce prenotazioni e comunicazioni in italiano, inglese e francese.',tipo:'separato',esempio:'Turista tedesco scrive in inglese "I need an appointment for Saturday." Il bot risponde in inglese e completa la prenotazione.',roi:'In zone turistiche come la Costa Smeralda, il 20-30% dei clienti è straniero. Catturarli = +€600/mese in estate.',tech:'n8n',dev:'WhatsApp webhook → detect lingua (Claude) → risposta nella lingua rilevata → prenotazione standard Supabase'},
+  {g:'avanzata',i:'🏢',n:'Gestione Multi-sede',d:'Controlla più sedi da un\'unica dashboard con dati separati ma visione unificata.',tipo:'interno',esempio:'Il titolare ha 2 saloni. Dal gestionale vede entrambe le agende, gli incassi totali e le performance per sede.',roi:'Scalare da 1 a 2 sedi senza raddoppiare il lavoro di gestione. Risparmio 5h/settimana.',tech:'supabase',dev:'Schema multi-tenant: ogni location ha ID → RLS filtra per location_id → aggregate view cross-location per owner'},
+  {g:'avanzata',i:'🔄',n:'Sincronizzazione Prezzi Multi-sede',d:'Aggiorna i listini su tutte le sedi in un colpo solo.',tipo:'interno',esempio:'Il titolare aumenta il prezzo del taglio da €25 a €28. In 30 secondi tutte le sedi mostrano il nuovo prezzo.',roi:'Gestione prezzi centralizzata. Niente incongruenze tra sedi diverse.',tech:'supabase',dev:'UPDATE su tabella prices con location_id NULL (globale) → trigger propagazione → override locale possibile per sede specifica'},
+  {g:'avanzata',i:'📜',n:'Gestione Contratti Operatori',d:'Archivia digitalmente i contratti degli operatori con scadenze e rinnovi.',tipo:'interno',esempio:'"Attenzione: il contratto di Sara scade il 30 giugno. Rinnovo consigliato entro il 15 giugno."',roi:'Zero contratti scaduti non rinnovati. Conformità lavorativa garantita.',tech:'supabase',dev:'Tabella employee_contracts con Supabase Storage PDF → scheduled check scadenze → alert Telegram 30 giorni prima'},
+  {g:'avanzata',i:'📄',n:'Generatore Fattura Proforma',d:'Genera fatture proforma per clienti business che richiedono documento prima del pagamento.',tipo:'interno',esempio:'Azienda chiede fattura proforma per un trattamento benessere di gruppo. Generata in PDF in 10 secondi, inviata via email.',roi:'Sblocca il mercato clienti business (hotel, aziende). Ticket medio 3× superiore.',tech:'n8n',dev:'Form proforma → n8n → template PDF Puppeteer → Supabase Storage → email con PDF allegato → follow-up automatico'},
+  {g:'avanzata',i:'📊',n:'Report Accessi Clienti',d:'Mostra quante volte ogni cliente ha visitato il sito e quali pagine ha visto prima di prenotare.',tipo:'interno',esempio:'"Giulia ha visitato la pagina colorazione 3 volte prima di prenotare." Sai esattamente cosa l\'ha convinta.',roi:'Ottimizzare le pagine più visitate prima della prenotazione aumenta le conversioni del 15%.',tech:'backend',dev:'Pixel tracking anonimo nel frontend → Supabase Edge Function associa a cliente dopo auth → dashboard journey per cliente'},
+  {g:'avanzata',i:'🔔',n:'Sistema Notifiche Centralizzate',d:'Un\'unica inbox per tutte le notifiche: prenotazioni, pagamenti, recensioni, alert.',tipo:'interno',esempio:'Il titolare apre l\'app e vede tutto in un feed: 3 nuove prenotazioni, 1 cancellazione, 2 recensioni, 1 pagamento ricevuto.',roi:'Riduce il tempo di gestione notifiche sparse. Da 45 min a 10 min/giorno di monitoraggio.',tech:'supabase',dev:'Tabella notifications con type, priority, read_at → INSERT da triggers multipli → Supabase Realtime → badge nell\'app'},
+  {g:'avanzata',i:'🔁',n:'Automazione Feedback Post-Visita',d:'Raccoglie feedback strutturato dopo ogni visita con domande specifiche per servizio.',tipo:'separato',esempio:'Dopo una colorazione: "Quanto sei soddisfatta del colore? (1-5) / Torneresti per lo stesso servizio? / Cosa miglioreresti?"',roi:'Feedback specifico per servizio identifica i punti deboli. Correggere 1 problema = -20% recensioni negative.',tech:'n8n',dev:'Trigger servizio completato → n8n identifica tipo servizio → form dinamico (domande per servizio) → INSERT structured feedback'},
+  {g:'avanzata',i:'🗂️',n:'Audit Trail Appuntamenti',d:'Storico completo di ogni modifica agli appuntamenti: chi ha cambiato cosa e quando.',tipo:'interno',esempio:'"L\'appuntamento di Marta è stato spostato 3 volte: il cliente 2 volte, l\'operatore 1 volta." Tutto documentato.',roi:'Risolve dispute con clienti e fornisce prova documentale in caso di contestazioni.',tech:'supabase',dev:'Trigger AFTER UPDATE su appointments → INSERT appointment_history con JSONB diff old/new → visualizzazione timeline nel frontend'},
+  {g:'avanzata',i:'📱',n:'App Cliente PWA',d:'Progressive Web App installabile sul telefono del cliente per prenotare e consultare lo storico.',tipo:'interno',esempio:'Giulia aggiunge il salone alla schermata home del telefono. Funziona come un\'app: prenotazione in 3 tap, notifiche push native.',roi:'I clienti con app hanno un tasso di ritorno 2× superiore. Retention da 45% a 90%.',tech:'backend',dev:'Astro PWA con manifest + Service Worker → Supabase Auth → offline calendar → push notification via Web Push API'},
+  {g:'avanzata',i:'🔍',n:'Ricerca Avanzata Clienti',d:'Filtra e trova clienti per servizio, data, operatore, spesa totale o numero di visite.',tipo:'interno',esempio:'"Mostrami tutti i clienti che hanno fatto il balayage nell\'ultimo anno e speso più di €100."',roi:'Segmentazione precisa per campagne ultra-mirate. CTR delle campagne 3× superiore alla media.',tech:'supabase',dev:'Full-text search Supabase + filtri compositi → query builder UI nel frontend → export CSV del segmento selezionato'},
+];
+
+const GROUPS = {
+  tutti: 'Tutti',
+  comunicazione: 'Comunicazione & Reminder',
+  booking: 'Prenotazione & Booking',
+  ai: 'AI & Intelligenza',
+  analytics: 'Analytics & Report',
+  clienti: 'Gestione Clienti',
+  team: 'Gestione Team',
+  marketing: 'Marketing & Social',
+  revenue: 'Vendite & Revenue',
+  integrazioni: 'Integrazioni',
+  avanzata: 'Gestione Avanzata'
+};
+
+let currentView = 'cliente';
+let currentGroup = 'tutti';
+let currentSearch = '';
+
+function techLabel(t) {
+  if(t==='n8n') return '<span class="tech-badge n8n">n8n workflow</span>';
+  if(t==='supabase') return '<span class="tech-badge supabase">Supabase / DB</span>';
+  return '<span class="tech-badge backend">Backend / Edge Fn</span>';
+}
+function tipoLabel(t) {
+  if(t==='interno') return '<span class="tipo-badge interno">⚙️ Interno al gestionale</span>';
+  return '<span class="tipo-badge separato">🔗 Separato (canale esterno)</span>';
+}
+
+function renderCard(d) {
+  const clientInfo = `
+    <div class="addon-client-info">
+      <div class="info-row">
+        <span class="info-lbl">Gestione</span>
+        <div>${tipoLabel(d.tipo)}</div>
+      </div>
+      <div class="info-row">
+        <span class="info-lbl">Esempio pratico</span>
+        <span class="info-val">${d.esempio}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-lbl">ROI stimato</span>
+        <span class="info-val"><strong>${d.roi}</strong></span>
+      </div>
+    </div>`;
+  const devInfo = `
+    <div class="addon-dev-info">
+      <div class="info-row">
+        <span class="info-lbl">Tecnologia</span>
+        <div>${techLabel(d.tech)}</div>
+      </div>
+      <div class="info-row">
+        <span class="info-lbl">Implementazione</span>
+        <span class="info-val">${d.dev}</span>
+      </div>
+    </div>`;
+  return `
+    <div class="addon-card" data-group="${d.g}" data-name="${d.n.toLowerCase()}" data-desc="${d.d.toLowerCase()}">
+      <div class="addon-card-top">
+        <div class="addon-icon">${d.i}</div>
+        <div class="addon-name">${d.n}</div>
+      </div>
+      <div class="addon-desc">${d.d}</div>
+      ${currentView === 'cliente' ? clientInfo : devInfo}
+      <div class="addon-price-row">
+        <span class="addon-pill setup">Setup da valutare</span>
+        <span class="addon-pill monthly">+ canone/mese</span>
+      </div>
+    </div>`;
+}
+
+function render() {
+  const container = document.getElementById('addonsContainer');
+  const noResults = document.getElementById('noResults');
+
+  const filtered = DD.filter(d => {
+    const matchGroup = currentGroup === 'tutti' || d.g === currentGroup;
+    const matchSearch = !currentSearch || d.n.toLowerCase().includes(currentSearch) || d.d.toLowerCase().includes(currentSearch);
+    return matchGroup && matchSearch;
+  });
+
+  if(filtered.length === 0) {
+    container.innerHTML = '';
+    noResults.style.display = 'block';
+    return;
+  }
+  noResults.style.display = 'none';
+
+  const groupsToDraw = currentGroup === 'tutti'
+    ? Object.keys(GROUPS).filter(k => k !== 'tutti')
+    : [currentGroup];
+
+  let html = '';
+  groupsToDraw.forEach(gKey => {
+    const cards = filtered.filter(d => d.g === gKey);
+    if(!cards.length) return;
+    html += `<div class="group-section">
+      <div class="group-label">${GROUPS[gKey]} <span class="group-label-count">${cards.length}</span></div>
+      <div class="addons-grid">${cards.map(renderCard).join('')}</div>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+document.querySelectorAll('.view-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.view-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentView = btn.dataset.view;
+    render();
+  });
+});
+
+document.querySelectorAll('.gf-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.gf-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentGroup = btn.dataset.group;
+    render();
+  });
+});
+
+document.getElementById('searchInput').addEventListener('input', e => {
+  currentSearch = e.target.value.toLowerCase().trim();
+  render();
+});
+
+render();
+</script>
+</div>
+</body>
+</html>

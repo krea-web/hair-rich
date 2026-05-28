@@ -18,6 +18,20 @@ export interface Service {
     created_at: string;
 }
 
+export type StaffRoleType =
+    | "founder"
+    | "co_founder"
+    | "master_barber"
+    | "barber"
+    | "apprentice"
+    | "receptionist"
+    | "employee";
+
+export interface StaffQa {
+    q: string;
+    a: string;
+}
+
 export interface Staff {
     id: string;
     name: string;
@@ -25,9 +39,19 @@ export interface Staff {
     role: string;
     bio: string | null;
     avatar_url: string | null;
+    cover_url: string | null;
     is_active: boolean;
     sort_order: number;
     created_at: string;
+    role_type: StaffRoleType;
+    tagline: string | null;
+    years_active: string | null;
+    expertise: string[];
+    signature: string | null;
+    full_bio: string | null;
+    qa: StaffQa[];
+    instagram_handle: string | null;
+    show_on_team_page: boolean;
 }
 
 export interface Customer {

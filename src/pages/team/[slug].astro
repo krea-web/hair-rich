@@ -1,0 +1,76 @@
+---
+import RootLayout from "../../layouts/RootLayout.astro";
+import { SiteHeader } from "../../components/ui/SiteHeader";
+import { MobileTopBar } from "../../components/ui/MobileTopBar";
+import { BookingDrawer } from "../../components/booking/BookingDrawer";
+import { StickySlotPeek } from "../../components/landing/StickySlotPeek";
+import { Footer } from "../../components/landing/Footer";
+import { ToastViewport } from "../../components/ui/ToastViewport";
+import { MobileBottomBar } from "../../components/ui/MobileBottomBar";
+import { CartDrawer } from "../../components/shop/CartDrawer";
+import { ProductDrawer } from "../../components/shop/ProductDrawer";
+import { StaffProfileDetail } from "../../components/landing/team/StaffProfileDetail";
+
+export async function getStaticPaths() {
+  const url = import.meta.env.PUBLIC_SUPABASE_URL;
+  const key = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) return [];
+
+  try {
+    const res = await fetch(
+      `${url}/rest/v1/staff?select=*&is_active=eq.true&show_on_team_page=eq.true&order=sort_order.asc`,
+      {
+        headers: {
+          apikey: key,
+          Authorization: `Bearer ${key}`,
+        },
+      }
+    );
+    if (!res.ok) return [];
+    const rows = await res.json();
+    return rows.map((staff: any) => ({
+      params: { slug: staff.slug },
+      props: { staff },
+    }));
+  } catch {
+    return [];
+  }
+}
+
+const { staff } = Astro.props as { staff: any };
+
+const SITE_URL = import.meta.env.PUBLIC_SITE_URL || "https://hair-rich.vercel.app";
+
+const pageTitle = `${staff.name} · ${staff.role || "Master barber"} · Hair Rich Olbia`;
+const pageDescription = staff.tagline
+  ? `${staff.tagline} — ${staff.name}, ${staff.role || "barber"} di Hair Rich Olbia.`
+  : staff.full_bio
+    ? staff.full_bio.slice(0, 155).replace(/\s+\S*$/, "") + "…"
+    : `Scopri ${staff.name}, ${staff.role || "master barber"} di Hair Rich Olbia. Prenota online il tuo prossimo taglio.`;
+---
+
+<RootLayout
+  title={pageTitle}
+  description={pageDescription}
+  breadcrumbs={[
+    { name: "Home", url: `${SITE_URL}/` },
+    { name: "Team", url: `${SITE_URL}/team/` },
+    { name: staff.name, url: `${SITE_URL}/team/${staff.slug}/` },
+  ]}
+>
+  <SiteHeader client:load />
+  <MobileTopBar client:load />
+
+  <main>
+    <StaffProfileDetail staff={staff} client:load />
+  </main>
+
+  <Footer client:idle />
+
+  <ToastViewport client:load />
+  <MobileBottomBar client:idle />
+  <BookingDrawer client:idle />
+  <CartDrawer client:idle />
+  <ProductDrawer client:idle />
+  <StickySlotPeek client:idle />
+</RootLayout>
