@@ -287,20 +287,17 @@ export function PortfolioGallery() {
                                 }
                             }}
                         >
-                            <motion.div
-                                layoutId={`pgrid-${filtered[lightboxIdx].path}`}
-                                className="relative mx-auto max-w-3xl max-h-[80vh] flex items-center justify-center"
-                            >
-                                <SmartImage
+                            <div className="relative w-full flex items-center justify-center">
+                                <img
                                     src={portfolioImageUrl(filtered[lightboxIdx].path, { width: 1600, quality: 82, format: "webp" })}
                                     srcSet={portfolioImageSrcset(filtered[lightboxIdx].path, 82)}
                                     sizes="(min-width: 1024px) 80vw, 100vw"
                                     alt={filtered[lightboxIdx].alt}
-                                    eager
-                                    natural
-                                    className="max-h-[80vh] w-auto"
+                                    loading="eager"
+                                    decoding="async"
+                                    className="block max-w-full max-h-[78vh] w-auto h-auto object-contain rounded-[var(--radius-md)]"
                                 />
-                            </motion.div>
+                            </div>
                             <div className="text-center mt-4">
                                 <span className="text-[10px] uppercase tracking-[0.3em] text-accent-warm font-body font-semibold">
                                     {filtered[lightboxIdx].tag} · {lightboxIdx + 1} / {filtered.length}

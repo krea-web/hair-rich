@@ -199,15 +199,15 @@ export function GallerySection() {
                             exit={{ opacity: 0, scale: 0.95 }}
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <div className="relative mx-auto max-w-3xl max-h-[85vh] flex items-center justify-center">
-                                <SmartImage
+                            <div className="relative w-full flex items-center justify-center">
+                                <img
                                     src={portfolioImageUrl(lightbox.path, { width: 1600, quality: 82, format: "webp" })}
                                     srcSet={portfolioImageSrcset(lightbox.path, 82)}
                                     sizes="(min-width: 1024px) 80vw, 100vw"
                                     alt={lightbox.alt}
-                                    eager
-                                    natural
-                                    className="max-h-[85vh] w-auto"
+                                    loading="eager"
+                                    decoding="async"
+                                    className="block max-w-full max-h-[80vh] w-auto h-auto object-contain rounded-[var(--radius-md)]"
                                 />
                             </div>
                             <div className="text-center mt-4">

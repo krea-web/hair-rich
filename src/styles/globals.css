@@ -47,7 +47,11 @@ body {
   color: var(--warm-white);
   font-family: var(--font-body);
   min-height: 100dvh;
-  overflow-x: hidden;
+  /* `overflow-x: hidden` su body crea un containing block che NEUTRALIZZA
+     position: sticky in tutti i discendenti (bug documentato in Chromium
+     e Safari). `overflow-x: clip` ottiene lo stesso effetto visivo
+     senza creare il formatting context. Richiede browser 2022+. */
+  overflow-x: clip;
 }
 
 /* ── Selection ─────────────────────────────────────────────────────────────── */

@@ -220,9 +220,7 @@ export function ShopHero() {
                                         visible: { opacity: 1, y: 0 },
                                     }}
                                     href={c.href}
-                                    className={`group relative aspect-square rounded-[var(--radius-md)] border border-line bg-gradient-to-br from-carbon to-black-2 overflow-hidden flex flex-col items-start justify-between p-4 md:p-5 hover:border-accent-warm/40 transition-colors ${
-                                        i === 0 || i === 3 ? "lg:translate-y-6" : ""
-                                    }`}
+                                    className="group relative aspect-square rounded-[var(--radius-md)] border border-line bg-gradient-to-br from-carbon to-black-2 overflow-hidden flex flex-col items-start justify-between p-4 md:p-5 hover:border-accent-warm/40 transition-colors"
                                 >
                                     {/* Big watermark numeral behind */}
                                     <span

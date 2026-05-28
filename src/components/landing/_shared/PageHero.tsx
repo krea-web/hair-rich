@@ -58,7 +58,7 @@ export function PageHero({
             {/* Editorial wordmark on the watermark layer */}
             <div
                 aria-hidden="true"
-                className="absolute -top-12 md:-top-16 -left-4 md:-left-6 text-display-alt text-[16vw] md:text-[18vw] text-warm-white/[0.025] leading-none pointer-events-none select-none"
+                className="absolute -top-12 md:-top-16 -left-4 md:-left-6 text-display-alt text-[16vw] md:text-[18vw] lg:text-[10vw] xl:text-[8.5vw] 2xl:text-[7.5vw] text-warm-white/[0.025] leading-none pointer-events-none select-none"
             >
                 {titleA}
             </div>
@@ -72,7 +72,7 @@ export function PageHero({
                     <span className="text-[10px] md:text-xs uppercase tracking-[0.5em] text-accent-warm font-body font-semibold">
                         {eyebrow}
                     </span>
-                    <h1 className="text-display text-4xl sm:text-5xl md:text-8xl lg:text-9xl text-warm-white tracking-tight mt-3 md:mt-6 leading-[0.95]">
+                    <h1 className="text-display text-4xl sm:text-5xl md:text-8xl lg:text-5xl xl:text-6xl 2xl:text-7xl text-warm-white tracking-tight mt-3 md:mt-6 leading-[0.95]">
                         {titleA}
                         {titleB && (
                             <>
