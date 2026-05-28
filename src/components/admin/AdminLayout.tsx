@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useClientPath, handleClientLink } from "@/lib/clientRouter";
 import { useAdminNotifyStore, useAdminInboxStore } from "@/lib/store";
 import { useBrand } from "@/lib/brand";
+import type { AdminRoleLevel } from "./AdminApp";
 
 const MAIN_MENU = [
     { href: "/admin", label: "Dashboard", icon: "svg-dash" },
@@ -20,6 +21,20 @@ const MAIN_MENU = [
     { href: "/admin/foto-risultati", label: "Foto risultato", icon: "svg-camera" },
     { href: "/admin/salute", label: "Salute sistema", icon: "svg-pulse" },
 ];
+
+// Voci accessibili dall'employee. Tutto il resto è owner/manager-only.
+// Allineate a EMPLOYEE_ALLOWED in AdminApp.tsx — duplica la lista per non
+// importare cross-file in una direzione che creerebbe cicli, ma le due
+// liste devono restare in sync. Tipa stretto per evitare drift.
+const EMPLOYEE_VOICES: ReadonlySet<string> = new Set([
+    "/admin",
+    "/admin/agenda",
+    "/admin/agenda-week",
+    "/admin/chiusure",
+    "/admin/clienti",
+    "/admin/clienti-cerca",
+    "/admin/foto-risultati",
+]);
 
 const SETTINGS_MENU = [
     { href: "/admin/servizi", label: "Servizi" },
@@ -40,13 +55,17 @@ const SETTINGS_MENU = [
     { href: "/admin/impostazioni", label: "Impostazioni Salone" },
 ];
 
-export function AdminLayout({ children }: { children: ReactNode }) {
+export function AdminLayout({ children, role = "owner" }: { children: ReactNode; role?: AdminRoleLevel }) {
     const pathname = useClientPath();
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const newBookingsCount = useAdminNotifyStore((s) => s.newBookingsCount);
     const markSeen = useAdminNotifyStore((s) => s.markSeen);
     const inboxUnreadCount = useAdminInboxStore((s) => s.unreadCount);
     const { brand } = useBrand();
+
+    const isEmployee = role === "staff";
+    const visibleMain = isEmployee ? MAIN_MENU.filter((m) => EMPLOYEE_VOICES.has(m.href)) : MAIN_MENU;
+    const visibleSettings = isEmployee ? [] : SETTINGS_MENU;
 
     useEffect(() => {
         // Visiting the agenda clears the unseen-new-bookings counter.
@@ -187,7 +206,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                             <div>
                                 <div className="px-3 mb-2 text-xs font-semibold text-silver-dark uppercase tracking-wider">Principale</div>
                                 <nav className="space-y-0.5">
-                                    {MAIN_MENU.map((item) => {
+                                    {visibleMain.map((item) => {
                                         const active = pathname === item.href;
                                         const agendaBadge = item.href === "/admin/agenda" && newBookingsCount > 0;
                                         const inboxBadge = item.href === "/admin/inbox" && inboxUnreadCount > 0;
@@ -212,10 +231,11 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                                 </nav>
                             </div>
 
+                            {visibleSettings.length > 0 && (
                             <div>
                                 <div className="px-3 mb-2 text-xs font-semibold text-silver-dark uppercase tracking-wider">Gestione</div>
                                 <nav className="space-y-0.5">
-                                    {SETTINGS_MENU.map((item) => {
+                                    {visibleSettings.map((item) => {
                                         const active = pathname.startsWith(item.href);
                                         return (
                                             <a
@@ -237,6 +257,16 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                                     })}
                                 </nav>
                             </div>
+                            )}
+
+                            {isEmployee && (
+                                <div className="px-3 py-3 text-xs text-silver-dark border border-line rounded-[var(--radius-sm)] bg-black-2/40 leading-snug">
+                                    <div className="font-body font-semibold text-warm-white mb-1 uppercase tracking-[0.2em] text-[10px]">
+                                        Vista dipendente
+                                    </div>
+                                    Le impostazioni del salone e i pannelli di marketing/contabilità sono accessibili solo al titolare.
+                                </div>
+                            )}
                         </div>
 
                         <div className="p-3 mt-auto">
