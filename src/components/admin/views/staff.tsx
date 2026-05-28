@@ -6,6 +6,20 @@ import { createClient } from "@/lib/supabase/client";
 import { useToastStore } from "@/lib/store";
 import { persistSortOrder } from "@/lib/sortOrder";
 
+interface StaffQa {
+    q: string;
+    a: string;
+}
+
+type StaffRoleType =
+    | "founder"
+    | "co_founder"
+    | "master_barber"
+    | "barber"
+    | "apprentice"
+    | "receptionist"
+    | "employee";
+
 interface StaffRow {
     id: string;
     slug: string;
@@ -14,7 +28,27 @@ interface StaffRow {
     bio: string | null;
     is_active: boolean;
     sort_order: number;
+    role_type: StaffRoleType;
+    tagline: string | null;
+    years_active: string | null;
+    expertise: string[];
+    signature: string | null;
+    full_bio: string | null;
+    qa: StaffQa[];
+    instagram_handle: string | null;
+    cover_url: string | null;
+    show_on_team_page: boolean;
 }
+
+const ROLE_TYPE_OPTIONS: { value: StaffRoleType; label: string }[] = [
+    { value: "founder", label: "Founder / Titolare" },
+    { value: "co_founder", label: "Co-founder" },
+    { value: "master_barber", label: "Master barber" },
+    { value: "barber", label: "Barber" },
+    { value: "apprentice", label: "Apprendista" },
+    { value: "receptionist", label: "Reception" },
+    { value: "employee", label: "Dipendente" },
+];
 
 interface StaffStats {
     nextAppt: string | null;
@@ -27,6 +61,7 @@ export default function AdminStaffPage() {
     const [loading, setLoading] = useState(true);
     const [savingId, setSavingId] = useState<string | null>(null);
     const [hoursEditor, setHoursEditor] = useState<{ id: string; name: string } | null>(null);
+    const [profileEditor, setProfileEditor] = useState<StaffRow | null>(null);
     const addToast = useToastStore((s) => s.addToast);
 
     const load = useCallback(async () => {
@@ -218,8 +253,23 @@ export default function AdminStaffPage() {
                                                 {s.is_active ? "Disponibile per il booking" : "Sospeso"}
                                             </span>
                                             <button
-                                                onClick={() => setHoursEditor({ id: s.id, name: s.name })}
+                                                onClick={() => setProfileEditor(s)}
                                                 className="ml-auto text-[10px] uppercase tracking-[0.25em] text-accent-warm hover:text-warm-white font-body font-semibold border border-accent-warm/40 rounded-full px-3 py-1.5 transition-colors"
+                                            >
+                                                Profilo pubblico
+                                            </button>
+                                            <a
+                                                href={`/team/${s.slug}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                title="Apri la pagina pubblica in una nuova scheda"
+                                                className="text-[10px] uppercase tracking-[0.25em] text-silver-dark hover:text-warm-white font-body font-semibold border border-line rounded-full px-3 py-1.5 transition-colors"
+                                            >
+                                                Vedi online ↗
+                                            </a>
+                                            <button
+                                                onClick={() => setHoursEditor({ id: s.id, name: s.name })}
+                                                className="text-[10px] uppercase tracking-[0.25em] text-silver-dark hover:text-warm-white font-body font-semibold border border-line rounded-full px-3 py-1.5 transition-colors"
                                             >
                                                 Orari settimana
                                             </button>
@@ -281,6 +331,16 @@ export default function AdminStaffPage() {
                         staffId={hoursEditor.id}
                         staffName={hoursEditor.name}
                         onClose={() => setHoursEditor(null)}
+                    />
+                )}
+                {profileEditor && (
+                    <PublicProfileModal
+                        staff={profileEditor}
+                        onClose={() => setProfileEditor(null)}
+                        onSaved={(patch) => {
+                            setStaff((rows) => rows.map((r) => (r.id === profileEditor.id ? { ...r, ...patch } : r)));
+                            setProfileEditor(null);
+                        }}
                     />
                 )}
             </AnimatePresence>
@@ -587,6 +647,356 @@ function RoleCell({
             }}
             className="w-56 bg-black-2 border border-accent-warm/40 rounded-full px-3 py-1 text-sm text-warm-white"
         />
+    );
+}
+
+function PublicProfileModal({
+    staff,
+    onClose,
+    onSaved,
+}: {
+    staff: StaffRow;
+    onClose: () => void;
+    onSaved: (patch: Partial<StaffRow>) => void;
+}) {
+    const [roleType, setRoleType] = useState<StaffRoleType>(staff.role_type);
+    const [tagline, setTagline] = useState(staff.tagline ?? "");
+    const [yearsActive, setYearsActive] = useState(staff.years_active ?? "");
+    const [signature, setSignature] = useState(staff.signature ?? "");
+    const [fullBio, setFullBio] = useState(staff.full_bio ?? "");
+    const [instagram, setInstagram] = useState(staff.instagram_handle ?? "");
+    const [coverUrl, setCoverUrl] = useState(staff.cover_url ?? "");
+    const [showOnTeam, setShowOnTeam] = useState(staff.show_on_team_page);
+    const [expertise, setExpertise] = useState<string[]>(staff.expertise ?? []);
+    const [expertiseDraft, setExpertiseDraft] = useState("");
+    const [qa, setQa] = useState<StaffQa[]>(staff.qa ?? []);
+    const [saving, setSaving] = useState(false);
+    const addToast = useToastStore((s) => s.addToast);
+
+    const addExpertise = () => {
+        const v = expertiseDraft.trim();
+        if (!v) return;
+        if (expertise.includes(v)) {
+            setExpertiseDraft("");
+            return;
+        }
+        setExpertise([...expertise, v]);
+        setExpertiseDraft("");
+    };
+
+    const removeExpertise = (idx: number) => {
+        setExpertise(expertise.filter((_, i) => i !== idx));
+    };
+
+    const addQa = () => {
+        setQa([...qa, { q: "", a: "" }]);
+    };
+
+    const updateQa = (idx: number, field: "q" | "a", value: string) => {
+        setQa(qa.map((item, i) => (i === idx ? { ...item, [field]: value } : item)));
+    };
+
+    const removeQa = (idx: number) => {
+        setQa(qa.filter((_, i) => i !== idx));
+    };
+
+    const save = async () => {
+        if (saving) return;
+        setSaving(true);
+        const patch: Partial<StaffRow> = {
+            role_type: roleType,
+            tagline: tagline.trim() || null,
+            years_active: yearsActive.trim() || null,
+            signature: signature.trim() || null,
+            full_bio: fullBio.trim() || null,
+            instagram_handle: instagram.trim().replace(/^@/, "") || null,
+            cover_url: coverUrl.trim() || null,
+            show_on_team_page: showOnTeam,
+            expertise: expertise.filter((e) => e.trim().length > 0),
+            qa: qa.filter((item) => item.q.trim() && item.a.trim()),
+        };
+        try {
+            const supabase = createClient();
+            const { error } = await supabase.from("staff").update(patch).eq("id", staff.id);
+            if (error) throw error;
+            addToast("Profilo pubblico aggiornato", "success");
+            onSaved(patch);
+        } catch (e: any) {
+            addToast(`Errore: ${e?.message ?? "?"}`, "error");
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+        >
+            <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-carbon border border-line rounded-[var(--radius-md)] p-6 max-w-2xl w-full max-h-[90dvh] overflow-y-auto space-y-6"
+            >
+                <div className="flex items-start justify-between gap-3 sticky top-0 -mt-6 -mx-6 px-6 pt-6 pb-3 bg-carbon border-b border-line z-10">
+                    <div>
+                        <span className="text-display-alt text-lg text-accent-warm">Profilo pubblico</span>
+                        <h3 className="text-display text-2xl text-warm-white tracking-tight">{staff.name}</h3>
+                        <p className="text-xs text-warm-white-muted mt-1">
+                            Questi campi alimentano <span className="text-accent-warm font-mono">/team/{staff.slug}</span> e
+                            la sezione di squadra in /team.
+                        </p>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="text-silver-dark hover:text-warm-white text-xl px-2 leading-none"
+                        aria-label="Chiudi"
+                    >
+                        ×
+                    </button>
+                </div>
+
+                {/* Visibilità + role_type */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-[10px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold mb-2">
+                            Ruolo (tier)
+                        </label>
+                        <select
+                            value={roleType}
+                            onChange={(e) => setRoleType(e.target.value as StaffRoleType)}
+                            className="w-full bg-black-2 border border-line rounded-[var(--radius-sm)] px-3 py-2 text-warm-white text-sm"
+                        >
+                            {ROLE_TYPE_OPTIONS.map((opt) => (
+                                <option key={opt.value} value={opt.value}>
+                                    {opt.label}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-[10px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold mb-2">
+                            Anni in salone
+                        </label>
+                        <input
+                            type="text"
+                            value={yearsActive}
+                            onChange={(e) => setYearsActive(e.target.value)}
+                            placeholder="Es. Dal 2017"
+                            className="w-full bg-black-2 border border-line rounded-[var(--radius-sm)] px-3 py-2 text-warm-white text-sm"
+                        />
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-3 p-3 bg-black-2 border border-line rounded-[var(--radius-sm)]">
+                    <button
+                        role="switch"
+                        aria-checked={showOnTeam}
+                        onClick={() => setShowOnTeam(!showOnTeam)}
+                        className={`relative inline-flex h-6 w-11 rounded-full transition-colors ${
+                            showOnTeam ? "bg-accent-warm" : "bg-line"
+                        }`}
+                    >
+                        <span
+                            className={`absolute top-0.5 w-5 h-5 rounded-full bg-black transition-transform ${
+                                showOnTeam ? "translate-x-5" : "translate-x-0.5"
+                            }`}
+                        />
+                    </button>
+                    <span className="text-xs text-warm-white">
+                        {showOnTeam ? "Visibile su /team e /team/" + staff.slug : "Nascosto dalla pagina pubblica"}
+                    </span>
+                </div>
+
+                {/* Tagline */}
+                <div>
+                    <label className="block text-[10px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold mb-2">
+                        Tagline / Motto (1 riga)
+                    </label>
+                    <input
+                        type="text"
+                        value={tagline}
+                        onChange={(e) => setTagline(e.target.value)}
+                        placeholder="Es. Un taglio non si esegue, si costruisce."
+                        className="w-full bg-black-2 border border-line rounded-[var(--radius-sm)] px-3 py-2 text-warm-white text-sm"
+                    />
+                </div>
+
+                {/* Bio */}
+                <div>
+                    <label className="block text-[10px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold mb-2">
+                        Bio completa
+                    </label>
+                    <textarea
+                        value={fullBio}
+                        onChange={(e) => setFullBio(e.target.value)}
+                        rows={5}
+                        placeholder="Storia + formazione + cosa distingue questa persona."
+                        className="w-full bg-black-2 border border-line rounded-[var(--radius-sm)] px-3 py-2 text-warm-white text-sm leading-relaxed resize-y"
+                    />
+                </div>
+
+                {/* Expertise */}
+                <div>
+                    <label className="block text-[10px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold mb-2">
+                        Specializzazioni
+                    </label>
+                    <div className="flex flex-wrap gap-2 mb-2">
+                        {expertise.map((ex, i) => (
+                            <span
+                                key={`${ex}-${i}`}
+                                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-line text-warm-white text-xs font-body bg-black-2"
+                            >
+                                {ex}
+                                <button
+                                    onClick={() => removeExpertise(i)}
+                                    className="text-silver-dark hover:text-error transition-colors"
+                                    aria-label={`Rimuovi ${ex}`}
+                                >
+                                    ×
+                                </button>
+                            </span>
+                        ))}
+                    </div>
+                    <div className="flex gap-2">
+                        <input
+                            type="text"
+                            value={expertiseDraft}
+                            onChange={(e) => setExpertiseDraft(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    addExpertise();
+                                }
+                            }}
+                            placeholder="Es. Fade chirurgico"
+                            className="flex-1 bg-black-2 border border-line rounded-[var(--radius-sm)] px-3 py-2 text-warm-white text-sm"
+                        />
+                        <button
+                            onClick={addExpertise}
+                            disabled={!expertiseDraft.trim()}
+                            className="px-4 py-2 bg-accent-warm text-black rounded-[var(--radius-sm)] text-[10px] uppercase tracking-[0.25em] font-body font-semibold disabled:opacity-40"
+                        >
+                            Aggiungi
+                        </button>
+                    </div>
+                </div>
+
+                {/* Signature */}
+                <div>
+                    <label className="block text-[10px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold mb-2">
+                        Cavallo di battaglia
+                    </label>
+                    <input
+                        type="text"
+                        value={signature}
+                        onChange={(e) => setSignature(e.target.value)}
+                        placeholder="Es. Razor cut con fade graduato"
+                        className="w-full bg-black-2 border border-line rounded-[var(--radius-sm)] px-3 py-2 text-warm-white text-sm"
+                    />
+                </div>
+
+                {/* Q&A */}
+                <div>
+                    <div className="flex items-center justify-between mb-3">
+                        <label className="block text-[10px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold">
+                            Domande & risposte ({qa.length})
+                        </label>
+                        <button
+                            onClick={addQa}
+                            className="text-[10px] uppercase tracking-[0.25em] text-accent-warm hover:text-warm-white font-body font-semibold"
+                        >
+                            + Nuova domanda
+                        </button>
+                    </div>
+                    <div className="space-y-4">
+                        {qa.length === 0 && (
+                            <p className="text-xs text-silver-dark italic">
+                                Nessuna domanda. Aggiungine 3-4 brevi per dare personalità al profilo.
+                            </p>
+                        )}
+                        {qa.map((item, i) => (
+                            <div key={i} className="p-3 bg-black-2 border border-line rounded-[var(--radius-sm)] space-y-2">
+                                <div className="flex items-start gap-2">
+                                    <input
+                                        type="text"
+                                        value={item.q}
+                                        onChange={(e) => updateQa(i, "q", e.target.value)}
+                                        placeholder="Domanda"
+                                        className="flex-1 bg-black border border-line rounded-[var(--radius-sm)] px-3 py-2 text-warm-white text-sm font-body font-semibold"
+                                    />
+                                    <button
+                                        onClick={() => removeQa(i)}
+                                        className="text-silver-dark hover:text-error transition-colors px-2 py-1"
+                                        aria-label="Rimuovi"
+                                    >
+                                        ×
+                                    </button>
+                                </div>
+                                <textarea
+                                    value={item.a}
+                                    onChange={(e) => updateQa(i, "a", e.target.value)}
+                                    placeholder="Risposta"
+                                    rows={2}
+                                    className="w-full bg-black border border-line rounded-[var(--radius-sm)] px-3 py-2 text-warm-white-muted text-sm leading-relaxed resize-y"
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Instagram + cover */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-[10px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold mb-2">
+                            Instagram (handle)
+                        </label>
+                        <input
+                            type="text"
+                            value={instagram}
+                            onChange={(e) => setInstagram(e.target.value)}
+                            placeholder="federico.barber"
+                            className="w-full bg-black-2 border border-line rounded-[var(--radius-sm)] px-3 py-2 text-warm-white text-sm"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-[10px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold mb-2">
+                            Cover (path o URL)
+                        </label>
+                        <input
+                            type="text"
+                            value={coverUrl}
+                            onChange={(e) => setCoverUrl(e.target.value)}
+                            placeholder="federico-cover.webp o https://…"
+                            className="w-full bg-black-2 border border-line rounded-[var(--radius-sm)] px-3 py-2 text-warm-white text-sm"
+                        />
+                    </div>
+                </div>
+
+                {/* Footer actions */}
+                <div className="flex justify-end gap-2 pt-4 border-t border-line sticky bottom-0 -mb-6 -mx-6 px-6 pb-6 bg-carbon">
+                    <button
+                        onClick={onClose}
+                        disabled={saving}
+                        className="px-4 py-2 border border-line text-warm-white rounded-full text-[10px] uppercase tracking-[0.25em]"
+                    >
+                        Annulla
+                    </button>
+                    <button
+                        onClick={save}
+                        disabled={saving}
+                        className="px-6 py-2.5 bg-accent-warm text-black rounded-full text-[11px] uppercase tracking-[0.25em] font-body font-semibold disabled:opacity-50"
+                    >
+                        {saving ? "Salvataggio…" : "Salva profilo pubblico"}
+                    </button>
+                </div>
+            </motion.div>
+        </motion.div>
     );
 }
 
