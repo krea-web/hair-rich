@@ -75,12 +75,8 @@ export function TeamShowcase() {
                             const fullBio = member.full_bio ?? member.bio ?? "";
                             const roleLabel = ROLE_TYPE_LABEL[member.role_type] ?? member.role;
                             return (
-                                <motion.article
+                                <article
                                     key={member.id}
-                                    initial={{ opacity: 0, y: 40 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true, margin: "-100px" }}
-                                    transition={{ duration: 0.7 }}
                                     className={`grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 items-start ${
                                         i % 2 === 1 ? "lg:[direction:rtl] [&>*]:[direction:ltr]" : ""
                                     }`}
@@ -233,7 +229,7 @@ export function TeamShowcase() {
                                             </div>
                                         )}
                                     </div>
-                                </motion.article>
+                                </article>
                             );
                         })}
                     </div>

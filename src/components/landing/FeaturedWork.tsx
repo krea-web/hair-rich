@@ -1,8 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { portfolioImageSrcset, portfolioImageUrl } from "@/lib/supabase/queries";
-import { SmartImage } from "./_shared/SmartImage";
 
 interface Props {
     /** storage_path inside the portfolio bucket */
@@ -24,24 +22,19 @@ export function FeaturedWork({ image, badge, title, subtitle, body, meta }: Prop
     return (
         <section className="relative bg-black overflow-hidden">
             <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 pt-16 md:pt-20 lg:pt-24 xl:pt-28 2xl:pt-32 pb-12 md:pb-16 lg:pb-20 xl:pb-24 2xl:pb-36">
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-50px" }}
-                    transition={{ duration: 0.7 }}
-                    className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-16 items-end"
-                >
-                    {/* Photo — natural aspect, no crop. The card grows to the
-                        image's intrinsic ratio so the subject is preserved. */}
-                    <div className="lg:col-span-7 relative">
-                        <div className="relative rounded-[var(--radius-md)] overflow-hidden border border-line">
-                            <SmartImage
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-16 items-center">
+                    {/* Foto SX — aspect fisso + max-h su PC così sta in
+                        viewport. Niente più `natural` height che ingigantiva. */}
+                    <div className="lg:col-span-6 relative">
+                        <div className="relative aspect-[3/4] lg:aspect-[4/5] xl:aspect-[3/4] max-h-[520px] lg:max-h-[440px] xl:max-h-[500px] 2xl:max-h-[560px] mx-auto rounded-[var(--radius-md)] overflow-hidden border border-line">
+                            <img
                                 src={portfolioImageUrl(image, { width: 1400, quality: 82, format: "webp" })}
                                 srcSet={portfolioImageSrcset(image, 82)}
-                                sizes="(min-width: 1024px) 58vw, 100vw"
+                                sizes="(min-width: 1024px) 48vw, 100vw"
                                 alt={title}
-                                eager
-                                natural
+                                loading="eager"
+                                decoding="async"
+                                className="absolute inset-0 w-full h-full object-cover"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
 
@@ -56,17 +49,17 @@ export function FeaturedWork({ image, badge, title, subtitle, body, meta }: Prop
                         </div>
                     </div>
 
-                    {/* Body */}
-                    <div className="lg:col-span-5 lg:pb-10">
+                    {/* Body DX */}
+                    <div className="lg:col-span-6">
                         {subtitle && (
                             <span className="text-[10px] uppercase tracking-[0.5em] text-accent-warm font-body font-semibold">
                                 {subtitle}
                             </span>
                         )}
-                        <h2 className="text-display text-3xl md:text-5xl text-warm-white tracking-tight mt-3 leading-[1.05]">
+                        <h2 className="text-display text-3xl md:text-5xl lg:text-4xl xl:text-5xl 2xl:text-5xl text-warm-white tracking-tight mt-3 leading-[1.05]">
                             {title}
                         </h2>
-                        <p className="mt-5 text-warm-white-muted text-base md:text-lg leading-relaxed">
+                        <p className="mt-5 text-warm-white-muted text-base md:text-lg lg:text-base xl:text-lg leading-relaxed max-w-xl">
                             {body}
                         </p>
 
@@ -85,7 +78,7 @@ export function FeaturedWork({ image, badge, title, subtitle, body, meta }: Prop
                             </dl>
                         )}
                     </div>
-                </motion.div>
+                </div>
             </div>
         </section>
     );
