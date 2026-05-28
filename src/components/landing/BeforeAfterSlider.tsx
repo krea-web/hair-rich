@@ -32,7 +32,7 @@ export function BeforeAfterSlider({ pair = REAL_PAIR }: Props) {
                     <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
                         Trasformazione
                     </span>
-                    <h2 className="text-display text-4xl md:text-6xl text-warm-white tracking-tight mt-3 leading-[1.05]">
+                    <h2 className="text-display text-4xl md:text-6xl lg:text-5xl xl:text-5xl 2xl:text-6xl text-warm-white tracking-tight mt-3 leading-[1.05]">
                         Prima e dopo, senza filtri.
                     </h2>
                     <p className="mt-5 text-warm-white-muted text-base md:text-lg leading-relaxed">

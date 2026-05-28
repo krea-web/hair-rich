@@ -32,7 +32,7 @@ export function PortfolioHero() {
                         <span className="text-[10px] md:text-xs uppercase tracking-[0.5em] text-accent-warm font-body font-semibold">
                             Contact sheet · 2024–2026
                         </span>
-                        <h1 className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-[7rem] text-warm-white tracking-tight mt-3 md:mt-5 leading-[0.92]">
+                        <h1 className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-7xl xl:text-[5.5rem] 2xl:text-[6rem] text-warm-white tracking-tight mt-3 md:mt-5 leading-[0.92]">
                             Tagli che
                             <br />
                             hanno{" "}

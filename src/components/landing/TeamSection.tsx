@@ -40,7 +40,7 @@ export function TeamSection() {
                         viewport={{ once: true, margin: "-80px" }}
                         transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
                     >
-                        <div className="relative aspect-[3/4] max-h-[640px] lg:max-h-[720px] xl:max-h-[800px] 2xl:max-h-[880px] mx-auto">
+                        <div className="relative aspect-[3/4] max-h-[640px] lg:max-h-[500px] xl:max-h-[560px] 2xl:max-h-[620px] mx-auto">
                             <SmartImage
                                 src={assetImageUrl(FEATURED_IMG, { width: 1200, quality: 82, format: "webp" })}
                                 srcSet={assetImageSrcset(FEATURED_IMG, 82)}
@@ -78,7 +78,7 @@ export function TeamSection() {
                             {FEATURED.role}
                         </motion.span>
                         <motion.h3
-                            className="text-display text-4xl md:text-6xl text-warm-white mt-2 leading-[0.95]"
+                            className="text-display text-4xl md:text-6xl lg:text-5xl xl:text-5xl text-warm-white mt-2 leading-[0.95]"
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
@@ -144,7 +144,7 @@ export function TeamSection() {
                                 {m.role}
                             </motion.span>
                             <motion.h3
-                                className="text-display text-4xl md:text-6xl text-warm-white mt-2 leading-[0.95]"
+                                className="text-display text-4xl md:text-6xl lg:text-5xl xl:text-5xl text-warm-white mt-2 leading-[0.95]"
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
@@ -199,7 +199,7 @@ export function TeamSection() {
                             viewport={{ once: true, margin: "-80px" }}
                             transition={{ duration: 1, delay: i * 0.1, ease: [0.25, 0.1, 0.25, 1] }}
                         >
-                            <div className="relative aspect-[3/4] max-h-[520px] lg:max-h-[580px] xl:max-h-[640px]">
+                            <div className="relative aspect-[3/4] max-h-[520px] lg:max-h-[460px] xl:max-h-[520px] 2xl:max-h-[580px]">
                                 <SmartImage
                                     src={assetImageUrl(m.img, { width: 1200, quality: 82, format: "webp" })}
                                     srcSet={assetImageSrcset(m.img, 82)}

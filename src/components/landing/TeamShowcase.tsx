@@ -49,7 +49,7 @@ export function TeamShowcase() {
                     <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
                         Master barber
                     </span>
-                    <h2 className="text-display text-4xl md:text-6xl text-warm-white tracking-tight mt-3 leading-[1.05]">
+                    <h2 className="text-display text-4xl md:text-6xl lg:text-5xl xl:text-5xl 2xl:text-6xl text-warm-white tracking-tight mt-3 leading-[1.05]">
                         Mani diverse, standard condiviso.
                     </h2>
                     <p className="mt-5 text-warm-white-muted text-base md:text-lg leading-relaxed">
@@ -85,7 +85,9 @@ export function TeamShowcase() {
                                         i % 2 === 1 ? "lg:[direction:rtl] [&>*]:[direction:ltr]" : ""
                                     }`}
                                 >
-                                    {/* Portrait + role badge */}
+                                    {/* Portrait + role badge — aspect più verticale su PC
+                                        per allungare il container foto e dare scroll-room
+                                        al testo sticky a destra. */}
                                     <div className="lg:col-span-5">
                                         <a
                                             href={`/team/${member.slug}`}
@@ -93,7 +95,7 @@ export function TeamShowcase() {
                                             aria-label={`Scopri ${member.name}`}
                                             className="block group"
                                         >
-                                            <div className="relative aspect-[4/5] rounded-[var(--radius-md)] border border-line bg-gradient-to-br from-carbon to-black-2 overflow-hidden">
+                                            <div className="relative aspect-[4/5] lg:aspect-[3/4] xl:aspect-[2/3] rounded-[var(--radius-md)] border border-line bg-gradient-to-br from-carbon to-black-2 overflow-hidden">
                                                 {member.avatar_url ? (
                                                     <img
                                                         src={
@@ -141,7 +143,7 @@ export function TeamShowcase() {
                                         <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
                                             {roleLabel}
                                         </span>
-                                        <h3 className="text-display text-3xl md:text-5xl text-warm-white tracking-tight mt-2 leading-[1.05]">
+                                        <h3 className="text-display text-3xl md:text-5xl lg:text-4xl xl:text-4xl 2xl:text-5xl text-warm-white tracking-tight mt-2 leading-[1.05]">
                                             <a
                                                 href={`/team/${member.slug}`}
                                                 onClick={handleClientLink}

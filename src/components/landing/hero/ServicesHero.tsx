@@ -56,7 +56,7 @@ export function ServicesHero() {
                     initial={{ opacity: 0, y: 24 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.9, ease: [0.25, 0.1, 0.25, 1], delay: 0.2 }}
-                    className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-[6rem] text-warm-white tracking-tight leading-[0.92] max-w-3xl"
+                    className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-6xl xl:text-7xl 2xl:text-[5rem] text-warm-white tracking-tight leading-[0.92] max-w-3xl"
                 >
                     Tre servizi.
                     <br />

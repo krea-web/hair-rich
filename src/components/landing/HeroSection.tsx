@@ -46,7 +46,7 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
                 {["BARBER", "STUDIO"].map((word, i) => (
                     <motion.span
                         key={word}
-                        className="block text-[13vw] md:text-[8.5vw] lg:text-[7.5vw] xl:text-[6.5vw] 2xl:text-[6vw]"
+                        className="block text-[13vw] md:text-[8.5vw] lg:text-[6vw] xl:text-[5.2vw] 2xl:text-[4.8vw]"
                         variants={{
                             hidden: { opacity: 0, y: 60, clipPath: "inset(100% 0 0 0)" },
                             visible: {

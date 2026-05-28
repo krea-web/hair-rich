@@ -119,7 +119,7 @@ export function BookingHero() {
                                 Slot live · 365 giorni
                             </span>
                         </div>
-                        <h1 className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-warm-white tracking-tight leading-[0.95]">
+                        <h1 className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-6xl xl:text-7xl 2xl:text-8xl text-warm-white tracking-tight leading-[0.95]">
                             Prenota in
                             <br />
                             <em className="text-display-alt not-italic text-silver">

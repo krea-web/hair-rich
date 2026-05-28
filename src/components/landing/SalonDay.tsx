@@ -61,7 +61,7 @@ export function SalonDay() {
                     <span className="text-[10px] uppercase tracking-[0.5em] text-accent-warm font-body font-semibold">
                         Dietro le quinte
                     </span>
-                    <h2 className="text-display text-4xl md:text-6xl text-warm-white tracking-tight mt-4 leading-[1.05]">
+                    <h2 className="text-display text-4xl md:text-6xl lg:text-5xl xl:text-5xl 2xl:text-6xl text-warm-white tracking-tight mt-4 leading-[1.05]">
                         Una giornata<br />
                         <em className="text-display-alt not-italic text-silver">in salone.</em>
                     </h2>

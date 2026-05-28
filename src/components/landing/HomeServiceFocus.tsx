@@ -59,7 +59,7 @@ export function HomeServiceFocus() {
 
                     <h2
                         id="home-service-title"
-                        className="text-display text-4xl sm:text-5xl md:text-7xl text-warm-white tracking-tight mt-5 md:mt-7 leading-[0.95]"
+                        className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-6xl xl:text-6xl 2xl:text-7xl text-warm-white tracking-tight mt-5 md:mt-7 leading-[0.95]"
                     >
                         Taglio
                         <br />

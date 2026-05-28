@@ -135,7 +135,7 @@ export function ShopHero() {
                             </span>
                         </div>
 
-                        <h1 className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-[7rem] text-warm-white tracking-tight leading-[0.92]">
+                        <h1 className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-7xl xl:text-[5.5rem] 2xl:text-[6rem] text-warm-white tracking-tight leading-[0.92]">
                             Quello che usiamo
                             <br />
                             <em className="text-display-alt not-italic text-silver">
