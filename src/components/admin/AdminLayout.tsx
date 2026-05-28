@@ -139,13 +139,27 @@ export function AdminLayout({ children }: { children: ReactNode }) {
         <div className="flex h-[100dvh] bg-black text-warm-white selection:bg-carbon selection:text-warm-white overflow-hidden">
             <div className="lg:hidden fixed top-0 w-full h-14 bg-carbon border-b border-line flex items-center justify-between px-4 z-40">
                 <a href="/admin" onClick={handleClientLink} className="text-display text-sm tracking-[0.2em]">{brand.adminTitle}</a>
-                <button onClick={() => setSidebarOpen(!isSidebarOpen)} className="p-2">
-                    <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
-                        <line x1="3" y1="12" x2="21" y2="12" />
-                        <line x1="3" y1="6" x2="21" y2="6" />
-                        <line x1="3" y1="18" x2="21" y2="18" />
-                    </svg>
-                </button>
+                <div className="flex items-center gap-2">
+                    <a
+                        href="/"
+                        onClick={handleClientLink}
+                        aria-label="Torna al sito"
+                        className="inline-flex items-center gap-2 px-3 py-2 rounded-full border border-line text-silver hover:text-warm-white hover:border-warm-white active:scale-95 transition-all"
+                    >
+                        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h12a1 1 0 001-1V10" />
+                            <path d="M9 21V14h6v7" />
+                        </svg>
+                        <span className="text-[10px] uppercase tracking-[0.3em] font-body font-semibold">Sito</span>
+                    </a>
+                    <button onClick={() => setSidebarOpen(!isSidebarOpen)} className="p-2" aria-label="Apri menu">
+                        <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
+                            <line x1="3" y1="12" x2="21" y2="12" />
+                            <line x1="3" y1="6" x2="21" y2="6" />
+                            <line x1="3" y1="18" x2="21" y2="18" />
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <AnimatePresence>
@@ -226,14 +240,18 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                         </div>
 
                         <div className="p-3 mt-auto">
-                            <button className="flex items-center gap-3 px-3 py-2 w-full rounded-[var(--radius-sm)] text-sm text-silver hover:bg-carbon-2 transition-colors">
+                            <a
+                                href="/"
+                                onClick={closeAndNav}
+                                className="flex items-center gap-3 px-3 py-2 w-full rounded-[var(--radius-sm)] text-sm text-silver hover:bg-carbon-2 transition-colors"
+                            >
                                 <svg viewBox="0 0 24 24" className="w-4 h-4 text-silver-dark" fill="none" stroke="currentColor" strokeWidth="2">
                                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                                     <polyline points="16 17 21 12 16 7" />
                                     <line x1="21" y1="12" x2="9" y2="12" />
                                 </svg>
                                 Esci dall'Admin
-                            </button>
+                            </a>
                         </div>
                     </motion.aside>
                 )}

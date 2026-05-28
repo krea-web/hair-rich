@@ -3,8 +3,18 @@
 import type { ReactNode } from "react";
 import { useClientPath, handleClientLink } from "@/lib/clientRouter";
 import { Wordmark } from "@/components/landing/_shared/Wordmark";
+import { useSkillsConfig } from "@/lib/skills/useSkillsConfig";
 
-const NAV_ITEMS = [
+interface NavItem {
+    href: string;
+    label: string;
+    icon: ReactNode;
+    // If present, voice is shown only when AT LEAST ONE of these skill_keys
+    // is enabled in skills_config. Voices without `anySkill` are always shown.
+    anySkill?: string[];
+}
+
+const NAV_ITEMS: NavItem[] = [
     {
         href: "/profilo",
         label: "Dashboard",
@@ -47,6 +57,7 @@ const NAV_ITEMS = [
                 <path d="M9 12l2 2 4-4" />
             </svg>
         ),
+        anySkill: ["service_packages", "loyalty", "coupons"],
     },
     {
         href: "/profilo/referral",
@@ -57,6 +68,7 @@ const NAV_ITEMS = [
                 <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
             </svg>
         ),
+        anySkill: ["referrals"],
     },
     {
         href: "/profilo/impostazioni",
@@ -72,6 +84,17 @@ const NAV_ITEMS = [
 
 export function ProfiloLayout({ children }: { children: ReactNode }) {
     const pathname = useClientPath();
+    const { ready, anyActive } = useSkillsConfig();
+
+    const visibleItems = NAV_ITEMS.filter((item) => {
+        if (!item.anySkill) return true;
+        // Hide gated items until the first fetch resolves — avoids briefly
+        // showing entries that the customer would only see vanish a moment
+        // later. The cost is a small first-paint delay for those voices,
+        // which is acceptable for navigation that is otherwise stable.
+        if (!ready) return false;
+        return anyActive(item.anySkill);
+    });
 
     return (
         <div className="min-h-[100dvh] flex flex-col md:flex-row bg-black">
@@ -95,7 +118,7 @@ export function ProfiloLayout({ children }: { children: ReactNode }) {
                     </span>
 
                     <nav className="mt-8 space-y-1.5">
-                        {NAV_ITEMS.map((item) => {
+                        {visibleItems.map((item) => {
                             const isActive = pathname === item.href;
                             return (
                                 <a
@@ -139,9 +162,18 @@ export function ProfiloLayout({ children }: { children: ReactNode }) {
             </aside>
 
             {/* ── Mobile top bar ──────────────────────────────────────────── */}
-            <header className="md:hidden sticky top-0 z-30 bg-black/85 backdrop-blur-md border-b border-line h-14 flex items-center justify-between px-5">
-                <a href="/" onClick={handleClientLink}>
-                    <Wordmark variant="wordmark" size="sm" />
+            <header className="md:hidden sticky top-0 z-30 bg-black/85 backdrop-blur-md border-b border-line h-14 flex items-center justify-between px-4">
+                <a
+                    href="/"
+                    onClick={handleClientLink}
+                    aria-label="Torna al sito"
+                    className="inline-flex items-center gap-2 px-3 py-2 -ml-1 rounded-full border border-line text-warm-white active:scale-95 transition-transform"
+                >
+                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h12a1 1 0 001-1V10" />
+                        <path d="M9 21V14h6v7" />
+                    </svg>
+                    <span className="text-[10px] uppercase tracking-[0.3em] font-body font-semibold">Sito</span>
                 </a>
                 <span className="text-[10px] uppercase tracking-[0.3em] text-accent-warm font-body font-semibold">
                     Profilo
@@ -156,7 +188,7 @@ export function ProfiloLayout({ children }: { children: ReactNode }) {
             {/* ── Mobile Bottom Nav ──────────────────────────────────────── */}
             <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-xl border-t border-line safe-bottom">
                 <div className="flex items-center justify-around h-16">
-                    {NAV_ITEMS.map((item) => {
+                    {visibleItems.map((item) => {
                         const isActive = pathname === item.href;
                         return (
                             <a
