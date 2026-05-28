@@ -1,145 +1,79 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { fetchStaff } from "@/lib/supabase/queries";
-import type { Staff } from "@/lib/supabase/types";
-
-const TEAM_MANIFESTO = [
-    "Tre persone scelte a mano.",
-    "Stessi standard, lingue diverse.",
-    "Una sola testa alla volta.",
-];
+import { assetImageUrl, assetImageSrcset } from "@/lib/supabase/queries";
+import { Wordmark } from "../_shared/Wordmark";
 
 /**
- * "Cast portrait" hero for /team. Big stack of staff avatars (gradient
- * monograms while real photos remain unavailable) anchors the eye, with
- * a short editorial manifesto in three lines beside them. Reads more
- * like a film poster than a corporate "about us" banner.
+ * Editorial hero for /team. Full-bleed photo of the salon with the
+ * two barbers working, centred Wordmark on top, oversized "Team"
+ * setpiece below, single CTA. Designed to fit on a single PC viewport
+ * (no scroll before the showcase begins).
  */
 export function TeamHero() {
-    const [staff, setStaff] = useState<Staff[]>([]);
-
-    useEffect(() => {
-        let alive = true;
-        fetchStaff()
-            .then((rows) => {
-                if (alive) setStaff(rows.slice(0, 4));
-            })
-            .catch(() => {
-                /* fallback: render with empty list */
-            });
-        return () => {
-            alive = false;
-        };
-    }, []);
-
     return (
         <section className="relative bg-black overflow-hidden border-b border-line">
-            {/* Soft radial backdrop */}
-            <div
-                aria-hidden="true"
-                className="absolute inset-0 bg-[radial-gradient(ellipse_at_60%_30%,rgba(212,165,116,0.18),transparent_60%)]"
-            />
-
-            {/* Big EST. monogram top-left */}
-            <div
-                aria-hidden="true"
-                className="absolute left-2 md:left-8 top-16 md:top-12 text-display-alt text-[35vw] md:text-[16vw] text-warm-white/[0.04] leading-none pointer-events-none select-none"
-            >
-                Cast
+            {/* Background: salone with both barbers at work */}
+            <div className="absolute inset-0" aria-hidden="true">
+                <img
+                    src={assetImageUrl("salone-team-staff.webp", { width: 2000, quality: 78, format: "webp" })}
+                    srcSet={assetImageSrcset("salone-team-staff.webp", 78)}
+                    sizes="100vw"
+                    alt=""
+                    className="absolute inset-0 w-full h-full object-cover"
+                    loading="eager"
+                    decoding="async"
+                    fetchPriority="high"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/45 to-black/85" />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
             </div>
 
-            <div className="relative max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 pt-20 md:pt-24 lg:pt-28 xl:pt-32 2xl:pt-36 pb-12 md:pb-16 lg:pb-20 xl:pb-24 min-h-[70vh] md:min-h-[75vh] lg:min-h-[62vh] xl:min-h-[58vh] 2xl:min-h-[55vh]">
+            <div className="relative max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 pt-24 md:pt-28 lg:pt-32 pb-16 md:pb-20 lg:pb-24 min-h-[58vh] md:min-h-[62vh] lg:min-h-[55vh] xl:min-h-[52vh] 2xl:min-h-[50vh] flex flex-col items-center justify-center text-center">
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.9 }}
-                    className="text-center max-w-3xl mx-auto"
                 >
-                    <span className="text-[10px] md:text-xs uppercase tracking-[0.5em] text-accent-warm font-body font-semibold">
-                        Il team · Master barber
-                    </span>
-                    <h1 className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-warm-white tracking-tight mt-3 md:mt-5 leading-[0.95]">
-                        Mani che
-                        <br />
-                        <em className="text-display-alt not-italic text-silver">
-                            pensano insieme.
-                        </em>
-                    </h1>
+                    <Wordmark
+                        variant="wordmark"
+                        size="md"
+                        className="opacity-95 drop-shadow-[0_0_24px_rgba(212,165,116,0.35)]"
+                    />
                 </motion.div>
 
-                {/* Avatar row */}
-                <motion.div
-                    initial="hidden"
-                    animate="visible"
-                    variants={{
-                        hidden: {},
-                        visible: { transition: { staggerChildren: 0.12, delayChildren: 0.4 } },
-                    }}
-                    className="mt-10 md:mt-16 lg:mt-20 flex items-center justify-center gap-3 md:gap-6 lg:gap-10 xl:gap-14"
+                <motion.span
+                    className="mt-6 md:mt-8 text-[10px] md:text-xs uppercase tracking-[0.5em] text-accent-warm font-body font-semibold"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
                 >
-                    {(staff.length > 0
-                        ? staff
-                        : ([
-                              { id: "s1", name: "Federico", role: "Master barber" },
-                              { id: "s2", name: "Cristian", role: "Barber" },
-                              { id: "s3", name: "Marco", role: "Barber" },
-                          ] as any[])
-                    ).map((s, i) => (
-                        <motion.div
-                            key={s.id}
-                            variants={{
-                                hidden: { opacity: 0, y: 30, scale: 0.95 },
-                                visible: { opacity: 1, y: 0, scale: 1 },
-                            }}
-                            className="flex flex-col items-center"
-                            style={{ transform: `translateY(${i % 2 === 0 ? 0 : 12}px)` }}
-                        >
-                            <div className="relative w-20 h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full bg-gradient-to-br from-accent-warm/60 via-warning/30 to-black border border-accent-warm/40 flex items-center justify-center shadow-[0_8px_40px_-8px_rgba(212,165,116,0.45)]">
-                                <span className="text-display text-3xl md:text-5xl text-warm-white">
-                                    {s.name.charAt(0)}
-                                </span>
-                            </div>
-                            <span className="mt-3 text-warm-white font-body text-sm md:text-base font-semibold">
-                                {s.name}
-                            </span>
-                            <span className="text-[9px] md:text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
-                                {s.role}
-                            </span>
-                        </motion.div>
-                    ))}
-                </motion.div>
+                    Master barber · Olbia
+                </motion.span>
 
-                {/* Manifesto */}
-                <motion.ul
-                    initial="hidden"
-                    animate="visible"
-                    variants={{
-                        hidden: {},
-                        visible: { transition: { staggerChildren: 0.15, delayChildren: 0.9 } },
-                    }}
-                    className="mt-10 md:mt-16 text-center space-y-1.5 md:space-y-2"
+                <motion.h1
+                    className="mt-3 md:mt-4 text-display text-warm-white tracking-tight leading-[0.85] text-[20vw] md:text-[14vw] lg:text-[12vw] xl:text-[10.5vw] 2xl:text-[9.5vw]"
+                    initial={{ opacity: 0, y: 30, clipPath: "inset(40% 0 40% 0)" }}
+                    animate={{ opacity: 1, y: 0, clipPath: "inset(0 0 0 0)" }}
+                    transition={{ duration: 1.1, ease: [0.7, 0, 0.3, 1], delay: 0.35 }}
                 >
-                    {TEAM_MANIFESTO.map((line, i) => (
-                        <motion.li
-                            key={i}
-                            variants={{
-                                hidden: { opacity: 0, y: 8 },
-                                visible: { opacity: 1, y: 0 },
-                            }}
-                            className="text-warm-white-muted text-base md:text-xl font-body italic"
-                        >
-                            {line}
-                        </motion.li>
-                    ))}
-                </motion.ul>
+                    Team
+                </motion.h1>
+
+                <motion.p
+                    className="mt-6 md:mt-8 max-w-xl text-warm-white-muted text-sm md:text-base lg:text-lg leading-relaxed"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.65 }}
+                >
+                    Federico, Cristian e chi sta crescendo dietro la sedia. Ogni mano ha la sua firma, lo standard è uno.
+                </motion.p>
 
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ duration: 0.8, delay: 1.2 }}
-                    className="mt-10 md:mt-16 flex items-end justify-between gap-4"
+                    transition={{ duration: 0.8, delay: 0.85 }}
+                    className="mt-10 md:mt-12 flex items-end justify-between gap-4 w-full"
                 >
                     <span className="text-[10px] uppercase tracking-[0.4em] text-silver-dark font-body font-semibold">
                         Sul campo · Dal 2017

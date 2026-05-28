@@ -6,6 +6,7 @@ import { formatPrice } from "@/lib/format";
 import { handleClientLink } from "@/lib/clientRouter";
 import { BirthdayBanner } from "../_shared/BirthdayBanner";
 import { LoyaltyProgress } from "../_shared/LoyaltyProgress";
+import { FollowReviewCta } from "../_shared/FollowReviewCta";
 import { PushOptInPrompt } from "@/components/ui/PushOptInPrompt";
 import { fetchMyAppointmentsWithDetails, type AppointmentWithDetails } from "@/lib/supabase/queries";
 import { useCurrentCustomer } from "@/lib/supabase/me";
@@ -160,6 +161,7 @@ export default function ProfiloDashboardPage() {
                 <PushOptInPrompt />
                 <BirthdayBanner />
                 <LoyaltyProgress />
+                <FollowReviewCta />
             </div>
 
             {/* KPI strip — real */}

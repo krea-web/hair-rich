@@ -32,9 +32,9 @@ export function TeamSection() {
                 />
 
                 {/* ── Featured Master ────────────────────────────────────────── */}
-                <div className="mt-16 md:mt-20 lg:mt-24 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 lg:gap-20 xl:gap-24 items-end">
+                <div className="mt-16 md:mt-20 lg:mt-24 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 lg:gap-20 xl:gap-24 items-start">
                     <motion.div
-                        className="md:col-span-5 relative"
+                        className="md:col-span-5 relative md:sticky md:top-24 lg:top-28 self-start"
                         initial={{ opacity: 0, y: 40 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-80px" }}
@@ -130,7 +130,7 @@ export function TeamSection() {
                 {TEAM.map((m, i) => (
                     <div
                         key={m.name}
-                        className="mt-20 md:mt-32 lg:mt-40 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 lg:gap-20 xl:gap-24 items-end"
+                        className="mt-20 md:mt-32 lg:mt-40 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 lg:gap-20 xl:gap-24 items-start"
                     >
                         {/* Bio (sx) */}
                         <div className="md:col-span-7 md:order-1 md:pr-8 order-2">
@@ -193,7 +193,7 @@ export function TeamSection() {
 
                         {/* Image (dx, mirror del founder) */}
                         <motion.div
-                            className="md:col-span-5 md:order-2 relative order-1"
+                            className="md:col-span-5 md:order-2 relative order-1 md:sticky md:top-24 lg:top-28 self-start"
                             initial={{ opacity: 0, y: 40 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, margin: "-80px" }}

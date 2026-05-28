@@ -103,16 +103,18 @@ export function Footer() {
                 {/* Full-bleed storefront photo, darkened for legibility */}
                 <div className="absolute inset-0" aria-hidden="true">
                     <img
-                        src={assetImageUrl("salone-esterno.webp", { width: 1920, quality: 75, format: "webp" })}
-                        srcSet={assetImageSrcset("salone-esterno.webp", 75)}
+                        src={assetImageUrl("salone-esterno.webp", { width: 1920, quality: 78, format: "webp" })}
+                        srcSet={assetImageSrcset("salone-esterno.webp", 78)}
                         sizes="100vw"
                         alt=""
-                        className="absolute inset-0 w-full h-full object-cover"
+                        className="absolute inset-0 w-full h-full object-cover object-[center_25%]"
                         loading="lazy"
                         decoding="async"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/55" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-black/50" />
+                    {/* Lighter bottom-fade only — keeps the storefront sign legible
+                        while still landing the eye on the CTA button below. */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/20" />
                 </div>
 
                 {/* Decorative editorial watermark */}
