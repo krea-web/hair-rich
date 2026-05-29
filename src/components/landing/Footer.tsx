@@ -107,7 +107,7 @@ export function Footer() {
                         srcSet={assetImageSrcset("salone-esterno.webp", 78)}
                         sizes="100vw"
                         alt=""
-                        className="absolute inset-0 w-full h-full object-cover object-[center_55%]"
+                        className="absolute inset-0 w-full h-full object-cover object-[center_top]"
                         loading="lazy"
                         decoding="async"
                     />

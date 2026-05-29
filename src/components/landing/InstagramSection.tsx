@@ -103,18 +103,16 @@ export function InstagramSection() {
                             {shot.storage_path ? (
                                 <img
                                     src={portfolioImageUrl(shot.storage_path, {
-                                        width: 600,
-                                        height: 600,
-                                        resize: "cover",
-                                        quality: 78,
+                                        width: 800,
+                                        quality: 82,
                                         format: "webp",
                                     })}
-                                    srcSet={portfolioImageSrcset(shot.storage_path, 78)}
+                                    srcSet={portfolioImageSrcset(shot.storage_path, 82)}
                                     sizes="(min-width: 768px) 16vw, 33vw"
                                     alt={shot.alt_text ?? ""}
                                     loading="lazy"
                                     decoding="async"
-                                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-[var(--ease-cinema)] group-hover:scale-110 grayscale-[15%]"
+                                    className="absolute inset-0 w-full h-full object-contain bg-black transition-transform duration-700 ease-[var(--ease-cinema)] group-hover:scale-105"
                                 />
                             ) : (
                                 <div className="absolute inset-0 bg-gradient-to-br from-carbon to-black-2" />

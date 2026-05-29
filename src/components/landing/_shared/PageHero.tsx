@@ -45,7 +45,7 @@ export function PageHero({
                     <img
                         src={bucketImageUrl(bgImageBucket, bgImage, { width: 1920, quality: 75, format: "webp" })}
                         alt=""
-                        className="absolute inset-0 w-full h-full object-cover object-[center_45%] opacity-65 grayscale-[10%]"
+                        className="absolute inset-0 w-full h-full object-cover object-[center_top] opacity-65 grayscale-[10%]"
                         loading="eager"
                         fetchPriority="high"
                         decoding="async"

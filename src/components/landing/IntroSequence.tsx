@@ -105,16 +105,12 @@ export function IntroSequence() {
         };
     }, []);
 
-    // Source frames are per-frame cropped (script: scripts/crop-intro-
-    // frames.mjs). Each frame's natural height varies — it equals the
-    // vertical extent of the subject + a tiny bottom padding. The frame
-    // motion itself already encodes the scissors rising: every cropped
-    // frame places the subject slightly higher within its own bounding
-    // box than the previous one. We therefore center the scaled frame
-    // inside the canvas — on a landscape PC viewport this keeps the
-    // subject visually anchored rather than leaving an asymmetric black
-    // void below, while on a portrait phone viewport the subject already
-    // fills the canvas so the centering offset collapses to ~0.
+    // Drawing strategy: scale ogni frame in modo che riempia ESATTAMENTE
+    // la dimensione più vincolante del canvas (object-contain), poi
+    // centra orizzontalmente E verticalmente. Cosi' la forbice/rosa sta
+    // sempre al centro del canvas con i bordi che toccano i lati del
+    // viewport intro a seconda dell'aspect — niente piu' offset
+    // asimmetrico, niente piu' subject pinned a top.
     const drawFrame = (img?: HTMLImageElement) => {
         if (!img || !img.naturalWidth || !canvasRef.current) return;
         const canvas = canvasRef.current;
@@ -122,11 +118,14 @@ export function IntroSequence() {
         if (!ctx) return;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const scale = canvas.width / img.naturalWidth;
-        const w = canvas.width;
+        const scaleX = canvas.width / img.naturalWidth;
+        const scaleY = canvas.height / img.naturalHeight;
+        const scale = Math.min(scaleX, scaleY); // contain
+        const w = img.naturalWidth * scale;
         const h = img.naturalHeight * scale;
-        const y = Math.max(0, (canvas.height - h) / 2);
-        ctx.drawImage(img, 0, y, w, h);
+        const x = (canvas.width - w) / 2;
+        const y = (canvas.height - h) / 2;
+        ctx.drawImage(img, x, y, w, h);
     };
 
     useMotionValueEvent(frameIndex, "change", (latest) => {

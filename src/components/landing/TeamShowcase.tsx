@@ -77,10 +77,23 @@ export function TeamShowcase() {
                             return (
                                 <article
                                     key={member.id}
-                                    className={`grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 items-start ${
-                                        i % 2 === 1 ? "lg:[direction:rtl] [&>*]:[direction:ltr]" : ""
-                                    }`}
+                                    className={`relative grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 items-start p-6 md:p-10 lg:p-12 rounded-[var(--radius-lg)] border border-line bg-gradient-to-br ${
+                                        i % 2 === 0
+                                            ? "from-[#1a0e0a] via-black to-black"
+                                            : "from-black via-black to-[#0e1416]"
+                                    } ${i % 2 === 1 ? "lg:[direction:rtl] [&>*]:[direction:ltr]" : ""}`}
                                 >
+                                    {/* Numero gigante watermark dietro */}
+                                    <span
+                                        aria-hidden="true"
+                                        className={`absolute pointer-events-none select-none text-display-alt text-[28vw] md:text-[18vw] lg:text-[14vw] xl:text-[12vw] 2xl:text-[10vw] text-warm-white/[0.035] leading-none ${
+                                            i % 2 === 0
+                                                ? "right-3 -bottom-6 md:right-6 md:-bottom-10"
+                                                : "left-3 -bottom-6 md:left-6 md:-bottom-10"
+                                        }`}
+                                    >
+                                        0{i + 1}
+                                    </span>
                                     {/* Portrait + role badge — aspect più verticale su PC
                                         per allungare il container foto e dare scroll-room
                                         al testo sticky a destra. */}
@@ -135,7 +148,7 @@ export function TeamShowcase() {
                                     </div>
 
                                     {/* Body */}
-                                    <div className="lg:col-span-7 lg:!sticky lg:!top-24 lg:self-start">
+                                    <div className="lg:col-span-7 sticky-pin">
                                         <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
                                             {roleLabel}
                                         </span>
