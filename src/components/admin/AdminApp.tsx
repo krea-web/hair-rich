@@ -143,10 +143,26 @@ function pickView(pathname: string) {
     }
 }
 
+// LocalStorage key for the tablet-mode role override. Quando il salone
+// usa lo stesso device per titolare e dipendente, vogliamo poter
+// switchare la "vista" senza dover fare logout/login. L'override vale
+// solo se il role di base e' "owner" o "manager" (cioe' chi ha davvero
+// accesso a entrambe le viste). Per role base "staff" il toggle e' off.
+const ROLE_OVERRIDE_KEY = "hairrich:admin:role_override";
+
+function readRoleOverride(): AdminRoleLevel | null {
+    if (typeof window === "undefined") return null;
+    const v = window.localStorage.getItem(ROLE_OVERRIDE_KEY);
+    if (v === "owner" || v === "manager" || v === "staff") return v;
+    return null;
+}
+
 export function AdminApp() {
     const pathname = useClientPath();
     const [ready, setReady] = useState(false);
     const [role, setRole] = useState<AdminRoleLevel>("owner");
+    const [baseRole, setBaseRole] = useState<AdminRoleLevel>("owner");
+    const [roleOverride, setRoleOverride] = useState<AdminRoleLevel | null>(null);
     useAdminLiveBookings();
     useAdminInbox();
 
@@ -181,14 +197,21 @@ export function AdminApp() {
                         .maybeSingle();
                     if (!cancelled) {
                         const raw = (adminRow as { role?: string } | null)?.role;
-                        if (raw === "owner" || raw === "manager" || raw === "staff") {
-                            setRole(raw);
-                        } else {
-                            setRole("staff");
-                        }
+                        const resolvedBase: AdminRoleLevel =
+                            raw === "owner" || raw === "manager" || raw === "staff" ? raw : "staff";
+                        setBaseRole(resolvedBase);
+                        // Apply override only if base role grants full access.
+                        const override = readRoleOverride();
+                        const effective: AdminRoleLevel =
+                            resolvedBase === "staff" ? "staff" : override ?? resolvedBase;
+                        setRoleOverride(override);
+                        setRole(effective);
                     }
                 } catch {
-                    if (!cancelled) setRole("staff");
+                    if (!cancelled) {
+                        setBaseRole("staff");
+                        setRole("staff");
+                    }
                 }
 
                 // Onboarding guard: redirect to /admin/onboarding if the salon
@@ -238,8 +261,34 @@ export function AdminApp() {
     const cleanPath = pathname.replace(/\/$/, "");
     const blocked = !fullAccess && cleanPath.startsWith("/admin") && !EMPLOYEE_ALLOWED.has(cleanPath);
 
+    // Tablet mode: il titolare (base="owner"|"manager") puo' switchare
+    // la vista per simulare quella del dipendente, senza fare logout.
+    // Persistiamo l'override in localStorage cosi sopravvive ai refresh.
+    const canSwitchRole = baseRole !== "staff";
+    const applyRoleOverride = (next: AdminRoleLevel | null) => {
+        if (!canSwitchRole) return;
+        if (next === null) {
+            window.localStorage.removeItem(ROLE_OVERRIDE_KEY);
+        } else {
+            window.localStorage.setItem(ROLE_OVERRIDE_KEY, next);
+        }
+        setRoleOverride(next);
+        setRole(next ?? baseRole);
+        // Se il dipendente atterra su una rotta proibita, riportiamolo a /admin
+        if (next === "staff" && cleanPath !== "/admin" && !EMPLOYEE_ALLOWED.has(cleanPath)) {
+            window.history.pushState({}, "", "/admin");
+            window.dispatchEvent(new PopStateEvent("popstate"));
+        }
+    };
+
     return (
-        <AdminLayout role={role}>
+        <AdminLayout
+            role={role}
+            baseRole={baseRole}
+            roleOverride={roleOverride}
+            canSwitchRole={canSwitchRole}
+            onSwitchRole={applyRoleOverride}
+        >
             {blocked ? <EmployeeBlockedView /> : pickView(pathname)}
         </AdminLayout>
     );

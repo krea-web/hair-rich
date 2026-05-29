@@ -61,7 +61,23 @@ const SETTINGS_MENU = [
     { href: "/admin/impostazioni", label: "Impostazioni Salone" },
 ];
 
-export function AdminLayout({ children, role = "owner" }: { children: ReactNode; role?: AdminRoleLevel }) {
+interface AdminLayoutProps {
+    children: ReactNode;
+    role?: AdminRoleLevel;
+    baseRole?: AdminRoleLevel;
+    roleOverride?: AdminRoleLevel | null;
+    canSwitchRole?: boolean;
+    onSwitchRole?: (next: AdminRoleLevel | null) => void;
+}
+
+export function AdminLayout({
+    children,
+    role = "owner",
+    baseRole = "owner",
+    roleOverride = null,
+    canSwitchRole = false,
+    onSwitchRole,
+}: AdminLayoutProps) {
     const pathname = useClientPath();
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const newBookingsCount = useAdminNotifyStore((s) => s.newBookingsCount);
@@ -207,6 +223,56 @@ export function AdminLayout({ children, role = "owner" }: { children: ReactNode;
                                 <path d="m6 9 6 6 6-6" />
                             </svg>
                         </div>
+
+                        {/* Tablet role switcher: visibile solo se l'utente
+                            loggato ha base owner/manager. Permette di passare
+                            in modalita' dipendente (vista limitata) senza
+                            logout — utile quando il salone usa un tablet
+                            condiviso. */}
+                        {canSwitchRole && onSwitchRole && (
+                            <div className="px-3 pt-2 pb-3 border-b border-line">
+                                <div className="text-[9px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold mb-2 px-1">
+                                    Vista corrente
+                                </div>
+                                <div className="grid grid-cols-2 gap-1 p-1 bg-black-2 rounded-[var(--radius-sm)] border border-line">
+                                    <button
+                                        type="button"
+                                        onClick={() => onSwitchRole(null)}
+                                        className={`flex items-center justify-center gap-1.5 px-2 py-2 rounded-[var(--radius-sm)] text-[10px] uppercase tracking-[0.2em] font-body font-semibold transition-all ${
+                                            roleOverride === null
+                                                ? "bg-accent-warm text-black"
+                                                : "text-silver hover:text-warm-white"
+                                        }`}
+                                        aria-pressed={roleOverride === null}
+                                    >
+                                        <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118L2.06 10.1c-.783-.57-.38-1.81.588-1.81h4.915a1 1 0 00.95-.69l1.519-4.674z" />
+                                        </svg>
+                                        Titolare
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => onSwitchRole("staff")}
+                                        className={`flex items-center justify-center gap-1.5 px-2 py-2 rounded-[var(--radius-sm)] text-[10px] uppercase tracking-[0.2em] font-body font-semibold transition-all ${
+                                            roleOverride === "staff"
+                                                ? "bg-accent-warm text-black"
+                                                : "text-silver hover:text-warm-white"
+                                        }`}
+                                        aria-pressed={roleOverride === "staff"}
+                                    >
+                                        <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                                        </svg>
+                                        Dipendente
+                                    </button>
+                                </div>
+                                {roleOverride === "staff" && (
+                                    <p className="mt-2 px-1 text-[9px] text-silver-dark leading-snug">
+                                        Stai vedendo la vista dipendente. Solo l'agenda e le sezioni operative sono visibili.
+                                    </p>
+                                )}
+                            </div>
+                        )}
 
                         <div className="flex-1 overflow-y-auto px-3 py-4 space-y-8 scrollbar-hide">
                             <div>
