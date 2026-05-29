@@ -93,7 +93,7 @@ export function ServicesSection() {
                                 viewport={{ once: true, margin: "-80px" }}
                                 transition={{ duration: 0.8, delay: i * 0.15, ease: [0.25, 0.1, 0.25, 1] }}
                             >
-                                <div className="relative aspect-[4/3] overflow-hidden">
+                                <div className="relative aspect-[4/3] lg:aspect-[5/3] xl:aspect-[16/9] overflow-hidden">
                                     <div className="absolute inset-0 transition-transform duration-[var(--dur-cinema)] ease-[var(--ease-cinema)] group-hover:scale-110">
                                         {isDomicilio ? (
                                             <SmartImage

@@ -87,7 +87,7 @@ export function ProductDrawer() {
             <Drawer.Portal>
                 <Drawer.Overlay className="fixed inset-0 z-[90] bg-black/70 backdrop-blur-sm" />
                 <Drawer.Content
-                    className="fixed bottom-0 left-0 right-0 z-[91] mt-24 flex flex-col rounded-t-[28px] bg-black-2 border-t border-line outline-none"
+                    className="fixed bottom-0 left-0 right-0 z-[91] mt-24 flex flex-col rounded-t-[28px] md:rounded-[28px] bg-black-2 border-t md:border border-line outline-none md:left-1/2 md:right-auto md:-translate-x-1/2 md:bottom-auto md:top-1/2 md:-translate-y-1/2 md:w-[min(880px,92vw)] md:max-h-[82dvh] md:h-auto md:mt-0"
                     style={{
                         height: "88dvh",
                         maxHeight: "calc(100dvh - env(safe-area-inset-top, 0px) - 12px)",
@@ -127,7 +127,7 @@ export function ProductDrawer() {
                                 initial={{ opacity: 0, scale: 0.98 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.35 }}
-                                className="relative aspect-square bg-black border border-line rounded-[var(--radius-md)] overflow-hidden"
+                                className="relative aspect-square md:aspect-[4/5] md:max-h-[440px] bg-black border border-line rounded-[var(--radius-md)] overflow-hidden"
                             >
                                 {product.image_path ? (
                                     <img

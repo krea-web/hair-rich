@@ -4,6 +4,8 @@ import type { ReactNode } from "react";
 import { useClientPath, handleClientLink } from "@/lib/clientRouter";
 import { Wordmark } from "@/components/landing/_shared/Wordmark";
 import { useSkillsConfig } from "@/lib/skills/useSkillsConfig";
+import { useCurrentCustomer } from "@/lib/supabase/me";
+import { createClient } from "@/lib/supabase/client";
 
 interface NavItem {
     href: string;
@@ -85,6 +87,24 @@ const NAV_ITEMS: NavItem[] = [
 export function ProfiloLayout({ children }: { children: ReactNode }) {
     const pathname = useClientPath();
     const { ready, anyActive } = useSkillsConfig();
+    const { customer } = useCurrentCustomer();
+
+    const firstName = (customer?.first_name ?? "").trim();
+    const lastName = (customer?.last_name ?? "").trim();
+    const fullName = [firstName, lastName].filter(Boolean).join(" ") || "Cliente";
+    const initials =
+        (firstName.charAt(0) + (lastName.charAt(0) || firstName.charAt(1) || "")).toUpperCase() || "·";
+    const email = customer?.email ?? "";
+
+    const handleSignOut = async () => {
+        try {
+            const supabase = createClient();
+            await supabase.auth.signOut();
+        } catch {
+            /* fallback below */
+        }
+        window.location.assign("/");
+    };
 
     const visibleItems = NAV_ITEMS.filter((item) => {
         if (!item.anySkill) return true;
@@ -148,14 +168,19 @@ export function ProfiloLayout({ children }: { children: ReactNode }) {
                 <div className="relative mt-auto p-8 border-t border-line">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent-warm to-warning text-black flex items-center justify-center font-display font-semibold shadow-[0_8px_20px_-8px_rgba(212,165,116,0.6)]">
-                            MD
+                            {initials}
                         </div>
                         <div className="min-w-0">
-                            <p className="text-warm-white text-sm font-semibold truncate">Mario Draghi</p>
-                            <p className="text-silver-dark text-xs truncate">mario@email.com</p>
+                            <p className="text-warm-white text-sm font-semibold truncate">{fullName}</p>
+                            {email && (
+                                <p className="text-silver-dark text-xs truncate">{email}</p>
+                            )}
                         </div>
                     </div>
-                    <button className="mt-6 w-full py-2.5 border border-line rounded-[var(--radius-sm)] text-[10px] uppercase tracking-[0.3em] font-body font-semibold text-silver-dark hover:text-warm-white hover:border-warm-white transition-colors">
+                    <button
+                        onClick={handleSignOut}
+                        className="mt-6 w-full py-2.5 border border-line rounded-[var(--radius-sm)] text-[10px] uppercase tracking-[0.3em] font-body font-semibold text-silver-dark hover:text-warm-white hover:border-warm-white transition-colors"
+                    >
                         Esci
                     </button>
                 </div>

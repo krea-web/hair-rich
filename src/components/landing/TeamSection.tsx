@@ -33,13 +33,7 @@ export function TeamSection() {
 
                 {/* ── Featured Master ────────────────────────────────────────── */}
                 <div className="mt-16 md:mt-20 lg:mt-24 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 lg:gap-20 xl:gap-24 items-start">
-                    <motion.div
-                        className="md:col-span-5 relative md:sticky md:top-24 lg:top-28 self-start"
-                        initial={{ opacity: 0, y: 40 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-80px" }}
-                        transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
-                    >
+                    <div className="md:col-span-5 relative md:sticky md:top-24 lg:top-28 self-start">
                         <div className="relative aspect-[3/4] max-h-[640px] lg:max-h-[500px] xl:max-h-[560px] 2xl:max-h-[620px] mx-auto">
                             <SmartImage
                                 src={assetImageUrl(FEATURED_IMG, { width: 1200, quality: 82, format: "webp" })}
@@ -64,7 +58,7 @@ export function TeamSection() {
                                 {FEATURED.yearsCaption}
                             </span>
                         </motion.div>
-                    </motion.div>
+                    </div>
 
                     {/* ── Featured Bio ───────────────────────────────────────── */}
                     <div className="md:col-span-7 md:pl-8">
@@ -192,13 +186,7 @@ export function TeamSection() {
                         </div>
 
                         {/* Image (dx, mirror del founder) */}
-                        <motion.div
-                            className="md:col-span-5 md:order-2 relative order-1 md:sticky md:top-24 lg:top-28 self-start"
-                            initial={{ opacity: 0, y: 40 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true, margin: "-80px" }}
-                            transition={{ duration: 1, delay: i * 0.1, ease: [0.25, 0.1, 0.25, 1] }}
-                        >
+                        <div className="md:col-span-5 md:order-2 relative order-1 md:sticky md:top-24 lg:top-28 self-start">
                             <div className="relative aspect-[3/4] max-h-[520px] lg:max-h-[460px] xl:max-h-[520px] 2xl:max-h-[580px]">
                                 <SmartImage
                                     src={assetImageUrl(m.img, { width: 1200, quality: 82, format: "webp" })}
@@ -224,7 +212,7 @@ export function TeamSection() {
                                     {m.yearsCaption}
                                 </span>
                             </motion.div>
-                        </motion.div>
+                        </div>
                     </div>
                 ))}
             </div>

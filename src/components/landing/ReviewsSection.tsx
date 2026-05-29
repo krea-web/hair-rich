@@ -119,7 +119,7 @@ export function ReviewsSection() {
                     {t.reviews.eyebrow}
                 </motion.span>
                 <motion.h2
-                    className="mt-2 text-display text-3xl md:text-5xl lg:text-6xl xl:text-7xl text-warm-white tracking-tight"
+                    className="mt-2 text-display text-3xl md:text-5xl lg:text-4xl xl:text-5xl 2xl:text-5xl text-warm-white tracking-tight"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -141,12 +141,12 @@ export function ReviewsSection() {
                             {/* Big quote mark */}
                             <span
                                 aria-hidden="true"
-                                className="absolute -top-12 left-1/2 -translate-x-1/2 text-display-alt text-[120px] md:text-[180px] lg:text-[220px] xl:text-[260px] text-accent-warm/15 leading-none select-none pointer-events-none"
+                                className="absolute -top-12 left-1/2 -translate-x-1/2 text-display-alt text-[120px] md:text-[160px] lg:text-[140px] xl:text-[160px] 2xl:text-[180px] text-accent-warm/15 leading-none select-none pointer-events-none"
                             >
                                 &ldquo;
                             </span>
 
-                            <blockquote className="relative text-display-alt text-2xl md:text-3xl lg:text-3xl xl:text-4xl 2xl:text-4xl text-warm-white leading-snug max-w-3xl lg:max-w-4xl xl:max-w-5xl mx-auto">
+                            <blockquote className="relative text-display-alt text-2xl md:text-3xl lg:text-2xl xl:text-3xl 2xl:text-3xl text-warm-white leading-snug max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto">
                                 {r.text}
                             </blockquote>
 

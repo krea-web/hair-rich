@@ -54,7 +54,7 @@ export function InstagramSection() {
                 follow
             </div>
 
-            <div className="relative max-w-7xl mx-auto">
+            <div className="relative max-w-5xl lg:max-w-5xl xl:max-w-6xl mx-auto">
                 <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 md:gap-10 mb-10 md:mb-12">
                     <EditorialHeading
                         eyebrow={t.instagram.eyebrow}

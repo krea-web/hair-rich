@@ -115,12 +115,40 @@ export default function ProfiloImpostazioniPage() {
         }
     };
 
-    if (loading || !customer) {
+    if (loading) {
         return (
             <div className="px-6 md:px-12 py-8 max-w-3xl space-y-4">
                 {[0, 1, 2].map((i) => (
                     <div key={i} className="h-32 bg-carbon border border-line rounded-[var(--radius-lg)] animate-pulse" />
                 ))}
+            </div>
+        );
+    }
+
+    // Se loading è false ma customer manca, vuol dire che l'utente è
+    // autenticato ma non ha ancora una riga in `customers`. Era un bug
+    // visibile su mobile: skeleton infinita. Adesso CTA chiara per
+    // completare il profilo (l'OnboardingWizard a ProfiloApp lo gestisce
+    // tornando al / profilo).
+    if (!customer) {
+        return (
+            <div className="px-6 md:px-12 py-12 max-w-3xl">
+                <h1 className="text-display text-3xl md:text-4xl text-warm-white tracking-tight">
+                    Profilo da completare
+                </h1>
+                <p className="mt-4 text-warm-white-muted text-base">
+                    Il tuo account è collegato ma il profilo cliente non è ancora stato creato.
+                    Completa l'onboarding per attivare le impostazioni.
+                </p>
+                <a
+                    href="/profilo"
+                    className="inline-flex items-center gap-2 mt-6 px-5 py-3 bg-accent-warm text-black rounded-full text-[10px] uppercase tracking-[0.3em] font-body font-semibold hover:scale-[1.02] active:scale-95 transition-transform"
+                >
+                    Vai alla dashboard
+                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                    </svg>
+                </a>
             </div>
         );
     }
