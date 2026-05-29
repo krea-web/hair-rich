@@ -148,7 +148,7 @@ export function TeamShowcase() {
                                     </div>
 
                                     {/* Body */}
-                                    <div className="lg:col-span-7 sticky-pin">
+                                    <div className="lg:col-span-7 lg:[position:sticky] lg:[top:6rem] lg:[align-self:flex-start]">
                                         <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
                                             {roleLabel}
                                         </span>

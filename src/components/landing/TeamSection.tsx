@@ -33,7 +33,7 @@ export function TeamSection() {
 
                 {/* ── Featured Master ────────────────────────────────────────── */}
                 <div className="mt-16 md:mt-20 lg:mt-24 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 lg:gap-20 xl:gap-24 items-start">
-                    <div className="md:col-span-5 relative sticky-pin">
+                    <div className="md:col-span-5 relative md:[position:sticky] md:[top:6rem] md:[align-self:flex-start]">
                         <div className="relative aspect-[3/4] max-h-[640px] lg:max-h-[500px] xl:max-h-[560px] 2xl:max-h-[620px] mx-auto">
                             <SmartImage
                                 src={assetImageUrl(FEATURED_IMG, { width: 1200, quality: 82, format: "webp" })}
@@ -186,7 +186,7 @@ export function TeamSection() {
                         </div>
 
                         {/* Image (dx, mirror del founder) */}
-                        <div className="md:col-span-5 md:order-2 relative order-1 sticky-pin">
+                        <div className="md:col-span-5 md:order-2 relative order-1 md:[position:sticky] md:[top:6rem] md:[align-self:flex-start]">
                             <div className="relative aspect-[3/4] max-h-[520px] lg:max-h-[460px] xl:max-h-[520px] 2xl:max-h-[580px]">
                                 <SmartImage
                                     src={assetImageUrl(m.img, { width: 1200, quality: 82, format: "webp" })}
