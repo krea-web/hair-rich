@@ -180,6 +180,40 @@ export function IntroSequence() {
         };
     }, []);
 
+    // Auto-skip al primo input scroll: appena l'utente tocca rotellina o
+    // swipe verso il basso, scroll smooth fino a fine intro -> niente
+    // schermo nero durante la sequenza frame-by-frame.
+    useEffect(() => {
+        let triggered = false;
+        const onUserScroll = () => {
+            if (triggered) return;
+            const section = sectionRef.current;
+            if (!section) return;
+            // Solo se siamo ancora dentro la intro section
+            if (document.body.dataset.introActive !== "true") return;
+            const sectionTop = section.offsetTop;
+            const sectionEnd = sectionTop + section.offsetHeight;
+            if (window.scrollY >= sectionEnd) return;
+            triggered = true;
+            window.scrollTo({ top: sectionEnd, behavior: "smooth" });
+            // Lascia che il browser termini lo smooth scroll prima di
+            // marcare intro come terminata.
+            window.setTimeout(() => {
+                document.body.dataset.introActive = "false";
+            }, 800);
+        };
+        const opts: AddEventListenerOptions = { passive: true };
+        window.addEventListener("wheel", onUserScroll, opts);
+        window.addEventListener("touchmove", onUserScroll, opts);
+        window.addEventListener("keydown", (e) => {
+            if (["ArrowDown", "PageDown", " ", "Spacebar"].includes(e.key)) onUserScroll();
+        });
+        return () => {
+            window.removeEventListener("wheel", onUserScroll);
+            window.removeEventListener("touchmove", onUserScroll);
+        };
+    }, []);
+
     const handleSkip = () => {
         const section = sectionRef.current;
         if (section) {

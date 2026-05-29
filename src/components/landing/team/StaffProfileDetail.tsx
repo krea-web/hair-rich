@@ -65,7 +65,10 @@ export function StaffProfileDetail({ staff }: Props) {
             </div>
 
             {/* Hero */}
-            <section className="px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 pt-8 md:pt-12 pb-16 md:pb-24 max-w-7xl 2xl:max-w-[1600px] mx-auto">
+            <section className="relative px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 pt-8 md:pt-12 pb-16 md:pb-24 max-w-7xl 2xl:max-w-[1600px] mx-auto overflow-hidden">
+                {/* Decorative warm gradient halo dietro il portrait */}
+                <div aria-hidden="true" className="pointer-events-none absolute -top-32 -left-32 w-[480px] h-[480px] rounded-full bg-accent-warm/[0.06] blur-3xl" />
+                <div aria-hidden="true" className="pointer-events-none absolute -bottom-40 right-0 w-[520px] h-[520px] rounded-full bg-warning/[0.04] blur-3xl" />
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-16 lg:gap-20 items-center">
                     {/* Portrait */}
                     <motion.div
@@ -128,15 +131,14 @@ export function StaffProfileDetail({ staff }: Props) {
                         )}
 
                         <div className="mt-10 flex flex-wrap items-center gap-3">
-                            <button
-                                onClick={handleBook}
-                                className="cta-shine cta-pulse inline-flex items-center gap-3 px-8 py-4 bg-accent-warm text-black rounded-full text-sm uppercase tracking-[0.25em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform"
-                            >
-                                Prenota con {staff.name.split(" ")[0]}
-                                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                                </svg>
-                            </button>
+                            {yearsActive && (
+                                <span className="inline-flex items-center gap-2 px-5 py-3 rounded-full border border-accent-warm/40 bg-accent-warm/10">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-accent-warm animate-pulse" aria-hidden="true" />
+                                    <span className="text-[10px] uppercase tracking-[0.3em] text-accent-warm font-body font-semibold">
+                                        {yearsActive}
+                                    </span>
+                                </span>
+                            )}
                             {staff.instagram_handle && (
                                 <a
                                     href={`https://instagram.com/${staff.instagram_handle.replace(/^@/, "")}`}
@@ -159,8 +161,14 @@ export function StaffProfileDetail({ staff }: Props) {
 
             {/* Bio */}
             {fullBio && (
-                <section className="px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 py-16 md:py-24 border-t border-line">
-                    <div className="max-w-3xl mx-auto">
+                <section className="relative px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 py-16 md:py-24 border-t border-line bg-gradient-to-b from-black via-[#0a0805] to-black overflow-hidden">
+                    <span
+                        aria-hidden="true"
+                        className="absolute -top-8 right-2 md:right-10 text-display-alt text-[26vw] md:text-[16vw] lg:text-[13vw] xl:text-[11vw] 2xl:text-[10vw] text-warm-white/[0.025] leading-none pointer-events-none select-none"
+                    >
+                        01
+                    </span>
+                    <div className="relative max-w-3xl mx-auto">
                         <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
                             Chi è
                         </span>
@@ -173,7 +181,13 @@ export function StaffProfileDetail({ staff }: Props) {
 
             {/* Expertise + signature */}
             {(expertise.length > 0 || signature) && (
-                <section className="px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 py-16 md:py-20 border-t border-line">
+                <section className="relative px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 py-16 md:py-20 border-t border-line overflow-hidden">
+                    <span
+                        aria-hidden="true"
+                        className="absolute -top-8 left-2 md:left-10 text-display-alt text-[26vw] md:text-[16vw] lg:text-[13vw] xl:text-[11vw] 2xl:text-[10vw] text-warm-white/[0.025] leading-none pointer-events-none select-none"
+                    >
+                        02
+                    </span>
                     <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
                         {expertise.length > 0 && (
                             <div>
@@ -211,8 +225,14 @@ export function StaffProfileDetail({ staff }: Props) {
 
             {/* Q&A */}
             {qa.length > 0 && (
-                <section className="px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 py-16 md:py-24 border-t border-line">
-                    <div className="max-w-3xl mx-auto">
+                <section className="relative px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 py-16 md:py-24 border-t border-line bg-gradient-to-b from-black via-[#06090c] to-black overflow-hidden">
+                    <span
+                        aria-hidden="true"
+                        className="absolute -top-8 right-2 md:right-10 text-display-alt text-[26vw] md:text-[16vw] lg:text-[13vw] xl:text-[11vw] 2xl:text-[10vw] text-warm-white/[0.025] leading-none pointer-events-none select-none"
+                    >
+                        03
+                    </span>
+                    <div className="relative max-w-3xl mx-auto">
                         <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
                             Domande a {staff.name.split(" ")[0]}
                         </span>
@@ -239,24 +259,34 @@ export function StaffProfileDetail({ staff }: Props) {
                 </section>
             )}
 
-            {/* Closing CTA */}
-            <section className="px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 py-20 md:py-28 border-t border-line text-center">
-                <div className="max-w-2xl mx-auto">
+            {/* Closing — quote editoriale al posto del CTA */}
+            <section className="relative px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 py-20 md:py-28 border-t border-line text-center overflow-hidden">
+                <span
+                    aria-hidden="true"
+                    className="absolute -bottom-10 left-1/2 -translate-x-1/2 text-display-alt text-[36vw] md:text-[22vw] lg:text-[18vw] xl:text-[15vw] 2xl:text-[13vw] text-warm-white/[0.03] leading-none pointer-events-none select-none whitespace-nowrap"
+                >
+                    {staff.name.split(" ")[0]}
+                </span>
+                <div className="relative max-w-2xl mx-auto">
                     <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
-                        Vuoi {staff.name.split(" ")[0]}?
+                        In poltrona da
                     </span>
-                    <h2 className="text-display text-3xl md:text-5xl text-warm-white tracking-tight mt-4 leading-tight">
-                        Prenota ora il tuo prossimo taglio.
+                    <h2 className="text-display text-3xl md:text-5xl lg:text-4xl xl:text-5xl text-warm-white tracking-tight mt-4 leading-tight">
+                        {yearsActive || "Anni nel mestiere"}.
                     </h2>
-                    <button
-                        onClick={handleBook}
-                        className="cta-shine cta-pulse mt-8 inline-flex items-center gap-3 px-8 py-4 bg-accent-warm text-black rounded-full text-sm uppercase tracking-[0.25em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform"
+                    <p className="mt-5 text-warm-white-muted text-base md:text-lg leading-relaxed">
+                        Tutto il team Hair Rich condivide gli stessi standard. {staff.name.split(" ")[0]} ti aspetta in salone.
+                    </p>
+                    <a
+                        href="/team"
+                        onClick={handleClientLink}
+                        className="mt-8 inline-flex items-center gap-2 px-6 py-3 border border-line text-warm-white rounded-full text-[10px] uppercase tracking-[0.3em] font-body font-semibold hover:border-warm-white hover:bg-warm-white/5 transition-all"
                     >
-                        Prenota con {staff.name.split(" ")[0]}
-                        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                        <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
                         </svg>
-                    </button>
+                        Scopri il resto del team
+                    </a>
                 </div>
             </section>
         </article>
