@@ -6,6 +6,7 @@ import { fetchStaffForTeamPage, assetImageUrl, assetImageSrcset } from "@/lib/su
 import type { Staff } from "@/lib/supabase/types";
 import { useBookingDrawer, useBookingStore } from "@/lib/store";
 import { handleClientLink } from "@/lib/clientRouter";
+import { StickyOnDesktop } from "./_shared/StickyOnDesktop";
 
 const ROLE_TYPE_LABEL: Record<string, string> = {
     founder: "Founder",
@@ -44,15 +45,6 @@ export function TeamShowcase() {
 
     return (
         <section className="relative py-12 md:py-16 lg:py-20 xl:py-24 2xl:py-28 px-6 md:px-12 lg:px-20 bg-black">
-            <style dangerouslySetInnerHTML={{ __html: `
-                @media (min-width: 1024px) {
-                    .hr-team-text-sticky {
-                        position: sticky !important;
-                        top: 6rem !important;
-                        align-self: flex-start !important;
-                    }
-                }
-            ` }} />
             <div className="max-w-6xl mx-auto">
                 <div className="mb-16 md:mb-24 max-w-3xl">
                     <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
@@ -157,7 +149,7 @@ export function TeamShowcase() {
                                     </div>
 
                                     {/* Body */}
-                                    <div className="lg:col-span-7 hr-team-text-sticky">
+                                    <StickyOnDesktop className="lg:col-span-7">
                                         <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
                                             {roleLabel}
                                         </span>
@@ -250,7 +242,7 @@ export function TeamShowcase() {
                                                 </dl>
                                             </div>
                                         )}
-                                    </div>
+                                    </StickyOnDesktop>
                                 </article>
                             );
                         })}

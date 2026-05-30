@@ -46,6 +46,58 @@ Cliente reale: barbiere a Olbia. Sito in italiano, multilingua (it/en/fr/de).
 - ⏳ **E3.4 Lighthouse audit**: audit statico OK; full Lighthouse va eseguito lunedì mattina con browser
 - ⏳ **E3.5 Manual click-through**: da fare sabato/domenica
 
+### Sprint UX rounds 1-12 (28-30 maggio 2026)
+
+12 rounds di calibrazione/UX iterativa post-sprint E, tutti pushati in produzione:
+
+- **Round 1-5 (calibration scripts v1→v4)**: 3 script Python in `scripts/calibrate_landing_*.py` che ribilanciano padding/font/min-h su 32 componenti landing. Eliminato il problema "tutto sproporzionato su PC".
+- **Round 6 (commit `35e0463`)**: pagina `/team/[slug]` dinamica SSG. Migration 0059 `staff_public_profile` con role_type/expertise/qa/signature/full_bio. Seed di Federico Asara + Cristian.
+- **Round 7 (commit `de5cac2`)**: `/admin/staff` editor CMS-like del profilo pubblico, drawer modale con bio/foto/role_type/QA/specialties.
+- **Round 8 (commit `e4c3011`)**: Skills Hub modal "Guida completa" con tutorial dettagliati per le 10 skill più impattanti.
+- **Round 9 (commit `1b7570b`)**: RBAC due livelli admin. `admins.role = owner|manager|staff`. AdminLayout filtra sidebar in base a EMPLOYEE_VOICES whitelist.
+- **Round 10 (commit `094206e`)**: Staff portal self-claim del titolare. Migration 0058 `fn_claim_owner_staff` RPC.
+- **Round 11 (commit `5641f7d`)**: unificato `/staff` dentro `/admin`. Timbratura + Ferie + "Le mie prenotazioni" accessibili anche al dipendente. `/staff/*` ora redirect a `/admin/*`.
+- **Round 12 (commit `e110013`)**: `/team/[slug]` arricchito con gradient bg + watermark 01/02/03 + closing editoriale. CTA "Prenota con X" rimossi. InstagramSection aspect-[4/5]. CTA Footer object-position 20%. IntroSequence auto-scroll su primo wheel.
+
+### Bug noti residui in tracking attivo
+
+- **Sticky team** (commit `fc3d43e` → fallback ulteriore in `StickyOnDesktop.tsx`): il diagnostico browser dell'utente ha mostrato `position: 'static'` nonostante il CSS sia nel bundle. Cache CDN Vercel sospetta. Fallback definitivo: componente `StickyOnDesktop` che applica `el.style.position = 'sticky'` programmaticamente in useEffect — inline style ha specificità massima, vince ogni CSS bundle.
+- **IntroSequence**: 6 fix iterativi su scroll budget, frame range, drawFrame centering. Adesso applica auto-scroll al primo wheel/touch per skippare il play-through.
+
+### Admin tablet-mode (commit `fc3d43e` + nuovo)
+
+Switch role visivo in sidebar admin per scenario "1 tablet condiviso in salone":
+- Toggle 2-button **Titolare** vs **Dipendente** sotto il brand chip.
+- Override salvato in `localStorage` (`hairrich:admin:role_override`).
+- Switch a `Dipendente` libero. Switch a `Titolare` da `Dipendente` → richiede PIN salvato in `salon_settings.owner_unlock_pin` (migration `0060`).
+- Visibile solo se utente ha role base `owner` o `manager`. Un `staff` puro non vede il toggle.
+- Quando si switcha a `Dipendente` su una rotta proibita, redirect automatico a `/admin`.
+
+### Piano Voice + Telegram bot (post-presentazione)
+
+Decisione: implementare **entrambe** ma in fasi distinte.
+
+**Fase 1 — Voice control nel gestionale** (~8h dev)
+- Bottone microfono in `/admin/agenda` accessibile a titolare E dipendenti
+- Web Speech API → trascrizione locale → invio a Edge Function `voice-to-appointment`
+- Edge Function: OpenAI Whisper (se serve speech-to-text server-side) + GPT-4o-mini con prompt "estrai data, ora, servizio, cliente, staff dalla frase italiana" → JSON strutturato
+- JSON → RPC `fn_create_appointment_from_voice(p_payload jsonb)` SECURITY DEFINER → insert appointments + conferma
+- Toast UI con preview "Hai detto: domani 10:00 taglio per Luca con Federico — confermi?" + bottoni Conferma/Annulla/Modifica
+- Costo runtime: ~€0.0001 per comando
+
+**Fase 2 — Telegram AI Assistant** (~12h dev, solo titolare)
+- Bot Telegram dedicato (riusa `TELEGRAM_BOT_TOKEN` già previsto)
+- Riceve messaggi testo o audio del titolare
+- Audio → Whisper → trascrizione
+- Trascrizione → GPT-4o con tool calling esposto (`fn_get_today_appointments`, `fn_get_week_revenue`, `fn_create_appointment`, `fn_list_customers_at_risk`, ecc.)
+- Risposta del bot con dati reali del gestionale
+- Solo `owner_telegram_chat_id` autorizzato (security gate)
+
+**Credenziali aggiuntive richieste** (vedi sezione "Credenziali esterne da fornire" in fondo):
+- Voice: `OPENAI_API_KEY` (già nella lista per altre AI skill)
+- Telegram bot: `TELEGRAM_BOT_TOKEN` (già nella lista)
+- Nessuna nuova oltre quelle già pianificate.
+
 ## Decisioni strategiche prese
 
 - **Multi-location: Opzione A** — ogni sede = Supabase project + Vercel deploy separati, stesso repo
@@ -1241,3 +1293,52 @@ Obiettivo: rendere il template legalmente venduibile in Italia oltre Hair Rich.
 - Il Router rispetta i consensi GDPR (eventi marketing/reminder/referral controllano `customer_consents_current`)
 - Il customer site mantiene branding Hair Rich; il gestionale è già "neutro" template-ready
 - Prezzi hardware nel catalog: solo prezzi reali del fornitore, zero ricarico, link a sito ufficiale
+
+---
+
+## 🔑 Credenziali esterne da fornire (TO-DO cliente)
+
+Lista live delle credenziali che il titolare deve procurarsi e poi
+incollarmi (oppure caricarmi su Supabase Secrets / Vercel env / admin
+impostazioni). Aggiornata insieme allo sviluppo: ogni nuova feature che
+richiede setup esterno aggiorna questa lista.
+
+### Bloccanti per attivare il gestionale in produzione
+
+| # | Credenziale | Dove prenderla | Dove va | Cosa abilita |
+|---|---|---|---|---|
+| 1 | `GMAIL_USER` + `GMAIL_APP_PASSWORD` | Gmail dedicato `hairrich.olbia@gmail.com` → 2FA on → https://myaccount.google.com/apppasswords (16 char) | Supabase Secrets | Email transazionali (cancel, recensioni, ricevute pacchetti, ecc.) |
+| 2 | `TELEGRAM_BOT_TOKEN` | `@BotFather` su Telegram → `/newbot` → token | Supabase Secrets | Alert titolare + Telegram AI Assistant (fase 2) |
+| 3 | `owner_telegram_chat_id` | Dopo `/start` al bot, leggi da `https://api.telegram.org/bot<TOKEN>/getUpdates` | `/admin/impostazioni` (campo) | Destinatario di tutti gli alert owner-side |
+| 4 | `owner_unlock_pin` | Sceglilo tu (4-6 cifre) | `/admin/impostazioni` (campo) | Tablet-mode: torna a vista Titolare dopo essere in vista Dipendente |
+| 5 | `PUBLIC_SITE_URL` | Dominio definitivo (es. `https://hairricholbia.com`) | Vercel env + Supabase Secrets | URL nei link email/telegram |
+| 6 | Supabase auth Site URL + redirect | Supabase Dashboard → Authentication → URL Configuration | Supabase Dashboard | Magic link login admin/cliente |
+
+### Per le skill AI (puoi attivarle dopo, costano qualche euro/mese)
+
+| # | Credenziale | Dove prenderla | Dove va | Cosa abilita |
+|---|---|---|---|---|
+| 7 | `OPENAI_API_KEY` | https://platform.openai.com/api-keys (con carta) | Supabase Secrets | AI weekly suggestions, AI monthly report, AI content generator, no-show outreach drafts, **voice control gestionale**, **Telegram AI Assistant** |
+| 8 | `VAPID_PUBLIC_KEY` + `VAPID_PRIVATE_KEY` | `npx web-push generate-vapid-keys` (terminal) | Supabase Secrets + `/admin/impostazioni` (public) | Push notification web ai clienti |
+| 9 | `VAPID_SUBJECT` | `mailto:hairrich.olbia@gmail.com` | Supabase Secrets | Required by VAPID spec |
+
+### Per integrazioni Google (skill avanzate, opzionali)
+
+| # | Credenziale | Dove prenderla | Dove va | Cosa abilita |
+|---|---|---|---|---|
+| 10 | `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` | https://console.cloud.google.com → progetto + OAuth 2.0 + abilita Calendar API, Business Profile API, Maps Booking | Supabase Secrets | Sync Google Calendar per ogni operatore + Google Business Profile orari/chiusure + Reserve with Google |
+| 11 | `google_place_id` + `google_review_url` | Da Google Maps URL del salone | `/admin/impostazioni` | Reviews Harvester usa URL diretto invece di fallback search |
+
+### Cose che non sono credenziali ma vanno configurate
+
+- **Foto Instagram** (~6-10 selezionate): il titolare invia le foto al sviluppatore. Senza Graph API approvata (richiede review Meta 2-3 settimane), niente auto-sync. Per lunedì basta caricare manualmente.
+- **Avatar staff aggiuntivi**: se l'organico cresce oltre Federico+Cristian, foto nei bucket Supabase `asset/`.
+- **Skills da attivare al go-live**: da `/admin/funzionalita` il titolare sceglie quali skill turn ON tra le 101 disponibili. Default tutte OFF tranne `gdpr_consents` e `admin_inbox`.
+
+### Cose rimandate (post-lunedì)
+
+- WhatsApp Business API: richiede approvazione Meta (1 mese setup)
+- SMS gateway (Twilio/MessageBird)
+- Fatture in Cloud (quando primo cliente B2B chiede)
+- Hardware POS (SumUp Air / Stripe Terminal)
+- Instagram Graph API (per auto-sync feed)

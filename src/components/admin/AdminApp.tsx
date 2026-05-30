@@ -265,8 +265,42 @@ export function AdminApp() {
     // la vista per simulare quella del dipendente, senza fare logout.
     // Persistiamo l'override in localStorage cosi sopravvive ai refresh.
     const canSwitchRole = baseRole !== "staff";
-    const applyRoleOverride = (next: AdminRoleLevel | null) => {
+    const applyRoleOverride = async (next: AdminRoleLevel | null) => {
         if (!canSwitchRole) return;
+
+        // Per tornare alla vista Titolare DA Dipendente, richiediamo il PIN
+        // salvato in salon_settings.owner_unlock_pin. Senza questo controllo
+        // qualsiasi dipendente potrebbe toggleare back al pieno accesso.
+        const goingToOwner = next === null;
+        const comingFromStaff = roleOverride === "staff";
+        if (goingToOwner && comingFromStaff) {
+            try {
+                const { createClient } = await import("@/lib/supabase/client");
+                const sb = createClient();
+                const { data: setRow } = await sb
+                    .from("salon_settings")
+                    .select("owner_unlock_pin")
+                    .limit(1)
+                    .maybeSingle();
+                const realPin = (setRow as { owner_unlock_pin?: string | null } | null)?.owner_unlock_pin?.trim();
+                if (realPin) {
+                    const userPin = window.prompt(
+                        "Inserisci il PIN del titolare per uscire dalla vista Dipendente:"
+                    );
+                    if (userPin == null) return; // annulla
+                    if (userPin.trim() !== realPin) {
+                        window.alert("PIN errato. Vista Dipendente mantenuta.");
+                        return;
+                    }
+                }
+                // Se PIN non e' configurato (NULL), proseguiamo: scenario
+                // dev/onboarding. L'admin /impostazioni mostra l'avviso.
+            } catch {
+                /* in caso di errore di rete, lasciamo passare il toggle
+                   piuttosto che bloccare il titolare fuori dal suo gestionale */
+            }
+        }
+
         if (next === null) {
             window.localStorage.removeItem(ROLE_OVERRIDE_KEY);
         } else {

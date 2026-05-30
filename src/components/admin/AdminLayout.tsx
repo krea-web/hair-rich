@@ -67,7 +67,7 @@ interface AdminLayoutProps {
     baseRole?: AdminRoleLevel;
     roleOverride?: AdminRoleLevel | null;
     canSwitchRole?: boolean;
-    onSwitchRole?: (next: AdminRoleLevel | null) => void;
+    onSwitchRole?: (next: AdminRoleLevel | null) => void | Promise<void>;
 }
 
 export function AdminLayout({
