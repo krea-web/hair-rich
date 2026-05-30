@@ -95,17 +95,21 @@ export function TeamShowcase() {
                                     >
                                         0{i + 1}
                                     </span>
-                                    {/* Portrait + role badge — aspect più verticale su PC
-                                        per allungare il container foto e dare scroll-room
-                                        al testo sticky a destra. */}
-                                    <div className="lg:col-span-5">
+                                    {/* Portrait + role badge — la cella e' alta sui PC
+                                        (min-h) per dare scroll budget al testo sticky a
+                                        destra, ma la foto interna mantiene il suo
+                                        aspect originale e si vede normalmente. Lo spazio
+                                        extra sotto la foto resta nero del gradient della
+                                        card cosi' visivamente si percepisce solo il
+                                        movimento della foto verso l'alto. */}
+                                    <div className="lg:col-span-5 lg:min-h-[820px] xl:min-h-[920px] 2xl:min-h-[1000px]">
                                         <a
                                             href={`/team/${member.slug}`}
                                             onClick={handleClientLink}
                                             aria-label={`Scopri ${member.name}`}
                                             className="block group"
                                         >
-                                            <div className="relative aspect-[4/5] lg:aspect-[3/5] xl:aspect-[2/5] min-h-[600px] lg:min-h-[820px] xl:min-h-[920px] 2xl:min-h-[1000px] rounded-[var(--radius-md)] border border-line bg-gradient-to-br from-carbon to-black-2 overflow-hidden">
+                                            <div className="relative aspect-[4/5] lg:aspect-[3/4] xl:aspect-[2/3] rounded-[var(--radius-md)] border border-line bg-gradient-to-br from-carbon to-black-2 overflow-hidden">
                                                 {member.avatar_url ? (
                                                     <img
                                                         src={
