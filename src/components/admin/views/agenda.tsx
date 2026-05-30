@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useBookingDrawer, useBookingStore } from "@/lib/store";
 import AdminAgendaDayView from "./agenda-day";
 import AdminAgendaMonthView from "./agenda-month";
+import AdminAgendaWeekView from "./agenda-week";
 
 type AgendaView = "month" | "week" | "day";
 
@@ -85,13 +86,7 @@ export default function AdminAgendaPage() {
                     onAddAppointment={handleAddAppointment}
                 />
             )}
-            {view === "week" && (
-                <iframe
-                    src="/admin/agenda-week"
-                    title="Agenda settimana"
-                    className="flex-1 w-full border-0 bg-black"
-                />
-            )}
+            {view === "week" && <AdminAgendaWeekView />}
             {view === "day" && <AdminAgendaDayView />}
         </div>
     );

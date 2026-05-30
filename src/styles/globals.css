@@ -130,10 +130,18 @@ body {
 
 /* Forced sticky utility — Tailwind `lg:sticky lg:top-24` non vinceva la
    battaglia di specificity contro le entrance animation di framer-motion
-   che lasciavano `position: relative` sull'elemento. Questa class va
-   sull'elemento che vogliamo sticky, attiva solo su >=1024px. */
+   che lasciavano `position: relative` sull'elemento. Queste classi vanno
+   sull'elemento che vogliamo sticky. */
+@media (min-width: 768px) {
+  .hr-sticky-md {
+    position: -webkit-sticky !important;
+    position: sticky !important;
+    top: 6rem !important;
+    align-self: flex-start !important;
+  }
+}
 @media (min-width: 1024px) {
-  .sticky-pin {
+  .hr-sticky-lg {
     position: -webkit-sticky !important;
     position: sticky !important;
     top: 6rem !important;

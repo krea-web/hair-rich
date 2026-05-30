@@ -34,7 +34,7 @@ export function TeamSection() {
 
                 {/* ── Featured Master ────────────────────────────────────────── */}
                 <div className="mt-16 md:mt-20 lg:mt-24 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 lg:gap-20 xl:gap-24 items-start">
-                    <StickyOnDesktop className="md:col-span-5 relative" minWidth={768}>
+                    <div className="md:col-span-5 relative">
                         <div className="relative aspect-[3/4] max-h-[640px] lg:max-h-[500px] xl:max-h-[560px] 2xl:max-h-[620px] mx-auto">
                             <SmartImage
                                 src={assetImageUrl(FEATURED_IMG, { width: 1200, quality: 82, format: "webp" })}
@@ -59,10 +59,10 @@ export function TeamSection() {
                                 {FEATURED.yearsCaption}
                             </span>
                         </motion.div>
-                    </StickyOnDesktop>
+                    </div>
 
                     {/* ── Featured Bio ───────────────────────────────────────── */}
-                    <div className="md:col-span-7 md:pl-8">
+                    <StickyOnDesktop className="md:col-span-7 md:pl-8" minWidth={768}>
                         <motion.span
                             className="text-display-alt text-2xl text-accent-warm"
                             initial={{ opacity: 0, x: 20 }}
@@ -118,7 +118,7 @@ export function TeamSection() {
                                 </span>
                             ))}
                         </motion.div>
-                    </div>
+                    </StickyOnDesktop>
                 </div>
 
                 {/* ── Featured Member 2 — stesso peso del founder ──────── */}
@@ -128,7 +128,7 @@ export function TeamSection() {
                         className="mt-20 md:mt-32 lg:mt-40 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 lg:gap-20 xl:gap-24 items-start"
                     >
                         {/* Bio (sx) */}
-                        <div className="md:col-span-7 md:order-1 md:pr-8 order-2">
+                        <StickyOnDesktop className="md:col-span-7 md:order-1 md:pr-8 order-2" minWidth={768}>
                             <motion.span
                                 className="text-display-alt text-2xl text-accent-warm"
                                 initial={{ opacity: 0, x: -20 }}
@@ -184,10 +184,10 @@ export function TeamSection() {
                                     </span>
                                 ))}
                             </motion.div>
-                        </div>
+                        </StickyOnDesktop>
 
                         {/* Image (dx, mirror del founder) */}
-                        <StickyOnDesktop className="md:col-span-5 md:order-2 relative order-1" minWidth={768}>
+                        <div className="md:col-span-5 md:order-2 relative order-1">
                             <div className="relative aspect-[3/4] max-h-[520px] lg:max-h-[460px] xl:max-h-[520px] 2xl:max-h-[580px]">
                                 <SmartImage
                                     src={assetImageUrl(m.img, { width: 1200, quality: 82, format: "webp" })}
@@ -213,7 +213,7 @@ export function TeamSection() {
                                     {m.yearsCaption}
                                 </span>
                             </motion.div>
-                        </StickyOnDesktop>
+                        </div>
                     </div>
                 ))}
             </div>

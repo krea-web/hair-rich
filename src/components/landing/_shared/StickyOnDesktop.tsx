@@ -11,6 +11,11 @@ interface Props {
     topRem?: number;
 }
 
+// Le classi .hr-sticky-md e .hr-sticky-lg sono definite in globals.css
+// (CSS pure, niente React style tag). Garantisce che la regola sia nel
+// bundle CSS che Astro emette per ogni pagina, indipendentemente da
+// quando il componente fa hydration.
+
 /**
  * Pinning client-side robusto via inline style.
  *
@@ -49,8 +54,12 @@ export function StickyOnDesktop({
         return () => window.removeEventListener("resize", apply);
     }, [minWidth, topRem]);
 
+    // Scegliamo la classe statica in base al breakpoint richiesto cosi
+    // il sticky e' attivo anche prima dell'hydration (CSS pure).
+    const staticClass = minWidth >= 1024 ? "hr-sticky-lg" : "hr-sticky-md";
+
     return (
-        <div ref={ref} className={className}>
+        <div ref={ref} className={`${className} ${staticClass}`}>
             {children}
         </div>
     );
