@@ -105,7 +105,7 @@ export function TeamShowcase() {
                                             aria-label={`Scopri ${member.name}`}
                                             className="block group"
                                         >
-                                            <div className="relative aspect-[4/5] lg:aspect-[3/4] xl:aspect-[2/3] rounded-[var(--radius-md)] border border-line bg-gradient-to-br from-carbon to-black-2 overflow-hidden">
+                                            <div className="relative aspect-[4/5] lg:aspect-[3/5] xl:aspect-[2/5] min-h-[600px] lg:min-h-[820px] xl:min-h-[920px] 2xl:min-h-[1000px] rounded-[var(--radius-md)] border border-line bg-gradient-to-br from-carbon to-black-2 overflow-hidden">
                                                 {member.avatar_url ? (
                                                     <img
                                                         src={
