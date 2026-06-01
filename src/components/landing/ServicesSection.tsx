@@ -102,7 +102,7 @@ export function ServicesSection() {
                                 viewport={{ once: true, margin: "-80px" }}
                                 transition={{ duration: 0.8, delay: i * 0.15, ease: [0.25, 0.1, 0.25, 1] }}
                             >
-                                <div className="relative aspect-[4/3] lg:aspect-[5/3] xl:aspect-[16/9] overflow-hidden">
+                                <div className="relative aspect-[3/4] md:aspect-[4/5] lg:aspect-[4/5] xl:aspect-[3/4] overflow-hidden">
                                     <div className="absolute inset-0 transition-transform duration-[var(--dur-cinema)] ease-[var(--ease-cinema)] group-hover:scale-110">
                                         {isDomicilio ? (
                                             <SmartImage
@@ -121,16 +121,14 @@ export function ServicesSection() {
                                         ) : customAsset ? (
                                             <SmartImage
                                                 src={assetImageUrl(customAsset, {
-                                                    width: 900,
-                                                    height: 675,
-                                                    resize: "cover",
-                                                    quality: 80,
+                                                    width: 1000,
+                                                    quality: 82,
                                                     format: "webp",
                                                 })}
-                                                srcSet={assetImageSrcset(customAsset, 80)}
+                                                srcSet={assetImageSrcset(customAsset, 82)}
                                                 sizes="(min-width: 768px) 33vw, 100vw"
                                                 alt={`${cat.title} — Hair Rich Olbia`}
-                                                className="h-full grayscale-[10%]"
+                                                className="h-full"
                                             />
                                         ) : photo ? (
                                             <SmartImage

@@ -186,11 +186,11 @@ export function StaffProfileDetail({ staff }: Props) {
                 <section className="relative border-t border-line overflow-hidden min-h-[55vh] md:min-h-[65vh] lg:min-h-[60vh] flex items-center">
                     <div className="absolute inset-0" aria-hidden="true">
                         <img
-                            src={assetImageUrl("federico-al-lavoro.jpeg", { width: 1920, quality: 75, format: "webp" })}
-                            srcSet={assetImageSrcset("federico-al-lavoro.jpeg", 75)}
+                            src={assetImageUrl("federico-al-lavoro.jpeg", { width: 1920, quality: 78, format: "webp" })}
+                            srcSet={assetImageSrcset("federico-al-lavoro.jpeg", 78)}
                             sizes="100vw"
                             alt=""
-                            className="absolute inset-0 w-full h-full object-cover"
+                            className="absolute inset-0 w-full h-full object-cover object-[center_30%]"
                             loading="lazy"
                             decoding="async"
                         />

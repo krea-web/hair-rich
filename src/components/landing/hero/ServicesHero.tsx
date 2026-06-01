@@ -22,7 +22,7 @@ export function ServicesHero() {
                     srcSet={assetImageSrcset("servizi-hero-bg.jpeg", 75)}
                     sizes="100vw"
                     alt=""
-                    className="absolute inset-0 w-full h-full object-cover opacity-40"
+                    className="absolute inset-0 w-full h-full object-cover object-[center_top] opacity-50"
                     loading="eager"
                     decoding="async"
                     fetchPriority="high"

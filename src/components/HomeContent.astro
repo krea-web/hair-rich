@@ -55,7 +55,14 @@ const m = marqueeItems[lang];
 <SiteHeader client:load />
 <MobileTopBar client:load />
 <main>
-  <IntroSequence client:load />
+  {/* Intro sequence (forbice + rosa che sale) — solo mobile. Su PC era
+     visivamente fastidiosa (sequenza lenta, schermo nero residuo) e
+     l'utente ha chiesto di rimuoverla completamente; la scritta
+     "Benvenuto" in basso rimane visibile dentro IntroSequence stessa
+     che e' gia' configurata md:hidden internamente per la welcome. */}
+  <div class="md:hidden">
+    <IntroSequence client:load />
+  </div>
   <HeroSection client:load />
   <StatsBanner client:idle />
 
