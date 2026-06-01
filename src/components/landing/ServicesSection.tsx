@@ -19,6 +19,14 @@ const HIGHLIGHT_INDEX = 1;
 const DOMICILIO_INDEX = 2;
 const DOMICILIO_ASSET = "taglio-domicilio-yacht.webp";
 
+// Custom hero shots per card 0 (TAGLIO) e 1 (BARBA). Sostituiscono i
+// portfolio shots casuali che venivano caricati prima — adesso una
+// foto curata in salone per ogni categoria.
+const CARD_ASSETS: Record<number, string> = {
+    0: "taglio-capelli.jpeg",
+    1: "taglio-barba.jpeg",
+};
+
 export function ServicesSection() {
     const { t } = useT();
     const openDrawer = useBookingDrawer((s) => s.open);
@@ -79,6 +87,7 @@ export function ServicesSection() {
                     {t.services.items.map((cat, i) => {
                         const highlight = i === HIGHLIGHT_INDEX;
                         const isDomicilio = i === DOMICILIO_INDEX;
+                        const customAsset = CARD_ASSETS[i];
                         const photo = photos[i];
                         return (
                             <motion.article
@@ -108,6 +117,20 @@ export function ServicesSection() {
                                                 sizes="(min-width: 768px) 33vw, 100vw"
                                                 alt={`${cat.title} — Hair Rich Olbia`}
                                                 className="h-full grayscale-[15%]"
+                                            />
+                                        ) : customAsset ? (
+                                            <SmartImage
+                                                src={assetImageUrl(customAsset, {
+                                                    width: 900,
+                                                    height: 675,
+                                                    resize: "cover",
+                                                    quality: 80,
+                                                    format: "webp",
+                                                })}
+                                                srcSet={assetImageSrcset(customAsset, 80)}
+                                                sizes="(min-width: 768px) 33vw, 100vw"
+                                                alt={`${cat.title} — Hair Rich Olbia`}
+                                                className="h-full grayscale-[10%]"
                                             />
                                         ) : photo ? (
                                             <SmartImage
