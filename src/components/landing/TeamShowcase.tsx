@@ -155,11 +155,7 @@ export function TeamShowcase() {
                                     {/* Body */}
                                     <div
                                         className="lg:col-span-7"
-                                        style={{
-                                            position: "sticky",
-                                            top: "6rem",
-                                            alignSelf: "start",
-                                        }}
+                                        data-sticky-pin
                                     >
                                         <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
                                             {roleLabel}

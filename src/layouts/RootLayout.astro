@@ -116,6 +116,22 @@ const localeKeywords: Record<string, string> = {
     <link rel="apple-touch-icon" href="/apple-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
 
+    {/* Sticky-pin CSS inline nel <head> — non passa per nessun bundle
+       e niente cache CDN. Garantisce che [data-sticky-pin] sia sticky
+       a partire da lg (>=1024px), e che il body non abbia overflow-x
+       hidden che invalida il contesto sticky dei discendenti. */}
+    <style is:inline>
+      body { overflow-x: clip !important; }
+      @media (min-width: 1024px) {
+        [data-sticky-pin] {
+          position: -webkit-sticky !important;
+          position: sticky !important;
+          top: 6rem !important;
+          align-self: start !important;
+        }
+      }
+    </style>
+
     {/* Preload critici (LCP): primo frame hero + wordmark */}
     <link rel="preload" as="image" href="/hero-seq/frame_001.webp" type="image/webp" fetchpriority="high" />
     <link rel="preload" as="image" href="/hairrich-logoesteso.png" type="image/png" />
