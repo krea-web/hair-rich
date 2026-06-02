@@ -111,7 +111,7 @@ export function IntroSequence() {
     // sempre al centro del canvas con i bordi che toccano i lati del
     // viewport intro a seconda dell'aspect — niente piu' offset
     // asimmetrico, niente piu' subject pinned a top.
-    const drawFrame = (img?: HTMLImageElement) => {
+    const drawFrame = (img?: HTMLImageElement, progress: number = 0) => {
         if (!img || !img.naturalWidth || !canvasRef.current) return;
         const canvas = canvasRef.current;
         const ctx = canvas.getContext("2d");
@@ -120,18 +120,25 @@ export function IntroSequence() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         const scaleX = canvas.width / img.naturalWidth;
         const scaleY = canvas.height / img.naturalHeight;
-        const scale = Math.min(scaleX, scaleY); // contain
+        const scale = Math.min(scaleX, scaleY);
         const w = img.naturalWidth * scale;
         const h = img.naturalHeight * scale;
         const x = (canvas.width - w) / 2;
-        const y = (canvas.height - h) / 2;
+        // Subject parte spostato verso l'ALTO (15% del canvas) per non
+        // coprire la welcome "Benvenuto" in basso. Durante l'animazione
+        // un offset negativo cresce con il progress -> il subject ESCE
+        // dal bordo top del canvas alla fine della sequenza.
+        const baseY = (canvas.height - h) * 0.15;
+        const exitOffset = progress * canvas.height * 0.6;
+        const y = baseY - exitOffset;
         ctx.drawImage(img, x, y, w, h);
     };
 
     useMotionValueEvent(frameIndex, "change", (latest) => {
         if (!imagesRef.current.length) return;
         const idx = Math.min(Math.max(Math.floor(latest) - 1, 0), FRAME_COUNT - 1);
-        drawFrame(imagesRef.current[idx]);
+        const progress = idx / (FRAME_COUNT - 1);
+        drawFrame(imagesRef.current[idx], progress);
     });
 
     useEffect(() => {
@@ -147,7 +154,8 @@ export function IntroSequence() {
                 canvas.height = h;
             }
             const idx = Math.min(Math.max(Math.floor(frameIndex.get()) - 1, 0), FRAME_COUNT - 1);
-            drawFrame(imagesRef.current[idx]);
+            const progress = idx / (FRAME_COUNT - 1);
+            drawFrame(imagesRef.current[idx], progress);
         };
         resize();
         window.addEventListener("resize", resize);

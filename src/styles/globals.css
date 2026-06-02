@@ -137,7 +137,7 @@ body {
     position: -webkit-sticky !important;
     position: sticky !important;
     top: 6rem !important;
-    align-self: flex-start !important;
+    align-self: start !important;
   }
 }
 @media (min-width: 1024px) {
@@ -145,7 +145,7 @@ body {
     position: -webkit-sticky !important;
     position: sticky !important;
     top: 6rem !important;
-    align-self: flex-start !important;
+    align-self: start !important;
   }
 }
 

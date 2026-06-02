@@ -153,7 +153,7 @@ export function TeamShowcase() {
                                     </div>
 
                                     {/* Body */}
-                                    <div className="lg:col-span-7 hr-sticky-lg">
+                                    <StickyOnDesktop className="lg:col-span-7 hr-sticky-lg">
                                         <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
                                             {roleLabel}
                                         </span>
@@ -246,7 +246,7 @@ export function TeamShowcase() {
                                                 </dl>
                                             </div>
                                         )}
-                                    </div>
+                                    </StickyOnDesktop>
                                 </article>
                             );
                         })}

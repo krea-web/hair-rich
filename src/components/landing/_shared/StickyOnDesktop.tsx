@@ -40,13 +40,16 @@ export function StickyOnDesktop({
         if (!el) return;
         const apply = () => {
             if (window.innerWidth >= minWidth) {
-                el.style.position = "sticky";
-                el.style.top = `${topRem}rem`;
-                el.style.alignSelf = "flex-start";
+                // setProperty con la flag "important" e' equivalente a
+                // `position: sticky !important` inline: vince qualsiasi
+                // regola CSS, qualsiasi cache.
+                el.style.setProperty("position", "sticky", "important");
+                el.style.setProperty("top", `${topRem}rem`, "important");
+                el.style.setProperty("align-self", "start", "important");
             } else {
-                el.style.position = "";
-                el.style.top = "";
-                el.style.alignSelf = "";
+                el.style.removeProperty("position");
+                el.style.removeProperty("top");
+                el.style.removeProperty("align-self");
             }
         };
         apply();
