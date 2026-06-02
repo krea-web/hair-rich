@@ -7,6 +7,7 @@ import { ServicesSection } from "./landing/ServicesSection";
 import { WhyUsSection } from "./landing/WhyUsSection";
 import { TeamSection } from "./landing/TeamSection";
 import { GallerySection } from "./landing/GallerySection";
+import { AtelierGallery } from "./landing/AtelierGallery";
 import { ReviewsSection } from "./landing/ReviewsSection";
 import { Footer } from "./landing/Footer";
 import { MarqueeStrip } from "./landing/_shared/MarqueeStrip";
@@ -55,7 +56,9 @@ const m = marqueeItems[lang];
 <SiteHeader client:load />
 <MobileTopBar client:load />
 <main>
-  <IntroSequence client:load />
+  <div class="md:hidden">
+    <IntroSequence client:load />
+  </div>
   <HeroSection client:load />
   <StatsBanner client:idle />
 
@@ -63,6 +66,7 @@ const m = marqueeItems[lang];
 
   <ServicesSection client:visible />
   <ManifestoSection client:idle />
+  <AtelierGallery client:visible />
   <WhyUsSection client:idle />
   <TeamSection client:visible />
   <GallerySection client:visible />

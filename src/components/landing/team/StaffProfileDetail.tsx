@@ -179,38 +179,6 @@ export function StaffProfileDetail({ staff }: Props) {
                 </section>
             )}
 
-            {/* Atelier showcase — sezione parallax con foto dello staff
-                al lavoro come sfondo. Per ora solo Federico ha la sua
-                foto in salone; mappabile in futuro tramite staff.cover_url. */}
-            {staff.slug === "federico-asara" && (
-                <section className="relative border-t border-line overflow-hidden min-h-[55vh] md:min-h-[65vh] lg:min-h-[60vh] flex items-center">
-                    <div className="absolute inset-0" aria-hidden="true">
-                        <img
-                            src={assetImageUrl("federico-al-lavoro.jpeg", { width: 1920, quality: 78, format: "webp" })}
-                            srcSet={assetImageSrcset("federico-al-lavoro.jpeg", 78)}
-                            sizes="100vw"
-                            alt=""
-                            className="absolute inset-0 w-full h-full object-cover object-[center_30%]"
-                            loading="lazy"
-                            decoding="async"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/60 to-black/30" />
-                        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/70" />
-                    </div>
-                    <div className="relative px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 py-20 md:py-28 max-w-3xl">
-                        <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
-                            In bottega
-                        </span>
-                        <h2 className="text-display text-3xl md:text-5xl lg:text-4xl xl:text-5xl text-warm-white tracking-tight mt-4 leading-tight">
-                            Le mani lavorano,<br />
-                            la testa <em className="text-display-alt not-italic text-silver">progetta</em>.
-                        </h2>
-                        <p className="mt-5 text-warm-white-muted text-base md:text-lg leading-relaxed max-w-xl">
-                            Ogni taglio è una decisione fatta sul momento. Lo strumento si sceglie sul capello, non al contrario.
-                        </p>
-                    </div>
-                </section>
-            )}
 
             {/* Expertise + signature */}
             {(expertise.length > 0 || signature) && (

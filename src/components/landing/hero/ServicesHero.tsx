@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { assetImageUrl, assetImageSrcset } from "@/lib/supabase/queries";
+import { portfolioImageUrl } from "@/lib/supabase/queries";
 import { BookingCtaButton } from "@/components/ui/BookingCtaButton";
 
 /**
@@ -14,15 +14,13 @@ export function ServicesHero() {
         <section className="relative bg-black overflow-hidden border-b border-line">
             <div className="absolute inset-0" aria-hidden="true">
                 <img
-                    src={assetImageUrl("servizi-hero-bg.jpeg", {
+                    src={portfolioImageUrl("tagli/mid-fade-01.jpeg", {
                         width: 1920,
-                        quality: 75,
+                        quality: 70,
                         format: "webp",
                     })}
-                    srcSet={assetImageSrcset("servizi-hero-bg.jpeg", 75)}
-                    sizes="100vw"
                     alt=""
-                    className="absolute inset-0 w-full h-full object-cover object-[center_top] opacity-50"
+                    className="absolute inset-0 w-full h-full object-cover opacity-25 grayscale"
                     loading="eager"
                     decoding="async"
                     fetchPriority="high"
