@@ -156,12 +156,39 @@ export default function ProfiloImpostazioniPage() {
     const initials = `${customer.first_name?.[0] ?? ""}${customer.last_name?.[0] ?? ""}`.toUpperCase() || "?";
     const fullName = `${customer.first_name} ${customer.last_name ?? ""}`.trim();
 
-    const allConsentTypes: ConsentType[] = [
-        "marketing",
-        "appointment_reminders",
-        "photos_pre_post",
-        "profiling",
-        "referral_program",
+    // I 5 consensi GDPR sono troppi se renderizzati come una lista flat
+    // (l'utente non riesce a leggerli tutti). Li raggruppiamo in 3
+    // famiglie: Notifiche / Dati personali / Programmi. Ogni gruppo e'
+    // un accordion espandibile con riepilogo "X di Y attivi" come
+    // anteprima — di default chiuso, l'utente apre solo quello che vuole.
+    const CONSENT_GROUPS: {
+        key: string;
+        title: string;
+        eyebrow: string;
+        description: string;
+        types: ConsentType[];
+    }[] = [
+        {
+            key: "notifiche",
+            eyebrow: "01 · Notifiche",
+            title: "Promemoria e comunicazioni",
+            description: "Come ti contattiamo prima e dopo i tuoi appuntamenti.",
+            types: ["appointment_reminders", "marketing"],
+        },
+        {
+            key: "dati",
+            eyebrow: "02 · Dati personali",
+            title: "Foto e personalizzazione",
+            description: "Cosa salviamo del tuo passaggio in salone.",
+            types: ["photos_pre_post", "profiling"],
+        },
+        {
+            key: "programmi",
+            eyebrow: "03 · Programmi",
+            title: "Iniziative facoltative",
+            description: "A cosa scegli di partecipare attivamente.",
+            types: ["referral_program"],
+        },
     ];
 
     return (
@@ -212,35 +239,91 @@ export default function ProfiloImpostazioniPage() {
                         Puoi revocare tutto in qualsiasi momento.
                     </p>
                 </div>
-                <div className="bg-carbon border border-line rounded-[var(--radius-lg)] overflow-hidden divide-y divide-line">
-                    {allConsentTypes.map((type) => {
-                        const snap = consents.get(type);
-                        const granted = Boolean(snap?.granted);
+                <div className="space-y-3">
+                    {CONSENT_GROUPS.map((group) => {
+                        const total = group.types.length;
+                        const active = group.types.filter(
+                            (t) => consents.get(t)?.granted
+                        ).length;
                         return (
-                            <div
-                                key={type}
-                                className="flex items-start justify-between gap-6 p-5 md:p-6"
+                            <details
+                                key={group.key}
+                                className="group bg-carbon border border-line rounded-[var(--radius-lg)] overflow-hidden"
                             >
-                                <div className="flex-1 min-w-0">
-                                    <h3 className="text-warm-white text-base font-body font-semibold">
-                                        {CONSENT_LABELS[type].title}
-                                    </h3>
-                                    <p className="text-silver-dark text-sm mt-1 leading-relaxed">
-                                        {CONSENT_LABELS[type].description}
-                                    </p>
-                                    {snap && (
-                                        <p className="text-[10px] uppercase tracking-[0.2em] text-silver-dark mt-2 font-body">
-                                            Versione policy {snap.policy_version} ·{" "}
-                                            {new Date(snap.effective_at).toLocaleDateString("it-IT")}
+                                <summary className="flex items-center justify-between gap-4 p-5 md:p-6 cursor-pointer list-none select-none hover:bg-carbon-2 transition-colors">
+                                    <div className="min-w-0 flex-1">
+                                        <span className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
+                                            {group.eyebrow}
+                                        </span>
+                                        <h3 className="text-warm-white text-base md:text-lg font-body font-semibold mt-1">
+                                            {group.title}
+                                        </h3>
+                                        <p className="text-silver-dark text-sm mt-1 leading-snug">
+                                            {group.description}
                                         </p>
-                                    )}
+                                    </div>
+                                    <div className="flex items-center gap-3 shrink-0">
+                                        <span
+                                            className={`text-[10px] uppercase tracking-[0.2em] font-body font-semibold whitespace-nowrap ${
+                                                active === total
+                                                    ? "text-accent-warm"
+                                                    : active > 0
+                                                        ? "text-warm-white"
+                                                        : "text-silver-dark"
+                                            }`}
+                                        >
+                                            {active}/{total} attivi
+                                        </span>
+                                        <svg
+                                            viewBox="0 0 24 24"
+                                            className="w-4 h-4 text-silver-dark transition-transform group-open:rotate-180"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            aria-hidden="true"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                d="m6 9 6 6 6-6"
+                                            />
+                                        </svg>
+                                    </div>
+                                </summary>
+
+                                <div className="divide-y divide-line border-t border-line">
+                                    {group.types.map((type) => {
+                                        const snap = consents.get(type);
+                                        const granted = Boolean(snap?.granted);
+                                        return (
+                                            <div
+                                                key={type}
+                                                className="flex items-start justify-between gap-4 p-5 md:p-6 bg-black-2/40"
+                                            >
+                                                <div className="flex-1 min-w-0">
+                                                    <h4 className="text-warm-white text-sm md:text-base font-body font-semibold">
+                                                        {CONSENT_LABELS[type].title}
+                                                    </h4>
+                                                    <p className="text-silver-dark text-xs md:text-sm mt-1 leading-relaxed">
+                                                        {CONSENT_LABELS[type].description}
+                                                    </p>
+                                                    {snap && (
+                                                        <p className="text-[10px] uppercase tracking-[0.2em] text-silver-dark/70 mt-2 font-body">
+                                                            v.{snap.policy_version} ·{" "}
+                                                            {new Date(snap.effective_at).toLocaleDateString("it-IT")}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                                <Toggle
+                                                    value={granted}
+                                                    busy={savingKey === type}
+                                                    onClick={() => toggleConsent(type, !granted)}
+                                                />
+                                            </div>
+                                        );
+                                    })}
                                 </div>
-                                <Toggle
-                                    value={granted}
-                                    busy={savingKey === type}
-                                    onClick={() => toggleConsent(type, !granted)}
-                                />
-                            </div>
+                            </details>
                         );
                     })}
                 </div>
