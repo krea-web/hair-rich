@@ -102,7 +102,7 @@ export function TeamShowcase() {
                                         extra sotto la foto resta nero del gradient della
                                         card cosi' visivamente si percepisce solo il
                                         movimento della foto verso l'alto. */}
-                                    <div className="lg:col-span-5 lg:min-h-[820px] xl:min-h-[920px] 2xl:min-h-[1000px]">
+                                    <div className="lg:col-span-5 lg:min-h-[1400px] xl:min-h-[1500px] 2xl:min-h-[1600px]">
                                         <a
                                             href={`/team/${member.slug}`}
                                             onClick={handleClientLink}
