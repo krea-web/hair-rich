@@ -329,7 +329,7 @@ export function Footer() {
                 <p className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
                     © {currentYear} Hair Rich Olbia · P.IVA 0000000000
                 </p>
-                <nav className="flex flex-wrap gap-5 text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold" aria-label="Legal">
+                <nav className="flex flex-wrap items-center gap-5 text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold" aria-label="Legal">
                     {LEGAL_LINKS.map((l) => (
                         <a
                             key={l.href}
@@ -339,6 +339,16 @@ export function Footer() {
                             {l.label}
                         </a>
                     ))}
+                    <span aria-hidden="true" className="text-silver-dark/40">·</span>
+                    <a
+                        href="/admin"
+                        className="inline-flex items-center gap-1.5 text-accent-warm/70 hover:text-accent-warm transition-colors"
+                    >
+                        <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                        </svg>
+                        Admin
+                    </a>
                 </nav>
             </div>
 

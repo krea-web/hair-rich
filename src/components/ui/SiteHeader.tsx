@@ -84,6 +84,16 @@ export function SiteHeader() {
                         </svg>
                     </button>
                     <CartIconButton size="md" />
+                    <a
+                        href="/profilo"
+                        aria-label="Area personale"
+                        className="hidden md:inline-flex w-9 h-9 items-center justify-center rounded-full border border-line text-warm-white hover:border-warm-white hover:bg-warm-white/5 active:scale-95 transition-all"
+                    >
+                        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+                            <path d="M4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                        </svg>
+                    </a>
                     <LangSwitcher current={lang} variant="navbar" />
                     <MobileMenuTrigger />
                 </div>
