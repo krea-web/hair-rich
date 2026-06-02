@@ -95,14 +95,13 @@ export function TeamShowcase() {
                                     >
                                         0{i + 1}
                                     </span>
-                                    {/* Portrait + role badge — la cella e' alta sui PC
-                                        (min-h) per dare scroll budget al testo sticky a
-                                        destra, ma la foto interna mantiene il suo
-                                        aspect originale e si vede normalmente. Lo spazio
-                                        extra sotto la foto resta nero del gradient della
-                                        card cosi' visivamente si percepisce solo il
-                                        movimento della foto verso l'alto. */}
-                                    <div className="lg:col-span-5 lg:min-h-[1400px] xl:min-h-[1500px] 2xl:min-h-[1600px]">
+                                    {/* Portrait + role badge — foto sticky lato sx
+                                        (data-sticky-pin): l'utente scrolla, il testo bio
+                                        a destra scorre via, la foto resta ferma fino
+                                        a quando il bottom dell'article (= bottom del testo)
+                                        raggiunge il bottom del viewport - solo allora la
+                                        foto si stacca e parte il prossimo membro. */}
+                                    <div className="lg:col-span-5" data-sticky-pin>
                                         <a
                                             href={`/team/${member.slug}`}
                                             onClick={handleClientLink}
@@ -153,10 +152,7 @@ export function TeamShowcase() {
                                     </div>
 
                                     {/* Body */}
-                                    <div
-                                        className="lg:col-span-7"
-                                        data-sticky-pin
-                                    >
+                                    <div className="lg:col-span-7">
                                         <span className="text-[10px] uppercase tracking-[0.4em] text-accent-warm font-body font-semibold">
                                             {roleLabel}
                                         </span>
