@@ -45,13 +45,13 @@ export function PageHero({
                     <img
                         src={bucketImageUrl(bgImageBucket, bgImage, { width: 1920, quality: 75, format: "webp" })}
                         alt=""
-                        className="absolute inset-0 w-full h-full object-cover object-[center_top] opacity-65 grayscale-[10%]"
+                        className="absolute inset-0 w-full h-full object-cover object-[center_top] opacity-35 grayscale-[20%]"
                         loading="eager"
                         fetchPriority="high"
                         decoding="async"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-transparent" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-transparent to-black/60" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/40" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/30 to-black/75" />
                 </div>
             )}
 
