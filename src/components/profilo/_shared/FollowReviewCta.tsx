@@ -97,7 +97,7 @@ export function FollowReviewCta() {
                             Recensione
                         </span>
                         <h3 className="text-display text-xl md:text-2xl text-warm-white tracking-tight mt-1 leading-snug">
-                            Lasciaci una stella su Google
+                            Lasciaci 5 stelle su Google
                         </h3>
                         <p className="mt-2 text-warm-white-muted text-sm leading-snug">
                             È il modo più diretto per farci crescere — 30 secondi.

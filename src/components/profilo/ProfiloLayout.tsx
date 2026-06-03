@@ -133,8 +133,8 @@ export function ProfiloLayout({ children }: { children: ReactNode }) {
                         <Wordmark variant="wordmark" size="md" />
                     </a>
 
-                    <span className="text-[10px] uppercase tracking-[0.3em] text-accent-warm font-body font-semibold">
-                        Area Personale
+                    <span className="text-[10px] uppercase tracking-[0.3em] text-accent-warm font-body font-semibold whitespace-nowrap">
+                        Area personale
                     </span>
 
                     <nav className="mt-8 space-y-1.5">
