@@ -217,6 +217,49 @@ p {
   text-wrap: pretty;
 }
 
+/* ── CMS rich-text content (TipTap editor + raw markdown preview) ──────────── */
+.prose-cms :is(h1, h2, h3) {
+  font-family: var(--font-display);
+  color: var(--warm-white);
+  line-height: 1.15;
+  margin: 0.6em 0 0.3em;
+}
+.prose-cms h1 { font-size: 1.5rem; }
+.prose-cms h2 { font-size: 1.25rem; }
+.prose-cms h3 { font-size: 1.05rem; }
+.prose-cms p { margin: 0.5em 0; }
+.prose-cms p:first-child { margin-top: 0; }
+.prose-cms p:last-child { margin-bottom: 0; }
+.prose-cms strong { color: var(--warm-white); font-weight: 700; }
+.prose-cms em { font-style: italic; }
+.prose-cms a { color: var(--accent-warm); text-decoration: underline; }
+.prose-cms :is(ul, ol) { margin: 0.5em 0; padding-left: 1.4em; }
+.prose-cms ul { list-style: disc; }
+.prose-cms ol { list-style: decimal; }
+.prose-cms li { margin: 0.2em 0; }
+.prose-cms blockquote {
+  border-left: 3px solid var(--accent-warm);
+  padding-left: 0.9em;
+  margin: 0.6em 0;
+  color: var(--silver);
+  font-style: italic;
+}
+.prose-cms code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+.prose-cms .ProseMirror:focus { outline: none; }
+.prose-cms p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--silver-dark);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
 /* ── Hide scrollbar utility ────────────────────────────────────────────────── */
 .scrollbar-hide {
   scrollbar-width: none;

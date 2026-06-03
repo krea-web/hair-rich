@@ -4,6 +4,11 @@ import { motion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useToastStore } from "@/lib/store";
+import CmsRichEditor from "./CmsRichEditor";
+
+// Message templates (email/Telegram) carry {{placeholders}} and channel-specific
+// syntax that a WYSIWYG round-trip would mangle — they stay on the raw textarea.
+const isTemplate = (key: string) => key.startsWith("tmpl_");
 
 interface CmsBlock {
     key: string;
@@ -189,6 +194,8 @@ export default function AdminCmsPage() {
                     {filteredBlocks.map((b) => {
                         const draft = drafts[b.key] ?? "";
                         const dirty = isDirty(b);
+                        const useRich = b.kind === "markdown" && !isTemplate(b.key);
+                        const showRawPreview = b.kind === "markdown" && isTemplate(b.key);
                         const isLong = b.kind !== "text" || draft.length > 80;
                         return (
                             <li
@@ -209,7 +216,14 @@ export default function AdminCmsPage() {
                                     )}
                                 </div>
 
-                                {isLong ? (
+                                {useRich ? (
+                                    <CmsRichEditor
+                                        value={draft}
+                                        onChange={(md) =>
+                                            setDrafts((d) => ({ ...d, [b.key]: md }))
+                                        }
+                                    />
+                                ) : isLong ? (
                                     <textarea
                                         value={draft}
                                         onChange={(e) =>
@@ -230,7 +244,7 @@ export default function AdminCmsPage() {
                                     />
                                 )}
 
-                                {b.kind === "markdown" && previewKey === b.key && (
+                                {showRawPreview && previewKey === b.key && (
                                     <div
                                         className="bg-black-2 border border-accent-warm/30 rounded-md px-4 py-3 text-warm-white text-sm leading-relaxed prose-cms"
                                         dangerouslySetInnerHTML={{ __html: renderMarkdownPreview(draft) }}
@@ -238,7 +252,7 @@ export default function AdminCmsPage() {
                                 )}
 
                                 <div className="flex justify-end gap-2 flex-wrap">
-                                    {b.kind === "markdown" && (
+                                    {showRawPreview && (
                                         <button
                                             onClick={() =>
                                                 setPreviewKey((k) => (k === b.key ? null : b.key))
