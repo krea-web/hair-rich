@@ -16,6 +16,143 @@ Cliente reale: barbiere a Olbia. Sito in italiano, multilingua (it/en/fr/de).
 
 ---
 
+## 🧭 Stato reale al 3 giugno 2026 — RESOCONTO
+
+> Aggiornamento richiesto dal titolare. Riassume cosa è LIVE in
+> produzione, cosa serve dalle sue mani per attivarlo, e cosa è ancora
+> da fare. Sostituisce per chiarezza i snapshot precedenti che con i
+> 30+ round di iterazione UX rischiavano di non essere più affidabili.
+
+### 1. Codice in produzione — funzionante senza altre azioni
+- **Sito pubblico** (50+ pagine, 4 lingue, brandizzato Hair Rich Olbia)
+  - Hero + servizi + lavori + team + prodotti + contatti + legal
+  - Booking drawer end-to-end (cliente → Supabase appointments)
+  - PWA installabile, manifest + service worker
+  - JSON-LD HairSalon / Service / FAQ / Breadcrumb su 5 pagine
+  - SEO: meta tag i18n, sitemap, robots, OG image 1200×630
+  - Performance: build 80 pagine in 8-12s, Lighthouse pre-audit OK
+- **Sticky team** (commit `b43f4a5`): finalmente funzionante,
+  foto sticky che "scende insieme allo scroll" mentre il bio scorre
+- **Hero `/contatti`**: foto bg salone-esterno scurita 65→35 opacity
+- **Card "I nostri servizi"** in home: aspect landscape, foto dal
+  portfolio bucket
+- **IntroSequence** (forbice+rosa): solo su mobile, rimossa da PC
+- **Gestionale admin** `/admin`: 29 view operative
+  - Dashboard / Inbox realtime / Agenda mese+settimana+giorno
+  - Waitlist / Chiusure / Statistiche / Clienti (incl. ricerca avanzata + no-show)
+  - Ordini & Cassa / Foto risultato / Salute sistema
+  - Servizi / Prodotti / Staff / Orari / CMS
+  - Marketing / Gamification / Pacchetti / Sondaggi
+  - Fornitori / QR promo / Hardware / Log / Impostazioni
+  - **Skills Hub** `/admin/funzionalita` (101 toggle con guida completa)
+- **Vista mese agenda** (commit `6290b9c`): grid 7×6 con pill
+  appuntamenti + CTA "Nuovo appuntamento", default su mese
+- **Admin RBAC due livelli** (commit `1b7570b` + `fc3d43e`):
+  - Owner: vista completa
+  - Staff/Dipendente: vista filtrata (Agenda, Clienti, Foto, Timbratura, Ferie)
+  - Toggle tablet "Titolare ↔ Dipendente" con PIN di unlock
+- **`/staff` unificato in `/admin`** (commit `5641f7d`): redirect
+  automatico, timbratura e ferie accessibili anche al dipendente
+- **Pagine pubbliche staff `/team/[slug]`** (commit `e110013`):
+  Federico + Cristian generate dinamicamente da DB con bio, expertise,
+  Q&A, watermark editoriale
+- **Profilo cliente** `/profilo`:
+  - Dashboard con prossimo appuntamento + crediti
+  - Appuntamenti (lista, cancel, reschedule)
+  - La mia storia (foto pre/post)
+  - Crediti & bonus / Passaparola (skill-gated)
+  - **Impostazioni** con **5 consensi GDPR raggruppati in 3 accordion**
+    (commit `424e2b1`): Notifiche / Dati / Programmi
+  - CTA Instagram + CTA "Lasciaci 5 stelle Google" (commit `b8bb1ec`)
+- **Navigation**: bottone Profilo nel SiteHeader PC, link Admin nel
+  Footer (commit `705d5eb`)
+- **Database Supabase**: 60 tabelle, 60+ migrations applicate, 55 RPC,
+  RLS attive, audit log automatico, triggers GDPR
+- **Edge Functions**: 27 deployate ACTIVE, 12 cron schedulati (pg_cron)
+
+### 2. Codice in produzione — ATTIVO solo dopo credenziali
+
+Tutte le skill marketing/AI/integrazione sono **già scritte e
+deployate** ma in stato `enabled=false` su `skills_config`. Il
+titolare le accende dalla Skills Hub UNA VOLTA che le credenziali
+corrispondenti sono inserite. Vedi sezione "🔑 Credenziali esterne
+da fornire" in fondo per la lista esatta.
+
+Esempi di cosa si attiva con quali credenziali:
+- `GMAIL_USER` + `GMAIL_APP_PASSWORD` (Gmail dedicato)
+  → Email reminder cliente, recensioni, ricevute pacchetti, cancel,
+    win-back, anteprime AI report
+- `TELEGRAM_BOT_TOKEN` + `owner_telegram_chat_id`
+  → TUTTI gli alert al titolare (prenotazioni, cancellazioni,
+    no-show, recensione negativa, calo prenotazioni, daily digest 18:00)
+- `OPENAI_API_KEY`
+  → AI weekly suggestions, AI monthly report, AI content generator,
+    no-show outreach drafts, Voice control gestionale, Telegram AI
+- `VAPID_*` keys
+  → Push notification web ai clienti
+- `GOOGLE_*` (OAuth)
+  → Sync Google Calendar staff, Google Business Profile orari,
+    Reserve with Google
+
+### 3. Cosa manca da fare lato CODE (non bloccante per la presentazione)
+
+Tre cantieri pianificati in `~/.claude/plans/` e nelle sezioni
+Sessione A/B/C/D più in basso. Riassunto:
+
+**a. Sessione A — finitura Hair Rich (~25h)**
+- CMS `/admin/cms` editor TipTap reale su `cms_blocks`
+- Statistiche dashboard recharts (RPC `fn_admin_stats_range` esiste)
+- Gamification CRUD coupon + fidelity
+- Onboarding wizard guard + 4-step
+- Drag&drop appuntamenti in `/admin/agenda` (RPC esiste)
+- Editor orari settimanali staff
+- Clienti CSV export
+- Customer health alerts dashboard
+
+**b. Sessione B — productization template (~30-45h)**
+- Multi-tier mapping skills_config con `min_tier`
+- Salon onboarding seed script `scripts/onboard_salon.py`
+- Estrazione Hair Rich-specific (loghi, foto, copy) verso `cms_blocks` / `salon_settings`
+- Architettura multi-location base (Nuoro)
+
+**c. Voice control + Telegram AI** (~20h totali)
+- Fase 1: Voice in `/admin/agenda` per tutti (titolare + dipendenti)
+- Fase 2: Telegram bot conversazionale per titolare con tool calling
+
+**d. Sessione C — Hardware POS** (~30h)
+- SumUp Air plugin
+- Stripe Terminal plugin
+- Stampante termica Star Micronics
+- Scanner barcode + cassetto contante
+
+**e. Sessione D — Fiscale + HR** (~50h)
+- Integrazione Fatture in Cloud
+- Liquidazione IVA + export commercialista
+- RT Olivetti integration (dopo che il titolare comunica il modello)
+- HR / Cassa giornaliera / commissioni staff
+
+### 4. Stato della presentazione
+
+La presentazione di lunedì 1 giugno è **già passata**. Lo sviluppo
+ha continuato dopo con focus su:
+- UX iterativa (12+ round calibrazione su feedback titolare)
+- Fix bug emergenti (sticky team, doppio menu agenda, foto formati)
+- Gestionale: agenda mese view, RBAC, voice/Telegram plan, PIN
+- Profilo: consensi raggruppati, CTA review/IG, nav header/footer
+
+**Cosa serve dal titolare adesso** per andare effettivamente in
+produzione con clienti reali:
+1. Confermare se vuole la **Sessione A** (finitura Hair Rich)
+   completata prima di accendere il sito al pubblico, o se vuole
+   andare live con quello che c'è e completare il resto in parallelo
+2. Procurare le **credenziali bloccanti** elencate sotto (Gmail,
+   Telegram bot, dominio definitivo) — sono 4 cose, ~20 min totali
+3. Decidere se la **Sessione B** (productization template) va fatta
+   prima del primo cliente non-Hair Rich, o se Hair Rich resta come
+   istanza singola per ora
+
+---
+
 ## Stato corrente (snapshot)
 
 - ✅ **Sito pubblico**: completo (50+ pagine), 4 lingue, brandizzato Hair Rich
