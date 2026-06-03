@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { formatPrice } from "@/lib/format";
 import { handleClientLink } from "@/lib/clientRouter";
@@ -61,6 +61,81 @@ function computeStats(rows: AppointmentWithDetails[], memberSince: string | null
             .filter((a) => a.status === "completed" || a.status === "cancelled")
             .slice(0, 5),
     };
+}
+
+interface TimeLeft {
+    days: number;
+    hours: number;
+    minutes: number;
+    seconds: number;
+    total: number;
+}
+
+function computeTimeLeft(targetIso: string): TimeLeft {
+    const total = Math.max(0, new Date(targetIso).getTime() - Date.now());
+    const seconds = Math.floor(total / 1000) % 60;
+    const minutes = Math.floor(total / (1000 * 60)) % 60;
+    const hours = Math.floor(total / (1000 * 60 * 60)) % 24;
+    const days = Math.floor(total / (1000 * 60 * 60 * 24));
+    return { days, hours, minutes, seconds, total };
+}
+
+function CountdownSegment({ value, label }: { value: number; label: string }) {
+    const padded = value.toString().padStart(2, "0");
+    return (
+        <div className="flex flex-col items-center min-w-[2.4rem]">
+            <div className="relative h-8 md:h-10 overflow-hidden">
+                <AnimatePresence mode="popLayout" initial={false}>
+                    <motion.span
+                        key={padded}
+                        initial={{ y: "100%", opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: "-100%", opacity: 0 }}
+                        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                        className="block text-display text-2xl md:text-3xl text-warm-white tabular-nums leading-none"
+                    >
+                        {padded}
+                    </motion.span>
+                </AnimatePresence>
+            </div>
+            <span className="mt-1 text-[9px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold">
+                {label}
+            </span>
+        </div>
+    );
+}
+
+function AppointmentCountdown({ targetIso }: { targetIso: string }) {
+    const [left, setLeft] = useState<TimeLeft>(() => computeTimeLeft(targetIso));
+
+    useEffect(() => {
+        setLeft(computeTimeLeft(targetIso));
+        const id = setInterval(() => setLeft(computeTimeLeft(targetIso)), 1000);
+        return () => clearInterval(id);
+    }, [targetIso]);
+
+    const showDays = left.days > 0;
+    const Sep = () => (
+        <span className="text-display text-xl md:text-2xl text-accent-warm/40 leading-none -mt-2 select-none">
+            :
+        </span>
+    );
+
+    return (
+        <div className="flex items-center gap-2 md:gap-3">
+            {showDays && (
+                <>
+                    <CountdownSegment value={left.days} label={left.days === 1 ? "giorno" : "giorni"} />
+                    <Sep />
+                </>
+            )}
+            <CountdownSegment value={left.hours} label="ore" />
+            <Sep />
+            <CountdownSegment value={left.minutes} label="min" />
+            <Sep />
+            <CountdownSegment value={left.seconds} label="sec" />
+        </div>
+    );
 }
 
 function formatStamp(iso: string): { day: string; weekday: string; month: string; time: string } {
@@ -279,6 +354,14 @@ export default function ProfiloDashboardPage() {
                                     Dettagli
                                 </a>
                             </div>
+                        </div>
+
+                        {/* Live countdown */}
+                        <div className="relative border-t border-accent-warm/15 px-6 md:px-8 py-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
+                            <span className="text-[10px] uppercase tracking-[0.3em] text-accent-warm font-body font-semibold shrink-0">
+                                Manca
+                            </span>
+                            <AppointmentCountdown targetIso={next.start_at} />
                         </div>
                     </div>
                 ) : (
