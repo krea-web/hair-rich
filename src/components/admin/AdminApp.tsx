@@ -200,10 +200,13 @@ export function AdminApp() {
                         const resolvedBase: AdminRoleLevel =
                             raw === "owner" || raw === "manager" || raw === "staff" ? raw : "staff";
                         setBaseRole(resolvedBase);
-                        // Apply override only if base role grants full access.
+                        // Il ruolo di base filtra solo la UI: chiunque sia nella
+                        // tabella `admins` ha pieno accesso DB via is_admin().
+                        // L'override (sbloccato col PIN titolare) puo' quindi
+                        // alzare la vista a "owner" anche da una base "staff" —
+                        // e' il modello "tablet condiviso" del salone.
                         const override = readRoleOverride();
-                        const effective: AdminRoleLevel =
-                            resolvedBase === "staff" ? "staff" : override ?? resolvedBase;
+                        const effective: AdminRoleLevel = override ?? resolvedBase;
                         setRoleOverride(override);
                         setRole(effective);
                     }
@@ -261,19 +264,20 @@ export function AdminApp() {
     const cleanPath = pathname.replace(/\/$/, "");
     const blocked = !fullAccess && cleanPath.startsWith("/admin") && !EMPLOYEE_ALLOWED.has(cleanPath);
 
-    // Tablet mode: il titolare (base="owner"|"manager") puo' switchare
-    // la vista per simulare quella del dipendente, senza fare logout.
-    // Persistiamo l'override in localStorage cosi sopravvive ai refresh.
-    const canSwitchRole = baseRole !== "staff";
+    // Tablet condiviso: dalla vista Dipendente si sale alla vista Titolare
+    // (gestionale completo) con il PIN del titolare; dalla vista Titolare si
+    // scende a Dipendente liberamente. L'override e' persistito in
+    // localStorage cosi' sopravvive ai refresh. La "porta" e' sempre
+    // disponibile per chi e' loggato nell'area admin.
+    const canSwitchRole = true;
     const applyRoleOverride = async (next: AdminRoleLevel | null) => {
-        if (!canSwitchRole) return;
+        const targetRole: AdminRoleLevel = next ?? baseRole;
 
-        // Per tornare alla vista Titolare DA Dipendente, richiediamo il PIN
-        // salvato in salon_settings.owner_unlock_pin. Senza questo controllo
-        // qualsiasi dipendente potrebbe toggleare back al pieno accesso.
-        const goingToOwner = next === null;
-        const comingFromStaff = roleOverride === "staff";
-        if (goingToOwner && comingFromStaff) {
+        // Salire al pieno accesso DA una vista Dipendente richiede il PIN
+        // titolare (salon_settings.owner_unlock_pin). Senza questo, chiunque
+        // usi il tablet potrebbe aprire il gestionale completo.
+        const needsPin = isFullAccess(targetRole) && role === "staff";
+        if (needsPin) {
             try {
                 const { createClient } = await import("@/lib/supabase/client");
                 const sb = createClient();
@@ -285,19 +289,19 @@ export function AdminApp() {
                 const realPin = (setRow as { owner_unlock_pin?: string | null } | null)?.owner_unlock_pin?.trim();
                 if (realPin) {
                     const userPin = window.prompt(
-                        "Inserisci il PIN del titolare per uscire dalla vista Dipendente:"
+                        "Inserisci il PIN del titolare per accedere al gestionale completo:"
                     );
                     if (userPin == null) return; // annulla
                     if (userPin.trim() !== realPin) {
-                        window.alert("PIN errato. Vista Dipendente mantenuta.");
+                        window.alert("PIN errato. Resti nella vista Dipendente.");
                         return;
                     }
                 }
-                // Se PIN non e' configurato (NULL), proseguiamo: scenario
-                // dev/onboarding. L'admin /impostazioni mostra l'avviso.
+                // Se il PIN non e' ancora configurato (NULL) proseguiamo, cosi'
+                // il titolare non resta chiuso fuori dal proprio gestionale.
+                // L'avviso "imposta un PIN" e' in /admin/impostazioni.
             } catch {
-                /* in caso di errore di rete, lasciamo passare il toggle
-                   piuttosto che bloccare il titolare fuori dal suo gestionale */
+                /* errore di rete: lasciamo passare per non bloccare il titolare */
             }
         }
 
@@ -307,9 +311,9 @@ export function AdminApp() {
             window.localStorage.setItem(ROLE_OVERRIDE_KEY, next);
         }
         setRoleOverride(next);
-        setRole(next ?? baseRole);
-        // Se il dipendente atterra su una rotta proibita, riportiamolo a /admin
-        if (next === "staff" && cleanPath !== "/admin" && !EMPLOYEE_ALLOWED.has(cleanPath)) {
+        setRole(targetRole);
+        // Se si scende a Dipendente su una rotta proibita, torna a /admin
+        if (targetRole === "staff" && cleanPath !== "/admin" && !EMPLOYEE_ALLOWED.has(cleanPath)) {
             window.history.pushState({}, "", "/admin");
             window.dispatchEvent(new PopStateEvent("popstate"));
         }
@@ -323,27 +327,43 @@ export function AdminApp() {
             canSwitchRole={canSwitchRole}
             onSwitchRole={applyRoleOverride}
         >
-            {blocked ? <EmployeeBlockedView /> : pickView(pathname)}
+            {blocked ? (
+                <EmployeeBlockedView onUnlock={() => applyRoleOverride("owner")} />
+            ) : (
+                pickView(pathname)
+            )}
         </AdminLayout>
     );
 }
 
-function EmployeeBlockedView() {
+function EmployeeBlockedView({ onUnlock }: { onUnlock: () => void }) {
     return (
         <div className="min-h-[60dvh] flex items-center justify-center px-6">
             <div className="max-w-md text-center">
                 <div className="text-5xl mb-4">🔒</div>
                 <h1 className="text-display text-2xl text-warm-white mb-2">Sezione riservata</h1>
                 <p className="text-warm-white-muted text-sm leading-relaxed mb-6">
-                    Questa parte del gestionale è accessibile solo al titolare. Tu hai accesso ad
-                    agenda, clienti e gestione foto risultati.
+                    Questa parte del gestionale è accessibile solo al titolare. Con la vista
+                    dipendente hai agenda, clienti e gestione foto risultati.
                 </p>
-                <a
-                    href="/admin/agenda"
-                    className="inline-block px-5 py-2.5 bg-accent-warm text-black rounded-full text-[10px] uppercase tracking-[0.3em] font-body font-semibold"
-                >
-                    Vai alla tua agenda
-                </a>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <button
+                        onClick={onUnlock}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent-warm text-black rounded-full text-[10px] uppercase tracking-[0.3em] font-body font-semibold hover:scale-[1.02] active:scale-95 transition-transform"
+                    >
+                        <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
+                            <rect x="5" y="11" width="14" height="10" rx="2" />
+                            <path d="M8 11V7a4 4 0 0 1 8 0" />
+                        </svg>
+                        Accedi come Titolare
+                    </button>
+                    <a
+                        href="/admin/agenda"
+                        className="inline-block px-5 py-2.5 border border-line text-warm-white rounded-full text-[10px] uppercase tracking-[0.3em] font-body font-semibold hover:bg-carbon-2 transition-colors"
+                    >
+                        Vai alla tua agenda
+                    </a>
+                </div>
             </div>
         </div>
     );
