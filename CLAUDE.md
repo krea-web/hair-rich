@@ -1269,6 +1269,37 @@ La roadmap sotto è suddivisa in 4 sessioni di lavoro, sequenziali ma indipenden
 
 Obiettivo: portare Hair Rich Olbia al 100% operativo e dare al titolare un prodotto vero da testare.
 
+> **✅ STATO 3 giugno 2026 — Sessione A sostanzialmente CHIUSA.**
+> La ricognizione ha mostrato che gran parte era già implementata nei
+> round precedenti. In questa sessione sono stati chiusi gli ultimi gap.
+>
+> **A1** — TUTTO fatto tranne 1 voce opzionale:
+> - ✅ `/admin/cms`: editor **TipTap WYSIWYG** sui blocchi markdown di
+>   copy sito (`CmsRichEditor.tsx` + `tiptap-markdown`). I template
+>   email/Telegram (`tmpl_*`) restano volutamente su textarea raw per
+>   non corrompere `{{placeholder}}` e sintassi di canale.
+> - ✅ `/admin/gamification`: coupon CRUD + loyalty + referral (già fatto)
+> - ✅ `/admin/agenda` (day-view): drag&drop dnd-kit con RPC reschedule (già fatto)
+> - ✅ `/admin/staff`: `WeeklyHoursModal` editor orari (già fatto)
+> - ⏳ `/admin/agenda-week` print/PDF settimanale: **NON fatto** (deciso
+>   dal titolare di rimandarlo, bassa priorità). Unica voce A1 aperta.
+>
+> **A2 Portal Staff** — ✅ già completo: route `/staff/*` → redirect a
+> `/admin/*`, viste timbratura/ferie/incassi/clienti/appuntamenti in
+> `src/components/staff/views/`, migration `0053_staff_portal`
+> (`staff_clock_entries`, `staff.user_id`, RLS).
+>
+> **A3 Profilo** — ✅ fatto tranne 1 voce opzionale:
+> - ✅ dashboard: hero card prossimo appuntamento **+ countdown live
+>   animato** (segmenti giorni/ore/min/sec, tick 1s)
+> - ✅ storia / credito / referral / impostazioni (consensi GDPR) già fatti
+> - ⏳ `/profilo/recensioni` (lista recensioni lasciate): **NON fatto**
+>   (deciso dal titolare di rimandarlo). Le preferenze sono dentro
+>   `impostazioni` (niente `/profilo/preferenze` separato, by design).
+>
+> **Resta aperto per chiudere A al 100%**: agenda-week print/PDF +
+> vista `/profilo/recensioni` — entrambe rimandate su decisione titolare.
+
 ### A1. Gestionale: gap residui (8-12h)
 - **`/admin/cms`**: editor TipTap reale sui `cms_blocks` (manca implementazione full)
 - **`/admin/gamification`**: refinement editor coupon con anteprima
