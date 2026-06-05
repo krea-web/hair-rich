@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { SITE } from "@/lib/constants";
 import { useT } from "@/i18n/useLang";
 import { useBookingDrawer } from "@/lib/store";
@@ -87,13 +88,24 @@ const mailHref = "mailto:" + SITE.email;
 
 export function Footer() {
     const { t, lang } = useT();
-    const currentYear = new Date().getFullYear();
     const openDrawer = useBookingDrawer((s) => s.open);
 
+    // SSG: l'HTML è generato a build time. Calcolare data/giorno durante il
+    // render produrrebbe un valore "congelato" alla build, diverso da quello
+    // del client → hydration mismatch (React #418). Quindi partiamo da valori
+    // neutri (uguali server/client) e calcoliamo dopo il mount.
+    const [currentYear, setCurrentYear] = useState(2026);
+    const [todayDow, setTodayDow] = useState<number | null>(null);
+    useEffect(() => {
+        const now = new Date();
+        setCurrentYear(now.getFullYear());
+        setTodayDow(now.getDay()); // 0=Sun, 1=Mon, ...
+    }, []);
+
     const isToday = (dayKey: string) => {
-        const dow = new Date().getDay(); // 0=Sun, 1=Mon, ...
+        if (todayDow === null) return false;
         const map: Record<string, number> = { sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 };
-        return map[dayKey] === dow;
+        return map[dayKey] === todayDow;
     };
 
     return (
