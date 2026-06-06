@@ -21,7 +21,10 @@
 // dal secret_token dell'header + whitelist chat id).
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-import { getSupabase } from '../_shared/supabaseAdmin.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const getSupabase = () =>
+  createClient(Deno.env.get('SUPABASE_URL') ?? '', Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '');
 
 const MODEL = 'gpt-4o-mini';
 const TZ = 'Europe/Rome';
@@ -341,7 +344,7 @@ async function execTool(sb: SB, name: string, args: any) {
 const SYSTEM_PROMPT = `Sei il segretario digitale di "Hair Rich Olbia", una barberia.
 Rispondi SOLO al titolare, in italiano, in modo conciso e diretto, con formattazione Telegram Markdown leggera (grassetto con *asterischi*, elenchi con trattini).
 Usa SEMPRE i tool per ottenere dati reali: non inventare numeri, nomi, prezzi o giacenze.
-La data di oggi è ${'${TODAY}'} (fuso ${TZ}). Gli importi sono in euro.
+La data di oggi è __TODAY__ (fuso ${TZ}). Gli importi sono in euro.
 Se un cliente non viene trovato o un dato manca, dillo chiaramente.
 Se la domanda è ambigua (es. più clienti con lo stesso nome), elenca le opzioni e chiedi di precisare.
 Mantieni le risposte brevi: vai dritto al punto, niente preamboli.`;
@@ -439,7 +442,7 @@ serve(async (req) => {
 
   try {
     const messages: OpenAIMsg[] = [
-      { role: 'system', content: SYSTEM_PROMPT.replace('${TODAY}', romeTodayStr()) },
+      { role: 'system', content: SYSTEM_PROMPT.replace('__TODAY__', romeTodayStr()) },
       { role: 'user', content: text },
     ];
 
