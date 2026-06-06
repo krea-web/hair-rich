@@ -22,10 +22,10 @@ const sb = createClient(env.PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, 
 });
 
 const patch = ON
-    ? { enabled: true, enabled_at: new Date().toISOString(), disabled_at: null }
-    : { enabled: false, disabled_at: new Date().toISOString() };
+    ? { skill_key: KEY, enabled: true, enabled_at: new Date().toISOString(), disabled_at: null }
+    : { skill_key: KEY, enabled: false, disabled_at: new Date().toISOString() };
 
-const { error } = await sb.from("skills_config").update(patch).eq("skill_key", KEY);
+const { error } = await sb.from("skills_config").upsert(patch, { onConflict: "skill_key" });
 if (error) throw error;
 
 const { data } = await sb
