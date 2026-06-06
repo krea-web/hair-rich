@@ -208,15 +208,18 @@ export function TeamShowcase() {
                                         )}
 
                                         <div className="mt-8 flex flex-wrap items-center gap-3">
-                                            <button
-                                                onClick={() => handleBookWith(member.id)}
-                                                className="cta-shine cta-pulse inline-flex items-center gap-3 px-7 py-3.5 bg-accent-warm text-black rounded-full text-[11px] uppercase tracking-[0.25em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform"
-                                            >
-                                                Prenota con {member.name.split(" ")[0]}
-                                                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                                                </svg>
-                                            </button>
+                                            {/* Il founder non lavora come parrucchiere: niente CTA di prenotazione. */}
+                                            {member.role_type !== "founder" && (
+                                                <button
+                                                    onClick={() => handleBookWith(member.id)}
+                                                    className="cta-shine cta-pulse inline-flex items-center gap-3 px-7 py-3.5 bg-accent-warm text-black rounded-full text-[11px] uppercase tracking-[0.25em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform"
+                                                >
+                                                    Prenota con {member.name.split(" ")[0]}
+                                                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                                                    </svg>
+                                                </button>
+                                            )}
                                             <a
                                                 href={`/team/${member.slug}`}
                                                 onClick={handleClientLink}
