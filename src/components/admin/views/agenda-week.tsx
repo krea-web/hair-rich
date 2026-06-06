@@ -116,6 +116,77 @@ export default function AdminAgendaWeekPage() {
     const goNext = () => setWeekStart((d) => addDays(d, 7));
     const goThisWeek = () => setWeekStart(startOfWeek(new Date()));
 
+    // Stampa/PDF: genera un documento HTML pulito (bianco) in un iframe
+    // nascosto ed esegue print(). Evita di combattere col tema scuro
+    // dell'admin e dà una resa A4 leggibile.
+    const handlePrint = () => {
+        const esc = (s: unknown) =>
+            String(s ?? "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c] ?? c));
+        const range = `${weekStart.toLocaleDateString("it-IT", { day: "numeric", month: "long" })} – ${addDays(
+            weekStart,
+            6,
+        ).toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" })}`;
+        const cols = days
+            .map((d, i) => {
+                const items = [...d.appts]
+                    .filter((a) => a.status !== "cancelled" && a.status !== "no_show")
+                    .sort((a, b) => (a.startISO < b.startISO ? -1 : 1));
+                const rows = items.length
+                    ? items
+                          .map((a) => {
+                              const st = a.staffId ? staffById[a.staffId]?.name?.split(" ")[0] ?? "" : "";
+                              return `<li><span class="t">${formatHour(a.startISO)}</span> <span class="c">${esc(
+                                  a.customer,
+                              )}</span><span class="s">${esc(a.serviceName)}${st ? ` · ${esc(st)}` : ""}</span></li>`;
+                          })
+                          .join("")
+                    : '<li class="empty">— libero —</li>';
+                return `<div class="day"><h2>${WEEKDAY_LABELS[i]} ${d.date.getDate()}<span class="n">${items.length}</span></h2><ul>${rows}</ul></div>`;
+            })
+            .join("");
+        const html = `<!doctype html><html lang="it"><head><meta charset="utf-8"><title>Agenda ${esc(
+            range,
+        )}</title><style>
+            @page{size:A4 landscape;margin:12mm}
+            *{box-sizing:border-box}
+            body{font-family:Arial,Helvetica,sans-serif;color:#111;margin:0}
+            h1{font-size:18px;margin:0 0 2px}
+            .sub{color:#666;font-size:12px;margin:0 0 12px}
+            .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+            .day{border:1px solid #ddd;border-radius:6px;overflow:hidden;page-break-inside:avoid}
+            .day h2{font-size:12px;margin:0;padding:6px 8px;background:#f3f3f3;border-bottom:1px solid #eee;display:flex;justify-content:space-between}
+            .day h2 .n{color:#999;font-weight:normal}
+            ul{list-style:none;margin:0;padding:6px;font-size:10px}
+            li{padding:3px 0;border-bottom:1px dashed #eee}
+            li:last-child{border-bottom:0}
+            .t{font-weight:bold}
+            .c{display:block}
+            .s{color:#666;display:block}
+            .empty{color:#bbb;font-style:italic}
+        </style></head><body>
+            <h1>Hair Rich Olbia — Agenda settimanale</h1>
+            <p class="sub">${esc(range)}</p>
+            <div class="grid">${cols}</div>
+        </body></html>`;
+        const iframe = document.createElement("iframe");
+        iframe.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;";
+        document.body.appendChild(iframe);
+        const doc = iframe.contentWindow?.document;
+        if (!doc) {
+            iframe.remove();
+            return;
+        }
+        doc.open();
+        doc.write(html);
+        doc.close();
+        const win = iframe.contentWindow;
+        setTimeout(() => {
+            win?.focus();
+            win?.print();
+            setTimeout(() => iframe.remove(), 1000);
+        }, 300);
+    };
+
     const todayISO = isoDate(new Date());
 
     return (
@@ -163,13 +234,24 @@ export default function AdminAgendaWeekPage() {
                         Questa settimana
                     </button>
                 </div>
-                <a
-                    href="/admin/agenda"
-                    onClick={handleClientLink}
-                    className="px-3 py-1.5 text-[10px] uppercase tracking-[0.25em] text-accent-warm border border-accent-warm/40 rounded-full hover:bg-accent-warm/10 transition-colors"
-                >
-                    Vista giorno →
-                </a>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={handlePrint}
+                        className="inline-flex items-center gap-2 px-3 py-1.5 text-[10px] uppercase tracking-[0.25em] text-silver border border-line rounded-full hover:bg-carbon-2 hover:text-warm-white transition-colors"
+                    >
+                        <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z" />
+                        </svg>
+                        Stampa
+                    </button>
+                    <a
+                        href="/admin/agenda"
+                        onClick={handleClientLink}
+                        className="px-3 py-1.5 text-[10px] uppercase tracking-[0.25em] text-accent-warm border border-accent-warm/40 rounded-full hover:bg-accent-warm/10 transition-colors"
+                    >
+                        Vista giorno →
+                    </a>
+                </div>
             </div>
 
             {loading ? (

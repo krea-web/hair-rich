@@ -56,6 +56,14 @@ Cliente reale: barbiere a Olbia. Sito in italiano, multilingua (it/en/fr/de).
   (`taper-fade-01`, `mid-fade-01`, `low-fade-01`, `french-crop-01`).
 - **Doc**: `docs/skills-da-attivare.md` — guida attivazione delle 101 skill
   per la formazione del titolare (40 consigliate / 41 opzionali / 20 escluse).
+- **Leftover Sessione A chiusi** (code-side, 6 giu sera):
+  - `/admin/agenda-week`: pulsante **Stampa** → genera PDF/stampa A4 pulito
+    (HTML bianco in iframe, niente conflitti col tema scuro).
+  - **`/profilo/recensioni`**: nuova vista — recensioni lasciate dal cliente
+    (da `review_requests`: stelle + Google/interna) + sondaggi post-visita
+    (da `customer_surveys`: emoji + testo). Nav skill-gated
+    (`reviews_harvester`/`post_visit_survey`), route + getStaticPaths.
+    Build a **82 pagine**.
 
 ### Script utility nuovi (`scripts/`, usano la service role key)
 `set_owner_telegram.mjs`, `enable_skill.mjs` (upsert), `dump_team_portfolio.mjs`,
@@ -94,7 +102,7 @@ Cliente reale: barbiere a Olbia. Sito in italiano, multilingua (it/en/fr/de).
       conversazione** (tabella sessione).
 - [ ] Rigenerare il **bot token** con `/revoke` (è transitato in chiaro) e
       aggiornare il secret → poi rifare `setWebhook`.
-- [ ] (Rimandati dal titolare) `agenda-week` print/PDF; vista `/profilo/recensioni`.
+- [x] `agenda-week` print/PDF + vista `/profilo/recensioni` — FATTI (6 giu).
 - [ ] Impostare `owner_unlock_pin` in `/admin/impostazioni` (rimandato).
 
 ### D. QA / go-live
@@ -1387,8 +1395,8 @@ Obiettivo: portare Hair Rich Olbia al 100% operativo e dare al titolare un prodo
 >   (deciso dal titolare di rimandarlo). Le preferenze sono dentro
 >   `impostazioni` (niente `/profilo/preferenze` separato, by design).
 >
-> **Resta aperto per chiudere A al 100%**: agenda-week print/PDF +
-> vista `/profilo/recensioni` — entrambe rimandate su decisione titolare.
+> **Sessione A ora al 100%**: agenda-week print/PDF e `/profilo/recensioni`
+> completati il 6 giugno (vedi sezione "Aggiornamento 5-6 giugno" in cima).
 
 ### A1. Gestionale: gap residui (8-12h)
 - **`/admin/cms`**: editor TipTap reale sui `cms_blocks` (manca implementazione full)

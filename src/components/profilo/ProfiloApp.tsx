@@ -12,6 +12,7 @@ import ProfiloImpostazioniPage from "./views/impostazioni";
 import ProfiloReferralPage from "./views/referral";
 import ProfiloStoriaPage from "./views/storia";
 import ProfiloCreditoPage from "./views/credito";
+import ProfiloRecensioniPage from "./views/recensioni";
 
 interface CustomerLite {
     id: string;
@@ -36,6 +37,8 @@ function pickView(pathname: string) {
             return <ProfiloStoriaPage />;
         case "/profilo/credito":
             return <ProfiloCreditoPage />;
+        case "/profilo/recensioni":
+            return <ProfiloRecensioniPage />;
         default:
             return (
                 <div className="p-12 text-center text-silver">

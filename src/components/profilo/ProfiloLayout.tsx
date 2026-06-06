@@ -73,6 +73,16 @@ const NAV_ITEMS: NavItem[] = [
         anySkill: ["referrals"],
     },
     {
+        href: "/profilo/recensioni",
+        label: "Recensioni",
+        icon: (
+            <svg viewBox="0 0 24 24" className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2l2.9 6.26 6.6.54-5 4.3 1.5 6.4L12 16.9 5.99 19.5l1.5-6.4-5-4.3 6.6-.54L12 2z" />
+            </svg>
+        ),
+        anySkill: ["reviews_harvester", "post_visit_survey"],
+    },
+    {
         href: "/profilo/impostazioni",
         label: "Impostazioni",
         icon: (
