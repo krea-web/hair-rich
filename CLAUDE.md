@@ -16,6 +16,96 @@ Cliente reale: barbiere a Olbia. Sito in italiano, multilingua (it/en/fr/de).
 
 ---
 
+## 🔄 Aggiornamento 5-6 giugno 2026 — sessione corrente
+
+### Fatto in questa sessione (tutto in produzione su `main`)
+- **Sessione A chiusa**: CMS editor **TipTap WYSIWYG** (`CmsRichEditor.tsx`,
+  solo blocchi markdown di copy; template `tmpl_*` restano textarea) +
+  **countdown live** nella dashboard `/profilo` (segmenti gg/hh/mm/ss).
+- **Porta "Area Titolare" PIN-gated** (`AdminApp.tsx` + `AdminLayout.tsx`):
+  dalla vista Dipendente si sale alla vista completa col PIN
+  (`salon_settings.owner_unlock_pin`); scendere a Dipendente è libero.
+  `canSwitchRole` ora sempre attivo → risolve il lockout di chi ha ruolo
+  base `staff`. `is_admin()` concede pieno accesso DB a chiunque sia in
+  `admins` (il ruolo filtra solo la UI; il PIN è il vero gate).
+- **Fix hydration React #418** in home: il `Footer` calcolava `new Date()`
+  a render-time (sito SSG → HTML congelato a build) → spostato in
+  `useEffect` (giorno/anno calcolati dopo il mount).
+- **Telegram operativo end-to-end**:
+  - `salon_settings.owner_telegram_chat_id` = `1459969011`.
+  - Skill `telegram_owner_alerts` **ON**.
+  - **Telegram AI Assistant (segretario)**: nuova Edge Function
+    `supabase/functions/telegram-assistant/index.ts` (GPT-4o-mini con
+    tool-calling, 7 tool DB: appuntamenti giorno, scheda cliente
+    [nr+speso+ultima/prossima+crediti], giacenze, ritiri click&collect,
+    incassi/stats, clienti a rischio, pacchetti in scadenza). Sicurezza:
+    whitelist chat id + secret_token header + skill gate.
+    Skill `telegram_assistant` (registry `ai`/recommended + `skills_config` ON).
+    **Deployata** (`--no-verify-jwt`), **webhook impostato** con
+    `secret_token`. Secrets settati dal titolare: `OPENAI_API_KEY`,
+    `TELEGRAM_BOT_TOKEN`, `TELEGRAM_WEBHOOK_SECRET`.
+- **Team aggiornato** (gerarchia reale):
+  - **Riccardo = founder** (non lavora in poltrona): aggiunto come staff
+    `role_type=founder`, sort_order 0, sticky PC, pagina `/team/riccardo`.
+    **Senza foto** (placeholder iniziale) e **testi provvisori** — foto e
+    copy definitivi più avanti. Nessun CTA "Prenota" per i founder.
+  - **Federico = co_founder** (lavora): `role_type` corretto da `founder`
+    → `co_founder`, bio aggiornata, **admins.role → owner**.
+  - **Cristian** = dipendente/barber (invariato).
+- **Portfolio /lavori**: corretti 4 tagli mal etichettati → **Burst Fade**
+  (`taper-fade-01`, `mid-fade-01`, `low-fade-01`, `french-crop-01`).
+- **Doc**: `docs/skills-da-attivare.md` — guida attivazione delle 101 skill
+  per la formazione del titolare (40 consigliate / 41 opzionali / 20 escluse).
+
+### Script utility nuovi (`scripts/`, usano la service role key)
+`set_owner_telegram.mjs`, `enable_skill.mjs` (upsert), `dump_team_portfolio.mjs`,
+`fix_federico_role.mjs`, `add_riccardo_founder.mjs`, `rename_burst_fade.mjs`.
+
+> Nota ambiente: l'integrazione MCP Supabase di questa sessione è **read-only
+> negata** (anche `execute_sql`/`list_*` → "permission"). Le scritture DB sono
+> state fatte via script Node con `SUPABASE_SERVICE_ROLE_KEY` da `.env.local`.
+> Il deploy delle Edge Function richiede la **Supabase CLI lato titolare**.
+
+---
+
+## ✅ Cosa manca per terminare il sito (punch-list al 6 giugno 2026)
+
+### A. Contenuti dal cliente (qualità, non bloccano il funzionamento)
+- [ ] **Riccardo**: foto ritratto (+ opz. cover) e **testi definitivi** (bio,
+      tagline, eventuale Q&A). Ora ha placeholder.
+- [ ] **Email di Riccardo** per renderlo **admin owner** (Federico già owner).
+- [ ] **Foto Instagram reali** (6-10) per `InstagramSection`, se si vuole.
+- [ ] Eventuali avatar staff aggiuntivi.
+
+### B. Credenziali che sbloccano skill (vedi `docs/skills-da-attivare.md`)
+- [ ] `GMAIL_USER` + `GMAIL_APP_PASSWORD` → tutte le email clienti
+      (reminder, recensioni, compleanno, waitlist, sondaggi, ricevute).
+- [ ] `VAPID_*` → push web.
+- [ ] `GOOGLE_CLIENT_ID/SECRET` + `google_place_id` → Calendar sync, GBP
+      orari, Reserve, Reviews Harvester.
+- [ ] **Dominio definitivo** → `PUBLIC_SITE_URL` (Vercel+Secrets) + Supabase
+      Auth Site URL/redirect (magic link + link nei messaggi).
+- [ ] (WhatsApp Business API — rimandato, ~1 mese setup Meta.)
+
+### C. Code / tech leftover
+- [ ] **Verifica deploy + secrets + cron** delle altre Edge Function della
+      checklist (Step 4-5) per accendere le skill marketing/AI quando si vuole.
+- [ ] `telegram-assistant`: confermare ricezione test; opz. **memoria
+      conversazione** (tabella sessione).
+- [ ] Rigenerare il **bot token** con `/revoke` (è transitato in chiaro) e
+      aggiornare il secret → poi rifare `setWebhook`.
+- [ ] (Rimandati dal titolare) `agenda-week` print/PDF; vista `/profilo/recensioni`.
+- [ ] Impostare `owner_unlock_pin` in `/admin/impostazioni` (rimandato).
+
+### D. QA / go-live
+- [ ] **Lighthouse** 6 pagine (Perf≥85, SEO≥95, A11y≥90, BP≥95).
+- [ ] **Click-through end-to-end** (booking, profilo, admin, mobile).
+- [ ] Verifica login admin/cliente sul dominio definitivo.
+- [ ] **Skills Hub**: scegliere quali skill accendere al lancio (rollout in
+      `docs/skills-da-attivare.md`).
+
+---
+
 ## 🧭 Stato reale al 3 giugno 2026 — RESOCONTO
 
 > Aggiornamento richiesto dal titolare. Riassume cosa è LIVE in
