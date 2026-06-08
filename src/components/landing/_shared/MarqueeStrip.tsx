@@ -4,8 +4,8 @@ import { motion } from "framer-motion";
 
 interface Props {
     items: string[];
-    /** "headline" = riga editorial cinematic · "duo" = due righe controdirezione · "ribbon" = strip oro */
-    variant?: "headline" | "duo" | "ribbon";
+    /** "headline" = riga editorial cinematic · "duo" = due righe controdirezione · "ribbon" = strip oro scuro · "gold" = strip oro pieno (testo nero) */
+    variant?: "headline" | "duo" | "ribbon" | "gold";
     speedSec?: number;
     accent?: string;
 }
@@ -201,6 +201,40 @@ export function MarqueeStrip({
                         )}
                     </MarqueeTrack>
                 </div>
+            </div>
+        );
+    }
+
+    if (variant === "gold") {
+        return (
+            <div
+                className="relative bg-accent-warm border-y border-line py-4 md:py-6 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"
+                aria-hidden="true"
+            >
+                <MarqueeTrack
+                    items={items}
+                    speedSec={speedSec ?? 8}
+                    direction="left"
+                    gapClass="gap-7 md:gap-12"
+                >
+                    {(item, i) => {
+                        const isItalic = i % 2 === 1;
+                        return (
+                            <span key={`${item}-${i}`} className="inline-flex items-center gap-7 md:gap-12">
+                                {isItalic ? (
+                                    <span className="text-display-alt text-3xl md:text-5xl text-black leading-none">
+                                        {item.toLowerCase()}
+                                    </span>
+                                ) : (
+                                    <span className="text-display text-2xl md:text-4xl tracking-[0.05em] font-semibold leading-none text-black">
+                                        {item}
+                                    </span>
+                                )}
+                                <LogoSeparator size={60} opacity={0.9} tone="ink" />
+                            </span>
+                        );
+                    }}
+                </MarqueeTrack>
             </div>
         );
     }

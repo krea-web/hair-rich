@@ -51,7 +51,7 @@ const PROMISES: Promise[] = [
 
 const TRUST = [
     { label: "Risposta media", value: "< 1h" },
-    { label: "Recensioni 5★", value: "247" },
+    { label: "Recensioni Google", value: "37" },
     { label: "Anni attivi", value: "8+" },
     { label: "Master barber", value: "2" },
 ];

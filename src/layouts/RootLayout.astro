@@ -13,6 +13,15 @@ interface Breadcrumb {
   url: string;
 }
 
+interface PersonItem {
+  name: string;
+  jobTitle?: string;
+  description?: string;
+  image?: string;
+  url?: string;
+  knowsAbout?: string[];
+}
+
 interface Props {
   title?: string;
   description?: string;
@@ -22,6 +31,8 @@ interface Props {
   faqItems?: FaqItem[];
   /** Aggiunge BreadcrumbList schema markup (pagine non-home) */
   breadcrumbs?: Breadcrumb[];
+  /** Aggiunge Person schema per lo staff (es. /team, /team/[slug]) */
+  persons?: PersonItem[];
 }
 
 const lang = getLangFromUrl(Astro.url);
@@ -53,6 +64,7 @@ const {
   noindex = false,
   faqItems = [],
   breadcrumbs = [],
+  persons = [],
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
@@ -168,6 +180,7 @@ const localeKeywords: Record<string, string> = {
       includeFaq={faqItems.length > 0}
       faqItems={faqItems}
       breadcrumbs={breadcrumbs}
+      persons={persons}
     />
 
     {/* Service Worker registration (PWA) — solo in produzione (https) */}

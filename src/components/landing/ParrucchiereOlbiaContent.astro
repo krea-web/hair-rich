@@ -1,0 +1,298 @@
+---
+/**
+ * Contenuto della pagina SEO locale "Parrucchiere a Olbia".
+ *
+ * Layout bespoke server-rendered (Astro puro): NON riusa i componenti landing
+ * React della home/servizi, per evitare contenuto near-duplicate. Il testo è
+ * localizzato per lingua e finisce nell'HTML statico di ogni versione.
+ *
+ * Una sola CTA primaria "Prenota" (hero). La fascia finale è contatti
+ * (telefono + mappa), non un secondo bottone di prenotazione.
+ */
+import type { Locale } from "@/i18n";
+import { PARRUCCHIERE_OLBIA } from "@/lib/content/parrucchiere-olbia";
+import { SITE } from "@/lib/constants";
+import { BookingCtaButton } from "@/components/ui/BookingCtaButton";
+import { MarqueeStrip } from "@/components/landing/_shared/MarqueeStrip";
+import { assetImageUrl, assetImageSrcset } from "@/lib/supabase/queries";
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const c = PARRUCCHIERE_OLBIA[lang];
+
+const mapsHref =
+  "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(SITE.address);
+const mapsEmbed =
+  "https://www.google.com/maps?q=" + encodeURIComponent(SITE.address) + "&output=embed";
+const phoneHref = "tel:" + SITE.phone.replace(/\s+/g, "");
+
+const homeWatermark: Record<string, string> = {
+  it: "Domicilio",
+  en: "At home",
+  fr: "À domicile",
+  de: "Zuhause",
+};
+
+const heroImg = assetImageUrl("salone-esterno.webp", { width: 1920, quality: 72, format: "webp" });
+const heroSrcset = assetImageSrcset("salone-esterno.webp", 72);
+const placeImg = assetImageUrl("salone-vista-completa.webp", { width: 1000, quality: 78, format: "webp" });
+const placeSrcset = assetImageSrcset("salone-vista-completa.webp", 78);
+---
+
+<article class="bg-black text-warm-white overflow-x-clip">
+  {/* ── HERO con foto salone ───────────────────────────────────── */}
+  <section class="relative min-h-[88vh] md:min-h-[90vh] flex flex-col">
+    <div class="absolute inset-0" aria-hidden="true">
+      <img
+        src={heroImg}
+        srcset={heroSrcset}
+        sizes="100vw"
+        alt=""
+        class="absolute inset-0 w-full h-full object-cover object-[center_35%]"
+        loading="eager"
+        decoding="async"
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/55"></div>
+      <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent"></div>
+    </div>
+
+    {/* Watermark editoriale */}
+    <span
+      aria-hidden="true"
+      class="absolute -bottom-6 right-2 md:right-8 text-display-alt text-[26vw] md:text-[15vw] text-warm-white/[0.05] leading-none pointer-events-none select-none"
+    >
+      Olbia
+    </span>
+
+    <nav
+      aria-label="Breadcrumb"
+      class="relative max-w-6xl w-full mx-auto px-6 md:px-10 pt-28 md:pt-32 text-[11px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold"
+    >
+      <a href="/" class="hover:text-warm-white transition-colors">{c.breadcrumbHome}</a>
+      <span aria-hidden="true" class="mx-2 text-silver-dark/50">/</span>
+      <span class="text-accent-warm">{c.breadcrumbLabel}</span>
+    </nav>
+
+    <div class="relative max-w-6xl w-full mx-auto px-6 md:px-10 flex-1 flex flex-col justify-center py-12 md:py-16">
+      <p class="text-display-alt text-2xl md:text-3xl text-accent-warm">{c.eyebrow}</p>
+      <h1 class="mt-2 text-display text-4xl sm:text-5xl md:text-7xl xl:text-8xl text-warm-white tracking-tight leading-[1.02] md:leading-[0.95] max-w-4xl [overflow-wrap:anywhere]">
+        {c.h1}
+      </h1>
+      <p class="mt-4 text-[11px] uppercase tracking-[0.35em] text-silver font-body font-semibold">
+        {c.heroKicker}
+      </p>
+      <div class="mt-6 space-y-4 text-warm-white-muted text-base md:text-lg leading-relaxed font-body max-w-2xl">
+        {c.intro.map((p) => <p>{p}</p>)}
+      </div>
+      <div class="mt-8 flex flex-wrap items-center gap-5">
+        <BookingCtaButton label={c.ctaButton} client:load />
+        <a href={phoneHref} class="font-body text-warm-white-muted hover:text-warm-white transition-colors">
+          <span class="text-[11px] uppercase tracking-[0.25em] text-silver-dark">{c.callLabel}</span>{" "}
+          <span class="text-accent-warm font-semibold">{SITE.phone}</span>
+        </a>
+      </div>
+
+      {/* Trust chips */}
+      <ul class="mt-10 flex flex-wrap gap-x-3 gap-y-2 text-[11px] uppercase tracking-[0.2em] font-body font-semibold text-silver">
+        {c.trust.map((item) => (
+          <li class="px-3 py-1.5 rounded-full border border-line bg-black/40 backdrop-blur-sm">{item}</li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  {/* ── SERVIZI (solo 3) ───────────────────────────────────────── */}
+  <section class="border-t border-line" aria-labelledby="po-servizi">
+    <div class="max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-24">
+      <div class="max-w-2xl">
+        <p class="text-display-alt text-xl md:text-2xl text-accent-warm">01 — Listino</p>
+        <h2 id="po-servizi" class="mt-1 text-display text-3xl md:text-5xl text-warm-white tracking-tight">
+          {c.servicesTitle}
+        </h2>
+        <p class="mt-4 text-warm-white-muted font-body leading-relaxed">{c.servicesIntro}</p>
+      </div>
+
+      <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6">
+        {c.services.map((s, i) => (
+          <div class="group relative flex flex-col justify-between overflow-hidden rounded-[var(--radius-md)] border border-line bg-carbon p-7 md:p-8 min-h-[260px] transition-colors hover:border-accent-warm/50">
+            <span
+              aria-hidden="true"
+              class="absolute -top-6 -right-3 text-display-alt text-[8rem] leading-none text-warm-white/[0.05] tabular-nums select-none transition-colors group-hover:text-accent-warm/15"
+            >
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <div class="relative">
+              <span class="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
+                {s.duration}
+              </span>
+              <h3 class="mt-2 text-display text-2xl md:text-3xl text-warm-white tracking-tight leading-tight">
+                {s.name}
+              </h3>
+              <p class="mt-3 text-sm text-warm-white-muted font-body leading-relaxed">{s.desc}</p>
+            </div>
+            <p class="relative mt-6 text-display text-3xl text-accent-warm tabular-nums">{s.price}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {/* ── Marquee oro (spezza il nero) — parole diverse dalla home ─ */}
+  <MarqueeStrip client:idle variant="gold" items={c.marquee} />
+
+  {/* ── PERCHÉ NOI ─────────────────────────────────────────────── */}
+  <section class="border-t border-line bg-carbon/30" aria-labelledby="po-why">
+    <div class="max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-24">
+      <p class="text-display-alt text-xl md:text-2xl text-accent-warm">02 — Differenza</p>
+      <h2 id="po-why" class="mt-1 text-display text-3xl md:text-5xl text-warm-white tracking-tight max-w-3xl">
+        {c.whyTitle}
+      </h2>
+      <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+        {c.why.map((w, i) => (
+          <div class="flex gap-5 border-t border-line pt-6">
+            <span aria-hidden="true" class="text-display-alt text-4xl text-accent-warm/70 leading-none tabular-nums shrink-0">
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <div>
+              <h3 class="text-display text-xl md:text-2xl text-warm-white tracking-tight">{w.title}</h3>
+              <p class="mt-2 text-sm md:text-base text-warm-white-muted font-body leading-relaxed">{w.body}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {/* ── DOVE SIAMO + foto + mappa ──────────────────────────────── */}
+  <section class="border-t border-line" aria-labelledby="po-dove">
+    <div class="max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+      <div>
+        <p class="text-display-alt text-xl md:text-2xl text-accent-warm">03 — Dove</p>
+        <h2 id="po-dove" class="mt-1 text-display text-3xl md:text-5xl text-warm-white tracking-tight">
+          {c.locationTitle}
+        </h2>
+        {c.location.map((p) => (
+          <p class="mt-5 text-warm-white-muted font-body leading-relaxed">{p}</p>
+        ))}
+        <address class="mt-6 not-italic text-warm-white font-body leading-relaxed">
+          <strong class="block text-display text-xl tracking-tight">Hair Rich Olbia</strong>
+          Via Regina Elena 33/A, 07026 Olbia (SS)<br />
+          <a href={phoneHref} class="text-accent-warm hover:underline">{SITE.phone}</a>
+        </address>
+        <a
+          href={mapsHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-full border border-line text-warm-white text-[11px] uppercase tracking-[0.25em] font-body font-semibold hover:border-accent-warm hover:bg-warm-white/5 transition-colors"
+        >
+          {c.directionsLabel}
+        </a>
+
+        <div class="mt-10">
+          <h3 class="text-display text-xl md:text-2xl text-warm-white tracking-tight">{c.hoursTitle}</h3>
+          <p class="mt-1 text-[11px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold">
+            {c.hoursNote}
+          </p>
+          <dl class="mt-4 divide-y divide-line border-y border-line max-w-sm">
+            {c.hours.map((h) => (
+              <div class="flex items-center justify-between gap-4 py-3">
+                <dt class="text-[11px] uppercase tracking-[0.25em] text-silver font-body font-semibold">{h.day}</dt>
+                <dd class="text-sm text-warm-white font-body tabular-nums">{h.time}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </div>
+
+      <div class="space-y-5">
+        <div class="w-full aspect-[5/4] rounded-[var(--radius-md)] overflow-hidden border border-line">
+          <img
+            src={placeImg}
+            srcset={placeSrcset}
+            sizes="(min-width: 1024px) 45vw, 100vw"
+            alt="Interno del salone Hair Rich, barbiere a Olbia"
+            class="w-full h-full object-cover"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+        <div class="w-full aspect-[5/3] rounded-[var(--radius-md)] overflow-hidden border border-line">
+          <iframe
+            title="Hair Rich Olbia — mappa"
+            src={mapsEmbed}
+            class="w-full h-full"
+            style="border:0;"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ── TAGLIO A DOMICILIO (sfondo oro, spezza il nero) ────────── */}
+  <section class="relative overflow-hidden bg-accent-warm text-black" aria-labelledby="po-area">
+    <span
+      aria-hidden="true"
+      class="absolute -top-8 -right-2 md:right-6 text-display-alt text-[26vw] md:text-[14vw] text-black/[0.07] leading-none pointer-events-none select-none"
+    >
+      {homeWatermark[lang] ?? homeWatermark.it}
+    </span>
+    <div class="relative max-w-4xl mx-auto px-6 md:px-10 py-16 md:py-24 text-center">
+      <h2 id="po-area" class="text-display text-3xl md:text-5xl tracking-tight">{c.areaTitle}</h2>
+      <p class="mt-5 text-black/80 font-body leading-relaxed text-lg max-w-2xl mx-auto">{c.area}</p>
+      <a
+        href={phoneHref}
+        class="mt-8 inline-flex items-center gap-2 px-8 py-4 rounded-full bg-black text-warm-white font-body font-semibold text-sm uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-95 transition-transform"
+      >
+        {c.homeCta} · {SITE.phone}
+      </a>
+    </div>
+  </section>
+
+  {/* ── RECENSIONI ─────────────────────────────────────────────── */}
+  <section class="border-t border-line" aria-labelledby="po-reviews">
+    <div class="max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-24">
+      <p class="text-display-alt text-xl md:text-2xl text-accent-warm">04 — Recensioni</p>
+      <h2 id="po-reviews" class="mt-1 text-display text-3xl md:text-5xl text-warm-white tracking-tight">
+        {c.reviewsTitle}
+      </h2>
+      <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6">
+        {c.reviews.map((r) => (
+          <figure class="flex flex-col bg-carbon border border-line rounded-[var(--radius-md)] p-7">
+            <div class="flex gap-0.5 text-accent-warm text-lg" aria-label="5/5">
+              {Array.from({ length: 5 }).map(() => <span aria-hidden="true">★</span>)}
+            </div>
+            <blockquote class="mt-4 flex-1 text-warm-white font-body leading-relaxed">{r.text}</blockquote>
+            <figcaption class="mt-5 text-[11px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold">
+              {r.name} · Google
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {/* ── FAQ ────────────────────────────────────────────────────── */}
+  <section class="border-t border-line bg-carbon/30" aria-labelledby="po-faq">
+    <div class="max-w-3xl mx-auto px-6 md:px-10 py-16 md:py-24">
+      <p class="text-display-alt text-xl md:text-2xl text-accent-warm">05 — FAQ</p>
+      <h2 id="po-faq" class="mt-1 text-display text-3xl md:text-5xl text-warm-white tracking-tight">{c.faqTitle}</h2>
+      <div class="mt-10 divide-y divide-line border-y border-line">
+        {c.faq.map((f) => (
+          <details class="group py-5">
+            <summary class="flex items-center justify-between gap-4 cursor-pointer list-none text-warm-white font-body font-semibold text-base md:text-lg">
+              <span>{f.q}</span>
+              <span aria-hidden="true" class="text-accent-warm text-xl transition-transform group-open:rotate-45">+</span>
+            </summary>
+            <p class="mt-3 text-sm md:text-base text-warm-white-muted font-body leading-relaxed">{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+</article>

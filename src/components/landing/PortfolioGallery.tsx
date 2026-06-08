@@ -42,7 +42,7 @@ export function PortfolioGallery() {
                         path: r.storage_path,
                         title: r.title,
                         tag: r.tag,
-                        alt: r.alt_text ?? r.title,
+                        alt: r.alt_text ?? `${r.title} — taglio realizzato da Hair Rich, barbiere a Olbia`,
                         featured: r.is_featured,
                     }))
                 );

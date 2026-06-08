@@ -60,7 +60,7 @@ export function PortfolioHero() {
                             {[
                                 { value: "240+", label: "Tagli archiviati" },
                                 { value: "12", label: "Mesi attivi" },
-                                { value: "4.9★", label: "Media recensioni" },
+                                { value: "4.6★", label: "Media recensioni" },
                             ].map((m) => (
                                 <motion.div
                                     key={m.label}

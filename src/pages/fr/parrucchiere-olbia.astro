@@ -1,0 +1,40 @@
+---
+import RootLayout from "../../layouts/RootLayout.astro";
+import { SiteHeader } from "../../components/ui/SiteHeader";
+import { MobileTopBar } from "../../components/ui/MobileTopBar";
+import { MobileBottomBar } from "../../components/ui/MobileBottomBar";
+import { BookingDrawer } from "../../components/booking/BookingDrawer";
+import { CartDrawer } from "../../components/shop/CartDrawer";
+import { ProductDrawer } from "../../components/shop/ProductDrawer";
+import { ToastViewport } from "../../components/ui/ToastViewport";
+import { Footer } from "../../components/landing/Footer";
+import ParrucchiereOlbiaContent from "../../components/landing/ParrucchiereOlbiaContent.astro";
+import { PARRUCCHIERE_OLBIA } from "../../lib/content/parrucchiere-olbia";
+import { SITE } from "../../lib/constants";
+
+const lang = "fr" as const;
+const c = PARRUCCHIERE_OLBIA[lang];
+const base = SITE.url;
+---
+
+<RootLayout
+  title={c.metaTitle}
+  description={c.metaDescription}
+  faqItems={c.faq.map((f) => ({ question: f.q, answer: f.a }))}
+  breadcrumbs={[
+    { name: c.breadcrumbHome, url: `${base}/fr/` },
+    { name: c.breadcrumbLabel, url: `${base}/fr/parrucchiere-olbia/` },
+  ]}
+>
+  <SiteHeader client:load />
+  <MobileTopBar client:load />
+  <main>
+    <ParrucchiereOlbiaContent lang={lang} />
+    <Footer client:idle />
+  </main>
+  <ToastViewport client:load />
+  <MobileBottomBar client:idle />
+  <BookingDrawer client:idle />
+  <CartDrawer client:idle />
+  <ProductDrawer client:idle />
+</RootLayout>

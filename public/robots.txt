@@ -1,3 +1,6 @@
+# Hair Rich Olbia — robots.txt
+# Aree pubbliche aperte a tutti i crawler (ricerca + AI). Private bloccate.
+
 User-agent: *
 Allow: /
 Disallow: /admin/
@@ -9,5 +12,42 @@ Disallow: /recensione/
 Disallow: /sondaggio/
 Disallow: /coupon/
 
-# Update questa riga quando il dominio cliente sostituisce hair-rich.vercel.app
-Sitemap: https://hair-rich.vercel.app/sitemap-index.xml
+# Crawler AI / answer engines: consentiti esplicitamente sulle aree pubbliche
+# (vogliamo essere citati da ChatGPT, Perplexity, Gemini, Claude, Copilot).
+User-agent: GPTBot
+Allow: /
+Disallow: /admin/
+Disallow: /staff/
+Disallow: /profilo/
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Sintesi fattuale per gli assistenti AI
+# https://www.hairricholbia.com/llms.txt
+
+Sitemap: https://www.hairricholbia.com/sitemap-index.xml

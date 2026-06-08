@@ -7,12 +7,12 @@ import { useBookingDrawer } from "@/lib/store";
 import { assetImageUrl, assetImageSrcset } from "@/lib/supabase/queries";
 
 const HOURS_RAW = [
-    { dayKey: "mon" as const, hours: "closed" as const },
-    { dayKey: "tue" as const, hours: "09:00 – 12:30 · 15:00 – 19:00" },
-    { dayKey: "wed" as const, hours: "09:00 – 12:30 · 15:00 – 19:00" },
-    { dayKey: "thu" as const, hours: "09:00 – 12:30 · 15:00 – 19:00" },
-    { dayKey: "fri" as const, hours: "09:00 – 12:30 · 15:00 – 19:00" },
-    { dayKey: "sat" as const, hours: "09:00 – 12:30 · 15:00 – 19:00" },
+    { dayKey: "mon" as const, hours: "09:00 – 13:00 · 15:00 – 20:00" },
+    { dayKey: "tue" as const, hours: "09:00 – 13:00 · 15:00 – 20:00" },
+    { dayKey: "wed" as const, hours: "09:00 – 13:00 · 15:00 – 20:00" },
+    { dayKey: "thu" as const, hours: "09:00 – 13:00 · 15:00 – 20:00" },
+    { dayKey: "fri" as const, hours: "09:00 – 13:00 · 15:00 – 20:00" },
+    { dayKey: "sat" as const, hours: "09:00 – 13:00 · 15:00 – 20:00" },
     { dayKey: "sun" as const, hours: "closed" as const },
 ];
 
@@ -89,6 +89,14 @@ const mailHref = "mailto:" + SITE.email;
 export function Footer() {
     const { t, lang } = useT();
     const openDrawer = useBookingDrawer((s) => s.open);
+
+    const parrucchiereHref = lang === "it" ? "/parrucchiere-olbia" : `/${lang}/parrucchiere-olbia`;
+    const parrucchiereLabel: Record<string, string> = {
+        it: "Parrucchiere uomo a Olbia",
+        en: "Men's hairdresser in Olbia",
+        fr: "Coiffeur homme à Olbia",
+        de: "Herrenfriseur in Olbia",
+    };
 
     // SSG: l'HTML è generato a build time. Calcolare data/giorno durante il
     // render produrrebbe un valore "congelato" alla build, diverso da quello
@@ -186,6 +194,15 @@ export function Footer() {
                                 {SITE.email}
                             </a>
                         </div>
+                        <p className="mt-5">
+                            <a
+                                href={parrucchiereHref}
+                                className="inline-flex items-center gap-1.5 text-accent-warm/80 hover:text-accent-warm text-sm font-body transition-colors"
+                            >
+                                {parrucchiereLabel[lang] ?? parrucchiereLabel.it}
+                                <span aria-hidden="true">→</span>
+                            </a>
+                        </p>
                     </div>
 
                     {/* Orari */}
@@ -364,63 +381,10 @@ export function Footer() {
                 </nav>
             </div>
 
-            {/* JSON-LD LocalBusiness (unchanged) */}
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{
-                    __html: JSON.stringify({
-                        "@context": "https://schema.org",
-                        "@type": "BarberShop",
-                        name: SITE.name,
-                        image: `${SITE.url}/og-image.png`,
-                        telephone: SITE.phone,
-                        email: SITE.email,
-                        address: {
-                            "@type": "PostalAddress",
-                            streetAddress: "Via Regina Elena 33/A",
-                            addressLocality: "Olbia",
-                            addressRegion: "SS",
-                            postalCode: "07026",
-                            addressCountry: "IT",
-                        },
-                        url: SITE.url,
-                        sameAs: [SITE.instagram],
-                        openingHoursSpecification: [
-                            { "@type": "OpeningHoursSpecification", dayOfWeek: "Tuesday", opens: "09:00", closes: "13:00" },
-                            { "@type": "OpeningHoursSpecification", dayOfWeek: "Tuesday", opens: "14:30", closes: "19:30" },
-                            { "@type": "OpeningHoursSpecification", dayOfWeek: "Wednesday", opens: "09:00", closes: "13:00" },
-                            { "@type": "OpeningHoursSpecification", dayOfWeek: "Wednesday", opens: "14:30", closes: "19:30" },
-                            { "@type": "OpeningHoursSpecification", dayOfWeek: "Thursday", opens: "09:00", closes: "13:00" },
-                            { "@type": "OpeningHoursSpecification", dayOfWeek: "Thursday", opens: "14:30", closes: "19:30" },
-                            { "@type": "OpeningHoursSpecification", dayOfWeek: "Friday", opens: "09:00", closes: "13:00" },
-                            { "@type": "OpeningHoursSpecification", dayOfWeek: "Friday", opens: "14:30", closes: "19:30" },
-                            { "@type": "OpeningHoursSpecification", dayOfWeek: "Saturday", opens: "09:00", closes: "13:00" },
-                            { "@type": "OpeningHoursSpecification", dayOfWeek: "Saturday", opens: "14:30", closes: "19:30" },
-                        ],
-                        priceRange: "€€",
-                        geo: { "@type": "GeoCoordinates", latitude: 40.923, longitude: 9.498 },
-                        aggregateRating: {
-                            "@type": "AggregateRating",
-                            ratingValue: "4.9",
-                            reviewCount: "247",
-                            bestRating: "5",
-                            worstRating: "1",
-                        },
-                        hasOfferCatalog: {
-                            "@type": "OfferCatalog",
-                            name: "Servizi Hair Rich",
-                            itemListElement: [
-                                { "@type": "Offer", price: "20", priceCurrency: "EUR", itemOffered: { "@type": "Service", name: "Taglio classico" } },
-                                { "@type": "Offer", price: "25", priceCurrency: "EUR", itemOffered: { "@type": "Service", name: "Fade & Sfumatura" } },
-                                { "@type": "Offer", price: "30", priceCurrency: "EUR", itemOffered: { "@type": "Service", name: "Razor cut" } },
-                                { "@type": "Offer", price: "15", priceCurrency: "EUR", itemOffered: { "@type": "Service", name: "Barba sartoriale" } },
-                                { "@type": "Offer", price: "35", priceCurrency: "EUR", itemOffered: { "@type": "Service", name: "Taglio + Barba" } },
-                                { "@type": "Offer", price: "45", priceCurrency: "EUR", itemOffered: { "@type": "Service", name: "Taglio a domicilio" } },
-                            ],
-                        },
-                    }),
-                }}
-            />
+            {/* NB: il markup JSON-LD LocalBusiness/HairSalon è centralizzato in
+               src/components/seo/JsonLd.astro (iniettato nel <head> di ogni pagina
+               via RootLayout) — single source of truth per orari, rating e servizi.
+               Niente schema duplicato qui per evitare entità in conflitto. */}
         </footer>
     );
 }

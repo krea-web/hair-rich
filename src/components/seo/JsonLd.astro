@@ -27,13 +27,24 @@ interface Breadcrumb {
   url: string;
 }
 
+interface PersonItem {
+  name: string;
+  jobTitle?: string;
+  description?: string;
+  image?: string;
+  url?: string;
+  knowsAbout?: string[];
+}
+
 interface Props {
   includeFaq?: boolean;
   faqItems?: FaqItem[];
   breadcrumbs?: Breadcrumb[];
+  /** Person schema per lo staff (E-E-A-T): es. pagine /team e /team/[slug] */
+  persons?: PersonItem[];
 }
 
-const { includeFaq = false, faqItems = [], breadcrumbs = [] } = Astro.props;
+const { includeFaq = false, faqItems = [], breadcrumbs = [], persons = [] } = Astro.props;
 
 const businessId = `${SITE.url}/#hairsalon`;
 
@@ -74,12 +85,25 @@ const localBusiness = {
   openingHoursSpecification: [
     {
       "@type": "OpeningHoursSpecification",
-      dayOfWeek: ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
       opens: "09:00",
-      closes: "19:00",
+      closes: "13:00",
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+      opens: "15:00",
+      closes: "20:00",
     },
   ],
-  sameAs: [SITE.instagram],
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: "4.6",
+    reviewCount: "37",
+    bestRating: "5",
+    worstRating: "1",
+  },
+  sameAs: [SITE.instagram, "https://maps.app.goo.gl/TCGSzjyUdSMtUVDj9"],
   hasOfferCatalog: {
     "@type": "OfferCatalog",
     name: "Servizi Hair Rich",
@@ -169,8 +193,26 @@ const breadcrumbSchema =
         })),
       }
     : null;
+
+const personSchema =
+  persons.length > 0
+    ? persons.map((p) => ({
+        "@context": "https://schema.org",
+        "@type": "Person",
+        name: p.name,
+        ...(p.jobTitle ? { jobTitle: p.jobTitle } : {}),
+        ...(p.description ? { description: p.description } : {}),
+        ...(p.image ? { image: p.image } : {}),
+        ...(p.url ? { url: p.url } : {}),
+        ...(p.knowsAbout && p.knowsAbout.length > 0 ? { knowsAbout: p.knowsAbout } : {}),
+        worksFor: { "@id": businessId },
+      }))
+    : [];
 ---
 
 <script type="application/ld+json" set:html={JSON.stringify(localBusiness)} />
 {faqSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}
 {breadcrumbSchema && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />}
+{personSchema.map((p) => (
+  <script type="application/ld+json" set:html={JSON.stringify(p)} />
+))}

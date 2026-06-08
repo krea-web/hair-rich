@@ -16,6 +16,65 @@ Cliente reale: barbiere a Olbia. Sito in italiano, multilingua (it/en/fr/de).
 
 ---
 
+## 🔄 Aggiornamento 6-8 giugno 2026 — sessione SEO/GEO/AEO (PUSHATA su main)
+
+> **STATO: pushato su `main` l'8 giugno 2026** → deploy Vercel automatico.
+> ⚠️ **AZIONE URGENTE — dominio**: canonical, sitemap e schema JSON-LD ora puntano a
+> `www.hairricholbia.com`. Finché il dominio non è attivo/puntato su Vercel, il sito
+> live (`hair-rich.vercel.app`) emette canonical verso un dominio che **non risolve**
+> → rischio SEO. **Attivare al più presto**: (1) dominio su Vercel, (2) redirect 301
+> `hair-rich.vercel.app` → dominio, (3) `PUBLIC_SITE_URL` env su Vercel, (4) Supabase
+> Auth Site URL/redirect, (5) submit sitemap in Google Search Console.
+
+### 🎯 PROSSIMA SESSIONE (stasera) — riscrittura copy per veri intent di ricerca
+Obiettivo dichiarato dal titolare: **i testi del sito sono troppo "finti"/poetici e
+non rispondono a veri intenti di ricerca** → riscriverli in chiave SEO reale
+(query che la gente cerca davvero: "barbiere Olbia", "quanto costa taglio Olbia",
+"parrucchiere uomo Olbia", "barbiere aperto oggi Olbia", ecc.), mantenendo il tono
+brand ma con sostanza fattuale e keyword-intent. Da rivedere: home (Hero/Manifesto/
+WhyUs/Services), /servizi, /lavori, /team, e i18n it/en/fr/de.
+
+### Fatto in questa sessione (locale)
+- **Dominio/canonical unificati** a `www.hairricholbia.com` (`astro.config.mjs`,
+  `.env.local`, `robots.txt`, breadcrumb hardcoded in contatti/lavori/servizi/prodotti/team).
+- **Dato recensioni reale 4,6 · 37** (era falso 4.9/247) ovunque: i18n 4 lingue +
+  `BookingReassurance`/`StatsBanner`/`PortfolioHero`. Schema `aggregateRating` reale.
+- **Recensioni reali** (Antonio Maricosu, Giuseppe Depperu, Filippo Martino, Nicolò
+  Masala, Iolanda Zampelli) in `ReviewsSection` via i18n; rimosso codice morto finto
+  (Alessandro/Francesco/Giovanni/Luigi/"Marco"). Esclusa la recensione "pizza" (off-topic).
+- **Orari reali corretti**: Lun–Sab 09:00–13:00 · 15:00–20:00, Dom chiuso (era Lun
+  chiuso + 9–19). Footer + JsonLd (2 turni) + i18n hoursSummary/openHours.
+- **Schema**: rimosso il 2° JSON-LD in conflitto nel Footer; `HairSalon` unico con
+  `aggregateRating`, orari corretti, `sameAs` (IG + Maps). **Person schema** staff su
+  /team e /team/[slug] (prop `persons` in JsonLd/RootLayout).
+- **GEO/AEO**: `public/llms.txt` creato; `robots.txt` con crawler AI espliciti
+  (GPTBot, PerplexityBot, ClaudeBot, Google-Extended, ecc.).
+- **FAQ /servizi** estesa a 9 domande local-intent (FAQPage schema).
+- **Home H1** ora contiene "Barbiere a Olbia" (localizzato) — `HeroSection.tsx`.
+- **NUOVA pagina pillar `/parrucchiere-olbia`** (it/en/fr/de): server-rendered Astro
+  puro (no componenti landing riusati → niente near-duplicate), layout bespoke con
+  hero+foto, **marquee variante `gold`** (nuova in `MarqueeStrip`, parole diverse
+  dalla home), card 3 servizi, "perché noi", dove siamo+foto+mappa, **fascia oro
+  "taglio a domicilio"**, recensioni reali, FAQ accordion. **Una sola CTA** (hero) +
+  link footer lang-aware. File: `src/lib/content/parrucchiere-olbia.ts`,
+  `src/components/landing/ParrucchiereOlbiaContent.astro`, 4 route.
+- **Fix overflow-x mobile** sulla pagina parrucchiere (H1 long-word + `overflow-x-clip`
+  su article). Verificato con Playwright a 320/360/375px: overflow=0 su tutte le
+  pagine e lingue. Resto del sito già protetto da `body{overflow-x:clip}`.
+
+### Follow-up aperti (oltre alla riscrittura copy)
+- [ ] **Allineare i 3 servizi reali** (Taglio 20€ / Barba 10€ / Combo 30€) anche su
+      `/servizi` e home: oggi il listino i18n `pricing.groups` elenca ancora fade 25€,
+      razor 30€, bambino 15€, rasatura 25€, domicilio 45€ → **da rimuovere** (il
+      titolare ha confermato: solo 3 servizi; domicilio resta solo come servizio
+      telefonico, non a listino).
+- [ ] hreflang senza trailing slash mentre canonical ce l'ha (comportamento
+      `getAlternates` su tutto il sito) — fix globale opzionale.
+- [x] Pushato su `main` l'8 giugno 2026 (sessione SEO/GEO/AEO + pagina parrucchiere).
+      **Resta**: attivare dominio + 301 + env Vercel + Supabase Auth (vedi nota sopra).
+
+---
+
 ## 🔄 Aggiornamento 5-6 giugno 2026 — sessione corrente
 
 ### Fatto in questa sessione (tutto in produzione su `main`)

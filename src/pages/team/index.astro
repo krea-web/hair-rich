@@ -15,6 +15,8 @@ import { MobileBottomBar } from "../../components/ui/MobileBottomBar";
 import { CartDrawer } from "../../components/shop/CartDrawer";
 import { ProductDrawer } from "../../components/shop/ProductDrawer";
 
+import { assetImageUrl } from "../../lib/supabase/queries";
+
 const VALUES = [
   {
     n: "01",
@@ -32,15 +34,56 @@ const VALUES = [
     body: "Il tuo barber ti conosce. Sa come è andato l'ultimo taglio, sa cosa hai apprezzato e cosa no. È un servizio costruito nel tempo, non una transazione singola.",
   },
 ];
+
+const SITE_URL = import.meta.env.PUBLIC_SITE_URL || "https://www.hairricholbia.com";
+
+// Person schema (E-E-A-T) per i barber del team — fetch a build time.
+let teamPersons: Array<Record<string, unknown>> = [];
+try {
+  const sbUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+  const sbKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+  if (sbUrl && sbKey) {
+    const res = await fetch(
+      `${sbUrl}/rest/v1/staff?select=*&is_active=eq.true&show_on_team_page=eq.true&order=sort_order.asc`,
+      { headers: { apikey: sbKey, Authorization: `Bearer ${sbKey}` } }
+    );
+    if (res.ok) {
+      const rows = await res.json();
+      teamPersons = rows
+        .filter((s: any) => s.role_type !== "founder" || s.full_bio || s.bio)
+        .map((s: any) => {
+          const photoRaw = s.avatar_url ?? s.cover_url ?? "";
+          const image = photoRaw
+            ? photoRaw.startsWith("http")
+              ? photoRaw
+              : assetImageUrl(photoRaw, { width: 800, quality: 82, format: "webp" })
+            : undefined;
+          return {
+            name: s.name,
+            jobTitle: s.role || "Barber",
+            description:
+              s.tagline || (s.full_bio ?? s.bio ?? "").slice(0, 220).replace(/\s+\S*$/, ""),
+            image,
+            url: `${SITE_URL}/team/${s.slug}/`,
+            knowsAbout:
+              Array.isArray(s.expertise) && s.expertise.length > 0 ? s.expertise : undefined,
+          };
+        });
+    }
+  }
+} catch {
+  teamPersons = [];
+}
 ---
 
 <RootLayout
   title="Il team · Hair Rich Olbia"
   description="Federico Asara, Cristian e tutto il team di Hair Rich Olbia. Master barber e senior barber sardi, formazione continua, mani sul lavoro dal 2017."
   breadcrumbs={[
-    { name: "Home", url: "https://hair-rich.vercel.app/" },
-    { name: "Team", url: "https://hair-rich.vercel.app/team/" },
+    { name: "Home", url: `${SITE_URL}/` },
+    { name: "Team", url: `${SITE_URL}/team/` },
   ]}
+  persons={teamPersons}
 >
   <SiteHeader client:load />
   <MobileTopBar client:load />

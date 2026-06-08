@@ -10,6 +10,7 @@ import { MobileBottomBar } from "../../components/ui/MobileBottomBar";
 import { CartDrawer } from "../../components/shop/CartDrawer";
 import { ProductDrawer } from "../../components/shop/ProductDrawer";
 import { StaffProfileDetail } from "../../components/landing/team/StaffProfileDetail";
+import { assetImageUrl } from "../../lib/supabase/queries";
 
 export async function getStaticPaths() {
   const url = import.meta.env.PUBLIC_SUPABASE_URL;
@@ -39,7 +40,7 @@ export async function getStaticPaths() {
 
 const { staff } = Astro.props as { staff: any };
 
-const SITE_URL = import.meta.env.PUBLIC_SITE_URL || "https://hair-rich.vercel.app";
+const SITE_URL = import.meta.env.PUBLIC_SITE_URL || "https://www.hairricholbia.com";
 
 const pageTitle = `${staff.name} · ${staff.role || "Master barber"} · Hair Rich Olbia`;
 const pageDescription = staff.tagline
@@ -47,6 +48,26 @@ const pageDescription = staff.tagline
   : staff.full_bio
     ? staff.full_bio.slice(0, 155).replace(/\s+\S*$/, "") + "…"
     : `Scopri ${staff.name}, ${staff.role || "master barber"} di Hair Rich Olbia. Prenota online il tuo prossimo taglio.`;
+
+const photoRaw = staff.avatar_url ?? staff.cover_url ?? "";
+const photoUrl = photoRaw
+  ? photoRaw.startsWith("http")
+    ? photoRaw
+    : assetImageUrl(photoRaw, { width: 800, quality: 82, format: "webp" })
+  : undefined;
+
+const staffPersons = [
+  {
+    name: staff.name,
+    jobTitle: staff.role || "Barber",
+    description:
+      staff.tagline ||
+      (staff.full_bio ?? staff.bio ?? "").slice(0, 220).replace(/\s+\S*$/, ""),
+    image: photoUrl,
+    url: `${SITE_URL}/team/${staff.slug}/`,
+    knowsAbout: Array.isArray(staff.expertise) && staff.expertise.length > 0 ? staff.expertise : undefined,
+  },
+];
 ---
 
 <RootLayout
@@ -57,6 +78,7 @@ const pageDescription = staff.tagline
     { name: "Team", url: `${SITE_URL}/team/` },
     { name: staff.name, url: `${SITE_URL}/team/${staff.slug}/` },
   ]}
+  persons={staffPersons}
 >
   <SiteHeader client:load />
   <MobileTopBar client:load />

@@ -5,49 +5,6 @@ import { useEffect, useState } from "react";
 import { SmartImage } from "./_shared/SmartImage";
 import { assetImageUrl, assetImageSrcset } from "@/lib/supabase/queries";
 
-interface Review {
-    name: string;
-    rating: number;
-    text: string;
-    date: string;
-    location: string;
-}
-
-const REVIEWS: Review[] = [
-    {
-        name: "Alessandro M.",
-        rating: 5,
-        text:
-            "Il miglior barbiere di Olbia, senza dubbio. Marco ha un talento incredibile per il fade — ascolta davvero e ti propone soluzioni cucite addosso. Ci torno ogni mese.",
-        date: "Aprile 2025",
-        location: "Olbia",
-    },
-    {
-        name: "Francesco R.",
-        rating: 5,
-        text:
-            "Ambiente curato, musica perfetta, taglio impeccabile. Hair Rich è un'esperienza, non un semplice appuntamento. Il momento della barba con asciugamani caldi è qualcosa di unico.",
-        date: "Marzo 2025",
-        location: "Cagliari",
-    },
-    {
-        name: "Giovanni P.",
-        rating: 5,
-        text:
-            "Finalmente un posto dove sanno ascoltare. Ho mostrato una foto e il risultato è stato anche meglio. Consigliatissimo a chi cerca qualità sartoriale.",
-        date: "Febbraio 2025",
-        location: "Sassari",
-    },
-    {
-        name: "Luigi B.",
-        rating: 5,
-        text:
-            "La cura dei dettagli è impressionante. Dal lavaggio al rifinitura, ogni gesto è studiato. Il taglio dura davvero un mese e si modella benissimo.",
-        date: "Gennaio 2025",
-        location: "Olbia",
-    },
-];
-
 // Real salon photo from the asset bucket — wider angle of the floor with
 // barbers at work. Lives in the asset/ bucket alongside the other shots.
 const BG_IMG_KEY = "salone-vista-completa.webp";

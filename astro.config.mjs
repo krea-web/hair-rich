@@ -4,8 +4,7 @@ import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 
 export default defineConfig({
-  // TODO: cambiare in https://www.hairricholbia.com appena il dominio sarà comprato e puntato.
-  site: "https://hair-rich.vercel.app",
+  site: "https://www.hairricholbia.com",
   output: "static",
   i18n: {
     defaultLocale: "it",

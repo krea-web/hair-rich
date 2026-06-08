@@ -12,8 +12,15 @@ const HERO_PHOTO = "/hero-seq/frame_001.webp";
 // stati rimossi perché su PC creavano un'accozzaglia che la utente non
 // voleva. La booking CTA resta unica e dominante; gli altri segnali
 // (open now, rating, indirizzo) vivono in sezioni dedicate più sotto.
+const H1_TAGLINE: Record<string, string> = {
+    it: "Barbiere a Olbia",
+    en: "Barbershop in Olbia, Sardinia",
+    fr: "Barbier à Olbia, Sardaigne",
+    de: "Barbier in Olbia, Sardinien",
+};
+
 function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
-    const { t } = useT();
+    const { t, lang } = useT();
     return (
         <div className="flex flex-col justify-center items-center text-center md:items-start md:text-left">
             {withWordmark && (
@@ -62,6 +69,15 @@ function HeroTextBlock({ withWordmark = true }: { withWordmark?: boolean }) {
                         {i === 1 ? <em className="text-display-alt not-italic text-silver">{word}</em> : word}
                     </motion.span>
                 ))}
+                <motion.span
+                    className="block font-body text-sm md:text-base lg:text-base xl:text-lg uppercase tracking-[0.35em] text-accent-warm mt-4 md:mt-5"
+                    variants={{
+                        hidden: { opacity: 0, y: 20 },
+                        visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
+                    }}
+                >
+                    {H1_TAGLINE[lang] ?? H1_TAGLINE.it}
+                </motion.span>
             </motion.h1>
 
             <motion.p
