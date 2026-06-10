@@ -31,6 +31,7 @@ interface AgendaAppt {
     status: string;
     isFirstVisit: boolean;
     customerPhone: string | null;
+    totalCents: number;
 }
 
 function toLocalHHMM(iso: string): string {
@@ -42,6 +43,53 @@ function durationSlots(startISO: string, endISO: string): number {
     const start = new Date(startISO).getTime();
     const end = new Date(endISO).getTime();
     return Math.max(1, Math.round((end - start) / (30 * 60 * 1000)));
+}
+
+function PaymentModal({
+    appt,
+    onConfirm,
+    onClose,
+}: {
+    appt: AgendaAppt;
+    onConfirm: (method: string, priceCents: number) => void;
+    onClose: () => void;
+}) {
+    const [eur, setEur] = useState((appt.totalCents / 100).toFixed(2));
+    const cents = Math.round((parseFloat(eur.replace(",", ".")) || 0) * 100);
+    const discount = Math.max(0, appt.totalCents - cents);
+    const methods = [
+        { v: "cash", l: "Contanti" },
+        { v: "pos", l: "POS / carta" },
+        { v: "package_credit", l: "Credito pacchetto" },
+        { v: "free", l: "Gratis / omaggio" },
+    ];
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" onClick={onClose}>
+            <div className="bg-black-2 border border-line rounded-[var(--radius-md)] p-6 max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
+                <h3 className="text-display text-xl text-warm-white tracking-tight">Incasso appuntamento</h3>
+                <p className="text-warm-white-muted text-sm mt-1">{appt.title}</p>
+                <label className="block mt-4">
+                    <span className="text-[10px] uppercase tracking-[0.2em] text-silver-dark font-body font-semibold">Prezzo incassato €</span>
+                    <input value={eur} onChange={(e) => setEur(e.target.value)} inputMode="decimal"
+                        className="mt-1 w-full bg-black border border-line rounded-md px-3 py-2 text-warm-white text-lg" />
+                </label>
+                <p className="text-[11px] text-silver-dark mt-1">
+                    Listino: {(appt.totalCents / 100).toFixed(2)}€{discount > 0 ? ` · sconto ${(discount / 100).toFixed(2)}€` : ""}
+                </p>
+                <div className="grid grid-cols-2 gap-2 mt-4">
+                    {methods.map((m) => (
+                        <button key={m.v} type="button" onClick={() => onConfirm(m.v, cents)}
+                            className="px-3 py-2.5 rounded-full bg-accent-warm text-black text-xs uppercase tracking-[0.15em] font-body font-semibold hover:scale-[1.02] transition-transform">
+                            {m.l}
+                        </button>
+                    ))}
+                </div>
+                <button type="button" onClick={onClose} className="mt-3 w-full text-silver-dark text-xs uppercase tracking-[0.2em] hover:text-warm-white transition-colors">
+                    Annulla
+                </button>
+            </div>
+        </div>
+    );
 }
 
 function statusClasses(status: string): string {
@@ -151,7 +199,7 @@ export default function AdminAgendaDayView() {
             const { data, error } = await supabase
                 .from("appointments")
                 .select(
-                    `id, start_at, end_at, status, staff_id, is_first_visit,
+                    `id, start_at, end_at, status, staff_id, is_first_visit, total_cents,
                     customer:customer_id ( first_name, last_name, phone ),
                     appointment_services ( service:service_id ( name ) )`
                 )
@@ -171,6 +219,7 @@ export default function AdminAgendaDayView() {
                 status: r.status,
                 isFirstVisit: r.is_first_visit ?? false,
                 customerPhone: r.customer?.phone ?? null,
+                totalCents: r.total_cents ?? 0,
             }));
             setAppts(mapped);
         } catch (e: any) {
@@ -196,6 +245,31 @@ export default function AdminAgendaDayView() {
         }
         addToast(`Stato aggiornato → ${newStatus}`, "success");
         load();
+    };
+
+    // Completamento con incasso: registra metodo (POS/contanti/credito) + prezzo
+    // reale + sconto, poi segna completato. Alimenta il recap POS vs contanti.
+    const [payFor, setPayFor] = useState<AgendaAppt | null>(null);
+    const completeWithPayment = async (
+        appt: AgendaAppt,
+        method: string,
+        pricePaidCents: number,
+    ) => {
+        const supabase = createClient();
+        const discount = Math.max(0, appt.totalCents - pricePaidCents);
+        const { error: e1 } = await supabase.rpc("fn_set_appointment_payment", {
+            p_appointment_id: appt.id,
+            p_price_paid_cents: method === "free" ? 0 : pricePaidCents,
+            p_payment_method: method,
+            p_discount_cents: method === "free" ? appt.totalCents : discount,
+            p_discount_reason: discount > 0 || method === "free" ? "manual" : null,
+        });
+        if (e1) {
+            addToast(`Errore pagamento: ${e1.message}`, "error");
+            return;
+        }
+        await changeStatus(appt.id, "completed");
+        setPayFor(null);
     };
 
     const sensors = useSensors(
@@ -379,7 +453,7 @@ export default function AdminAgendaDayView() {
                                         {open && (
                                             <div className="mt-3 flex gap-2">
                                                 <button
-                                                    onClick={() => changeStatus(ev.id, "completed")}
+                                                    onClick={() => setPayFor(ev)}
                                                     className="flex-1 text-[10px] uppercase tracking-[0.25em] py-2 rounded-full bg-success/15 text-success border border-success/40 hover:bg-success hover:text-black transition-colors"
                                                 >
                                                     Completa
@@ -513,7 +587,7 @@ export default function AdminAgendaDayView() {
                                                     onPointerDown={(e) => e.stopPropagation()}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-                                                        changeStatus(ev.id, "completed");
+                                                        setPayFor(ev);
                                                     }}
                                                     className="text-[9px] uppercase tracking-wide px-1.5 py-0.5 rounded bg-success/20 text-success hover:bg-success hover:text-black transition-colors"
                                                 >
@@ -564,6 +638,13 @@ export default function AdminAgendaDayView() {
                 </div>
             </div>
             </DndContext>
+            {payFor && (
+                <PaymentModal
+                    appt={payFor}
+                    onConfirm={(method, cents) => completeWithPayment(payFor, method, cents)}
+                    onClose={() => setPayFor(null)}
+                />
+            )}
         </div>
     );
 }
