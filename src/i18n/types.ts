@@ -504,6 +504,17 @@ export interface Dict {
             cta: string;
             footer: string;
         };
+        shopHero: {
+            chip: string;
+            h1A: string;
+            h1B: string;
+            intro: string;
+            cta: string;
+            productSingular: string;
+            productPlural: string;
+            metrics: Array<{ value: string; label: string }>;
+            categories: Array<{ label: string; blurb: string }>;
+        };
     };
     contactPage: {
         heroEyebrow: string;

@@ -823,6 +823,26 @@ export const it: Dict = {
             cta: "Chiama per richiedere",
             footer: "Disponibili negli orari di apertura",
         },
+        shopHero: {
+            chip: "Click & Collect · Olbia",
+            h1A: "Quello che usiamo",
+            h1B: "in salone.",
+            intro: "Pomate, cere, oli barba e shampoo selezionati uno per uno. Prenoti online, paghi al ritiro. Niente spedizioni, niente sorprese.",
+            cta: "Esplora il catalogo",
+            productSingular: "prodotto",
+            productPlural: "prodotti",
+            metrics: [
+                { value: "15+", label: "Prodotti curati" },
+                { value: "7gg", label: "Tempo ritiro" },
+                { value: "0€", label: "Spese spedizione" },
+            ],
+            categories: [
+                { label: "Capelli", blurb: "Pomate, cere, polveri" },
+                { label: "Barba", blurb: "Oli, balsami, mousse" },
+                { label: "Rasatura", blurb: "Dopobarba, pre-shave" },
+                { label: "Merchandising", blurb: "T-shirt, felpe, capi brand" },
+            ],
+        },
     },
     contactPage: {
         heroEyebrow: "Contatti · Salone",

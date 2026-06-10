@@ -801,6 +801,26 @@ export const fr: Dict = {
             cta: "Appeler pour demander",
             footer: "Disponibles aux heures d'ouverture",
         },
+        shopHero: {
+            chip: "Click & Collect · Olbia",
+            h1A: "Ce qu'on utilise",
+            h1B: "au salon.",
+            intro: "Pommades, cires, huiles à barbe et shampoings sélectionnés un par un. Réservez en ligne, payez au retrait. Pas d'expédition, pas de surprises.",
+            cta: "Explorer le catalogue",
+            productSingular: "produit",
+            productPlural: "produits",
+            metrics: [
+                { value: "15+", label: "Produits sélectionnés" },
+                { value: "7 j", label: "Délai de retrait" },
+                { value: "0€", label: "Frais de port" },
+            ],
+            categories: [
+                { label: "Cheveux", blurb: "Pommades, cires, poudres" },
+                { label: "Barbe", blurb: "Huiles, baumes, mousses" },
+                { label: "Rasage", blurb: "Après-rasage, pre-shave" },
+                { label: "Merchandising", blurb: "T-shirts, sweats, articles brandés" },
+            ],
+        },
     },
     contactPage: {
         heroEyebrow: "Contact · Salon",

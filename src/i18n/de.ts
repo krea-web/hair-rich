@@ -800,6 +800,26 @@ export const de: Dict = {
             cta: "Zum Anfragen anrufen",
             footer: "Verfügbar zu den Öffnungszeiten",
         },
+        shopHero: {
+            chip: "Click & Collect · Olbia",
+            h1A: "Was wir verwenden",
+            h1B: "im Salon.",
+            intro: "Pomaden, Wachse, Bartöle und Shampoos, eines nach dem anderen ausgewählt. Online reservieren, bei der Abholung zahlen. Kein Versand, keine Überraschungen.",
+            cta: "Katalog entdecken",
+            productSingular: "Produkt",
+            productPlural: "Produkte",
+            metrics: [
+                { value: "15+", label: "Ausgewählte Produkte" },
+                { value: "7 Tage", label: "Abholfrist" },
+                { value: "0€", label: "Versandkosten" },
+            ],
+            categories: [
+                { label: "Haare", blurb: "Pomaden, Wachse, Pulver" },
+                { label: "Bart", blurb: "Öle, Balsame, Moussen" },
+                { label: "Rasur", blurb: "Aftershave, Pre-Shave" },
+                { label: "Merchandising", blurb: "T-Shirts, Hoodies, Markenartikel" },
+            ],
+        },
     },
     contactPage: {
         heroEyebrow: "Kontakt · Salon",

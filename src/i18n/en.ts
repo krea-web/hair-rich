@@ -796,6 +796,26 @@ export const en: Dict = {
             cta: "Call to request",
             footer: "Available during opening hours",
         },
+        shopHero: {
+            chip: "Click & Collect · Olbia",
+            h1A: "What we use",
+            h1B: "at the salon.",
+            intro: "Pomades, waxes, beard oils and shampoos selected one by one. Reserve online, pay on pickup. No shipping, no surprises.",
+            cta: "Explore the catalogue",
+            productSingular: "product",
+            productPlural: "products",
+            metrics: [
+                { value: "15+", label: "Curated products" },
+                { value: "7 days", label: "Pickup window" },
+                { value: "€0", label: "Shipping cost" },
+            ],
+            categories: [
+                { label: "Hair", blurb: "Pomades, waxes, powders" },
+                { label: "Beard", blurb: "Oils, balms, mousses" },
+                { label: "Shave", blurb: "Aftershave, pre-shave" },
+                { label: "Merchandising", blurb: "T-shirts, hoodies, branded items" },
+            ],
+        },
     },
     contactPage: {
         heroEyebrow: "Contact · Salon",

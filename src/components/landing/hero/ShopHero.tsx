@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { fetchProducts, assetImageUrl } from "@/lib/supabase/queries";
+import { useT } from "@/i18n/useLang";
 
 /**
  * Editorial hero for /prodotti. Storefront photo darkened in the bg, two
@@ -76,6 +77,8 @@ const CATEGORY_CARDS: {
 ];
 
 export function ShopHero() {
+    const { t } = useT();
+    const sh = t.productsPage.shopHero;
     const [counts, setCounts] = useState<Record<string, number>>({});
 
     useEffect(() => {
@@ -131,21 +134,20 @@ export function ShopHero() {
                         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent-warm/15 border border-accent-warm/40 mb-5">
                             <span className="w-1.5 h-1.5 rounded-full bg-accent-warm animate-pulse" aria-hidden="true" />
                             <span className="text-[10px] uppercase tracking-[0.3em] text-accent-warm font-body font-semibold">
-                                Click & Collect · Olbia
+                                {sh.chip}
                             </span>
                         </div>
 
                         <h1 className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-5xl xl:text-6xl 2xl:text-7xl text-warm-white tracking-tight leading-[0.92]">
-                            Quello che usiamo
+                            {sh.h1A}
                             <br />
                             <em className="text-display-alt not-italic text-silver">
-                                in salone.
+                                {sh.h1B}
                             </em>
                         </h1>
 
                         <p className="mt-5 md:mt-7 max-w-xl text-warm-white-muted text-base md:text-lg leading-relaxed">
-                            Pomate, cere, oli barba e shampoo selezionati uno per uno. Prenoti
-                            online, paghi al ritiro. Niente spedizioni, niente sorprese.
+                            {sh.intro}
                         </p>
 
                         {/* Three pillar value-props */}
@@ -158,11 +160,7 @@ export function ShopHero() {
                             }}
                             className="mt-8 md:mt-12 grid grid-cols-3 gap-4 max-w-md"
                         >
-                            {[
-                                { value: "15+", label: "Prodotti curati" },
-                                { value: "7gg", label: "Tempo ritiro" },
-                                { value: "0€", label: "Spese spedizione" },
-                            ].map((m) => (
+                            {sh.metrics.map((m) => (
                                 <motion.div
                                     key={m.label}
                                     variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}
@@ -189,7 +187,7 @@ export function ShopHero() {
                                 href="#catalog"
                                 className="cta-shine cta-pulse group inline-flex items-center justify-center gap-3 px-8 py-4 bg-accent-warm text-black rounded-full text-sm uppercase tracking-[0.3em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform shadow-[0_18px_50px_-12px_rgba(212,165,116,0.55)]"
                             >
-                                Esplora il catalogo
+                                {sh.cta}
                                 <svg viewBox="0 0 24 24" className="w-4 h-4 transition-transform group-hover:translate-y-0.5" fill="none" stroke="currentColor" strokeWidth="2.5">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                                 </svg>
@@ -234,14 +232,14 @@ export function ShopHero() {
                                     </span>
                                     <div className="relative">
                                         <span className="block text-warm-white font-body font-semibold text-sm md:text-base leading-tight">
-                                            {c.label}
+                                            {sh.categories[i]?.label ?? c.label}
                                         </span>
                                         <span className="block text-silver-dark text-[10px] md:text-xs uppercase tracking-[0.25em] font-body font-semibold mt-1">
-                                            {c.blurb}
+                                            {sh.categories[i]?.blurb ?? c.blurb}
                                         </span>
                                         {c.showCount && typeof count === "number" && count > 0 && (
                                             <span className="block mt-2 text-accent-warm text-xs md:text-sm font-display tabular-nums">
-                                                {count} {count === 1 ? "prodotto" : "prodotti"}
+                                                {count} {count === 1 ? sh.productSingular : sh.productPlural}
                                             </span>
                                         )}
                                     </div>
