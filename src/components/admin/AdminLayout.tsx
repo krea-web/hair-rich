@@ -21,6 +21,7 @@ const MAIN_MENU = [
     { href: "/admin/clienti-cerca", label: "Ricerca avanzata", icon: "svg-users" },
     { href: "/admin/clienti-no-show", label: "No-show", icon: "svg-users" },
     { href: "/admin/ordini", label: "Ordini & Cassa", icon: "svg-wallet" },
+    { href: "/admin/spese", label: "Spese attività", icon: "svg-wallet" },
     { href: "/admin/foto-risultati", label: "Foto risultato", icon: "svg-camera" },
     { href: "/admin/salute", label: "Salute sistema", icon: "svg-pulse" },
 ];

@@ -33,6 +33,7 @@ import AdminSondaggiPage from "./views/sondaggi";
 import AdminClientiCercaPage from "./views/clienti-cerca";
 import AdminContenutiAiPage from "./views/contenuti-ai";
 import AdminFornitoriPage from "./views/fornitori";
+import AdminSpesePage from "./views/spese";
 import AdminQrPromoPage from "./views/qr-promo";
 import AdminSalutePage from "./views/salute";
 import AdminHardwarePage from "./views/hardware";
@@ -121,6 +122,8 @@ function pickView(pathname: string) {
             return <AdminContenutiAiPage />;
         case "/admin/fornitori":
             return <AdminFornitoriPage />;
+        case "/admin/spese":
+            return <AdminSpesePage />;
         case "/admin/qr-promo":
             return <AdminQrPromoPage />;
         case "/admin/salute":
