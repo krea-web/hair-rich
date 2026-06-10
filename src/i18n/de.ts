@@ -755,6 +755,10 @@ export const de: Dict = {
         ],
     },
     teamPage: {
+        heroEyebrow: "Master Barber · Olbia",
+        heroBody: "Federico, Cristian und alle, die hinter dem Stuhl wachsen. Jede Hand hat ihre Handschrift, der Standard ist einer.",
+        heroFooterLeft: "Am Werk · Seit 2017",
+        heroFooterRight: "03 / Team",
         valuesEyebrow: "Was uns verbindet",
         valuesTitle: "Drei Werte, die man in jedem Service sieht.",
         values: [
@@ -784,6 +788,18 @@ export const de: Dict = {
             { q: "Kann ich ein Produkt vor dem Kauf testen?", a: "Ja, im Salon haben wir offene Tester für Pomaden, Wachse und Öle. Komm vorbei, wir lassen dich die Textur in der Hand fühlen. Wir verkaufen nichts blind." },
             { q: "Was, wenn mich ein Produkt nicht überzeugt?", a: "Du hast 14 Tage, um es zu tauschen oder einen Gutschein im gleichen Wert zu bekommen. Wir ersetzen es direkt im Salon — nichts zurückzuschicken." },
         ],
+        merch: {
+            chip: "Limited Edition · nur im Salon",
+            titleA: "Offizielles Merch",
+            body: "T-Shirts, Hoodies und Caps mit Hair-Rich-Branding. Kein Online-Katalog, limitierte Stücke. Ruf uns an, um zu erfahren, was wir haben, Größen und Farben — komm zum Abholen in den Salon.",
+            facts: [
+                { v: "Limited", l: "Exklusive Drops" },
+                { v: "100%", l: "Premium-Baumwolle" },
+                { v: "Olbia", l: "Nur im Salon" },
+            ],
+            cta: "Zum Anfragen anrufen",
+            footer: "Verfügbar zu den Öffnungszeiten",
+        },
     },
     contactPage: {
         heroEyebrow: "Kontakt · Salon",

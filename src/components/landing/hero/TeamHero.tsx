@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { assetImageUrl, assetImageSrcset } from "@/lib/supabase/queries";
 import { Wordmark } from "../_shared/Wordmark";
+import { useT } from "@/i18n/useLang";
 
 /**
  * Editorial hero for /team. Full-bleed photo of the salon with the
@@ -11,6 +12,8 @@ import { Wordmark } from "../_shared/Wordmark";
  * (no scroll before the showcase begins).
  */
 export function TeamHero() {
+    const { t } = useT();
+    const h = t.teamPage;
     return (
         <section className="relative bg-black overflow-hidden border-b border-line">
             {/* Background: salone with both barbers at work */}
@@ -48,7 +51,7 @@ export function TeamHero() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
                 >
-                    Master barber · Olbia
+                    {h.heroEyebrow}
                 </motion.span>
 
                 <motion.h1
@@ -66,7 +69,7 @@ export function TeamHero() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.65 }}
                 >
-                    Federico, Cristian e chi sta crescendo dietro la sedia. Ogni mano ha la sua firma, lo standard è uno.
+                    {h.heroBody}
                 </motion.p>
 
                 <motion.div
@@ -76,10 +79,10 @@ export function TeamHero() {
                     className="mt-10 md:mt-12 flex items-end justify-between gap-4 w-full"
                 >
                     <span className="text-[10px] uppercase tracking-[0.4em] text-silver-dark font-body font-semibold">
-                        Sul campo · Dal 2017
+                        {h.heroFooterLeft}
                     </span>
                     <span className="text-[10px] uppercase tracking-[0.4em] text-silver-dark font-body font-semibold">
-                        03 / Team
+                        {h.heroFooterRight}
                     </span>
                 </motion.div>
             </div>

@@ -778,6 +778,10 @@ export const it: Dict = {
         ],
     },
     teamPage: {
+        heroEyebrow: "Master barber · Olbia",
+        heroBody: "Federico, Cristian e chi sta crescendo dietro la sedia. Ogni mano ha la sua firma, lo standard è uno.",
+        heroFooterLeft: "Sul campo · Dal 2017",
+        heroFooterRight: "03 / Team",
         valuesEyebrow: "Cosa ci unisce",
         valuesTitle: "Tre valori che si vedono in ogni servizio.",
         values: [
@@ -807,6 +811,18 @@ export const it: Dict = {
             { q: "Posso provare un prodotto prima di acquistarlo?", a: "Sì, in salone abbiamo i tester aperti per pomate, cere e oli. Passa, ti facciamo provare la texture in mano. Non vendiamo niente al buio." },
             { q: "Cosa succede se un prodotto non mi convince?", a: "Hai 14 giorni per cambiarlo o ottenere un buono di pari valore. Lo sostituiamo direttamente in salone — nessun reso da spedire." },
         ],
+        merch: {
+            chip: "Edizione limitata · solo in salone",
+            titleA: "Merch ufficiale",
+            body: "T-shirt, felpe e cappellini brandizzati Hair Rich. Niente catalogo online, pezzi limitati. Chiamaci per sapere cosa abbiamo disponibile, taglie e colori — passa a ritirare in salone.",
+            facts: [
+                { v: "Limited", l: "Drop esclusivi" },
+                { v: "100%", l: "Cotone premium" },
+                { v: "Olbia", l: "Solo in salone" },
+            ],
+            cta: "Chiama per richiedere",
+            footer: "Disponibili negli orari di apertura",
+        },
     },
     contactPage: {
         heroEyebrow: "Contatti · Salone",

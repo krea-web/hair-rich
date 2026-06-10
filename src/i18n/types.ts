@@ -477,6 +477,10 @@ export interface Dict {
         faq: Array<{ q: string; a: string }>;
     };
     teamPage: {
+        heroEyebrow: string;
+        heroBody: string;
+        heroFooterLeft: string;
+        heroFooterRight: string;
         valuesEyebrow: string;
         valuesTitle: string;
         values: Array<{ n: string; title: string; body: string }>;
@@ -492,6 +496,14 @@ export interface Dict {
         faqEyebrow: string;
         faqTitle: string;
         faq: Array<{ q: string; a: string }>;
+        merch: {
+            chip: string;
+            titleA: string;
+            body: string;
+            facts: Array<{ v: string; l: string }>;
+            cta: string;
+            footer: string;
+        };
     };
     contactPage: {
         heroEyebrow: string;

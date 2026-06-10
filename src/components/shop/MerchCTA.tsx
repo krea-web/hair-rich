@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { assetImageUrl, assetImageSrcset } from "@/lib/supabase/queries";
 import { SITE } from "@/lib/constants";
+import { useT } from "@/i18n/useLang";
 
 /**
  * Phone-only CTA for Hair Rich branded merch (T-shirt, felpe, cappellini).
@@ -12,6 +13,8 @@ import { SITE } from "@/lib/constants";
  * atterra.
  */
 export function MerchCTA() {
+    const { t } = useT();
+    const md = t.productsPage.merch;
     const phoneHref = "tel:+39" + SITE.phone.replace(/\s+/g, "");
     return (
         <section
@@ -53,7 +56,7 @@ export function MerchCTA() {
                     <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent-warm/15 border border-accent-warm/40">
                         <span className="w-1.5 h-1.5 rounded-full bg-accent-warm animate-pulse" aria-hidden="true" />
                         <span className="text-[10px] uppercase tracking-[0.3em] text-accent-warm font-body font-semibold">
-                            Edizione limitata · solo in salone
+                            {md.chip}
                         </span>
                     </span>
 
@@ -61,24 +64,18 @@ export function MerchCTA() {
                         id="merch-title"
                         className="text-display text-4xl sm:text-5xl md:text-7xl text-warm-white tracking-tight mt-5 md:mt-7 leading-[0.95]"
                     >
-                        Merch ufficiale
+                        {md.titleA}
                         <br />
                         <em className="text-display-alt not-italic text-silver">Hair Rich.</em>
                     </h2>
 
                     <p className="mt-6 md:mt-8 text-warm-white-muted text-base md:text-lg leading-relaxed max-w-xl">
-                        T-shirt, felpe e cappellini brandizzati Hair Rich. Niente catalogo
-                        online, pezzi limitati. Chiamaci per sapere cosa abbiamo
-                        disponibile, taglie e colori — passa a ritirare in salone.
+                        {md.body}
                     </p>
 
                     {/* Three quick facts */}
                     <dl className="mt-8 md:mt-10 grid grid-cols-3 gap-3 md:gap-6 max-w-lg">
-                        {[
-                            { v: "Limited", l: "Drop esclusivi" },
-                            { v: "100%", l: "Cotone premium" },
-                            { v: "Olbia", l: "Solo in salone" },
-                        ].map((m) => (
+                        {md.facts.map((m) => (
                             <div key={m.l} className="border-l-2 border-accent-warm/60 pl-3">
                                 <dt className="text-display text-2xl md:text-3xl text-warm-white tabular-nums">
                                     {m.v}
@@ -105,7 +102,7 @@ export function MerchCTA() {
                             <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.91.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0122 16.92z" />
                             </svg>
-                            Chiama per richiedere
+                            {md.cta}
                         </a>
                         <a
                             href={phoneHref}
@@ -116,7 +113,7 @@ export function MerchCTA() {
                     </motion.div>
 
                     <p className="mt-6 text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
-                        Disponibili negli orari di apertura
+                        {md.footer}
                     </p>
                 </motion.div>
             </div>

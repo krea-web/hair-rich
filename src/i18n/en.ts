@@ -751,6 +751,10 @@ export const en: Dict = {
         ],
     },
     teamPage: {
+        heroEyebrow: "Master barber · Olbia",
+        heroBody: "Federico, Cristian and those growing behind the chair. Every hand has its signature, the standard is one.",
+        heroFooterLeft: "On the floor · Since 2017",
+        heroFooterRight: "03 / Team",
         valuesEyebrow: "What unites us",
         valuesTitle: "Three values you can see in every service.",
         values: [
@@ -780,6 +784,18 @@ export const en: Dict = {
             { q: "Can I try a product before buying it?", a: "Yes, at the salon we have open testers for pomades, waxes and oils. Drop by and feel the texture in your hand. We don't sell anything blind." },
             { q: "What if a product isn't right for me?", a: "You have 14 days to swap it or get a voucher of equal value. We replace it directly at the salon — nothing to ship back." },
         ],
+        merch: {
+            chip: "Limited edition · salon only",
+            titleA: "Official merch",
+            body: "Hair Rich branded T-shirts, hoodies and caps. No online catalogue, limited pieces. Call us to find out what we have, sizes and colours — drop by the salon to collect.",
+            facts: [
+                { v: "Limited", l: "Exclusive drops" },
+                { v: "100%", l: "Premium cotton" },
+                { v: "Olbia", l: "Salon only" },
+            ],
+            cta: "Call to request",
+            footer: "Available during opening hours",
+        },
     },
     contactPage: {
         heroEyebrow: "Contact · Salon",
