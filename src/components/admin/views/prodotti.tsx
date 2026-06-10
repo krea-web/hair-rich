@@ -70,6 +70,30 @@ export default function AdminProdottiPage() {
         return true;
     };
 
+    // "Usato in salone": consuma 1 pezzo come uso interno (spesa/COGS, NON vendita).
+    // Decrementa lo stock e logga il movimento via RPC fn_record_stock_use.
+    const useInternal = async (id: string, current: number) => {
+        if (current <= 0) {
+            addToast("Stock a zero, niente da scalare", "error");
+            return;
+        }
+        setSavingId(id);
+        const supabase = createClient();
+        const { error } = await supabase.rpc("fn_record_stock_use", {
+            p_product_id: id,
+            p_qty: 1,
+            p_reason: "internal_use",
+            p_source: "admin",
+        });
+        setSavingId(null);
+        if (error) {
+            addToast(`Errore: ${error.message}`, "error");
+            return;
+        }
+        setProducts((rows) => rows.map((r) => (r.id === id ? { ...r, stock: Math.max(0, r.stock - 1) } : r)));
+        addToast("Stock −1 (usato in salone, registrato come spesa)", "success");
+    };
+
     const filtered = useMemo(() => {
         return products.filter((p) => {
             if (category !== "all" && p.category !== category) return false;
@@ -218,6 +242,15 @@ export default function AdminProdottiPage() {
                                                 disabled={saving}
                                                 onSave={(n) => updateField(p.id, { stock: n })}
                                             />
+                                            <button
+                                                type="button"
+                                                onClick={() => useInternal(p.id, p.stock)}
+                                                disabled={saving || p.stock <= 0}
+                                                title="Usato in salone (−1, spesa, non vendita)"
+                                                className="mt-1 block ml-auto text-[9px] uppercase tracking-[0.2em] text-silver-dark hover:text-accent-warm disabled:opacity-40 font-body font-semibold"
+                                            >
+                                                − Usato in salone
+                                            </button>
                                         </td>
                                         <td className="p-3 text-center">
                                             <button
