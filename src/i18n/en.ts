@@ -131,10 +131,10 @@ export const en: Dict = {
         titleB: "Barber.",
         featured: {
             name: "Federico Asara",
-            role: "Master Barber & Founder",
+            role: "Master Barber & Co-founder",
             quote: "Every cut is a tailoring act. No formulas, no shortcuts.",
             bio:
-                "Federico is the founder of Hair Rich. He learned the craft young and has refined his technique ever since. Specialised in razor cut, surgical fades and shape-ups tailored to face morphology. Today he cuts personally at the salon and trains his team with a tailored method.",
+                "Federico is the co-founder of Hair Rich, together with Riccardo. He learned the craft young and has refined his technique ever since. Specialised in razor cut, surgical fades and shape-ups tailored to face morphology. Today he cuts personally at the salon and trains his team with a tailored method.",
             specialties: ["Razor", "Fade", "Classic", "Beard"],
             yearsLabel: "10+",
             yearsCaption: "years on the chair",

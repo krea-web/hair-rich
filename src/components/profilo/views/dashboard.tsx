@@ -323,7 +323,7 @@ export default function ProfiloDashboardPage() {
                             </div>
 
                             <div className="hidden md:block">
-                                <span className="text-display-alt text-xl text-accent-warm">Sartoriale</span>
+                                <span className="text-display-alt text-xl text-accent-warm">Prossimo</span>
                                 <h3 className="text-display text-2xl text-warm-white tracking-tight">{nextService}</h3>
 
                                 <div className="mt-3 flex items-center gap-4">

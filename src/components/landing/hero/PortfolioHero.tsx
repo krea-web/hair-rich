@@ -30,7 +30,7 @@ export function PortfolioHero() {
                         className="lg:col-span-7"
                     >
                         <span className="text-[10px] md:text-xs uppercase tracking-[0.5em] text-accent-warm font-body font-semibold">
-                            Contact sheet · 2024–2026
+                            Tagli realizzati · Olbia
                         </span>
                         <h1 className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-5xl xl:text-6xl 2xl:text-7xl text-warm-white tracking-tight mt-3 md:mt-5 leading-[0.92]">
                             Tagli che
@@ -58,9 +58,9 @@ export function PortfolioHero() {
                             className="mt-8 md:mt-12 grid grid-cols-3 gap-4 max-w-md"
                         >
                             {[
-                                { value: "240+", label: "Tagli archiviati" },
-                                { value: "12", label: "Mesi attivi" },
-                                { value: "4.6★", label: "Media recensioni" },
+                                { value: "4,6★", label: "37 recensioni" },
+                                { value: "dal 2017", label: "A Olbia" },
+                                { value: "3", label: "Servizi" },
                             ].map((m) => (
                                 <motion.div
                                     key={m.label}
@@ -131,7 +131,7 @@ export function PortfolioHero() {
                     className="absolute left-6 md:left-12 lg:left-20 right-6 md:right-12 lg:right-20 bottom-6 md:bottom-8 flex items-end justify-between gap-4 pointer-events-none"
                 >
                     <span className="text-[10px] uppercase tracking-[0.4em] text-silver-dark font-body font-semibold">
-                        Archive 2024 — 2026
+                        Hair Rich · Olbia
                     </span>
                     <span className="text-[10px] uppercase tracking-[0.4em] text-silver-dark font-body font-semibold">
                         02 / Lavori

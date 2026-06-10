@@ -165,7 +165,7 @@ export function BookingHero() {
                                             </span>
                                         </div>
                                         <p className="mt-3 text-warm-white-muted text-sm md:text-base">
-                                            con <span className="text-warm-white font-semibold">{next.staffName}</span> · Taglio sartoriale
+                                            con <span className="text-warm-white font-semibold">{next.staffName}</span> · Taglio uomo
                                         </p>
                                     </>
                                 ) : (

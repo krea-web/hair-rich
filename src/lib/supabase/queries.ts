@@ -100,6 +100,20 @@ export async function fetchStaff(): Promise<Staff[]> {
     return (data ?? []) as Staff[];
 }
 
+// Staff selezionabili in prenotazione: solo chi lavora in poltrona.
+// Esclude founder/receptionist (es. Riccardo è founder e non prende appuntamenti).
+export async function fetchBookableStaff(): Promise<Staff[]> {
+    const supabase = createClient();
+    const { data, error } = await supabase
+        .from("staff")
+        .select("*")
+        .eq("is_active", true)
+        .not("role_type", "in", "(founder,receptionist)")
+        .order("sort_order");
+    if (error) throw error;
+    return (data ?? []) as Staff[];
+}
+
 export async function fetchStaffForTeamPage(): Promise<Staff[]> {
     const supabase = createClient();
     const { data, error } = await supabase

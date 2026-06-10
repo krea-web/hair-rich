@@ -26,7 +26,7 @@ const mapsHref =
   "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(SITE.address);
 const mapsEmbed =
   "https://www.google.com/maps?q=" + encodeURIComponent(SITE.address) + "&output=embed";
-const phoneHref = "tel:" + SITE.phone.replace(/\s+/g, "");
+const phoneHref = "tel:+39" + SITE.phone.replace(/\s+/g, "");
 
 const homeWatermark: Record<string, string> = {
   it: "Domicilio",

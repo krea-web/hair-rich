@@ -83,8 +83,8 @@ export function StyleQuiz() {
                         Tre opzioni. Un tap. Sei in poltrona.
                     </h2>
                     <p className="mt-4 text-warm-white-muted text-base md:text-lg leading-relaxed">
-                        Niente questionari, niente tabelle. Scegli cosa vuoi fare oggi e
-                        prenoti il prossimo slot disponibile — in 60 secondi.
+                        Taglio 20€, barba 10€, combo 30€. Scegli cosa fare oggi e
+                        prenoti il prossimo slot — in 60 secondi.
                     </p>
                 </div>
 

@@ -47,7 +47,7 @@ const ENRICHMENT: Record<string, ServiceEnrichment> = {
     "taglio-barba": {
         poetic: "Un'ora intera. Capelli e barba in continuità, niente dettaglio lasciato indietro.",
         persona: "Per chi viene da noi una volta al mese e vuole tutto.",
-        tools: ["Tutto il taglio capelli", "Tutta la barba sartoriale", "Pausa relax"],
+        tools: ["Tutto il taglio capelli", "Tutta la barba", "Un'ora dedicata"],
         coverImage: "salone-interno-postazioni.webp",
         coverBucket: "asset",
     },
@@ -270,7 +270,7 @@ export function ServiceCatalog() {
 }
 
 function HomeServiceCard({ index }: { index: number }) {
-    const phoneHref = "tel:" + SITE.phone.replace(/\s+/g, "");
+    const phoneHref = "tel:+39" + SITE.phone.replace(/\s+/g, "");
     const reverse = index % 2 === 1;
     return (
         <motion.article

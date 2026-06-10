@@ -47,7 +47,7 @@ export function ServicesHero() {
                 >
                     <span className="w-1.5 h-1.5 rounded-full bg-accent-warm animate-pulse" aria-hidden="true" />
                     <span className="text-[10px] uppercase tracking-[0.3em] text-accent-warm font-body font-semibold">
-                        Slot oggi disponibili
+                        Su prenotazione · Olbia centro
                     </span>
                 </motion.div>
 
@@ -58,9 +58,9 @@ export function ServicesHero() {
                     transition={{ duration: 0.9, ease: [0.25, 0.1, 0.25, 1], delay: 0.2 }}
                     className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-5xl xl:text-6xl 2xl:text-7xl text-warm-white tracking-tight leading-[0.92] max-w-3xl"
                 >
-                    Tre servizi.
+                    Taglio e barba
                     <br />
-                    <em className="text-display-alt not-italic text-silver">Un tap.</em>
+                    <em className="text-display-alt not-italic text-silver">a Olbia.</em>
                 </motion.h1>
 
                 <motion.p
@@ -69,8 +69,8 @@ export function ServicesHero() {
                     transition={{ duration: 0.8, delay: 0.45 }}
                     className="mt-5 md:mt-7 max-w-xl text-warm-white-muted text-base md:text-lg leading-relaxed"
                 >
-                    Listino trasparente, prenotazione in 60 secondi, conferma immediata.
-                    Niente carte, niente acconti.
+                    Taglio capelli 20€, barba 10€, taglio + barba 30€. Prenoti online in un minuto,
+                    paghi in salone. Lavaggio e styling sempre inclusi.
                 </motion.p>
 
                 {/* Primary CTA */}
@@ -94,9 +94,9 @@ export function ServicesHero() {
                     className="mt-10 md:mt-14 lg:mt-16 grid grid-cols-3 gap-4 md:gap-8 lg:gap-12 xl:gap-16 max-w-xl lg:max-w-2xl xl:max-w-3xl"
                 >
                     {[
-                        { v: "60s", l: "Booking online" },
-                        { v: "0€", l: "Acconto" },
-                        { v: "24/7", l: "Slot in tempo reale" },
+                        { v: "da 20€", l: "Listino" },
+                        { v: "60s", l: "Prenoti online" },
+                        { v: "4,6★", l: "37 recensioni" },
                     ].map((m) => (
                         <motion.div
                             key={m.l}

@@ -14,7 +14,7 @@ const LINKS = [
     { href: "/contatti", key: "about" as const },
 ];
 
-const phoneHref = "tel:" + SITE.phone.replace(/\s+/g, "");
+const phoneHref = "tel:+39" + SITE.phone.replace(/\s+/g, "");
 const mapsHref =
     "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(SITE.address);
 

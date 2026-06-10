@@ -36,8 +36,8 @@ const ROUTES: Route[] = [
     },
     {
         title: "Dall'aeroporto",
-        body: "10 minuti in auto da Olbia–Costa Smeralda. Taxi diretto al centro, costo medio 12–15€.",
-        detail: "Pratico per chi atterra: prenota con anticipo e fai il taglio prima del check-in hotel.",
+        body: "10–15 minuti in auto dall'aeroporto Olbia Costa Smeralda. In taxi, a noleggio o in navetta arrivi dritto in centro.",
+        detail: "Pratico per chi atterra: prenota con anticipo e fai il taglio prima del check-in in hotel.",
         icon: (
             <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M22 16v-2l-8.5-5V3.5a1.5 1.5 0 00-3 0V9L2 14v2l8.5-2.5V19L8 20.5V22l4-1 4 1v-1.5L13.5 19v-5.5L22 16z" />

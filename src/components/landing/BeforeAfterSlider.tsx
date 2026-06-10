@@ -16,7 +16,7 @@ interface Pair {
 const REAL_PAIR: Pair = {
     before: "trasformazione-prima.webp",
     after: "trasformazione-dopo.webp",
-    title: "Bowl cut + low fade · taglio sartoriale Hair Rich",
+    title: "Bowl cut + low fade · taglio uomo Hair Rich Olbia",
     note: "Stessa testa, stesso sguardo. Solo il taglio cambia.",
 };
 

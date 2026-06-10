@@ -6,39 +6,9 @@ import { SmartImage } from "./_shared/SmartImage";
 import { useBookingDrawer } from "@/lib/store";
 import { useT } from "@/i18n/useLang";
 
-interface PriceItem {
-    name: string;
-    description: string;
-    duration: string;
-    price: string;
-    popular?: boolean;
-    seasonal?: boolean;
-}
-
 // Indici (gi, i) dei prezzi che hanno tag speciali — dipende dall'ordine nel dizionario
-const POPULAR_KEYS = new Set(["0-1", "1-2"]); // Fade & Sfumatura · Taglio + Barba
-const SEASONAL_KEYS = new Set(["1-3"]); // Taglio a domicilio (highlight come "novità")
-
-const PRICE_GROUPS: { title: string; items: PriceItem[] }[] = [
-    {
-        title: "Taglio",
-        items: [
-            { name: "Taglio classico", description: "Forbice, lavaggio e styling", duration: "30'", price: "€20" },
-            { name: "Fade & Sfumatura", description: "Sfumatura precisa, forbice, rasoio", duration: "45'", price: "€25", popular: true },
-            { name: "Razor cut", description: "Lavorazione completa al rasoio", duration: "50'", price: "€30" },
-            { name: "Taglio bambino", description: "Da 0 a 12 anni", duration: "25'", price: "€15" },
-        ],
-    },
-    {
-        title: "Barba & Servizi",
-        items: [
-            { name: "Barba sartoriale", description: "Modellatura, asciugamani caldi, olio", duration: "30'", price: "€15" },
-            { name: "Rasatura tradizionale", description: "Rasoio a mano libera, servizio completo", duration: "40'", price: "€25" },
-            { name: "Taglio + Barba", description: "Il combo signature", duration: "60'", price: "€35", popular: true },
-            { name: "Taglio a domicilio", description: "Veniamo noi. Su prenotazione, in orari concordati.", duration: "60'", price: "€45", seasonal: true },
-        ],
-    },
-];
+const POPULAR_KEYS = new Set(["0-2"]); // Taglio + Barba (combo)
+const SEASONAL_KEYS = new Set<string>(); // nessun servizio "novità" a listino
 
 const ASIDE_IMG =
     "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=900&auto=format&fit=crop";

@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useBookingStore } from "@/lib/store";
 import { formatPrice } from "@/lib/format";
-import { fetchServices, fetchStaff } from "@/lib/supabase/queries";
+import { fetchServices, fetchBookableStaff } from "@/lib/supabase/queries";
 
 const STAFF_ANY_ID = "any";
 
@@ -23,7 +23,7 @@ export function StepServiceStaff({ onNext }: { onNext: () => void }) {
     useEffect(() => {
         let alive = true;
         if (services.length > 0) return;
-        Promise.all([fetchServices(), fetchStaff()])
+        Promise.all([fetchServices(), fetchBookableStaff()])
             .then(([svc, st]) => {
                 if (!alive) return;
                 setCatalog(svc, st);

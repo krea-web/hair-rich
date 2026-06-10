@@ -39,7 +39,7 @@ export const it: Dict = {
         titleA: "BARBER",
         titleB: "STUDIO",
         body:
-            "Da otto anni la nostra missione è scolpire la tua identità. Taglio, barba e trattamenti esclusivi nel cuore di Olbia.",
+            "Taglio capelli e barba da uomo, nel centro di Olbia. Su prenotazione, un cliente alla volta, senza fretta — dal 2017.",
         primaryCta: "Prenota Ora",
         secondaryCta: "Esplora i servizi",
         captionEyebrow: "Premium",
@@ -60,16 +60,16 @@ export const it: Dict = {
         titleA: "Il nostro",
         titleB: "studio.",
         bodyP1:
-            "Hair Rich nasce da una visione: trasformare il taglio in un'esperienza intima, sartoriale, irripetibile. Una poltrona, un Master Barber, mani esperte.",
+            "Hair Rich è un barbiere specializzato sull'uomo, nel centro di Olbia. Una persona alla volta, tutto il tempo che serve: prima ci parliamo, poi tagliamo.",
         bodyP2:
-            "Niente fretta. Niente standardizzazioni. Solo il tempo che serve per scolpire il tuo carattere — un fade alla volta.",
+            "Niente fretta e niente tagli a stampino. Partiamo dalla forma del tuo viso e da quanto tempo dedichi ai capelli, per un taglio che sta bene anche dopo una settimana.",
         values: [
-            "Sartorialità ossessiva",
-            "Materiali premium",
-            "Atmosfera intima",
-            "Tempo lento",
+            "Solo uomo e barba",
+            "Su prenotazione",
+            "Lavaggio e styling inclusi",
+            "In centro a Olbia",
         ],
-        cta: "Vivi l'esperienza",
+        cta: "Prenota il tuo taglio",
         sinceLabel: "since",
     },
     services: {
@@ -77,37 +77,37 @@ export const it: Dict = {
         titleA: "I nostri",
         titleB: "servizi.",
         intro:
-            "Tre famiglie di trattamenti per ogni momento della tua giornata. Scegli il servizio che ti rappresenta — noi pensiamo al resto.",
+            "Tre servizi, prezzi chiari: taglio capelli 20€, barba 10€, taglio + barba 30€. Lavaggio e styling sempre inclusi, su prenotazione. Facciamo anche il taglio a domicilio a Olbia (solo per telefono).",
         items: [
             {
-                eyebrow: "Sharp",
+                eyebrow: "20€ · 30 min",
                 title: "TAGLIO",
                 description:
-                    "Tagli classici, fade chirurgici, sfumature al rasoio. Ogni capo è studiato sul tuo viso.",
-                items: ["Taglio classico", "Fade & Sfumature", "Razor Cut", "Bambino"],
+                    "Taglio capelli uomo: forbice o macchinetta, sfumatura e contorni curati. Lavaggio e styling inclusi.",
+                items: ["Forbice o macchinetta", "Sfumatura e contorni", "Lavaggio + styling", "Su prenotazione"],
             },
             {
-                eyebrow: "Refined",
+                eyebrow: "10€ · 30 min",
                 title: "BARBA",
                 description:
-                    "Modellatura, rifinitura, asciugamani caldi e olio essenziale per una rasatura impeccabile.",
+                    "Modellatura e rifinitura della barba con asciugamano caldo, rasoio classico e olio nutriente.",
                 items: [
-                    "Modellatura",
-                    "Rasatura tradizionale",
-                    "Designer beard",
-                    "Trattamento idratante",
+                    "Asciugamano caldo",
+                    "Rasoio classico",
+                    "Contorni netti",
+                    "Olio nutriente",
                 ],
             },
             {
-                eyebrow: "Home",
-                title: "DOMICILIO",
+                eyebrow: "30€ · 60 min",
+                title: "COMBO",
                 description:
-                    "Veniamo da te. Servizio su prenotazione per chi non può raggiungere il salone — stessa qualità sartoriale.",
+                    "Taglio capelli + barba in un'unica seduta da un'ora. Il servizio completo Hair Rich.",
                 items: [
-                    "Taglio a domicilio",
-                    "Barba a domicilio",
-                    "Cerimonie & matrimoni",
-                    "Su prenotazione",
+                    "Taglio + barba",
+                    "Un'ora dedicata",
+                    "Lavaggio + styling",
+                    "Il più richiesto",
                 ],
             },
         ],
@@ -119,24 +119,24 @@ export const it: Dict = {
         titleB: "davvero.",
         features: [
             {
-                title: "Atmosfera Intima",
+                title: "Specializzati sull'uomo",
                 description:
-                    "Solo poche poltrone, niente folla. Ogni cliente è un ospite — non una pratica da chiudere.",
+                    "Tagliamo capelli e barba da uomo tutto il giorno, ogni giorno. La specializzazione si vede sul risultato.",
             },
             {
-                title: "Master Barber Certificati",
+                title: "Su prenotazione, niente attese",
                 description:
-                    "Anni di formazione internazionale. Ogni taglio è studiato sulla tua morfologia, non sulle mode passeggere.",
+                    "Prenoti online in un minuto o per telefono. Slot ampi, mai sovrapposti: entri e sei subito in poltrona.",
             },
             {
-                title: "Strumenti Premium",
+                title: "Taglio cucito su di te",
                 description:
-                    "Lame giapponesi, prodotti formulati a mano, salviette in cotone organico. Niente compromessi.",
+                    "Partiamo dalla forma del viso e dal tuo stile di vita, non dalle mode del momento. Un taglio che regge anche dopo una settimana.",
             },
             {
-                title: "Tempo Dedicato",
+                title: "Nel centro di Olbia",
                 description:
-                    "Slot ampi, mai sovrapposti. Il servizio richiede calma — ne avrai a sufficienza.",
+                    "In Via Regina Elena 33/A, a due passi dal Corso Umberto. Parcheggio nelle vicinanze, aperto lun–sab 9–13 e 15–20.",
             },
         ],
     },
@@ -146,10 +146,10 @@ export const it: Dict = {
         titleB: "Barber.",
         featured: {
             name: "Federico Asara",
-            role: "Master Barber & Founder",
-            quote: "Ogni taglio è un atto sartoriale. Niente formule, niente shortcut.",
+            role: "Master Barber & Co-founder",
+            quote: "L'abbiamo pensato come un posto dove il taglio si fa con calma, una persona alla volta. Hair Rich è questo.",
             bio:
-                "Federico è il fondatore di Hair Rich. Ha imparato il mestiere giovanissimo e da allora non ha mai smesso di affinare la tecnica. Specializzato in razor cut, fade chirurgici e shape-up cuciti sulla morfologia del viso. Oggi taglia personalmente in salone e forma il suo team con metodo sartoriale.",
+                "Federico è il co-fondatore di Hair Rich, insieme a Riccardo, e taglia nel salone nel centro di Olbia. Ha imparato il mestiere giovanissimo e da allora non ha mai smesso di affinare la tecnica: fade, razor cut e contorni sulla forma del viso. Oggi taglia personalmente in salone e forma il suo team con metodo e pazienza.",
             specialties: ["Razor", "Fade", "Classic", "Beard"],
             yearsLabel: "10+",
             yearsCaption: "anni di mestiere",
@@ -159,9 +159,9 @@ export const it: Dict = {
                 name: "Cristian",
                 role: "Senior Barber",
                 specialties: "Taglio · Barba · Styling",
-                quote: "Il taglio giusto si vede dopo una settimana, non dopo cinque minuti.",
+                quote: "Un taglio fatto bene si vede dopo una settimana, non dopo cinque minuti.",
                 bio:
-                    "Cristian è entrato nel team Hair Rich dopo anni in saloni di Roma e Cagliari. Specializzato in tagli moderni, texturizzazioni e barba sartoriale. Mano leggera, ascolto vero, e quel pizzico di ironia che fa volare la seduta.",
+                    "Cristian è entrato nel team Hair Rich dopo anni in saloni tra Roma e Cagliari. Specializzato in tagli moderni, texturizzazioni e barba. Mano leggera, ascolto vero e quel pizzico di ironia che fa volare la seduta.",
                 tags: ["Modern", "Texture", "Beard", "Styling"],
                 yearsLabel: "6+",
                 yearsCaption: "anni di mestiere",
@@ -173,24 +173,14 @@ export const it: Dict = {
         titleA: "Listino",
         titleB: "prezzi.",
         intro:
-            "Tariffe trasparenti, tempi onesti. Niente sovrapprezzo nel weekend, mai. Per pacchetti aziendali e cerimonie scrivici.",
+            "Tariffe trasparenti, nessun sovrapprezzo nel weekend. Lavaggio e styling sempre inclusi. Per il taglio a domicilio a Olbia, chiamaci.",
         groups: [
             {
-                title: "Taglio",
+                title: "Listino",
                 items: [
-                    { name: "Taglio classico", description: "Forbice, lavaggio e styling", duration: "30'", price: "€20" },
-                    { name: "Fade & Sfumatura", description: "Sfumatura precisa, forbice, rasoio", duration: "45'", price: "€25" },
-                    { name: "Razor cut", description: "Lavorazione completa al rasoio", duration: "50'", price: "€30" },
-                    { name: "Taglio bambino", description: "Da 0 a 12 anni", duration: "25'", price: "€15" },
-                ],
-            },
-            {
-                title: "Barba & Domicilio",
-                items: [
-                    { name: "Barba sartoriale", description: "Modellatura, asciugamani caldi, olio", duration: "30'", price: "€15" },
-                    { name: "Rasatura tradizionale", description: "Rasoio a mano libera, rifinitura precisa", duration: "40'", price: "€25" },
-                    { name: "Taglio + Barba", description: "Il combo signature", duration: "60'", price: "€35" },
-                    { name: "Taglio a domicilio", description: "Veniamo noi. Su prenotazione, in orari concordati.", duration: "60'", price: "€45" },
+                    { name: "Taglio capelli", description: "Forbice o macchinetta, sfumatura e contorni. Lavaggio e styling inclusi.", duration: "30'", price: "€20" },
+                    { name: "Taglio barba", description: "Asciugamano caldo, rasoio classico, olio nutriente.", duration: "30'", price: "€10" },
+                    { name: "Taglio + Barba", description: "Capelli e barba in un'ora. Il combo completo.", duration: "60'", price: "€30" },
                 ],
             },
         ],
@@ -350,7 +340,7 @@ export const it: Dict = {
         intro:
             "Lo studio Hair Rich è in centro a Olbia, a pochi passi da Corso Umberto. Parcheggio nelle vicinanze.",
         cta: "Indicazioni stradali",
-        hoursSummary: "Lun–Sab · 9:00–20:00",
+        hoursSummary: "Lun–Sab · 9–13 / 15–20",
         labels: { address: "Indirizzo", hours: "Orari" },
     },
     footer: {
@@ -373,9 +363,9 @@ export const it: Dict = {
         premium: "Premium products only",
     },
     bundle: {
-        eyebrow: "Combo signature",
-        title: "Taglio + Barba a €35 invece di €40",
-        save: (eur) => `Risparmi ${eur}`,
+        eyebrow: "Combo completo",
+        title: "Taglio + Barba in un'ora a €30",
+        save: (eur) => `Taglio ${eur}`,
         cta: "Prenota il combo",
     },
     availability: {

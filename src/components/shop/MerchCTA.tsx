@@ -12,7 +12,7 @@ import { SITE } from "@/lib/constants";
  * atterra.
  */
 export function MerchCTA() {
-    const phoneHref = "tel:" + SITE.phone.replace(/\s+/g, "");
+    const phoneHref = "tel:+39" + SITE.phone.replace(/\s+/g, "");
     return (
         <section
             id="merch"

@@ -83,7 +83,7 @@ const LEGAL_LINKS = [
 
 const mapsHref =
     "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(SITE.address);
-const phoneHref = "tel:" + SITE.phone.replace(/\s+/g, "");
+const phoneHref = "tel:+39" + SITE.phone.replace(/\s+/g, "");
 const mailHref = "mailto:" + SITE.email;
 
 export function Footer() {
@@ -275,9 +275,9 @@ export function Footer() {
                         </div>
                         <div className="md:col-span-6 md:col-start-7 flex md:items-end">
                             <p className="text-warm-white-muted text-sm md:text-base leading-relaxed max-w-md">
-                                Barbiere sartoriale a Olbia dal 2017. Lavoriamo capelli e barba con
-                                la stessa cura con cui un sarto cuce un capo: una persona alla
-                                volta, una testa alla volta. Sempre su prenotazione.
+                                Barbiere a Olbia dal 2017, specializzato sull'uomo. Lavoriamo
+                                capelli e barba una persona alla volta, con calma e tutto il
+                                tempo che serve. Sempre su prenotazione.
                             </p>
                         </div>
                     </div>
@@ -343,9 +343,15 @@ export function Footer() {
                                 @hair_rich_
                             </a>
                         </div>
-                        <span className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
-                            Reel, backstage, taglio in tempo reale
-                        </span>
+                        <a
+                            href={phoneHref}
+                            className="group inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-silver-dark hover:text-accent-warm font-body font-semibold transition-colors"
+                        >
+                            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-accent-warm" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.91.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0122 16.92z" />
+                            </svg>
+                            Chiama · {SITE.phone}
+                        </a>
                     </div>
                 </div>
             </div>

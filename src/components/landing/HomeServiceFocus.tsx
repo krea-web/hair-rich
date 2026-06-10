@@ -12,7 +12,7 @@ import { SITE } from "@/lib/constants";
  * storefront photo with strong overlay treatment.
  */
 export function HomeServiceFocus() {
-    const phoneHref = "tel:" + SITE.phone.replace(/\s+/g, "");
+    const phoneHref = "tel:+39" + SITE.phone.replace(/\s+/g, "");
     return (
         <section
             id="taglio-a-domicilio"
@@ -53,7 +53,7 @@ export function HomeServiceFocus() {
                     <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent-warm/15 border border-accent-warm/40">
                         <span className="w-1.5 h-1.5 rounded-full bg-accent-warm animate-pulse" aria-hidden="true" />
                         <span className="text-[10px] uppercase tracking-[0.3em] text-accent-warm font-body font-semibold">
-                            Su prenotazione · esclusivo
+                            Barbiere a domicilio · Olbia e Costa Smeralda
                         </span>
                     </span>
 
@@ -61,23 +61,25 @@ export function HomeServiceFocus() {
                         id="home-service-title"
                         className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-6xl xl:text-6xl 2xl:text-7xl text-warm-white tracking-tight mt-5 md:mt-7 leading-[0.95]"
                     >
-                        Taglio
+                        Taglio a domicilio
                         <br />
-                        <em className="text-display-alt not-italic text-silver">a domicilio.</em>
+                        <em className="text-display-alt not-italic text-silver">a Olbia.</em>
                     </h2>
 
                     <p className="mt-6 md:mt-8 text-warm-white-muted text-base md:text-lg leading-relaxed max-w-xl">
-                        Veniamo noi. Stessa attrezzatura, stessa cura. A casa, in albergo,
-                        in barca, sul set. Niente prenotazione online — il preventivo si
-                        fa al telefono perché ogni location chiede tempi e tariffa diversi.
+                        Hair Rich è anche barbiere a domicilio a Olbia e in Costa Smeralda. Veniamo
+                        noi da te — a casa, in hotel, a bordo di yacht o per cerimonie e matrimoni —
+                        a Olbia, Porto Cervo e Golfo Aranci. Stessa attrezzatura e stessa cura del
+                        salone. Il servizio a domicilio si organizza solo per telefono: chiamaci e
+                        definiamo insieme luogo, orario e prezzo.
                     </p>
 
                     {/* Three quick facts */}
                     <dl className="mt-8 md:mt-10 lg:mt-12 grid grid-cols-3 gap-3 md:gap-6 lg:gap-10 xl:gap-12 max-w-lg lg:max-w-2xl xl:max-w-3xl">
                         {[
-                            { v: "24h", l: "Sopralluogo" },
-                            { v: "VIP", l: "Setup completo" },
-                            { v: "€€", l: "Su misura" },
+                            { v: "Olbia", l: "+ Costa Smeralda" },
+                            { v: "Yacht", l: "Hotel · Cerimonie" },
+                            { v: "Solo", l: "per telefono" },
                         ].map((m) => (
                             <div key={m.l} className="border-l-2 border-accent-warm/60 pl-3">
                                 <dt className="text-display text-2xl md:text-3xl text-warm-white tabular-nums">

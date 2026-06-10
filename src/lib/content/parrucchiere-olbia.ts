@@ -142,7 +142,7 @@ export const PARRUCCHIERE_OLBIA: Record<Locale, PoContent> = {
     areaTitle: "Taglio a domicilio a Olbia e in Costa Smeralda",
     area: "Non puoi raggiungere il salone? Veniamo noi da te. Offriamo il taglio a domicilio in tutta Olbia e nella Costa Smeralda — Porto Cervo, Golfo Aranci — anche a bordo di yacht e per cerimonie. La stessa cura del salone, a casa tua o dove preferisci. Il servizio a domicilio si organizza esclusivamente per telefono: chiamaci e definiamo insieme luogo, orario e dettagli.",
     homeCta: "Chiama per il domicilio",
-    marquee: ["Parrucchiere uomo", "Olbia centro", "Taglio sartoriale", "Barba", "Su appuntamento", "Dal 2017"],
+    marquee: ["Parrucchiere uomo", "Olbia centro", "Taglio capelli", "Barba", "Su appuntamento", "Dal 2017"],
     reviewsTitle: "Cosa dicono i clienti",
     reviews: [
       { name: "Antonio Maricosu", text: "I barbieri simpatici e la qualità del taglio elevata, tornerò sicuramente! Il migliore nella zona!" },

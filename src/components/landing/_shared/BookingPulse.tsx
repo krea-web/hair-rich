@@ -22,7 +22,7 @@ const NAMES = [
 ];
 
 const SERVICES_BY_LANG = {
-    it: ["Razor Fade", "Taglio + Barba", "Taglio classico", "Barba sartoriale", "Razor Cut"],
+    it: ["Razor Fade", "Taglio + Barba", "Taglio capelli", "Barba", "Razor Cut"],
     en: ["Razor Fade", "Cut + Beard", "Classic Cut", "Tailored Beard", "Razor Cut"],
     fr: ["Razor Fade", "Coupe + Barbe", "Coupe classique", "Barbe sur mesure", "Razor Cut"],
     de: ["Razor Fade", "Schnitt + Bart", "Klassischer Schnitt", "Maßgeschneiderter Bart", "Razor Cut"],

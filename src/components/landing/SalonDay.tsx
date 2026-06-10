@@ -10,34 +10,34 @@ interface TimelineEntry {
 
 const TIMELINE: TimelineEntry[] = [
     {
-        time: "08:30",
-        title: "Apertura porta",
-        body: "Espresso, mood board della settimana, controllo agenda. Le 15 minute prima del primo cliente sono sacre — niente fretta.",
-    },
-    {
         time: "09:00",
-        title: "Primo cliente",
-        body: "Si parte sempre dalla consulenza, anche per chi viene da anni. Quello che ha funzionato l'ultima volta non funziona automaticamente questa.",
+        title: "Si apre",
+        body: "Caffè, agenda della giornata, lame pronte. Quando entra il primo cliente è già tutto in ordine.",
     },
     {
-        time: "12:30",
-        title: "Pausa pranzo",
-        body: "Chiudiamo davvero. Niente improvvisate, niente \"giusto cinque minuti\". Mangiare bene è parte del mestiere.",
+        time: "09:30",
+        title: "Primo taglio",
+        body: "Si parte sempre dal consulto, anche con chi viene da anni: la testa cambia, il taglio si adatta.",
+    },
+    {
+        time: "13:00",
+        title: "Pausa",
+        body: "Si chiude davvero, dalle 13 alle 15. Niente \"giusto cinque minuti\": si stacca e si torna lucidi.",
     },
     {
         time: "15:00",
-        title: "Riapertura",
-        body: "Pomeriggio = clienti dopo-lavoro. Tagli più rapidi, focus su mantenimento. La macchinetta lavora di più del rasoio in questo turno.",
+        title: "Pomeriggio",
+        body: "Clienti dopo il lavoro: taglio, barba, combo. Chi ha poco tempo entra ed esce, chi vuole con calma se la prende.",
     },
     {
-        time: "17:00",
-        title: "Slot premium",
-        body: "Le ore d'oro. Razor cut, barba sartoriale, combo. Qui i clienti chiedono il tempo per il servizio completo.",
+        time: "18:00",
+        title: "Ora di punta",
+        body: "Le ore più piene: taglio, barba e rifiniture. Si lavora solo su appuntamento, così nessuno aspetta in piedi.",
     },
     {
-        time: "19:00",
-        title: "Chiusura",
-        body: "Stesso rispetto del mattino: chiudiamo in orario per chi viene dopo, ma chi è dentro finisce con calma. Sempre.",
+        time: "20:00",
+        title: "Si chiude",
+        body: "Stesso rispetto del mattino: si chiude in orario per chi viene domani, ma chi è in poltrona finisce con calma. Sempre.",
     },
 ];
 
@@ -53,7 +53,7 @@ export function SalonDay() {
                 aria-hidden="true"
                 className="absolute -top-20 right-0 text-display-alt text-[32vw] md:text-[18vw] text-warm-white/[0.02] leading-none pointer-events-none select-none whitespace-nowrap"
             >
-                09 — 19:00
+                09 — 20:00
             </div>
 
             <div className="relative max-w-5xl mx-auto">
@@ -66,8 +66,8 @@ export function SalonDay() {
                         <em className="text-display-alt not-italic text-silver">in salone.</em>
                     </h2>
                     <p className="mt-5 text-warm-white-muted text-base md:text-lg leading-relaxed">
-                        Niente coreografia, niente "esperienza". Un mestiere, fatto bene, dalle
-                        otto e mezza alle sette e mezza, dal martedì al sabato.
+                        Nessuna messa in scena. Un mestiere fatto bene, dal lunedì al sabato,
+                        dalle 9 alle 20 con la pausa pranzo. Ecco com'è una giornata da Hair Rich.
                     </p>
                 </div>
 
