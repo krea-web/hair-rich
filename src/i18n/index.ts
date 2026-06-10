@@ -44,10 +44,15 @@ export function localizePath(currentPath: string, target: Locale): string {
 /** Tutte le varianti URL per hreflang dato un path. */
 export function getAlternates(currentPath: string, baseUrl: string) {
     const locales: Locale[] = ["it", "en", "fr", "de"];
-    return locales.map((loc) => ({
-        hreflang: loc === "it" ? "it-IT" : loc === "en" ? "en" : loc === "fr" ? "fr-FR" : "de-DE",
-        href: new URL(localizePath(currentPath, loc), baseUrl).toString(),
-    }));
+    return locales.map((loc) => {
+        // Allinea al canonical (Astro directory format → trailing slash).
+        let path = localizePath(currentPath, loc);
+        if (!path.endsWith("/")) path += "/";
+        return {
+            hreflang: loc === "it" ? "it-IT" : loc === "en" ? "en" : loc === "fr" ? "fr-FR" : "de-DE",
+            href: new URL(path, baseUrl).toString(),
+        };
+    });
 }
 
 /** Format prezzo locale-aware (estende format.ts senza rompere il default). */

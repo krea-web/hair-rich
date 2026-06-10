@@ -476,4 +476,48 @@ export interface Dict {
         faqTitle: string;
         faq: Array<{ q: string; a: string }>;
     };
+    teamPage: {
+        valuesEyebrow: string;
+        valuesTitle: string;
+        values: Array<{ n: string; title: string; body: string }>;
+    };
+    lavoriPage: {
+        featuredBadge: string;
+        featuredSubtitle: string;
+        featuredTitle: string;
+        featuredBody: string;
+        featuredMeta: Array<{ label: string; value: string }>;
+    };
+    productsPage: {
+        faqEyebrow: string;
+        faqTitle: string;
+        faq: Array<{ q: string; a: string }>;
+    };
+    contactPage: {
+        heroEyebrow: string;
+        heroTitleA: string;
+        heroTitleB: string;
+        heroIntro: string;
+        heroMetaLeft: string;
+        heroMetaRight: string;
+        chipCall: string;
+        chipEmail: string;
+        chipDirections: string;
+        bookEyebrow: string;
+        bookTitle: string;
+        bookBody: string;
+        recapitiEyebrow: string;
+        recapitiTitle: string;
+        phoneLabel: string;
+        phoneHint: string;
+        emailLabel: string;
+        emailHint: string;
+        salonLabel: string;
+        mapBtn: string;
+        formEyebrow: string;
+        formTitle: string;
+        formBody: string;
+        formBookLink: string;
+        formCallLink: string;
+    };
 }

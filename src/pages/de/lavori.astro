@@ -1,20 +1,20 @@
 ---
-import RootLayout from "../layouts/RootLayout.astro";
-import { SiteHeader } from "../components/ui/SiteHeader";
-import { MobileTopBar } from "../components/ui/MobileTopBar";
-import { BookingDrawer } from "../components/booking/BookingDrawer";
-import { StickySlotPeek } from "../components/landing/StickySlotPeek";
-import { PortfolioHero } from "../components/landing/hero/PortfolioHero";
-import { PortfolioGallery } from "../components/landing/PortfolioGallery";
-import { BeforeAfterSlider } from "../components/landing/BeforeAfterSlider";
-import { FeaturedWork } from "../components/landing/FeaturedWork";
-import { Footer } from "../components/landing/Footer";
-import { ToastViewport } from "../components/ui/ToastViewport";
-import { MobileBottomBar } from "../components/ui/MobileBottomBar";
-import { CartDrawer } from "../components/shop/CartDrawer";
-import { ProductDrawer } from "../components/shop/ProductDrawer";
+import RootLayout from "../../layouts/RootLayout.astro";
+import { SiteHeader } from "../../components/ui/SiteHeader";
+import { MobileTopBar } from "../../components/ui/MobileTopBar";
+import { BookingDrawer } from "../../components/booking/BookingDrawer";
+import { StickySlotPeek } from "../../components/landing/StickySlotPeek";
+import { PortfolioHero } from "../../components/landing/hero/PortfolioHero";
+import { PortfolioGallery } from "../../components/landing/PortfolioGallery";
+import { BeforeAfterSlider } from "../../components/landing/BeforeAfterSlider";
+import { FeaturedWork } from "../../components/landing/FeaturedWork";
+import { Footer } from "../../components/landing/Footer";
+import { ToastViewport } from "../../components/ui/ToastViewport";
+import { MobileBottomBar } from "../../components/ui/MobileBottomBar";
+import { CartDrawer } from "../../components/shop/CartDrawer";
+import { ProductDrawer } from "../../components/shop/ProductDrawer";
 import { useTranslations, getLangFromUrl, localizePath, type Locale } from "@/i18n";
-import { SITE } from "../lib/constants";
+import { SITE } from "../../lib/constants";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
@@ -42,11 +42,8 @@ const m = META[lang];
   <MobileTopBar client:load />
   <main>
     <PortfolioHero client:load />
-
     <BeforeAfterSlider client:visible />
-
     <PortfolioGallery client:visible />
-
     <FeaturedWork
       client:visible
       image="tagli/taper-fade-01.jpeg"
@@ -56,7 +53,6 @@ const m = META[lang];
       body={lp.featuredBody}
       meta={lp.featuredMeta}
     />
-
     <Footer client:idle />
   </main>
 
