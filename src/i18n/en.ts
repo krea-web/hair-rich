@@ -755,6 +755,8 @@ export const en: Dict = {
         heroBody: "Federico, Cristian and those growing behind the chair. Every hand has its signature, the standard is one.",
         heroFooterLeft: "On the floor · Since 2017",
         heroFooterRight: "03 / Team",
+        showcaseDiscover: "Discover",
+        showcaseBookWith: "Book with",
         valuesEyebrow: "What unites us",
         valuesTitle: "Three values you can see in every service.",
         values: [

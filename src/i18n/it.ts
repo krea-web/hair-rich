@@ -782,6 +782,8 @@ export const it: Dict = {
         heroBody: "Federico, Cristian e chi sta crescendo dietro la sedia. Ogni mano ha la sua firma, lo standard è uno.",
         heroFooterLeft: "Sul campo · Dal 2017",
         heroFooterRight: "03 / Team",
+        showcaseDiscover: "Scopri",
+        showcaseBookWith: "Prenota con",
         valuesEyebrow: "Cosa ci unisce",
         valuesTitle: "Tre valori che si vedono in ogni servizio.",
         values: [

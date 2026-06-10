@@ -759,6 +759,8 @@ export const de: Dict = {
         heroBody: "Federico, Cristian und alle, die hinter dem Stuhl wachsen. Jede Hand hat ihre Handschrift, der Standard ist einer.",
         heroFooterLeft: "Am Werk · Seit 2017",
         heroFooterRight: "03 / Team",
+        showcaseDiscover: "Entdecken",
+        showcaseBookWith: "Buchen mit",
         valuesEyebrow: "Was uns verbindet",
         valuesTitle: "Drei Werte, die man in jedem Service sieht.",
         values: [

@@ -7,6 +7,7 @@ import type { Staff } from "@/lib/supabase/types";
 import { useBookingDrawer, useBookingStore } from "@/lib/store";
 import { handleClientLink } from "@/lib/clientRouter";
 import { StickyOnDesktop } from "./_shared/StickyOnDesktop";
+import { useT } from "@/i18n/useLang";
 
 const ROLE_TYPE_LABEL: Record<string, string> = {
     founder: "Founder",
@@ -19,6 +20,8 @@ const ROLE_TYPE_LABEL: Record<string, string> = {
 };
 
 export function TeamShowcase() {
+    const { t } = useT();
+    const tp = t.teamPage;
     const [staff, setStaff] = useState<Staff[]>([]);
     const [loading, setLoading] = useState(true);
     const openDrawer = useBookingDrawer((s) => s.open);
@@ -105,7 +108,7 @@ export function TeamShowcase() {
                                         <a
                                             href={`/team/${member.slug}`}
                                             onClick={handleClientLink}
-                                            aria-label={`Scopri ${member.name}`}
+                                            aria-label={`${tp.showcaseDiscover} ${member.name}`}
                                             className="block group"
                                         >
                                             <div className="relative aspect-[4/5] lg:aspect-[3/4] xl:aspect-[2/3] rounded-[var(--radius-md)] border border-line bg-gradient-to-br from-carbon to-black-2 overflow-hidden">
@@ -214,7 +217,7 @@ export function TeamShowcase() {
                                                     onClick={() => handleBookWith(member.id)}
                                                     className="cta-shine cta-pulse inline-flex items-center gap-3 px-7 py-3.5 bg-accent-warm text-black rounded-full text-[11px] uppercase tracking-[0.25em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform"
                                                 >
-                                                    Prenota con {member.name.split(" ")[0]}
+                                                    {tp.showcaseBookWith} {member.name.split(" ")[0]}
                                                     <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5">
                                                         <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                                                     </svg>

@@ -481,6 +481,8 @@ export interface Dict {
         heroBody: string;
         heroFooterLeft: string;
         heroFooterRight: string;
+        showcaseDiscover: string;
+        showcaseBookWith: string;
         valuesEyebrow: string;
         valuesTitle: string;
         values: Array<{ n: string; title: string; body: string }>;

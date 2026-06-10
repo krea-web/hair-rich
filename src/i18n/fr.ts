@@ -760,6 +760,8 @@ export const fr: Dict = {
         heroBody: "Federico, Cristian et ceux qui grandissent derrière le fauteuil. Chaque main a sa signature, le standard est unique.",
         heroFooterLeft: "Sur le terrain · Depuis 2017",
         heroFooterRight: "03 / Équipe",
+        showcaseDiscover: "Découvrir",
+        showcaseBookWith: "Réserver avec",
         valuesEyebrow: "Ce qui nous unit",
         valuesTitle: "Trois valeurs visibles dans chaque service.",
         values: [
