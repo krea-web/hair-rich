@@ -49,6 +49,56 @@ function endOfToday(): Date {
     return d;
 }
 
+function recapFmtEur(c: number): string {
+    return new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format((c || 0) / 100);
+}
+
+// Recap contabile di oggi (da fn_daily_brief). Si nasconde se la migration 0061
+// non è applicata o se l'utente non è admin (RLS).
+function TodayRecap() {
+    const [data, setData] = useState<any | null>(null);
+    const [hide, setHide] = useState(false);
+    useEffect(() => {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        const d = now.toISOString().slice(0, 10);
+        createClient()
+            .rpc("fn_daily_brief", { p_date: d })
+            .then(({ data, error }: { data: any; error: any }) => {
+                if (error) setHide(true);
+                else setData(data);
+            });
+    }, []);
+    if (hide || !data) return null;
+    const rev = data.revenue ?? {};
+    const margin = (rev.total_cents ?? 0) - (data.expenses_cents ?? 0) - (data.stock_consumed_cost_cents ?? 0);
+    const cells = [
+        { l: "Incasso oggi", v: recapFmtEur(rev.total_cents ?? 0), accent: true },
+        { l: "POS", v: recapFmtEur(rev.pos_cents ?? 0), accent: false },
+        { l: "Contanti", v: recapFmtEur(rev.cash_cents ?? 0), accent: false },
+        { l: "Spese", v: recapFmtEur(data.expenses_cents ?? 0), accent: false },
+        { l: "Margine stimato", v: recapFmtEur(margin), accent: false },
+    ];
+    return (
+        <div className="mb-6 bg-carbon border border-line rounded-[var(--radius-md)] p-4 md:p-5">
+            <div className="flex items-center justify-between mb-3">
+                <h2 className="text-sm font-semibold font-body text-warm-white">Recap oggi</h2>
+                <span className="text-[10px] uppercase tracking-[0.2em] text-silver-dark">
+                    {data.appts_completed ?? 0} completati · {data.no_shows ?? 0} no-show
+                </span>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                {cells.map((c) => (
+                    <div key={c.l} className="border-l-2 border-accent-warm/40 pl-3">
+                        <p className={`text-lg md:text-xl tabular-nums font-display ${c.accent ? "text-accent-warm" : "text-warm-white"}`}>{c.v}</p>
+                        <p className="text-[9px] uppercase tracking-[0.2em] text-silver-dark mt-0.5">{c.l}</p>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
 export default function AdminDashboardPage() {
     const [stats, setStats] = useState<Stats | null>(null);
     const [next, setNext] = useState<UpcomingAppt[]>([]);
@@ -231,6 +281,8 @@ export default function AdminDashboardPage() {
                           </div>
                       ))}
             </motion.div>
+
+            <TodayRecap />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Prossimi appuntamenti */}
