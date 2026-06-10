@@ -1,25 +1,22 @@
 ---
-import RootLayout from "../layouts/RootLayout.astro";
-import { SiteHeader } from "../components/ui/SiteHeader";
-import { MobileTopBar } from "../components/ui/MobileTopBar";
-import { BookingDrawer } from "../components/booking/BookingDrawer";
-import { StickySlotPeek } from "../components/landing/StickySlotPeek";
-import { ServicesHero } from "../components/landing/hero/ServicesHero";
-import { StyleQuiz } from "../components/landing/StyleQuiz";
-import { HomeServiceFocus } from "../components/landing/HomeServiceFocus";
-import { ServicesProcess } from "../components/landing/_shared/ServicesProcess";
-import { ServicesFaq } from "../components/landing/_shared/ServicesFaq";
-import { Footer } from "../components/landing/Footer";
-import { ToastViewport } from "../components/ui/ToastViewport";
-import { MobileBottomBar } from "../components/ui/MobileBottomBar";
-import { CartDrawer } from "../components/shop/CartDrawer";
-import { ProductDrawer } from "../components/shop/ProductDrawer";
+import RootLayout from "../../layouts/RootLayout.astro";
+import { SiteHeader } from "../../components/ui/SiteHeader";
+import { MobileTopBar } from "../../components/ui/MobileTopBar";
+import { BookingDrawer } from "../../components/booking/BookingDrawer";
+import { StickySlotPeek } from "../../components/landing/StickySlotPeek";
+import { ServicesHero } from "../../components/landing/hero/ServicesHero";
+import { StyleQuiz } from "../../components/landing/StyleQuiz";
+import { HomeServiceFocus } from "../../components/landing/HomeServiceFocus";
+import { ServicesProcess } from "../../components/landing/_shared/ServicesProcess";
+import { ServicesFaq } from "../../components/landing/_shared/ServicesFaq";
+import { Footer } from "../../components/landing/Footer";
+import { ToastViewport } from "../../components/ui/ToastViewport";
+import { MobileBottomBar } from "../../components/ui/MobileBottomBar";
+import { CartDrawer } from "../../components/shop/CartDrawer";
+import { ProductDrawer } from "../../components/shop/ProductDrawer";
 import { useTranslations, getLangFromUrl, localizePath, type Locale } from "@/i18n";
-import { SITE } from "../lib/constants";
+import { SITE } from "../../lib/constants";
 
-// Pagina servita anche su /en|fr|de/servizi (file gemelli). La lingua è dedotta
-// dall'URL: meta + schema FAQ seguono la lingua, le isole React si localizzano
-// da <body data-lang>.
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const base = SITE.url;
@@ -59,18 +56,10 @@ const faqItems = t.servicesPage.faq.map((f) => ({ question: f.q, answer: f.a }))
   <MobileTopBar client:load />
   <main>
     <ServicesHero client:load />
-
-    {/* Three bookable services — the only catalog block on the page */}
     <StyleQuiz client:load />
-
-    {/* Phone-only home service: dedicated full-bleed focus block */}
     <HomeServiceFocus client:visible />
-
-    {/* What happens during a service — localizzato client-side */}
     <ServicesProcess client:idle />
-
     <ServicesFaq client:idle />
-
     <Footer client:idle />
   </main>
 
