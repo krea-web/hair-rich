@@ -7,32 +7,16 @@ import { StickySlotPeek } from "../components/landing/StickySlotPeek";
 import { ServicesHero } from "../components/landing/hero/ServicesHero";
 import { StyleQuiz } from "../components/landing/StyleQuiz";
 import { HomeServiceFocus } from "../components/landing/HomeServiceFocus";
-import { ProcessSteps } from "../components/landing/_shared/ProcessSteps";
-import { FAQAccordion } from "../components/landing/_shared/FAQAccordion";
+import { ServicesProcess } from "../components/landing/_shared/ServicesProcess";
+import { ServicesFaq } from "../components/landing/_shared/ServicesFaq";
 import { Footer } from "../components/landing/Footer";
 import { ToastViewport } from "../components/ui/ToastViewport";
 import { MobileBottomBar } from "../components/ui/MobileBottomBar";
 import { CartDrawer } from "../components/shop/CartDrawer";
 import { ProductDrawer } from "../components/shop/ProductDrawer";
 
-const PROCESS = [
-  {
-    n: "01",
-    title: "Consulto · 2 minuti",
-    body: "Prima delle forbici: forma del viso, stile di vita, tempo che puoi dedicare al mattino. Decidiamo insieme.",
-  },
-  {
-    n: "02",
-    title: "Esecuzione · forbice o rasoio",
-    body: "Tecnica scelta sul risultato che vuoi, non sulla moda del mese. Lavaggio sempre incluso.",
-  },
-  {
-    n: "03",
-    title: "Finitura · prodotto giusto",
-    body: "Styling con prodotto adatto al tuo capello, così a casa lo riproduci in 30 secondi.",
-  },
-];
-
+// FAQ array tenuto server-side SOLO per lo schema FAQPage JSON-LD (route IT
+// canonica). La FAQ visibile è localizzata client-side da <ServicesFaq/>.
 const FAQ = [
   {
     q: "Quanto costa un taglio da Hair Rich a Olbia?",
@@ -97,20 +81,10 @@ const FAQ = [
     {/* Phone-only home service: dedicated full-bleed focus block */}
     <HomeServiceFocus client:visible />
 
-    {/* What happens during a service — short, no service repetition */}
-    <ProcessSteps
-      client:idle
-      eyebrow="Il servizio Hair Rich"
-      title="Cosa succede quando ti siedi."
-      steps={PROCESS}
-    />
+    {/* What happens during a service — localizzato client-side */}
+    <ServicesProcess client:idle />
 
-    <FAQAccordion
-      client:idle
-      eyebrow="Domande sui servizi"
-      title="Le più frequenti."
-      items={FAQ}
-    />
+    <ServicesFaq client:idle />
 
     <Footer client:idle />
   </main>

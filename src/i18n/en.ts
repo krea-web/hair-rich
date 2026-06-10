@@ -39,7 +39,7 @@ export const en: Dict = {
         titleA: "BARBER",
         titleB: "STUDIO",
         body:
-            "For eight years our mission has been to sculpt your identity. Cut, beard and exclusive treatments in the heart of Olbia.",
+            "Men's haircuts and beard work, in the centre of Olbia. By appointment, one client at a time, no rush — since 2017.",
         primaryCta: "Book Now",
         secondaryCta: "Explore services",
         captionEyebrow: "Premium",
@@ -60,11 +60,11 @@ export const en: Dict = {
         titleA: "Our",
         titleB: "studio.",
         bodyP1:
-            "Hair Rich was born from a vision: turning the haircut into an intimate, tailored, one-of-a-kind experience. One chair, one Master Barber, expert hands.",
+            "Hair Rich is a barber specialised in men, in the centre of Olbia. One person at a time, all the time it takes: first we talk, then we cut.",
         bodyP2:
-            "No rush. No standardisation. Just the time it takes to sculpt your character — one fade at a time.",
-        values: ["Obsessive tailoring", "Premium materials", "Intimate atmosphere", "Slow craft"],
-        cta: "Live the experience",
+            "No rush and no cookie-cutter cuts. We start from the shape of your face and how much time you give your hair, for a cut that still looks good a week later.",
+        values: ["Men & beard only", "By appointment", "Wash & styling included", "In central Olbia"],
+        cta: "Book your cut",
         sinceLabel: "since",
     },
     services: {
@@ -72,28 +72,28 @@ export const en: Dict = {
         titleA: "Our",
         titleB: "services.",
         intro:
-            "Three families of treatments for every moment of your day. Pick the treatment that defines you — we'll handle the rest.",
+            "Three services, clear prices: haircut €20, beard €10, cut + beard €30. Wash and styling always included, by appointment. We also do home haircuts in Olbia (phone only).",
         items: [
             {
-                eyebrow: "Sharp",
+                eyebrow: "€20 · 30 min",
                 title: "CUT",
                 description:
-                    "Classic cuts, surgical fades, razor blends. Every cut is designed for your face.",
-                items: ["Classic cut", "Fade & Blends", "Razor cut", "Kids"],
+                    "Men's haircut: scissors or clippers, clean fades and outlines. Wash and styling included.",
+                items: ["Scissors or clippers", "Fades & outlines", "Wash + styling", "By appointment"],
             },
             {
-                eyebrow: "Refined",
+                eyebrow: "€10 · 30 min",
                 title: "BEARD",
                 description:
-                    "Shaping, finishing, hot towels and essential oil for an impeccable shave.",
-                items: ["Shaping", "Traditional shave", "Designer beard", "Hydrating treatment"],
+                    "Beard shaping and finishing with a hot towel, classic razor and nourishing oil.",
+                items: ["Hot towel", "Classic razor", "Clean outlines", "Nourishing oil"],
             },
             {
-                eyebrow: "Home",
-                title: "AT HOME",
+                eyebrow: "€30 · 60 min",
+                title: "COMBO",
                 description:
-                    "We come to you. By appointment, for those who can't reach the salon — same tailored quality.",
-                items: ["Home haircut", "Home beard", "Weddings & ceremonies", "By appointment"],
+                    "Haircut + beard in a single one-hour session. The complete Hair Rich service.",
+                items: ["Cut + beard", "One dedicated hour", "Wash + styling", "Most popular"],
             },
         ],
         bookFromCard: "Book",
@@ -104,24 +104,24 @@ export const en: Dict = {
         titleB: "for real.",
         features: [
             {
-                title: "Intimate atmosphere",
+                title: "Specialised in men",
                 description:
-                    "Just a few chairs, no crowds. Every client is a guest — not a task to close.",
+                    "We cut men's hair and beards all day, every day. The specialisation shows in the result.",
             },
             {
-                title: "Certified Master Barbers",
+                title: "By appointment, no waiting",
                 description:
-                    "Years of international training. Every cut is studied on your morphology, not on passing trends.",
+                    "Book online in a minute or by phone. Generous slots, never overlapped: you walk in and you're straight in the chair.",
             },
             {
-                title: "Premium tools",
+                title: "A cut tailored to you",
                 description:
-                    "Japanese blades, hand-formulated products, organic cotton towels. No compromises.",
+                    "We start from your face shape and lifestyle, not the trend of the month. A cut that holds up even a week later.",
             },
             {
-                title: "Dedicated time",
+                title: "In the centre of Olbia",
                 description:
-                    "Generous slots, never overlapped. The service demands calm — you'll have plenty of it.",
+                    "At Via Regina Elena 33/A, steps from Corso Umberto. Parking nearby, open Mon–Sat 9–13 and 15–20.",
             },
         ],
     },
@@ -132,9 +132,9 @@ export const en: Dict = {
         featured: {
             name: "Federico Asara",
             role: "Master Barber & Co-founder",
-            quote: "Every cut is a tailoring act. No formulas, no shortcuts.",
+            quote: "We wanted a place where the cut is done calmly, one person at a time. That's Hair Rich.",
             bio:
-                "Federico is the co-founder of Hair Rich, together with Riccardo. He learned the craft young and has refined his technique ever since. Specialised in razor cut, surgical fades and shape-ups tailored to face morphology. Today he cuts personally at the salon and trains his team with a tailored method.",
+                "Federico is the co-founder of Hair Rich, together with Riccardo, and cuts at the salon in central Olbia. He learned the craft young and has never stopped refining his technique: fades, razor cut and outlines shaped to your face. Today he cuts personally at the salon and trains his team with method and patience.",
             specialties: ["Razor", "Fade", "Classic", "Beard"],
             yearsLabel: "10+",
             yearsCaption: "years on the chair",
@@ -146,7 +146,7 @@ export const en: Dict = {
                 specialties: "Cut · Beard · Styling",
                 quote: "A good cut shows after a week, not after five minutes.",
                 bio:
-                    "Cristian joined the Hair Rich team after years in salons in Rome and Cagliari. Specialised in modern cuts, texturing and tailored beard work. Light hand, real listening, and just enough wit to make the chair feel like a privilege.",
+                    "Cristian joined the Hair Rich team after years in salons between Rome and Cagliari. Specialised in modern cuts, texturing and beard. Light hand, real listening and just enough wit to make the session fly.",
                 tags: ["Modern", "Texture", "Beard", "Styling"],
                 yearsLabel: "6+",
                 yearsCaption: "years on the chair",
@@ -158,24 +158,14 @@ export const en: Dict = {
         titleA: "Pricing",
         titleB: "list.",
         intro:
-            "Transparent rates, honest timing. No weekend surcharge, ever. For corporate packages and ceremonies, write us.",
+            "Transparent rates, no weekend surcharge. Wash and styling always included. For home haircuts in Olbia, give us a call.",
         groups: [
             {
-                title: "Cut",
+                title: "Pricing",
                 items: [
-                    { name: "Classic cut", description: "Scissors, wash and styling", duration: "30'", price: "€20" },
-                    { name: "Fade & Blend", description: "Precise blend, scissors, razor", duration: "45'", price: "€25" },
-                    { name: "Razor cut", description: "Full razor work", duration: "50'", price: "€30" },
-                    { name: "Kids cut", description: "Ages 0 to 12", duration: "25'", price: "€15" },
-                ],
-            },
-            {
-                title: "Beard & At Home",
-                items: [
-                    { name: "Tailored beard", description: "Shaping, hot towels, oil", duration: "30'", price: "€15" },
-                    { name: "Traditional shave", description: "Straight razor, precise finishing", duration: "40'", price: "€25" },
-                    { name: "Cut + Beard", description: "The signature combo", duration: "60'", price: "€35" },
-                    { name: "Home haircut", description: "We come to you. By appointment, at your time.", duration: "60'", price: "€45" },
+                    { name: "Haircut", description: "Scissors or clippers, fades and outlines. Wash and styling included.", duration: "30'", price: "€20" },
+                    { name: "Beard", description: "Hot towel, classic razor, nourishing oil.", duration: "30'", price: "€10" },
+                    { name: "Cut + Beard", description: "Hair and beard in one hour. The full combo.", duration: "60'", price: "€30" },
                 ],
             },
         ],
@@ -335,7 +325,7 @@ export const en: Dict = {
         intro:
             "The Hair Rich studio sits in central Olbia, a short walk from Corso Umberto. Parking nearby.",
         cta: "Get directions",
-        hoursSummary: "Mon–Sat · 9:00–20:00",
+        hoursSummary: "Mon–Sat · 9–13 / 15–20",
         labels: { address: "Address", hours: "Hours" },
     },
     footer: {
@@ -358,9 +348,9 @@ export const en: Dict = {
         premium: "Premium products only",
     },
     bundle: {
-        eyebrow: "Signature combo",
-        title: "Cut + Beard at €35 instead of €40",
-        save: (eur) => `Save ${eur}`,
+        eyebrow: "Full combo",
+        title: "Cut + Beard in one hour at €30",
+        save: (eur) => `Cut ${eur}`,
         cta: "Book the combo",
     },
     availability: {
@@ -650,6 +640,115 @@ export const en: Dict = {
                 },
             ],
         },
+    },
+    servicesHero: {
+        chip: "By appointment · Central Olbia",
+        titleA: "Cuts & beards",
+        titleB: "in Olbia.",
+        body:
+            "Haircut €20, beard €10, cut + beard €30. Book online in a minute, pay at the salon. Wash and styling always included.",
+        cta: "Book now",
+        metrics: [
+            { v: "from €20", l: "Price list" },
+            { v: "60s", l: "Book online" },
+            { v: "4.6★", l: "37 reviews" },
+        ],
+        footerLeft: "Instant confirmation",
+        footerRight: "01 / Services",
+    },
+    serviceQuiz: {
+        eyebrow: "Build your service",
+        title: "Three options. One tap. You're in the chair.",
+        intro:
+            "Cut €20, beard €10, combo €30. Pick what you want today and book the next slot — in 60 seconds.",
+        watermark: "pick",
+        items: [
+            { tag: "Hair only", quick: "Listen + execute + finish. 30 minutes, done.", cta: "Book a haircut" },
+            { tag: "Beard only", quick: "Classic razor, outlines, oil chosen for your skin.", cta: "Book a beard trim" },
+            { tag: "Combo", quick: "A full hour. Hair and beard in one go.", cta: "Book the combo" },
+        ],
+        fallbackNames: { cut: "Haircut", beard: "Beard trim", combo: "Haircut + beard" },
+    },
+    homeService: {
+        chip: "Home barber · Olbia & Costa Smeralda",
+        titleA: "Home haircuts",
+        titleB: "in Olbia.",
+        body:
+            "Hair Rich is also a home barber in Olbia and across Costa Smeralda. We come to you — at home, in a hotel, aboard a yacht or for ceremonies and weddings — in Olbia, Porto Cervo and Golfo Aranci. Same tools and same care as the salon. The home service is arranged by phone only: call us and we'll set place, time and price together.",
+        facts: [
+            { v: "Olbia", l: "+ Costa Smeralda" },
+            { v: "Yacht", l: "Hotel · Ceremonies" },
+            { v: "Phone", l: "only" },
+        ],
+        cta: "Call to book",
+        footer: "Available during opening hours",
+        watermark: "at home",
+    },
+    galleryHero: {
+        eyebrow: "Real cuts · Olbia",
+        titleA: "Cuts that walked",
+        titleB: "right out of here.",
+        body:
+            "Every photo is a real client, shot at the end of the service. No stock, no AI, no recycled catalogue. Just what we actually do.",
+        metrics: [
+            { value: "4.6★", label: "37 reviews" },
+            { value: "since 2017", label: "In Olbia" },
+            { value: "3", label: "Services" },
+        ],
+        footerLeft: "Hair Rich · Olbia",
+        footerRight: "02 / Work",
+    },
+    salonDay: {
+        eyebrow: "Behind the scenes",
+        titleA: "A day",
+        titleB: "at the salon.",
+        intro:
+            "No staging. A craft done well, Monday to Saturday, from 9 to 20 with a lunch break. Here's what a day at Hair Rich looks like.",
+        watermark: "09 — 20:00",
+        timeline: [
+            { time: "09:00", title: "We open", body: "Coffee, the day's schedule, blades ready. By the time the first client walks in, everything's in order." },
+            { time: "09:30", title: "First cut", body: "We always start with the consultation, even with regulars: the head changes, the cut adapts." },
+            { time: "13:00", title: "Break", body: "We really close, from 13 to 15. No \"just five minutes\": you switch off and come back sharp." },
+            { time: "15:00", title: "Afternoon", body: "After-work clients: cut, beard, combo. If you're short on time you're in and out; if you want, take it slow." },
+            { time: "18:00", title: "Rush hour", body: "The busiest hours: cut, beard and touch-ups. By appointment only, so nobody waits on their feet." },
+            { time: "20:00", title: "We close", body: "Same respect as the morning: we close on time for tomorrow's clients, but whoever's in the chair finishes calmly. Always." },
+        ],
+    },
+    directions: {
+        eyebrow: "Getting here",
+        addressLine: "Via Regina Elena 33/A,",
+        city: "Olbia.",
+        intro:
+            "A short walk from Corso Umberto. Three different ways to get here, all under 15 minutes from wherever you are.",
+        mapBtn: "Open in Maps",
+        routes: [
+            { title: "On foot from the Corso", body: "5 minutes from Corso Umberto. Head towards Via Regina Elena and keep straight to number 33/A.", detail: "Ideal if you parked in the centre or you're already in the pedestrian area." },
+            { title: "By car", body: "Free parking on Via Regina Elena and Via Mameli. No restricted-traffic zone around the salon.", detail: "Coming from the port or the SS125, follow the signs for the Historic Centre." },
+            { title: "From the airport", body: "10–15 minutes by car from Olbia Costa Smeralda airport. By taxi, rental or shuttle you arrive straight in the centre.", detail: "Handy if you've just landed: book ahead and get your cut before hotel check-in." },
+        ],
+    },
+    servicesPage: {
+        processEyebrow: "The Hair Rich service",
+        processTitle: "What happens when you sit down.",
+        process: [
+            { n: "01", title: "Consultation · 2 minutes", body: "Before the scissors: face shape, lifestyle, how much time you can give in the morning. We decide together." },
+            { n: "02", title: "Execution · scissors or razor", body: "Technique chosen for the result you want, not the trend of the month. Wash always included." },
+            { n: "03", title: "Finish · the right product", body: "Styling with the product suited to your hair, so you can recreate it at home in 30 seconds." },
+        ],
+        faqEyebrow: "Questions about the services",
+        faqTitle: "The most common ones.",
+        faq: [
+            { q: "How much does a haircut at Hair Rich in Olbia cost?", a: "At Hair Rich in Olbia a men's haircut is €20, a beard trim €10 and the cut + beard combo €30. Prices always include wash and styling, with no weekend surcharge. The cut takes about 30 minutes, the combo about an hour." },
+            { q: "Where is Hair Rich in Olbia?", a: "Hair Rich is at Via Regina Elena 33/A, in the centre of Olbia (07026, province of Sassari), steps from Corso Umberto. There's parking nearby, and it's about ten minutes from Olbia Costa Smeralda airport." },
+            { q: "Is Hair Rich open today? What are the hours?", a: "Hair Rich is open Monday to Saturday, 09:00–13:00 and 15:00–20:00, and closed on Sunday. We work by appointment only, so it's best to book before stopping by." },
+            { q: "How do I book an appointment at Hair Rich?", a: "You can book at Hair Rich online in about 60 seconds with instant confirmation, or by phone at 0789 1891049 during opening hours." },
+            { q: "Is there a home barber in Olbia?", a: "Yes: Hair Rich offers home haircuts in Olbia and across Costa Smeralda — Porto Cervo, Golfo Aranci — at home, in a hotel, aboard a yacht and for ceremonies and weddings. We bring the same tools and the same care as the salon right to you." },
+            { q: "How much is the home haircut in Olbia and how do I book it?", a: "Hair Rich's home service is arranged by phone only: call 0789 1891049 and we'll set place, time, number of people and price together. The quote depends on location and number of heads, but the quality is the same as the salon." },
+            { q: "Do you do beards with a traditional razor?", a: "Yes. The beard at Hair Rich (€10) is done with a hot towel, traditional razor, clean outlines and nourishing oil. It's also included in the €30 cut + beard combo." },
+            { q: "What's the difference between a fade and a classic taper?", a: "A fade is a very gradual blend that starts almost at skin level and rises progressively; a classic taper keeps more length on the sides. At Hair Rich we do both, with scissors and razor, based on your face shape." },
+            { q: "Can I add the beard to my cut during the appointment?", a: "Yes. At the initial consultation you can move from just the cut to the cut + beard combo (€30) if your face shape calls for it. The price is recalculated transparently before we start." },
+            { q: "Does Hair Rich do women's cuts or colour?", a: "Hair Rich is a barber specialised in men and beards: haircut, beard and combo. We don't do colour or women's styling; for advanced unisex styling we work by dedicated appointment only." },
+        ],
     },
     notFound: {
         eyebrow: "404",

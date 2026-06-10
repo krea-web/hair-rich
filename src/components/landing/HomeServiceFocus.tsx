@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { assetImageUrl, assetImageSrcset } from "@/lib/supabase/queries";
 import { SITE } from "@/lib/constants";
+import { useT } from "@/i18n/useLang";
 
 /**
  * Dedicated focus block for the "Taglio a domicilio" exclusive service.
@@ -12,6 +13,8 @@ import { SITE } from "@/lib/constants";
  * storefront photo with strong overlay treatment.
  */
 export function HomeServiceFocus() {
+    const { t } = useT();
+    const h = t.homeService;
     const phoneHref = "tel:+39" + SITE.phone.replace(/\s+/g, "");
     return (
         <section
@@ -39,7 +42,7 @@ export function HomeServiceFocus() {
                 aria-hidden="true"
                 className="absolute -bottom-8 right-2 md:right-12 text-display-alt text-[24vw] md:text-[12vw] text-warm-white/[0.05] leading-none pointer-events-none select-none"
             >
-                domicilio
+                {h.watermark}
             </div>
 
             <div className="relative max-w-5xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 py-12 md:py-16 lg:py-20 xl:py-24 2xl:py-28 lg:py-40 xl:py-48">
@@ -53,7 +56,7 @@ export function HomeServiceFocus() {
                     <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent-warm/15 border border-accent-warm/40">
                         <span className="w-1.5 h-1.5 rounded-full bg-accent-warm animate-pulse" aria-hidden="true" />
                         <span className="text-[10px] uppercase tracking-[0.3em] text-accent-warm font-body font-semibold">
-                            Barbiere a domicilio · Olbia e Costa Smeralda
+                            {h.chip}
                         </span>
                     </span>
 
@@ -61,26 +64,18 @@ export function HomeServiceFocus() {
                         id="home-service-title"
                         className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-6xl xl:text-6xl 2xl:text-7xl text-warm-white tracking-tight mt-5 md:mt-7 leading-[0.95]"
                     >
-                        Taglio a domicilio
+                        {h.titleA}
                         <br />
-                        <em className="text-display-alt not-italic text-silver">a Olbia.</em>
+                        <em className="text-display-alt not-italic text-silver">{h.titleB}</em>
                     </h2>
 
                     <p className="mt-6 md:mt-8 text-warm-white-muted text-base md:text-lg leading-relaxed max-w-xl">
-                        Hair Rich è anche barbiere a domicilio a Olbia e in Costa Smeralda. Veniamo
-                        noi da te — a casa, in hotel, a bordo di yacht o per cerimonie e matrimoni —
-                        a Olbia, Porto Cervo e Golfo Aranci. Stessa attrezzatura e stessa cura del
-                        salone. Il servizio a domicilio si organizza solo per telefono: chiamaci e
-                        definiamo insieme luogo, orario e prezzo.
+                        {h.body}
                     </p>
 
                     {/* Three quick facts */}
                     <dl className="mt-8 md:mt-10 lg:mt-12 grid grid-cols-3 gap-3 md:gap-6 lg:gap-10 xl:gap-12 max-w-lg lg:max-w-2xl xl:max-w-3xl">
-                        {[
-                            { v: "Olbia", l: "+ Costa Smeralda" },
-                            { v: "Yacht", l: "Hotel · Cerimonie" },
-                            { v: "Solo", l: "per telefono" },
-                        ].map((m) => (
+                        {h.facts.map((m) => (
                             <div key={m.l} className="border-l-2 border-accent-warm/60 pl-3">
                                 <dt className="text-display text-2xl md:text-3xl text-warm-white tabular-nums">
                                     {m.v}
@@ -107,7 +102,7 @@ export function HomeServiceFocus() {
                             <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.91.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0122 16.92z" />
                             </svg>
-                            Chiama per prenotare
+                            {h.cta}
                         </a>
                         <a
                             href={phoneHref}
@@ -118,7 +113,7 @@ export function HomeServiceFocus() {
                     </motion.div>
 
                     <p className="mt-6 text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
-                        Disponibili negli orari di apertura
+                        {h.footer}
                     </p>
                 </motion.div>
             </div>

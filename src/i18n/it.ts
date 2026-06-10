@@ -668,6 +668,115 @@ export const it: Dict = {
             ],
         },
     },
+    servicesHero: {
+        chip: "Su prenotazione · Olbia centro",
+        titleA: "Taglio e barba",
+        titleB: "a Olbia.",
+        body:
+            "Taglio capelli 20€, barba 10€, taglio + barba 30€. Prenoti online in un minuto, paghi in salone. Lavaggio e styling sempre inclusi.",
+        cta: "Prenota ora",
+        metrics: [
+            { v: "da 20€", l: "Listino" },
+            { v: "60s", l: "Prenoti online" },
+            { v: "4,6★", l: "37 recensioni" },
+        ],
+        footerLeft: "Conferma immediata",
+        footerRight: "01 / Servizi",
+    },
+    serviceQuiz: {
+        eyebrow: "Costruisci il tuo servizio",
+        title: "Tre opzioni. Un tap. Sei in poltrona.",
+        intro:
+            "Taglio 20€, barba 10€, combo 30€. Scegli cosa fare oggi e prenoti il prossimo slot — in 60 secondi.",
+        watermark: "scegli",
+        items: [
+            { tag: "Solo capelli", quick: "Ascolto + esecuzione + finish. 30 minuti, finito.", cta: "Prenota taglio capelli" },
+            { tag: "Solo barba", quick: "Rasoio classico, contorni, olio scelto sul tipo di pelle.", cta: "Prenota taglio barba" },
+            { tag: "Combo", quick: "Un'ora intera. Capelli e barba in continuità.", cta: "Prenota combo" },
+        ],
+        fallbackNames: { cut: "Taglio capelli", beard: "Taglio barba", combo: "Taglio capelli + barba" },
+    },
+    homeService: {
+        chip: "Barbiere a domicilio · Olbia e Costa Smeralda",
+        titleA: "Taglio a domicilio",
+        titleB: "a Olbia.",
+        body:
+            "Hair Rich è anche barbiere a domicilio a Olbia e in Costa Smeralda. Veniamo noi da te — a casa, in hotel, a bordo di yacht o per cerimonie e matrimoni — a Olbia, Porto Cervo e Golfo Aranci. Stessa attrezzatura e stessa cura del salone. Il servizio a domicilio si organizza solo per telefono: chiamaci e definiamo insieme luogo, orario e prezzo.",
+        facts: [
+            { v: "Olbia", l: "+ Costa Smeralda" },
+            { v: "Yacht", l: "Hotel · Cerimonie" },
+            { v: "Solo", l: "per telefono" },
+        ],
+        cta: "Chiama per prenotare",
+        footer: "Disponibili negli orari di apertura",
+        watermark: "domicilio",
+    },
+    galleryHero: {
+        eyebrow: "Tagli realizzati · Olbia",
+        titleA: "Tagli che hanno camminato",
+        titleB: "fuori da qui.",
+        body:
+            "Ogni foto è un cliente vero, scattata a fine servizio. Niente stock, niente IA, niente catalogo riciclato. Solo quello che facciamo davvero.",
+        metrics: [
+            { value: "4,6★", label: "37 recensioni" },
+            { value: "dal 2017", label: "A Olbia" },
+            { value: "3", label: "Servizi" },
+        ],
+        footerLeft: "Hair Rich · Olbia",
+        footerRight: "02 / Lavori",
+    },
+    salonDay: {
+        eyebrow: "Dietro le quinte",
+        titleA: "Una giornata",
+        titleB: "in salone.",
+        intro:
+            "Nessuna messa in scena. Un mestiere fatto bene, dal lunedì al sabato, dalle 9 alle 20 con la pausa pranzo. Ecco com'è una giornata da Hair Rich.",
+        watermark: "09 — 20:00",
+        timeline: [
+            { time: "09:00", title: "Si apre", body: "Caffè, agenda della giornata, lame pronte. Quando entra il primo cliente è già tutto in ordine." },
+            { time: "09:30", title: "Primo taglio", body: "Si parte sempre dal consulto, anche con chi viene da anni: la testa cambia, il taglio si adatta." },
+            { time: "13:00", title: "Pausa", body: "Si chiude davvero, dalle 13 alle 15. Niente \"giusto cinque minuti\": si stacca e si torna lucidi." },
+            { time: "15:00", title: "Pomeriggio", body: "Clienti dopo il lavoro: taglio, barba, combo. Chi ha poco tempo entra ed esce, chi vuole con calma se la prende." },
+            { time: "18:00", title: "Ora di punta", body: "Le ore più piene: taglio, barba e rifiniture. Si lavora solo su appuntamento, così nessuno aspetta in piedi." },
+            { time: "20:00", title: "Si chiude", body: "Stesso rispetto del mattino: si chiude in orario per chi viene domani, ma chi è in poltrona finisce con calma. Sempre." },
+        ],
+    },
+    directions: {
+        eyebrow: "Come arrivare",
+        addressLine: "Via Regina Elena 33/A,",
+        city: "Olbia.",
+        intro:
+            "A due passi da Corso Umberto. Tre modi diversi per arrivare, tutti in meno di 15 minuti dal punto in cui sei.",
+        mapBtn: "Apri in Maps",
+        routes: [
+            { title: "A piedi dal Corso", body: "5 minuti da Corso Umberto. Esci verso Via Regina Elena, prosegui dritto fino al civico 33/A.", detail: "Ideale se hai parcheggiato in centro o sei già nella zona pedonale." },
+            { title: "In auto", body: "Parcheggi liberi su Via Regina Elena e Via Mameli. ZTL non attiva nella zona del salone.", detail: "Se arrivi dal porto o dalla SS125, segui le indicazioni per Centro Storico." },
+            { title: "Dall'aeroporto", body: "10–15 minuti in auto dall'aeroporto Olbia Costa Smeralda. In taxi, a noleggio o in navetta arrivi dritto in centro.", detail: "Pratico per chi atterra: prenota con anticipo e fai il taglio prima del check-in in hotel." },
+        ],
+    },
+    servicesPage: {
+        processEyebrow: "Il servizio Hair Rich",
+        processTitle: "Cosa succede quando ti siedi.",
+        process: [
+            { n: "01", title: "Consulto · 2 minuti", body: "Prima delle forbici: forma del viso, stile di vita, tempo che puoi dedicare al mattino. Decidiamo insieme." },
+            { n: "02", title: "Esecuzione · forbice o rasoio", body: "Tecnica scelta sul risultato che vuoi, non sulla moda del mese. Lavaggio sempre incluso." },
+            { n: "03", title: "Finitura · prodotto giusto", body: "Styling con prodotto adatto al tuo capello, così a casa lo riproduci in 30 secondi." },
+        ],
+        faqEyebrow: "Domande sui servizi",
+        faqTitle: "Le più frequenti.",
+        faq: [
+            { q: "Quanto costa un taglio da Hair Rich a Olbia?", a: "Da Hair Rich a Olbia il taglio capelli uomo costa 20€, la barba 10€ e il combo taglio + barba 30€. I prezzi includono sempre lavaggio e styling, senza sovrapprezzo nel weekend. Il taglio dura circa 30 minuti, il combo circa un'ora." },
+            { q: "Dove si trova Hair Rich a Olbia?", a: "Hair Rich è in Via Regina Elena 33/A, nel centro di Olbia (07026, provincia di Sassari), a pochi passi da Corso Umberto. C'è parcheggio nelle vicinanze e dall'aeroporto di Olbia Costa Smeralda sono circa dieci minuti." },
+            { q: "Hair Rich è aperto oggi? Quali sono gli orari?", a: "Hair Rich è aperto dal lunedì al sabato, 09:00–13:00 e 15:00–20:00, e chiuso la domenica. Si lavora solo su prenotazione, quindi conviene fissare l'appuntamento prima di passare." },
+            { q: "Come prenoto un appuntamento da Hair Rich?", a: "Puoi prenotare da Hair Rich online dal sito in circa 60 secondi con conferma immediata, oppure al telefono allo 0789 1891049 negli orari di apertura." },
+            { q: "C'è un barbiere a domicilio a Olbia?", a: "Sì: Hair Rich fa il taglio a domicilio a Olbia e in tutta la Costa Smeralda — Porto Cervo, Golfo Aranci — a casa, in hotel, a bordo di yacht e per cerimonie e matrimoni. Portiamo la stessa attrezzatura e la stessa cura del salone direttamente da te." },
+            { q: "Quanto costa e come si prenota il taglio a domicilio a Olbia?", a: "Il taglio a domicilio di Hair Rich si organizza solo per telefono: chiama lo 0789 1891049 e definiamo insieme luogo, orario, numero di persone e prezzo. Il preventivo dipende dalla località e dal numero di teste, ma la qualità è quella del salone." },
+            { q: "Fate la barba con il rasoio tradizionale?", a: "Sì. La barba da Hair Rich (10€) si fa con asciugamano caldo, rasoio tradizionale, contorni netti e olio nutriente. È inclusa anche nel combo taglio + barba da 30€." },
+            { q: "Qual è la differenza tra fade e sfumatura classica?", a: "Il fade è una sfumatura molto graduale che parte quasi a pelle e sale progressivamente; la sfumatura classica lascia più lunghezza sui lati. Da Hair Rich lavoriamo entrambe, a forbice e rasoio, in base alla forma del tuo viso." },
+            { q: "Posso aggiungere la barba al taglio durante l'appuntamento?", a: "Sì. Al consulto iniziale puoi passare dal solo taglio al combo taglio + barba (30€) se la forma del viso lo richiede. Il prezzo viene ricalibrato in modo trasparente prima di iniziare." },
+            { q: "Hair Rich fa tagli da donna o il colore?", a: "Hair Rich è un barbiere specializzato sull'uomo e sulla barba: taglio capelli, barba e combo. Non facciamo colore o acconciature da donna; per uno styling unisex avanzato lavoriamo solo su prenotazione dedicata." },
+        ],
+    },
     notFound: {
         eyebrow: "404",
         title: "Pagina non trovata.",

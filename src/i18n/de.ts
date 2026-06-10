@@ -39,7 +39,7 @@ export const de: Dict = {
         titleA: "BARBER",
         titleB: "STUDIO",
         body:
-            "Seit acht Jahren ist es unsere Mission, deine Identität zu formen. Schnitt, Bart und exklusive Behandlungen im Herzen von Olbia.",
+            "Herrenhaarschnitt und Bartpflege, im Zentrum von Olbia. Auf Termin, ein Kunde nach dem anderen, ohne Eile — seit 2017.",
         primaryCta: "Jetzt buchen",
         secondaryCta: "Services entdecken",
         captionEyebrow: "Premium",
@@ -60,11 +60,11 @@ export const de: Dict = {
         titleA: "Unser",
         titleB: "Studio.",
         bodyP1:
-            "Hair Rich entstand aus einer Vision: das Service des Haarschnitts in eine intime, maßgeschneiderte, einzigartige Erfahrung zu verwandeln. Ein Stuhl, ein Master Barber, erfahrene Hände.",
+            "Hair Rich ist ein auf Männer spezialisierter Barbier im Zentrum von Olbia. Eine Person nach der anderen, mit der nötigen Zeit: zuerst reden wir, dann schneiden wir.",
         bodyP2:
-            "Keine Eile. Keine Standardisierung. Nur die Zeit, die nötig ist, um deinen Charakter zu formen — ein Fade nach dem anderen.",
-        values: ["Obsessive Maßarbeit", "Premium-Materialien", "Intime Atmosphäre", "Langsames Service"],
-        cta: "Erlebe es",
+            "Keine Eile und keine Schnitte von der Stange. Wir gehen von deiner Gesichtsform aus und davon, wie viel Zeit du deinem Haar widmest — für einen Schnitt, der auch nach einer Woche gut sitzt.",
+        values: ["Nur Mann & Bart", "Auf Termin", "Waschen & Styling inklusive", "Im Zentrum von Olbia"],
+        cta: "Buche deinen Schnitt",
         sinceLabel: "seit",
     },
     services: {
@@ -72,28 +72,28 @@ export const de: Dict = {
         titleA: "Unsere",
         titleB: "Services.",
         intro:
-            "Drei Familien von Behandlungen für jeden Moment deines Tages. Wähle das Service, das dich definiert — den Rest übernehmen wir.",
+            "Drei Services, klare Preise: Haarschnitt 20€, Bart 10€, Schnitt + Bart 30€. Waschen und Styling immer inklusive, auf Termin. Wir machen auch den Hausbesuch-Schnitt in Olbia (nur telefonisch).",
         items: [
             {
-                eyebrow: "Sharp",
+                eyebrow: "20€ · 30 Min.",
                 title: "SCHNITT",
                 description:
-                    "Klassische Schnitte, chirurgische Fades, Übergänge mit Rasiermesser. Jeder Schnitt ist auf dein Gesicht abgestimmt.",
-                items: ["Klassischer Schnitt", "Fade & Übergänge", "Razor Cut", "Kinder"],
+                    "Herrenhaarschnitt: Schere oder Maschine, saubere Fades und Konturen. Waschen und Styling inklusive.",
+                items: ["Schere oder Maschine", "Fades und Konturen", "Waschen + Styling", "Auf Termin"],
             },
             {
-                eyebrow: "Refined",
+                eyebrow: "10€ · 30 Min.",
                 title: "BART",
                 description:
-                    "Modellierung, Finish, heiße Tücher und ätherisches Öl für eine makellose Rasur.",
-                items: ["Modellierung", "Traditionelle Rasur", "Designer Beard", "Pflegende Behandlung"],
+                    "Bartmodellierung und Finish mit heißem Tuch, klassischem Rasiermesser und pflegendem Öl.",
+                items: ["Heißes Tuch", "Klassisches Rasiermesser", "Saubere Konturen", "Pflegendes Öl"],
             },
             {
-                eyebrow: "Home",
-                title: "ZU HAUSE",
+                eyebrow: "30€ · 60 Min.",
+                title: "COMBO",
                 description:
-                    "Wir kommen zu dir. Auf Termin, für alle die es nicht in den Salon schaffen — gleiche maßgeschneiderte Qualität.",
-                items: ["Hausbesuch Schnitt", "Hausbesuch Bart", "Hochzeiten & Zeremonien", "Auf Termin"],
+                    "Haarschnitt + Bart in einer einzigen Sitzung von einer Stunde. Der komplette Hair-Rich-Service.",
+                items: ["Schnitt + Bart", "Eine dedizierte Stunde", "Waschen + Styling", "Am beliebtesten"],
             },
         ],
         bookFromCard: "Buchen",
@@ -104,24 +104,24 @@ export const de: Dict = {
         titleB: "wirklich.",
         features: [
             {
-                title: "Intime Atmosphäre",
+                title: "Auf Männer spezialisiert",
                 description:
-                    "Nur wenige Stühle, keine Menge. Jeder Kunde ist ein Gast — kein Termin, der erledigt werden muss.",
+                    "Wir schneiden den ganzen Tag Männerhaare und -bärte, jeden Tag. Die Spezialisierung zeigt sich im Ergebnis.",
             },
             {
-                title: "Zertifizierte Master Barbers",
+                title: "Auf Termin, ohne Wartezeit",
                 description:
-                    "Jahrelange internationale Ausbildung. Jeder Schnitt ist auf deine Morphologie abgestimmt, nicht auf vorübergehende Trends.",
+                    "Buche online in einer Minute oder telefonisch. Großzügige Slots, nie überlappend: du kommst rein und sitzt sofort im Stuhl.",
             },
             {
-                title: "Premium-Werkzeuge",
+                title: "Ein Schnitt, der zu dir passt",
                 description:
-                    "Japanische Klingen, handgefertigte Produkte, Tücher aus Bio-Baumwolle. Keine Kompromisse.",
+                    "Wir gehen von deiner Gesichtsform und deinem Lebensstil aus, nicht vom Trend des Monats. Ein Schnitt, der auch nach einer Woche hält.",
             },
             {
-                title: "Bewusste Zeit",
+                title: "Im Zentrum von Olbia",
                 description:
-                    "Großzügige Slots, niemals überlappend. Das Service verlangt Ruhe — du wirst genug davon haben.",
+                    "In der Via Regina Elena 33/A, wenige Schritte vom Corso Umberto. Parkplätze in der Nähe, geöffnet Mo–Sa 9–13 und 15–20.",
             },
         ],
     },
@@ -132,9 +132,9 @@ export const de: Dict = {
         featured: {
             name: "Federico Asara",
             role: "Master Barber & Co-founder",
-            quote: "Jeder Schnitt ist Maßarbeit. Keine Formeln, keine Abkürzungen.",
+            quote: "Wir wollten einen Ort, an dem der Schnitt in Ruhe gemacht wird, eine Person nach der anderen. Das ist Hair Rich.",
             bio:
-                "Federico ist der Mitgründer von Hair Rich, gemeinsam mit Riccardo. Er hat das Handwerk früh gelernt und seine Technik seither stetig verfeinert. Spezialisiert auf Razor Cut, chirurgische Fades und Shape-ups, abgestimmt auf die Gesichtsmorphologie. Heute schneidet er persönlich im Salon und bildet sein Team nach maßgeschneiderter Methode aus.",
+                "Federico ist der Mitgründer von Hair Rich, gemeinsam mit Riccardo, und schneidet im Salon im Zentrum von Olbia. Er hat das Handwerk früh gelernt und seine Technik seither nie aufgehört zu verfeinern: Fades, Razor Cut und Konturen, abgestimmt auf deine Gesichtsform. Heute schneidet er persönlich im Salon und bildet sein Team mit Methode und Geduld aus.",
             specialties: ["Razor", "Fade", "Classic", "Beard"],
             yearsLabel: "10+",
             yearsCaption: "Jahre Handwerk",
@@ -146,7 +146,7 @@ export const de: Dict = {
                 specialties: "Schnitt · Bart · Styling",
                 quote: "Ein guter Schnitt zeigt sich nach einer Woche, nicht nach fünf Minuten.",
                 bio:
-                    "Cristian kam ins Hair Rich Team nach Jahren in Salons in Rom und Cagliari. Spezialisiert auf moderne Schnitte, Texturierung und maßgeschneiderten Bart. Leichte Hand, echtes Zuhören und genau die richtige Prise Humor, um den Stuhl zum Privileg zu machen.",
+                    "Cristian kam ins Hair Rich Team nach Jahren in Salons zwischen Rom und Cagliari. Spezialisiert auf moderne Schnitte, Texturierung und Bart. Leichte Hand, echtes Zuhören und genau die richtige Prise Humor, damit die Sitzung wie im Flug vergeht.",
                 tags: ["Modern", "Texture", "Beard", "Styling"],
                 yearsLabel: "6+",
                 yearsCaption: "Jahre Handwerk",
@@ -158,24 +158,14 @@ export const de: Dict = {
         titleA: "Preisliste",
         titleB: "",
         intro:
-            "Transparente Preise, ehrliche Zeiten. Niemals Wochenendaufschlag. Für Firmenpakete und Zeremonien schreib uns.",
+            "Transparente Preise, kein Wochenendaufschlag. Waschen und Styling immer inklusive. Für den Hausbesuch-Schnitt in Olbia ruf uns an.",
         groups: [
             {
-                title: "Schnitt",
+                title: "Preisliste",
                 items: [
-                    { name: "Klassischer Schnitt", description: "Schere, Waschen und Styling", duration: "30'", price: "20€" },
-                    { name: "Fade & Übergang", description: "Präziser Übergang, Schere, Rasiermesser", duration: "45'", price: "25€" },
-                    { name: "Razor Cut", description: "Komplette Bearbeitung mit Rasiermesser", duration: "50'", price: "30€" },
-                    { name: "Kinderschnitt", description: "Von 0 bis 12 Jahre", duration: "25'", price: "15€" },
-                ],
-            },
-            {
-                title: "Bart & Hausbesuch",
-                items: [
-                    { name: "Maßgeschneiderter Bart", description: "Modellierung, heiße Tücher, Öl", duration: "30'", price: "15€" },
-                    { name: "Traditionelle Rasur", description: "Freihand-Rasiermesser, präzises Finish", duration: "40'", price: "25€" },
-                    { name: "Schnitt + Bart", description: "Das Signature-Combo", duration: "60'", price: "35€" },
-                    { name: "Hausbesuch Schnitt", description: "Wir kommen zu dir. Auf Termin.", duration: "60'", price: "45€" },
+                    { name: "Haarschnitt", description: "Schere oder Maschine, Fades und Konturen. Waschen und Styling inklusive.", duration: "30'", price: "20€" },
+                    { name: "Bart", description: "Heißes Tuch, klassisches Rasiermesser, pflegendes Öl.", duration: "30'", price: "10€" },
+                    { name: "Schnitt + Bart", description: "Haare und Bart in einer Stunde. Das komplette Combo.", duration: "60'", price: "30€" },
                 ],
             },
         ],
@@ -339,7 +329,7 @@ export const de: Dict = {
         intro:
             "Das Hair-Rich-Studio liegt im Zentrum von Olbia, nur wenige Schritte vom Corso Umberto entfernt. Parkplätze in der Nähe.",
         cta: "Route planen",
-        hoursSummary: "Mo–Sa · 9:00–20:00",
+        hoursSummary: "Mo–Sa · 9–13 / 15–20",
         labels: { address: "Adresse", hours: "Öffnungszeiten" },
     },
     footer: {
@@ -362,9 +352,9 @@ export const de: Dict = {
         premium: "Nur Premium-Produkte",
     },
     bundle: {
-        eyebrow: "Signature Combo",
-        title: "Schnitt + Bart für 35€ statt 40€",
-        save: (eur) => `Spare ${eur}`,
+        eyebrow: "Komplettes Combo",
+        title: "Schnitt + Bart in einer Stunde für 30€",
+        save: (eur) => `Schnitt ${eur}`,
         cta: "Combo buchen",
     },
     availability: {
@@ -654,6 +644,115 @@ export const de: Dict = {
                 },
             ],
         },
+    },
+    servicesHero: {
+        chip: "Auf Termin · Olbia Zentrum",
+        titleA: "Schnitt & Bart",
+        titleB: "in Olbia.",
+        body:
+            "Haarschnitt 20€, Bart 10€, Schnitt + Bart 30€. Buche online in einer Minute, zahle im Salon. Waschen und Styling immer inklusive.",
+        cta: "Jetzt buchen",
+        metrics: [
+            { v: "ab 20€", l: "Preisliste" },
+            { v: "60s", l: "Online buchen" },
+            { v: "4,6★", l: "37 Bewertungen" },
+        ],
+        footerLeft: "Sofortige Bestätigung",
+        footerRight: "01 / Services",
+    },
+    serviceQuiz: {
+        eyebrow: "Stell deinen Service zusammen",
+        title: "Drei Optionen. Ein Tap. Du sitzt im Stuhl.",
+        intro:
+            "Schnitt 20€, Bart 10€, Combo 30€. Wähle, was du heute willst, und buche den nächsten Slot — in 60 Sekunden.",
+        watermark: "wählen",
+        items: [
+            { tag: "Nur Haare", quick: "Zuhören + Ausführen + Finish. 30 Minuten, fertig.", cta: "Haarschnitt buchen" },
+            { tag: "Nur Bart", quick: "Klassisches Rasiermesser, Konturen, Öl passend zur Haut.", cta: "Bart buchen" },
+            { tag: "Combo", quick: "Eine ganze Stunde. Haare und Bart am Stück.", cta: "Combo buchen" },
+        ],
+        fallbackNames: { cut: "Haarschnitt", beard: "Bart", combo: "Haarschnitt + Bart" },
+    },
+    homeService: {
+        chip: "Barbier auf Hausbesuch · Olbia & Costa Smeralda",
+        titleA: "Hausbesuch-Schnitt",
+        titleB: "in Olbia.",
+        body:
+            "Hair Rich ist auch Barbier auf Hausbesuch in Olbia und in der ganzen Costa Smeralda. Wir kommen zu dir — nach Hause, ins Hotel, an Bord einer Yacht oder für Zeremonien und Hochzeiten — in Olbia, Porto Cervo und Golfo Aranci. Gleiche Werkzeuge und gleiche Sorgfalt wie im Salon. Der Hausbesuch wird nur telefonisch organisiert: ruf uns an und wir legen gemeinsam Ort, Zeit und Preis fest.",
+        facts: [
+            { v: "Olbia", l: "+ Costa Smeralda" },
+            { v: "Yacht", l: "Hotel · Zeremonien" },
+            { v: "Nur", l: "telefonisch" },
+        ],
+        cta: "Zum Buchen anrufen",
+        footer: "Verfügbar zu den Öffnungszeiten",
+        watermark: "Hausbesuch",
+    },
+    galleryHero: {
+        eyebrow: "Echte Schnitte · Olbia",
+        titleA: "Schnitte, die hier",
+        titleB: "rausspaziert sind.",
+        body:
+            "Jedes Foto ist ein echter Kunde, am Ende des Services aufgenommen. Keine Stockfotos, keine KI, kein recycelter Katalog. Nur das, was wir wirklich machen.",
+        metrics: [
+            { value: "4,6★", label: "37 Bewertungen" },
+            { value: "seit 2017", label: "In Olbia" },
+            { value: "3", label: "Services" },
+        ],
+        footerLeft: "Hair Rich · Olbia",
+        footerRight: "02 / Arbeiten",
+    },
+    salonDay: {
+        eyebrow: "Hinter den Kulissen",
+        titleA: "Ein Tag",
+        titleB: "im Salon.",
+        intro:
+            "Keine Inszenierung. Ein Handwerk, gut gemacht, von Montag bis Samstag, von 9 bis 20 Uhr mit Mittagspause. So sieht ein Tag bei Hair Rich aus.",
+        watermark: "09 — 20:00",
+        timeline: [
+            { time: "09:00", title: "Wir öffnen", body: "Kaffee, der Tagesplan, Klingen bereit. Wenn der erste Kunde reinkommt, ist schon alles in Ordnung." },
+            { time: "09:30", title: "Erster Schnitt", body: "Wir starten immer mit der Beratung, auch bei Stammkunden: der Kopf ändert sich, der Schnitt passt sich an." },
+            { time: "13:00", title: "Pause", body: "Wir schließen wirklich, von 13 bis 15 Uhr. Kein \"nur fünf Minuten\": man schaltet ab und kommt klar zurück." },
+            { time: "15:00", title: "Nachmittag", body: "Kunden nach der Arbeit: Schnitt, Bart, Combo. Wenig Zeit? Rein und raus. Lust auf Ruhe? Nimm sie dir." },
+            { time: "18:00", title: "Stoßzeit", body: "Die vollsten Stunden: Schnitt, Bart und Korrekturen. Nur auf Termin, so wartet niemand im Stehen." },
+            { time: "20:00", title: "Wir schließen", body: "Gleicher Respekt wie am Morgen: wir schließen pünktlich für die Kunden von morgen, aber wer im Stuhl sitzt, wird in Ruhe fertig. Immer." },
+        ],
+    },
+    directions: {
+        eyebrow: "Anfahrt",
+        addressLine: "Via Regina Elena 33/A,",
+        city: "Olbia.",
+        intro:
+            "Wenige Schritte vom Corso Umberto. Drei Wege herzukommen, alle in unter 15 Minuten von wo du gerade bist.",
+        mapBtn: "In Maps öffnen",
+        routes: [
+            { title: "Zu Fuß vom Corso", body: "5 Minuten vom Corso Umberto. Richtung Via Regina Elena, dann geradeaus bis Nummer 33/A.", detail: "Ideal, wenn du im Zentrum geparkt hast oder schon in der Fußgängerzone bist." },
+            { title: "Mit dem Auto", body: "Freie Parkplätze in der Via Regina Elena und Via Mameli. Keine verkehrsbeschränkte Zone rund um den Salon.", detail: "Vom Hafen oder der SS125: den Schildern zum Centro Storico folgen." },
+            { title: "Vom Flughafen", body: "10–15 Minuten mit dem Auto vom Flughafen Olbia Costa Smeralda. Mit Taxi, Mietwagen oder Shuttle direkt ins Zentrum.", detail: "Praktisch nach der Landung: vorab buchen und vor dem Hotel-Check-in den Schnitt machen." },
+        ],
+    },
+    servicesPage: {
+        processEyebrow: "Der Hair-Rich-Service",
+        processTitle: "Was passiert, wenn du dich setzt.",
+        process: [
+            { n: "01", title: "Beratung · 2 Minuten", body: "Vor der Schere: Gesichtsform, Lebensstil, wie viel Zeit du morgens hast. Wir entscheiden gemeinsam." },
+            { n: "02", title: "Ausführung · Schere oder Rasiermesser", body: "Technik nach dem gewünschten Ergebnis, nicht nach der Mode des Monats. Waschen immer inklusive." },
+            { n: "03", title: "Finish · das richtige Produkt", body: "Styling mit dem Produkt, das zu deinem Haar passt, damit du es zu Hause in 30 Sekunden nachmachst." },
+        ],
+        faqEyebrow: "Fragen zu den Services",
+        faqTitle: "Die häufigsten.",
+        faq: [
+            { q: "Was kostet ein Haarschnitt bei Hair Rich in Olbia?", a: "Bei Hair Rich in Olbia kostet der Herrenhaarschnitt 20€, der Bart 10€ und das Combo Schnitt + Bart 30€. Die Preise enthalten immer Waschen und Styling, ohne Wochenendaufschlag. Der Schnitt dauert etwa 30 Minuten, das Combo etwa eine Stunde." },
+            { q: "Wo ist Hair Rich in Olbia?", a: "Hair Rich ist in der Via Regina Elena 33/A, im Zentrum von Olbia (07026, Provinz Sassari), wenige Schritte vom Corso Umberto. Parkplätze in der Nähe, und etwa zehn Minuten vom Flughafen Olbia Costa Smeralda." },
+            { q: "Ist Hair Rich heute geöffnet? Wie sind die Öffnungszeiten?", a: "Hair Rich ist von Montag bis Samstag geöffnet, 09:00–13:00 und 15:00–20:00, sonntags geschlossen. Wir arbeiten nur auf Termin, daher am besten vorher buchen." },
+            { q: "Wie buche ich einen Termin bei Hair Rich?", a: "Du kannst bei Hair Rich online in etwa 60 Sekunden mit sofortiger Bestätigung buchen, oder telefonisch unter 0789 1891049 zu den Öffnungszeiten." },
+            { q: "Gibt es einen Barbier auf Hausbesuch in Olbia?", a: "Ja: Hair Rich bietet den Hausbesuch-Schnitt in Olbia und in der ganzen Costa Smeralda an — Porto Cervo, Golfo Aranci — zu Hause, im Hotel, an Bord einer Yacht und für Zeremonien und Hochzeiten. Wir bringen die gleichen Werkzeuge und die gleiche Sorgfalt wie im Salon zu dir." },
+            { q: "Was kostet der Hausbesuch-Schnitt in Olbia und wie buche ich ihn?", a: "Der Hausbesuch von Hair Rich wird nur telefonisch organisiert: ruf 0789 1891049 an, und wir legen gemeinsam Ort, Zeit, Personenzahl und Preis fest. Der Kostenvoranschlag hängt vom Ort und der Anzahl der Köpfe ab, die Qualität ist die des Salons." },
+            { q: "Macht ihr den Bart mit dem traditionellen Rasiermesser?", a: "Ja. Der Bart bei Hair Rich (10€) wird mit heißem Tuch, traditionellem Rasiermesser, sauberen Konturen und pflegendem Öl gemacht. Er ist auch im Combo Schnitt + Bart für 30€ enthalten." },
+            { q: "Was ist der Unterschied zwischen einem Fade und einem klassischen Übergang?", a: "Der Fade ist ein sehr gradueller Übergang, der fast an der Haut beginnt und allmählich ansteigt; der klassische Übergang lässt mehr Länge an den Seiten. Bei Hair Rich machen wir beide, mit Schere und Rasiermesser, je nach deiner Gesichtsform." },
+            { q: "Kann ich den Bart während des Termins zum Schnitt hinzufügen?", a: "Ja. Bei der Beratung kannst du vom reinen Schnitt zum Combo Schnitt + Bart (30€) wechseln, wenn die Gesichtsform es nahelegt. Der Preis wird vor dem Start transparent neu berechnet." },
+            { q: "Macht Hair Rich Damenschnitte oder Farbe?", a: "Hair Rich ist ein auf Männer und Bart spezialisierter Barbier: Haarschnitt, Bart und Combo. Wir machen keine Farbe und kein Damen-Styling; für fortgeschrittenes Unisex-Styling arbeiten wir nur nach gesondertem Termin." },
+        ],
     },
     notFound: {
         eyebrow: "404",

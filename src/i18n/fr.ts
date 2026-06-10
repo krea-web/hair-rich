@@ -39,7 +39,7 @@ export const fr: Dict = {
         titleA: "BARBER",
         titleB: "STUDIO",
         body:
-            "Depuis huit ans, notre mission est de sculpter votre identité. Coupe, barbe et soins exclusifs au cœur d'Olbia.",
+            "Coupe homme et taille de barbe, au cœur d'Olbia. Sur rendez-vous, un client à la fois, sans précipitation — depuis 2017.",
         primaryCta: "Réserver",
         secondaryCta: "Découvrir les services",
         captionEyebrow: "Premium",
@@ -60,11 +60,11 @@ export const fr: Dict = {
         titleA: "Notre",
         titleB: "studio.",
         bodyP1:
-            "Hair Rich est né d'une vision : transformer le service de la coupe en une expérience intime, sur mesure, unique. Un fauteuil, un Master Barber, des mains expertes.",
+            "Hair Rich est un barbier spécialisé dans l'homme, au centre d'Olbia. Une personne à la fois, tout le temps qu'il faut : d'abord on parle, ensuite on coupe.",
         bodyP2:
-            "Pas de précipitation. Aucune standardisation. Juste le temps qu'il faut pour sculpter votre caractère — un fade à la fois.",
-        values: ["Sur-mesure obsessionnel", "Matériaux premium", "Atmosphère intime", "Soin lent"],
-        cta: "Vivez l'expérience",
+            "Pas de précipitation et pas de coupes à l'emporte-pièce. On part de la forme de votre visage et du temps que vous consacrez à vos cheveux, pour une coupe qui tient encore après une semaine.",
+        values: ["Homme et barbe seulement", "Sur rendez-vous", "Lavage et coiffage inclus", "Au centre d'Olbia"],
+        cta: "Réservez votre coupe",
         sinceLabel: "depuis",
     },
     services: {
@@ -72,28 +72,28 @@ export const fr: Dict = {
         titleA: "Nos",
         titleB: "services.",
         intro:
-            "Trois familles de soins pour chaque moment de votre journée. Choisissez le service qui vous représente — on s'occupe du reste.",
+            "Trois services, des prix clairs : coupe 20€, barbe 10€, coupe + barbe 30€. Lavage et coiffage toujours inclus, sur rendez-vous. Nous faisons aussi la coupe à domicile à Olbia (par téléphone uniquement).",
         items: [
             {
-                eyebrow: "Sharp",
+                eyebrow: "20€ · 30 min",
                 title: "COUPE",
                 description:
-                    "Coupes classiques, fades chirurgicaux, dégradés au rasoir. Chaque coupe est dessinée pour votre visage.",
-                items: ["Coupe classique", "Fade & Dégradés", "Razor cut", "Enfant"],
+                    "Coupe homme : ciseaux ou tondeuse, dégradés et contours soignés. Lavage et coiffage inclus.",
+                items: ["Ciseaux ou tondeuse", "Dégradés et contours", "Lavage + coiffage", "Sur rendez-vous"],
             },
             {
-                eyebrow: "Refined",
+                eyebrow: "10€ · 30 min",
                 title: "BARBE",
                 description:
-                    "Modelage, finition, serviettes chaudes et huile essentielle pour un rasage impeccable.",
-                items: ["Modelage", "Rasage traditionnel", "Designer beard", "Soin hydratant"],
+                    "Modelage et finition de la barbe avec serviette chaude, rasoir classique et huile nourrissante.",
+                items: ["Serviette chaude", "Rasoir classique", "Contours nets", "Huile nourrissante"],
             },
             {
-                eyebrow: "Home",
-                title: "À DOMICILE",
+                eyebrow: "30€ · 60 min",
+                title: "COMBO",
                 description:
-                    "Nous venons chez vous. Sur rendez-vous, pour qui ne peut pas se déplacer — même qualité sur mesure.",
-                items: ["Coupe à domicile", "Barbe à domicile", "Mariages & cérémonies", "Sur rendez-vous"],
+                    "Coupe + barbe en une seule séance d'une heure. Le service complet Hair Rich.",
+                items: ["Coupe + barbe", "Une heure dédiée", "Lavage + coiffage", "Le plus demandé"],
             },
         ],
         bookFromCard: "Réserver",
@@ -104,24 +104,24 @@ export const fr: Dict = {
         titleB: "vraiment.",
         features: [
             {
-                title: "Atmosphère intime",
+                title: "Spécialisés dans l'homme",
                 description:
-                    "Quelques fauteuils seulement, jamais de foule. Chaque client est un invité — pas un dossier à fermer.",
+                    "On coupe cheveux et barbes d'homme toute la journée, tous les jours. La spécialisation se voit sur le résultat.",
             },
             {
-                title: "Master Barbers certifiés",
+                title: "Sur rendez-vous, sans attente",
                 description:
-                    "Des années de formation internationale. Chaque coupe est étudiée sur votre morphologie, pas sur les modes passagères.",
+                    "Réservez en ligne en une minute ou par téléphone. Créneaux larges, jamais superposés : vous entrez et vous êtes tout de suite au fauteuil.",
             },
             {
-                title: "Outils premium",
+                title: "Une coupe taillée pour vous",
                 description:
-                    "Lames japonaises, produits formulés à la main, serviettes coton bio. Aucun compromis.",
+                    "On part de la forme du visage et de votre mode de vie, pas de la mode du moment. Une coupe qui tient même après une semaine.",
             },
             {
-                title: "Temps dédié",
+                title: "Au centre d'Olbia",
                 description:
-                    "Créneaux généreux, jamais superposés. Le soin demande du calme — vous en aurez à profusion.",
+                    "Via Regina Elena 33/A, à deux pas du Corso Umberto. Parking à proximité, ouvert lun–sam 9–13 et 15–20.",
             },
         ],
     },
@@ -132,9 +132,9 @@ export const fr: Dict = {
         featured: {
             name: "Federico Asara",
             role: "Master Barber & Co-founder",
-            quote: "Chaque coupe est un acte de couture. Pas de formules, pas de raccourcis.",
+            quote: "On l'a pensé comme un endroit où la coupe se fait avec calme, une personne à la fois. Hair Rich, c'est ça.",
             bio:
-                "Federico est le co-fondateur de Hair Rich, avec Riccardo. Il a appris le métier très jeune et n'a jamais cessé d'affiner sa technique. Spécialisé en razor cut, fade chirurgical et shape-up adaptés à la morphologie du visage. Aujourd'hui il coupe personnellement au salon et forme son équipe avec une méthode sur mesure.",
+                "Federico est le co-fondateur de Hair Rich, avec Riccardo, et coupe au salon au centre d'Olbia. Il a appris le métier très jeune et n'a jamais cessé d'affiner sa technique : fades, razor cut et contours dessinés sur la forme de votre visage. Aujourd'hui il coupe personnellement au salon et forme son équipe avec méthode et patience.",
             specialties: ["Razor", "Fade", "Classic", "Beard"],
             yearsLabel: "10+",
             yearsCaption: "années de métier",
@@ -146,7 +146,7 @@ export const fr: Dict = {
                 specialties: "Coupe · Barbe · Styling",
                 quote: "Une bonne coupe se voit après une semaine, pas après cinq minutes.",
                 bio:
-                    "Cristian a rejoint l'équipe Hair Rich après plusieurs années dans des salons à Rome et Cagliari. Spécialisé en coupes modernes, texturisation et barbe sur mesure. Main légère, écoute vraie, et juste ce qu'il faut d'humour pour faire de la séance un plaisir.",
+                    "Cristian a rejoint l'équipe Hair Rich après plusieurs années dans des salons entre Rome et Cagliari. Spécialisé en coupes modernes, texturisation et barbe. Main légère, écoute vraie et juste ce qu'il faut d'humour pour faire filer la séance.",
                 tags: ["Modern", "Texture", "Beard", "Styling"],
                 yearsLabel: "6+",
                 yearsCaption: "années de métier",
@@ -158,24 +158,14 @@ export const fr: Dict = {
         titleA: "Liste",
         titleB: "des prix.",
         intro:
-            "Tarifs transparents, durées honnêtes. Pas de supplément week-end, jamais. Pour les forfaits entreprise et les cérémonies, écrivez-nous.",
+            "Tarifs transparents, pas de supplément le week-end. Lavage et coiffage toujours inclus. Pour la coupe à domicile à Olbia, appelez-nous.",
         groups: [
             {
-                title: "Coupe",
+                title: "Tarifs",
                 items: [
-                    { name: "Coupe classique", description: "Ciseaux, lavage et coiffage", duration: "30'", price: "20€" },
-                    { name: "Fade & Dégradé", description: "Dégradé précis, ciseaux, rasoir", duration: "45'", price: "25€" },
-                    { name: "Razor cut", description: "Travail intégral au rasoir", duration: "50'", price: "30€" },
-                    { name: "Coupe enfant", description: "De 0 à 12 ans", duration: "25'", price: "15€" },
-                ],
-            },
-            {
-                title: "Barbe & Domicile",
-                items: [
-                    { name: "Barbe sur mesure", description: "Modelage, serviettes chaudes, huile", duration: "30'", price: "15€" },
-                    { name: "Rasage traditionnel", description: "Rasoir à main libre, finition précise", duration: "40'", price: "25€" },
-                    { name: "Coupe + Barbe", description: "Le combo signature", duration: "60'", price: "35€" },
-                    { name: "Coupe à domicile", description: "Nous venons chez vous. Sur rendez-vous.", duration: "60'", price: "45€" },
+                    { name: "Coupe", description: "Ciseaux ou tondeuse, dégradés et contours. Lavage et coiffage inclus.", duration: "30'", price: "20€" },
+                    { name: "Barbe", description: "Serviette chaude, rasoir classique, huile nourrissante.", duration: "30'", price: "10€" },
+                    { name: "Coupe + Barbe", description: "Cheveux et barbe en une heure. Le combo complet.", duration: "60'", price: "30€" },
                 ],
             },
         ],
@@ -340,7 +330,7 @@ export const fr: Dict = {
         intro:
             "Le studio Hair Rich se trouve au centre d'Olbia, à deux pas du Corso Umberto. Parking à proximité.",
         cta: "Itinéraire",
-        hoursSummary: "Lun–Sam · 9h00–20h00",
+        hoursSummary: "Lun–Sam · 9–13 / 15–20",
         labels: { address: "Adresse", hours: "Horaires" },
     },
     footer: {
@@ -363,9 +353,9 @@ export const fr: Dict = {
         premium: "Produits premium uniquement",
     },
     bundle: {
-        eyebrow: "Combo signature",
-        title: "Coupe + Barbe à 35€ au lieu de 40€",
-        save: (eur) => `Économisez ${eur}`,
+        eyebrow: "Combo complet",
+        title: "Coupe + Barbe en une heure à 30€",
+        save: (eur) => `Coupe ${eur}`,
         cta: "Réserver le combo",
     },
     availability: {
@@ -655,6 +645,115 @@ export const fr: Dict = {
                 },
             ],
         },
+    },
+    servicesHero: {
+        chip: "Sur rendez-vous · Olbia centre",
+        titleA: "Coupe & barbe",
+        titleB: "à Olbia.",
+        body:
+            "Coupe 20€, barbe 10€, coupe + barbe 30€. Réservez en ligne en une minute, payez au salon. Lavage et coiffage toujours inclus.",
+        cta: "Réserver",
+        metrics: [
+            { v: "dès 20€", l: "Tarifs" },
+            { v: "60s", l: "Réservation en ligne" },
+            { v: "4,6★", l: "37 avis" },
+        ],
+        footerLeft: "Confirmation immédiate",
+        footerRight: "01 / Services",
+    },
+    serviceQuiz: {
+        eyebrow: "Composez votre service",
+        title: "Trois options. Un tap. Vous êtes au fauteuil.",
+        intro:
+            "Coupe 20€, barbe 10€, combo 30€. Choisissez ce que vous voulez aujourd'hui et réservez le prochain créneau — en 60 secondes.",
+        watermark: "choisir",
+        items: [
+            { tag: "Cheveux seulement", quick: "Écoute + exécution + finition. 30 minutes, c'est fait.", cta: "Réserver une coupe" },
+            { tag: "Barbe seulement", quick: "Rasoir classique, contours, huile choisie selon la peau.", cta: "Réserver la barbe" },
+            { tag: "Combo", quick: "Une heure entière. Cheveux et barbe d'affilée.", cta: "Réserver le combo" },
+        ],
+        fallbackNames: { cut: "Coupe", beard: "Barbe", combo: "Coupe + barbe" },
+    },
+    homeService: {
+        chip: "Barbier à domicile · Olbia & Costa Smeralda",
+        titleA: "Coupe à domicile",
+        titleB: "à Olbia.",
+        body:
+            "Hair Rich est aussi barbier à domicile à Olbia et dans toute la Costa Smeralda. Nous venons chez vous — à la maison, à l'hôtel, à bord d'un yacht ou pour des cérémonies et des mariages — à Olbia, Porto Cervo et Golfo Aranci. Mêmes outils et même soin qu'au salon. Le service à domicile s'organise uniquement par téléphone : appelez-nous et nous définissons ensemble le lieu, l'horaire et le prix.",
+        facts: [
+            { v: "Olbia", l: "+ Costa Smeralda" },
+            { v: "Yacht", l: "Hôtel · Cérémonies" },
+            { v: "Par tél.", l: "uniquement" },
+        ],
+        cta: "Appeler pour réserver",
+        footer: "Disponibles aux heures d'ouverture",
+        watermark: "domicile",
+    },
+    galleryHero: {
+        eyebrow: "Coupes réalisées · Olbia",
+        titleA: "Des coupes qui sont sorties",
+        titleB: "d'ici.",
+        body:
+            "Chaque photo est un vrai client, prise en fin de service. Pas de banque d'images, pas d'IA, pas de catalogue recyclé. Juste ce qu'on fait vraiment.",
+        metrics: [
+            { value: "4,6★", label: "37 avis" },
+            { value: "depuis 2017", label: "À Olbia" },
+            { value: "3", label: "Services" },
+        ],
+        footerLeft: "Hair Rich · Olbia",
+        footerRight: "02 / Travaux",
+    },
+    salonDay: {
+        eyebrow: "Dans les coulisses",
+        titleA: "Une journée",
+        titleB: "au salon.",
+        intro:
+            "Aucune mise en scène. Un métier bien fait, du lundi au samedi, de 9h à 20h avec la pause déjeuner. Voilà à quoi ressemble une journée chez Hair Rich.",
+        watermark: "09 — 20:00",
+        timeline: [
+            { time: "09:00", title: "On ouvre", body: "Café, planning de la journée, lames prêtes. Quand le premier client entre, tout est déjà en ordre." },
+            { time: "09:30", title: "Première coupe", body: "On commence toujours par la consultation, même avec les habitués : la tête change, la coupe s'adapte." },
+            { time: "13:00", title: "Pause", body: "On ferme vraiment, de 13h à 15h. Pas de \"juste cinq minutes\" : on coupe et on revient frais." },
+            { time: "15:00", title: "Après-midi", body: "Clients d'après-travail : coupe, barbe, combo. Pressé, vous entrez et sortez ; tranquille, prenez votre temps." },
+            { time: "18:00", title: "Heure de pointe", body: "Les heures les plus pleines : coupe, barbe et retouches. Sur rendez-vous uniquement, personne n'attend debout." },
+            { time: "20:00", title: "On ferme", body: "Même respect que le matin : on ferme à l'heure pour les clients de demain, mais celui qui est au fauteuil termine au calme. Toujours." },
+        ],
+    },
+    directions: {
+        eyebrow: "Comment venir",
+        addressLine: "Via Regina Elena 33/A,",
+        city: "Olbia.",
+        intro:
+            "À deux pas du Corso Umberto. Trois façons d'arriver, toutes en moins de 15 minutes d'où vous êtes.",
+        mapBtn: "Ouvrir dans Maps",
+        routes: [
+            { title: "À pied depuis le Corso", body: "5 minutes du Corso Umberto. Prenez vers la Via Regina Elena et continuez tout droit jusqu'au n° 33/A.", detail: "Idéal si vous êtes garé au centre ou déjà dans la zone piétonne." },
+            { title: "En voiture", body: "Stationnement libre sur Via Regina Elena et Via Mameli. Pas de zone à trafic limité autour du salon.", detail: "Depuis le port ou la SS125, suivez les indications pour le Centre Historique." },
+            { title: "Depuis l'aéroport", body: "10–15 minutes en voiture de l'aéroport d'Olbia Costa Smeralda. En taxi, en location ou en navette, vous arrivez en plein centre.", detail: "Pratique à l'atterrissage : réservez à l'avance et faites votre coupe avant le check-in à l'hôtel." },
+        ],
+    },
+    servicesPage: {
+        processEyebrow: "Le service Hair Rich",
+        processTitle: "Ce qui se passe quand vous vous asseyez.",
+        process: [
+            { n: "01", title: "Consultation · 2 minutes", body: "Avant les ciseaux : forme du visage, mode de vie, temps que vous pouvez consacrer le matin. On décide ensemble." },
+            { n: "02", title: "Exécution · ciseaux ou rasoir", body: "Technique choisie pour le résultat voulu, pas pour la mode du mois. Lavage toujours inclus." },
+            { n: "03", title: "Finition · le bon produit", body: "Coiffage avec le produit adapté à vos cheveux, pour le refaire chez vous en 30 secondes." },
+        ],
+        faqEyebrow: "Questions sur les services",
+        faqTitle: "Les plus fréquentes.",
+        faq: [
+            { q: "Combien coûte une coupe chez Hair Rich à Olbia ?", a: "Chez Hair Rich à Olbia, la coupe homme coûte 20€, la barbe 10€ et le combo coupe + barbe 30€. Les prix incluent toujours lavage et coiffage, sans supplément le week-end. La coupe dure environ 30 minutes, le combo environ une heure." },
+            { q: "Où se trouve Hair Rich à Olbia ?", a: "Hair Rich est Via Regina Elena 33/A, au centre d'Olbia (07026, province de Sassari), à deux pas du Corso Umberto. Stationnement à proximité, et environ dix minutes depuis l'aéroport d'Olbia Costa Smeralda." },
+            { q: "Hair Rich est-il ouvert aujourd'hui ? Quels sont les horaires ?", a: "Hair Rich est ouvert du lundi au samedi, 09:00–13:00 et 15:00–20:00, et fermé le dimanche. On travaille sur rendez-vous uniquement, mieux vaut donc réserver avant de passer." },
+            { q: "Comment réserver un rendez-vous chez Hair Rich ?", a: "Vous pouvez réserver chez Hair Rich en ligne en 60 secondes avec confirmation immédiate, ou par téléphone au 0789 1891049 aux heures d'ouverture." },
+            { q: "Y a-t-il un barbier à domicile à Olbia ?", a: "Oui : Hair Rich propose la coupe à domicile à Olbia et dans toute la Costa Smeralda — Porto Cervo, Golfo Aranci — à la maison, à l'hôtel, à bord d'un yacht et pour les cérémonies et mariages. Nous apportons les mêmes outils et le même soin qu'au salon, chez vous." },
+            { q: "Combien coûte la coupe à domicile à Olbia et comment la réserver ?", a: "Le service à domicile de Hair Rich s'organise uniquement par téléphone : appelez le 0789 1891049 et nous définissons ensemble le lieu, l'horaire, le nombre de personnes et le prix. Le devis dépend du lieu et du nombre de têtes, mais la qualité est celle du salon." },
+            { q: "Faites-vous la barbe au rasoir traditionnel ?", a: "Oui. La barbe chez Hair Rich (10€) se fait avec serviette chaude, rasoir traditionnel, contours nets et huile nourrissante. Elle est aussi incluse dans le combo coupe + barbe à 30€." },
+            { q: "Quelle est la différence entre un fade et un dégradé classique ?", a: "Le fade est un dégradé très progressif qui part presque à ras et remonte petit à petit ; le dégradé classique garde plus de longueur sur les côtés. Chez Hair Rich on fait les deux, aux ciseaux et au rasoir, selon la forme de votre visage." },
+            { q: "Puis-je ajouter la barbe à ma coupe pendant le rendez-vous ?", a: "Oui. Lors de la consultation, vous pouvez passer de la coupe seule au combo coupe + barbe (30€) si la forme du visage s'y prête. Le prix est recalculé en toute transparence avant de commencer." },
+            { q: "Hair Rich fait-il des coupes femme ou la couleur ?", a: "Hair Rich est un barbier spécialisé homme et barbe : coupe, barbe et combo. Nous ne faisons pas la couleur ni le coiffage femme ; pour un styling unisexe avancé, nous travaillons sur rendez-vous dédié uniquement." },
+        ],
     },
     notFound: {
         eyebrow: "404",

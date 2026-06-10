@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { portfolioImageUrl } from "@/lib/supabase/queries";
+import { useT } from "@/i18n/useLang";
 
 const TEASER_IMAGES = [
     "tagli/taper-fade-01.jpeg",
@@ -18,6 +19,8 @@ const TEASER_IMAGES = [
  * tiny ordinal so the eye reads the page as a contact sheet.
  */
 export function PortfolioHero() {
+    const { t } = useT();
+    const g = t.galleryHero;
     return (
         <section className="relative bg-black overflow-hidden border-b border-line">
             <div className="relative max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 xl:px-20 2xl:px-24 pt-20 md:pt-24 lg:pt-28 xl:pt-32 2xl:pt-36 pb-12 md:pb-16 lg:pb-20 xl:pb-24 min-h-[70vh] md:min-h-[75vh] lg:min-h-[52vh] xl:min-h-[48vh] 2xl:min-h-[45vh]">
@@ -30,21 +33,17 @@ export function PortfolioHero() {
                         className="lg:col-span-7"
                     >
                         <span className="text-[10px] md:text-xs uppercase tracking-[0.5em] text-accent-warm font-body font-semibold">
-                            Tagli realizzati · Olbia
+                            {g.eyebrow}
                         </span>
                         <h1 className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-5xl xl:text-6xl 2xl:text-7xl text-warm-white tracking-tight mt-3 md:mt-5 leading-[0.92]">
-                            Tagli che
+                            {g.titleA}
                             <br />
-                            hanno{" "}
                             <em className="text-display-alt not-italic text-silver">
-                                camminato
+                                {g.titleB}
                             </em>
-                            <br />
-                            fuori da qui.
                         </h1>
                         <p className="mt-5 md:mt-7 max-w-md text-warm-white-muted text-base md:text-lg leading-relaxed">
-                            Ogni foto è un cliente vero, scattata a fine servizio. Niente stock,
-                            niente IA, niente catalogo riciclato. Solo quello che facciamo davvero.
+                            {g.body}
                         </p>
 
                         {/* Metrics row */}
@@ -57,11 +56,7 @@ export function PortfolioHero() {
                             }}
                             className="mt-8 md:mt-12 grid grid-cols-3 gap-4 max-w-md"
                         >
-                            {[
-                                { value: "4,6★", label: "37 recensioni" },
-                                { value: "dal 2017", label: "A Olbia" },
-                                { value: "3", label: "Servizi" },
-                            ].map((m) => (
+                            {g.metrics.map((m) => (
                                 <motion.div
                                     key={m.label}
                                     variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}
@@ -131,10 +126,10 @@ export function PortfolioHero() {
                     className="absolute left-6 md:left-12 lg:left-20 right-6 md:right-12 lg:right-20 bottom-6 md:bottom-8 flex items-end justify-between gap-4 pointer-events-none"
                 >
                     <span className="text-[10px] uppercase tracking-[0.4em] text-silver-dark font-body font-semibold">
-                        Hair Rich · Olbia
+                        {g.footerLeft}
                     </span>
                     <span className="text-[10px] uppercase tracking-[0.4em] text-silver-dark font-body font-semibold">
-                        02 / Lavori
+                        {g.footerRight}
                     </span>
                 </motion.div>
             </div>

@@ -415,4 +415,65 @@ export interface Dict {
         switch: string;
         keep: string;
     };
+    servicesHero: {
+        chip: string;
+        titleA: string;
+        titleB: string;
+        body: string;
+        cta: string;
+        metrics: Array<{ v: string; l: string }>;
+        footerLeft: string;
+        footerRight: string;
+    };
+    serviceQuiz: {
+        eyebrow: string;
+        title: string;
+        intro: string;
+        watermark: string;
+        items: Array<{ tag: string; quick: string; cta: string }>;
+        fallbackNames: { cut: string; beard: string; combo: string };
+    };
+    homeService: {
+        chip: string;
+        titleA: string;
+        titleB: string;
+        body: string;
+        facts: Array<{ v: string; l: string }>;
+        cta: string;
+        footer: string;
+        watermark: string;
+    };
+    galleryHero: {
+        eyebrow: string;
+        titleA: string;
+        titleB: string;
+        body: string;
+        metrics: Array<{ value: string; label: string }>;
+        footerLeft: string;
+        footerRight: string;
+    };
+    salonDay: {
+        eyebrow: string;
+        titleA: string;
+        titleB: string;
+        intro: string;
+        watermark: string;
+        timeline: Array<{ time: string; title: string; body: string }>;
+    };
+    directions: {
+        eyebrow: string;
+        addressLine: string;
+        city: string;
+        intro: string;
+        mapBtn: string;
+        routes: Array<{ title: string; body: string; detail: string }>;
+    };
+    servicesPage: {
+        processEyebrow: string;
+        processTitle: string;
+        process: Array<{ n: string; title: string; body: string }>;
+        faqEyebrow: string;
+        faqTitle: string;
+        faq: Array<{ q: string; a: string }>;
+    };
 }

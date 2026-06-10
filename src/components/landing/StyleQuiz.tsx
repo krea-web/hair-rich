@@ -6,26 +6,9 @@ import { fetchServices } from "@/lib/supabase/queries";
 import type { Service } from "@/lib/supabase/types";
 import { formatPrice } from "@/lib/format";
 import { useBookingDrawer, useBookingStore } from "@/lib/store";
+import { useT } from "@/i18n/useLang";
 
 const ORDER = ["taglio-classico", "barba-sartoriale", "taglio-barba"];
-
-const COPY: Record<string, { tag: string; quick: string; cta: string }> = {
-    "taglio-classico": {
-        tag: "Solo capelli",
-        quick: "Ascolto + esecuzione + finish. 30 minuti, finito.",
-        cta: "Prenota taglio capelli",
-    },
-    "barba-sartoriale": {
-        tag: "Solo barba",
-        quick: "Rasoio classico, contorni, olio scelto sul tipo di pelle.",
-        cta: "Prenota taglio barba",
-    },
-    "taglio-barba": {
-        tag: "Combo",
-        quick: "Un'ora intera. Capelli e barba in continuità.",
-        cta: "Prenota combo",
-    },
-};
 
 /**
  * "Build your service" lead-magnet block on /servizi. Replaces the older
@@ -35,6 +18,8 @@ const COPY: Record<string, { tag: string; quick: string; cta: string }> = {
  * with the service preselected.
  */
 export function StyleQuiz() {
+    const { t } = useT();
+    const q = t.serviceQuiz;
     const [services, setServices] = useState<Service[]>([]);
     const openDrawer = useBookingDrawer((s) => s.open);
     const setService = useBookingStore((s) => s.setService);
@@ -71,20 +56,19 @@ export function StyleQuiz() {
                 aria-hidden="true"
                 className="absolute -bottom-10 right-2 md:right-8 text-display-alt text-[28vw] md:text-[14vw] text-warm-white/[0.04] leading-none pointer-events-none select-none"
             >
-                scegli
+                {q.watermark}
             </div>
 
             <div className="relative max-w-6xl xl:max-w-7xl 2xl:max-w-[1600px] mx-auto">
                 <div className="max-w-2xl">
                     <span className="text-[10px] uppercase tracking-[0.5em] text-accent-warm font-body font-semibold">
-                        Costruisci il tuo servizio
+                        {q.eyebrow}
                     </span>
                     <h2 className="text-display text-3xl md:text-5xl text-warm-white tracking-tight mt-3 leading-[1.05]">
-                        Tre opzioni. Un tap. Sei in poltrona.
+                        {q.title}
                     </h2>
                     <p className="mt-4 text-warm-white-muted text-base md:text-lg leading-relaxed">
-                        Taglio 20€, barba 10€, combo 30€. Scegli cosa fare oggi e
-                        prenoti il prossimo slot — in 60 secondi.
+                        {q.intro}
                     </p>
                 </div>
 
@@ -105,10 +89,10 @@ export function StyleQuiz() {
                               slug,
                               name:
                                   slug === "taglio-classico"
-                                      ? "Taglio capelli"
+                                      ? q.fallbackNames.cut
                                       : slug === "barba-sartoriale"
-                                        ? "Taglio barba"
-                                        : "Taglio capelli + barba",
+                                        ? q.fallbackNames.beard
+                                        : q.fallbackNames.combo,
                               price_cents:
                                   slug === "taglio-classico"
                                       ? 2000
@@ -124,7 +108,7 @@ export function StyleQuiz() {
                               badge: slug === "taglio-classico" ? "Più scelto" : null,
                           })) as unknown as Service[])
                     ).map((s, i) => {
-                        const c = COPY[s.slug] ?? { tag: "", quick: "", cta: `Prenota ${s.name}` };
+                        const c = q.items[i] ?? { tag: "", quick: "", cta: s.name };
                         const featured = s.slug === "taglio-classico";
                         return (
                             <motion.li

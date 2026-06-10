@@ -1,73 +1,36 @@
 "use client";
 
 import { motion } from "framer-motion";
-
-interface TimelineEntry {
-    time: string;
-    title: string;
-    body: string;
-}
-
-const TIMELINE: TimelineEntry[] = [
-    {
-        time: "09:00",
-        title: "Si apre",
-        body: "Caffè, agenda della giornata, lame pronte. Quando entra il primo cliente è già tutto in ordine.",
-    },
-    {
-        time: "09:30",
-        title: "Primo taglio",
-        body: "Si parte sempre dal consulto, anche con chi viene da anni: la testa cambia, il taglio si adatta.",
-    },
-    {
-        time: "13:00",
-        title: "Pausa",
-        body: "Si chiude davvero, dalle 13 alle 15. Niente \"giusto cinque minuti\": si stacca e si torna lucidi.",
-    },
-    {
-        time: "15:00",
-        title: "Pomeriggio",
-        body: "Clienti dopo il lavoro: taglio, barba, combo. Chi ha poco tempo entra ed esce, chi vuole con calma se la prende.",
-    },
-    {
-        time: "18:00",
-        title: "Ora di punta",
-        body: "Le ore più piene: taglio, barba e rifiniture. Si lavora solo su appuntamento, così nessuno aspetta in piedi.",
-    },
-    {
-        time: "20:00",
-        title: "Si chiude",
-        body: "Stesso rispetto del mattino: si chiude in orario per chi viene domani, ma chi è in poltrona finisce con calma. Sempre.",
-    },
-];
+import { useT } from "@/i18n/useLang";
 
 /**
  * "Una giornata al salone" — narrative timeline that humanizes the team
- * page. Pure prose, no DB calls. Gives the reader a sense of pacing and
- * personality without needing to visit in person.
+ * page. Copy localizzata via i18n (t.salonDay).
  */
 export function SalonDay() {
+    const { t } = useT();
+    const s = t.salonDay;
+    const TIMELINE = s.timeline;
     return (
         <section className="relative py-12 md:py-16 lg:py-20 xl:py-24 2xl:py-28 px-6 md:px-12 lg:px-20 bg-black-2 border-y border-line overflow-hidden">
             <div
                 aria-hidden="true"
                 className="absolute -top-20 right-0 text-display-alt text-[32vw] md:text-[18vw] text-warm-white/[0.02] leading-none pointer-events-none select-none whitespace-nowrap"
             >
-                09 — 20:00
+                {s.watermark}
             </div>
 
             <div className="relative max-w-5xl mx-auto">
                 <div className="mb-14 md:mb-20 max-w-2xl">
                     <span className="text-[10px] uppercase tracking-[0.5em] text-accent-warm font-body font-semibold">
-                        Dietro le quinte
+                        {s.eyebrow}
                     </span>
                     <h2 className="text-display text-4xl md:text-6xl lg:text-5xl xl:text-5xl 2xl:text-6xl text-warm-white tracking-tight mt-4 leading-[1.05]">
-                        Una giornata<br />
-                        <em className="text-display-alt not-italic text-silver">in salone.</em>
+                        {s.titleA}<br />
+                        <em className="text-display-alt not-italic text-silver">{s.titleB}</em>
                     </h2>
                     <p className="mt-5 text-warm-white-muted text-base md:text-lg leading-relaxed">
-                        Nessuna messa in scena. Un mestiere fatto bene, dal lunedì al sabato,
-                        dalle 9 alle 20 con la pausa pranzo. Ecco com'è una giornata da Hair Rich.
+                        {s.intro}
                     </p>
                 </div>
 

@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { portfolioImageUrl } from "@/lib/supabase/queries";
 import { BookingCtaButton } from "@/components/ui/BookingCtaButton";
+import { useT } from "@/i18n/useLang";
 
 /**
  * Hero for /servizi. Photo backdrop, watermark numeral, hero claim + CTA
@@ -10,6 +11,8 @@ import { BookingCtaButton } from "@/components/ui/BookingCtaButton";
  * qui in alto solo il pitch e la conferma di velocità del booking.
  */
 export function ServicesHero() {
+    const { t } = useT();
+    const s = t.servicesHero;
     return (
         <section className="relative bg-black overflow-hidden border-b border-line">
             <div className="absolute inset-0" aria-hidden="true">
@@ -47,7 +50,7 @@ export function ServicesHero() {
                 >
                     <span className="w-1.5 h-1.5 rounded-full bg-accent-warm animate-pulse" aria-hidden="true" />
                     <span className="text-[10px] uppercase tracking-[0.3em] text-accent-warm font-body font-semibold">
-                        Su prenotazione · Olbia centro
+                        {s.chip}
                     </span>
                 </motion.div>
 
@@ -58,9 +61,9 @@ export function ServicesHero() {
                     transition={{ duration: 0.9, ease: [0.25, 0.1, 0.25, 1], delay: 0.2 }}
                     className="text-display text-4xl sm:text-5xl md:text-7xl lg:text-5xl xl:text-6xl 2xl:text-7xl text-warm-white tracking-tight leading-[0.92] max-w-3xl"
                 >
-                    Taglio e barba
+                    {s.titleA}
                     <br />
-                    <em className="text-display-alt not-italic text-silver">a Olbia.</em>
+                    <em className="text-display-alt not-italic text-silver">{s.titleB}</em>
                 </motion.h1>
 
                 <motion.p
@@ -69,8 +72,7 @@ export function ServicesHero() {
                     transition={{ duration: 0.8, delay: 0.45 }}
                     className="mt-5 md:mt-7 max-w-xl text-warm-white-muted text-base md:text-lg leading-relaxed"
                 >
-                    Taglio capelli 20€, barba 10€, taglio + barba 30€. Prenoti online in un minuto,
-                    paghi in salone. Lavaggio e styling sempre inclusi.
+                    {s.body}
                 </motion.p>
 
                 {/* Primary CTA */}
@@ -80,7 +82,7 @@ export function ServicesHero() {
                     transition={{ duration: 0.8, delay: 0.6 }}
                     className="mt-8 md:mt-10"
                 >
-                    <BookingCtaButton label="Prenota ora" />
+                    <BookingCtaButton label={s.cta} />
                 </motion.div>
 
                 {/* Trust metrics — non duplicano il listino, parlano di flusso */}
@@ -93,11 +95,7 @@ export function ServicesHero() {
                     }}
                     className="mt-10 md:mt-14 lg:mt-16 grid grid-cols-3 gap-4 md:gap-8 lg:gap-12 xl:gap-16 max-w-xl lg:max-w-2xl xl:max-w-3xl"
                 >
-                    {[
-                        { v: "da 20€", l: "Listino" },
-                        { v: "60s", l: "Prenoti online" },
-                        { v: "4,6★", l: "37 recensioni" },
-                    ].map((m) => (
+                    {s.metrics.map((m) => (
                         <motion.div
                             key={m.l}
                             variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}
@@ -121,10 +119,10 @@ export function ServicesHero() {
                     className="mt-10 md:mt-14 w-full flex items-end justify-between gap-4"
                 >
                     <span className="text-[10px] uppercase tracking-[0.4em] text-silver-dark font-body font-semibold">
-                        Conferma immediata
+                        {s.footerLeft}
                     </span>
                     <span className="text-[10px] uppercase tracking-[0.4em] text-silver-dark font-body font-semibold">
-                        01 / Servizi
+                        {s.footerRight}
                     </span>
                 </motion.div>
             </div>
