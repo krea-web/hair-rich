@@ -3,14 +3,15 @@
  * Landing "Barbiere a domicilio in Costa Smeralda" — server-rendered (Astro puro).
  *
  * Layout bespoke, deliberatamente DIVERSO dalla pillar /parrucchiere-olbia per
- * evitare contenuto near-duplicate: photo-essay editoriale, hero ancorato in
- * basso, intro split asimmetrica con foto sticky, banda-itinerario delle zone
- * (niente mappa iframe), rail orizzontale "come funziona" con una foto per step,
- * gallery a griglia sfalsata, pull-quote su foto scurita, banda fiducia terse,
- * nota "solo telefono", FAQ accordion, fascia oro di chiusura.
+ * evitare contenuto near-duplicate: photo-essay editoriale con vista marina,
+ * hero immersivo ancorato in basso, intro split con foto sticky, banda-itinerario
+ * delle zone (niente mappa iframe), rail orizzontale "come funziona", gallery
+ * masonry, pull-quote su foto notturna, banda fiducia, nota "solo telefono",
+ * FAQ accordion, fascia oro di chiusura.
  *
- * Usa TUTTE e 9 le foto reali della sessione in villa a Porto Cervo (bucket asset/).
- * Una sola CTA: il telefono del salone (servizio non prenotabile online).
+ * Foto: sessione reale del barbiere a domicilio con vista sul porto della Costa
+ * Smeralda (mantellina rossa, ring light, golden/blue hour) + alcuni scatti villa.
+ * Bucket asset/. Una sola CTA: il telefono del salone (servizio non online).
  */
 import type { Locale } from "@/i18n";
 import { TAGLIO_DOMICILIO } from "@/lib/content/taglio-a-domicilio";
@@ -28,44 +29,47 @@ const phoneHref = "tel:+39" + SITE.phone.replace(/\s+/g, "");
 const p = (path: string) => (lang === "it" ? path : `/${lang}${path}`);
 const homeHref = lang === "it" ? "/" : `/${lang}/`;
 
-// Foto (bucket asset/) — tutte e 9 le immagini della sessione in villa.
-const img = (name: string, w: number, q = 74) =>
+const img = (name: string, w: number, q = 76) =>
   assetImageUrl(name, { width: w, quality: q, format: "webp" });
-const set = (name: string, q = 74) => assetImageSrcset(name, q);
+const set = (name: string, q = 76) => assetImageSrcset(name, q);
 
-const HERO = "domicilio-villa-wide-1.webp";
-const INTRO = "domicilio-action-1.webp";
-const LOC_BG = "domicilio-result-goldenhour-1.webp";
-const STEP_IMGS = ["domicilio-villa-wide-2.webp", "domicilio-kit-postazione.webp", "domicilio-result-goldenhour-2.webp"];
+// Sessione con vista marina (Porto Cervo / Porto Rotondo), mantellina rossa.
+const HERO = "domicilio-marina-1.webp";
+const INTRO = "domicilio-comb.webp";
+const LOC_BG = "domicilio-brand-view.webp";
+const STEP_IMGS = ["domicilio-daylight.webp", "domicilio-ringlight.webp", "domicilio-marina-2.webp"];
+const SOCIAL = "domicilio-night-ringlight.webp";
+// Mix marina + villa per varietà (yacht/marina + ville).
 const GALLERY = [
-  "domicilio-cape-detail.webp",
-  "domicilio-result-goldenhour-3.webp",
-  "domicilio-villa-wide-1.webp",
-  "domicilio-result-goldenhour-2.webp",
+  { src: "domicilio-razor.webp", alt: c.alts.step1, span: true },
+  { src: "domicilio-back-marina.webp", alt: c.alts.gallery3 },
+  { src: "domicilio-villa-wide-1.webp", alt: c.alts.hero },
+  { src: "domicilio-cape-detail.webp", alt: c.alts.gallery2 },
+  { src: "domicilio-crew.webp", alt: c.alts.social },
+  { src: "domicilio-result-goldenhour-1.webp", alt: c.alts.gallery4, span: true },
 ];
-const SOCIAL = "domicilio-action-2.webp";
-const galleryAlts = [c.alts.gallery2, c.alts.gallery3, c.alts.gallery1, c.alts.gallery4];
+
+const stops = c.locations.slice(0, 4);
 ---
 
 <article class="bg-black text-warm-white overflow-x-clip">
-  {/* ── HERO editoriale — H1 ancorato in basso ─────────────────── */}
-  <section class="relative min-h-[92vh] flex flex-col">
+  {/* ── HERO immersivo — vista marina, H1 ancorato in basso ─────── */}
+  <section class="relative min-h-[94svh] md:min-h-screen flex flex-col">
     <div class="absolute inset-0" aria-hidden="true">
       <img
-        src={img(HERO, 1920, 72)}
-        srcset={set(HERO, 72)}
+        src={img(HERO, 1920, 74)}
+        srcset={set(HERO, 74)}
         sizes="100vw"
         alt={c.alts.hero}
-        class="absolute inset-0 w-full h-full object-cover object-[center_30%]"
+        class="absolute inset-0 w-full h-full object-cover object-[center_35%]"
         loading="eager"
         fetchpriority="high"
         decoding="async"
       />
-      <div class="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-black/30"></div>
-      <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-transparent to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-black via-black/55 to-black/25"></div>
+      <div class="absolute inset-0 bg-gradient-to-br from-black/65 via-transparent to-transparent"></div>
     </div>
 
-    {/* Breadcrumb + kicker su una riga in alto */}
     <nav
       aria-label="Breadcrumb"
       class="relative max-w-6xl w-full mx-auto px-6 md:px-10 pt-28 md:pt-32 text-[11px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold"
@@ -75,16 +79,29 @@ const galleryAlts = [c.alts.gallery2, c.alts.gallery3, c.alts.gallery1, c.alts.g
       <span class="text-accent-warm">{c.breadcrumbLabel}</span>
     </nav>
 
-    {/* H1 + CTA ancorati in basso a sinistra */}
-    <div class="relative max-w-6xl w-full mx-auto px-6 md:px-10 flex-1 flex flex-col justify-end pb-14 md:pb-20">
-      <p class="text-display-alt text-xl md:text-2xl text-accent-warm">{c.eyebrow}</p>
-      <h1 class="mt-2 text-display text-[2.7rem] sm:text-6xl md:text-7xl xl:text-8xl text-warm-white tracking-tight leading-[1.0] md:leading-[0.92] max-w-4xl [overflow-wrap:anywhere]">
+    <div class="relative max-w-6xl w-full mx-auto px-6 md:px-10 flex-1 flex flex-col justify-end pb-16 md:pb-24">
+      <p class="flex items-center gap-3 text-display-alt text-xl md:text-2xl text-accent-warm">
+        <span class="w-8 h-px bg-accent-warm/60" aria-hidden="true"></span>
+        {c.eyebrow}
+      </p>
+      <h1 class="mt-3 text-display text-[2.85rem] sm:text-6xl md:text-7xl xl:text-[7.5rem] text-warm-white tracking-tight leading-[0.98] md:leading-[0.9] max-w-5xl [overflow-wrap:anywhere]">
         {c.h1}
       </h1>
       <p class="mt-5 text-warm-white-muted text-base md:text-xl leading-relaxed font-body max-w-2xl">
         {c.heroKicker}
       </p>
-      <div class="mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
+
+      {/* Stops geo — contesto locale immediato */}
+      <ul class="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] md:text-xs uppercase tracking-[0.22em] text-silver font-body font-semibold">
+        {stops.map((s, i) => (
+          <li class="flex items-center gap-3">
+            {i > 0 && <span aria-hidden="true" class="w-1 h-1 rounded-full bg-accent-warm/70"></span>}
+            <span>{s}</span>
+          </li>
+        ))}
+      </ul>
+
+      <div class="mt-9 flex flex-col sm:flex-row sm:items-center gap-4">
         <a
           href={phoneHref}
           class="cta-shine cta-pulse group inline-flex items-center justify-center gap-3 px-8 md:px-10 py-4 md:py-5 bg-accent-warm text-black rounded-full text-sm md:text-base uppercase tracking-[0.25em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform shadow-[0_22px_60px_-15px_rgba(212,165,116,0.6)]"
@@ -103,13 +120,13 @@ const galleryAlts = [c.alts.gallery2, c.alts.gallery3, c.alts.gallery1, c.alts.g
 
   {/* ── INTRO — split asimmetrico, foto sticky a destra ────────── */}
   <section class="border-t border-line" aria-labelledby="td-intro">
-    <div class="max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-24 grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-10 lg:gap-16 items-start">
+    <div class="max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-28 grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-10 lg:gap-16 items-start">
       <div>
         <p class="text-display-alt text-xl md:text-2xl text-accent-warm">{c.introEyebrow}</p>
-        <h2 id="td-intro" class="mt-1 text-display text-3xl md:text-5xl text-warm-white tracking-tight max-w-2xl">
+        <h2 id="td-intro" class="mt-1 text-display text-3xl md:text-5xl xl:text-6xl text-warm-white tracking-tight max-w-2xl leading-[1.02]">
           {c.introTitle}
         </h2>
-        <div class="mt-6 space-y-5 text-warm-white-muted text-base md:text-lg leading-relaxed font-body max-w-2xl">
+        <div class="mt-7 space-y-5 text-warm-white-muted text-base md:text-lg leading-relaxed font-body max-w-2xl">
           {c.introBody.map((para) => <p>{para}</p>)}
         </div>
         <p class="mt-7 text-warm-white-muted font-body leading-relaxed max-w-2xl">
@@ -122,11 +139,11 @@ const galleryAlts = [c.alts.gallery2, c.alts.gallery3, c.alts.gallery1, c.alts.g
 
       <div class="lg:sticky lg:top-28 self-start w-full aspect-[3/4] rounded-[var(--radius-md)] overflow-hidden border border-line">
         <img
-          src={img(INTRO, 900, 78)}
-          srcset={set(INTRO, 78)}
+          src={img(INTRO, 900, 80)}
+          srcset={set(INTRO, 80)}
           sizes="(min-width: 1024px) 35vw, 100vw"
           alt={c.alts.intro}
-          class="w-full h-full object-cover"
+          class="w-full h-full object-cover object-[center_30%]"
           loading="lazy"
           decoding="async"
         />
@@ -137,21 +154,21 @@ const galleryAlts = [c.alts.gallery2, c.alts.gallery3, c.alts.gallery1, c.alts.g
   {/* ── Marquee ribbon (motivo diverso dal gold della pillar) ──── */}
   <MarqueeStrip client:idle variant="ribbon" items={c.marquee} />
 
-  {/* ── ZONE — banda itinerario (no mappa) ─────────────────────── */}
+  {/* ── ZONE — banda itinerario su foto brand+vista marina ─────── */}
   <section class="relative overflow-hidden border-t border-line" aria-labelledby="td-loc">
     <div class="absolute inset-0" aria-hidden="true">
       <img
-        src={img(LOC_BG, 1600, 60)}
-        srcset={set(LOC_BG, 60)}
+        src={img(LOC_BG, 1600, 62)}
+        srcset={set(LOC_BG, 62)}
         sizes="100vw"
         alt=""
-        class="absolute inset-0 w-full h-full object-cover object-center opacity-[0.12]"
+        class="absolute inset-0 w-full h-full object-cover object-[center_25%] opacity-[0.16]"
         loading="lazy"
         decoding="async"
       />
-      <div class="absolute inset-0 bg-black/70"></div>
+      <div class="absolute inset-0 bg-black/72"></div>
     </div>
-    <div class="relative max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-24">
+    <div class="relative max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-28">
       <p class="text-display-alt text-xl md:text-2xl text-accent-warm">{c.locationsEyebrow}</p>
       <h2 id="td-loc" class="mt-1 text-display text-3xl md:text-5xl text-warm-white tracking-tight">{c.locationsTitle}</h2>
       <p class="mt-4 text-warm-white-muted font-body leading-relaxed max-w-2xl">{c.locationsIntro}</p>
@@ -175,7 +192,7 @@ const galleryAlts = [c.alts.gallery2, c.alts.gallery3, c.alts.gallery1, c.alts.g
 
   {/* ── COME FUNZIONA — rail orizzontale 01/02/03 ──────────────── */}
   <section class="border-t border-line bg-carbon/30" aria-labelledby="td-steps">
-    <div class="max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-24">
+    <div class="max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-28">
       <p class="text-display-alt text-xl md:text-2xl text-accent-warm">{c.stepsEyebrow}</p>
       <h2 id="td-steps" class="mt-1 text-display text-3xl md:text-5xl text-warm-white tracking-tight">{c.stepsTitle}</h2>
 
@@ -184,17 +201,18 @@ const galleryAlts = [c.alts.gallery2, c.alts.gallery3, c.alts.gallery1, c.alts.g
           <li class="group flex flex-col">
             <div class="relative w-full aspect-[4/5] rounded-[var(--radius-md)] overflow-hidden border border-line">
               <img
-                src={img(STEP_IMGS[i], 800, 76)}
-                srcset={set(STEP_IMGS[i], 76)}
+                src={img(STEP_IMGS[i], 800, 78)}
+                srcset={set(STEP_IMGS[i], 78)}
                 sizes="(min-width: 768px) 30vw, 100vw"
                 alt={[c.alts.step1, c.alts.step2, c.alts.step3][i]}
                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                 loading="lazy"
                 decoding="async"
               />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent"></div>
               <span
                 aria-hidden="true"
-                class="absolute top-3 left-4 text-display-alt text-6xl md:text-7xl text-warm-white/90 leading-none tabular-nums drop-shadow-[0_2px_12px_rgba(0,0,0,0.7)]"
+                class="absolute top-3 left-4 text-display-alt text-6xl md:text-7xl text-warm-white/90 leading-none tabular-nums drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]"
               >
                 {String(i + 1).padStart(2, "0")}
               </span>
@@ -207,9 +225,9 @@ const galleryAlts = [c.alts.gallery2, c.alts.gallery3, c.alts.gallery1, c.alts.g
     </div>
   </section>
 
-  {/* ── GALLERY — griglia sfalsata della sessione in villa ─────── */}
+  {/* ── GALLERY — masonry editoriale della sessione ────────────── */}
   <section class="border-t border-line" aria-labelledby="td-gallery">
-    <div class="max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-24">
+    <div class="max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-28">
       <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
         <div>
           <p class="text-display-alt text-xl md:text-2xl text-accent-warm">{c.galleryEyebrow}</p>
@@ -225,22 +243,16 @@ const galleryAlts = [c.alts.gallery2, c.alts.gallery3, c.alts.gallery1, c.alts.g
         </a>
       </div>
 
-      <div class="mt-10 grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-        {GALLERY.map((name, i) => (
-          <div
-            class:list={[
-              "relative rounded-[var(--radius-md)] overflow-hidden border border-line",
-              i === 0 ? "row-span-2 aspect-[3/4] lg:aspect-auto" : "aspect-[4/5]",
-              i === 1 ? "lg:mt-12" : "",
-              i === 3 ? "lg:mt-12" : "",
-            ]}
-          >
+      {/* CSS columns = masonry pulito, ottimo per scatti verticali, zero overflow */}
+      <div class="mt-10 [column-count:2] lg:[column-count:3] [column-gap:0.75rem] lg:[column-gap:1rem]">
+        {GALLERY.map((g) => (
+          <div class="mb-3 lg:mb-4 break-inside-avoid rounded-[var(--radius-md)] overflow-hidden border border-line">
             <img
-              src={img(name, 700, 76)}
-              srcset={set(name, 76)}
-              sizes="(min-width: 1024px) 24vw, 50vw"
-              alt={galleryAlts[i]}
-              class="w-full h-full object-cover hover:scale-[1.03] transition-transform duration-700"
+              src={img(g.src, 720, 78)}
+              srcset={set(g.src, 78)}
+              sizes="(min-width: 1024px) 32vw, 50vw"
+              alt={g.alt}
+              class="w-full h-auto object-cover hover:scale-[1.03] transition-transform duration-700"
               loading="lazy"
               decoding="async"
             />
@@ -250,7 +262,7 @@ const galleryAlts = [c.alts.gallery2, c.alts.gallery3, c.alts.gallery1, c.alts.g
     </div>
   </section>
 
-  {/* ── SOCIAL PROOF — pull-quote su foto scurita ──────────────── */}
+  {/* ── SOCIAL PROOF — pull-quote su foto notturna ─────────────── */}
   <section class="relative overflow-hidden" aria-label={c.socialAttribution}>
     <div class="absolute inset-0" aria-hidden="true">
       <img
@@ -258,14 +270,14 @@ const galleryAlts = [c.alts.gallery2, c.alts.gallery3, c.alts.gallery1, c.alts.g
         srcset={set(SOCIAL, 70)}
         sizes="100vw"
         alt={c.alts.social}
-        class="absolute inset-0 w-full h-full object-cover object-[center_30%]"
+        class="absolute inset-0 w-full h-full object-cover object-[center_35%]"
         loading="lazy"
         decoding="async"
       />
-      <div class="absolute inset-0 bg-black/72"></div>
-      <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40"></div>
+      <div class="absolute inset-0 bg-black/75"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/45"></div>
     </div>
-    <div class="relative max-w-4xl mx-auto px-6 md:px-10 py-20 md:py-32 text-center">
+    <div class="relative max-w-4xl mx-auto px-6 md:px-10 py-20 md:py-36 text-center">
       <span aria-hidden="true" class="text-display-alt text-7xl md:text-9xl text-accent-warm/40 leading-none block">&ldquo;</span>
       <blockquote class="-mt-6 md:-mt-10 text-display text-2xl md:text-4xl text-warm-white tracking-tight leading-snug [text-wrap:balance]">
         {c.socialQuote}
@@ -276,7 +288,7 @@ const galleryAlts = [c.alts.gallery2, c.alts.gallery3, c.alts.gallery1, c.alts.g
 
   {/* ── QUALITÀ — banda fiducia terse 2×2 ──────────────────────── */}
   <section class="border-t border-line" aria-labelledby="td-trust">
-    <div class="max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-24">
+    <div class="max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-28">
       <p class="text-display-alt text-xl md:text-2xl text-accent-warm">{c.trustEyebrow}</p>
       <h2 id="td-trust" class="mt-1 text-display text-3xl md:text-5xl text-warm-white tracking-tight max-w-3xl">{c.trustTitle}</h2>
       <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-8">
@@ -318,7 +330,7 @@ const galleryAlts = [c.alts.gallery2, c.alts.gallery3, c.alts.gallery1, c.alts.g
 
   {/* ── FAQ accordion ──────────────────────────────────────────── */}
   <section class="border-t border-line" aria-labelledby="td-faq">
-    <div class="max-w-3xl mx-auto px-6 md:px-10 py-16 md:py-24">
+    <div class="max-w-3xl mx-auto px-6 md:px-10 py-16 md:py-28">
       <p class="text-display-alt text-xl md:text-2xl text-accent-warm">{c.faqEyebrow}</p>
       <h2 id="td-faq" class="mt-1 text-display text-3xl md:text-5xl text-warm-white tracking-tight">{c.faqTitle}</h2>
       <div class="mt-10 divide-y divide-line border-y border-line">

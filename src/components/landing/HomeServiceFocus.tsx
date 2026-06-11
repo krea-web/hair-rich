@@ -32,11 +32,11 @@ export function HomeServiceFocus() {
             {/* Photo background */}
             <div className="absolute inset-0" aria-hidden="true">
                 <img
-                    src={assetImageUrl("domicilio-action-2.webp", { width: 1920, quality: 75, format: "webp" })}
-                    srcSet={assetImageSrcset("domicilio-action-2.webp", 75)}
+                    src={assetImageUrl("domicilio-marina-1.webp", { width: 1920, quality: 75, format: "webp" })}
+                    srcSet={assetImageSrcset("domicilio-marina-1.webp", 75)}
                     sizes="100vw"
-                    alt="Barbiere a domicilio in villa a Porto Cervo — taglio in corso, Costa Smeralda"
-                    className="absolute inset-0 w-full h-full object-cover object-[center_30%]"
+                    alt="Barbiere a domicilio con vista sul porto della Costa Smeralda — taglio in corso, mantellina rossa"
+                    className="absolute inset-0 w-full h-full object-cover object-[center_35%]"
                     loading="lazy"
                     decoding="async"
                 />

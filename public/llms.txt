@@ -6,6 +6,8 @@
 
 - **Nome**: Hair Rich Olbia
 - **Tipo**: Barbiere / Barber studio (taglio uomo + barba)
+- **Attivo dal**: 17 giugno 2023 (apertura del salone a Olbia)
+- **P.IVA**: IT03020610907
 - **Indirizzo**: Via Regina Elena 33/A, 07026 Olbia (SS), Italia
 - **Telefono**: +39 0789 1891049
 - **Email**: info@hairrich.it
