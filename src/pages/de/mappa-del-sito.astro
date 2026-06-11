@@ -1,0 +1,39 @@
+---
+import RootLayout from "../../layouts/RootLayout.astro";
+import { SiteHeader } from "../../components/ui/SiteHeader";
+import { MobileTopBar } from "../../components/ui/MobileTopBar";
+import { MobileBottomBar } from "../../components/ui/MobileBottomBar";
+import { BookingDrawer } from "../../components/booking/BookingDrawer";
+import { CartDrawer } from "../../components/shop/CartDrawer";
+import { ProductDrawer } from "../../components/shop/ProductDrawer";
+import { ToastViewport } from "../../components/ui/ToastViewport";
+import { Footer } from "../../components/landing/Footer";
+import SiteMapContent from "../../components/landing/SiteMapContent.astro";
+import { MAPPA_DEL_SITO } from "../../lib/content/mappa-del-sito";
+import { SITE } from "../../lib/constants";
+
+const lang = "de" as const;
+const c = MAPPA_DEL_SITO[lang];
+const base = SITE.url;
+---
+
+<RootLayout
+  title={c.metaTitle}
+  description={c.metaDescription}
+  breadcrumbs={[
+    { name: c.breadcrumbHome, url: `${base}/de/` },
+    { name: c.breadcrumbLabel, url: `${base}/de/mappa-del-sito/` },
+  ]}
+>
+  <SiteHeader client:load />
+  <MobileTopBar client:load />
+  <main>
+    <SiteMapContent lang={lang} />
+    <Footer client:idle />
+  </main>
+  <ToastViewport client:load />
+  <MobileBottomBar client:idle />
+  <BookingDrawer client:idle />
+  <CartDrawer client:idle />
+  <ProductDrawer client:idle />
+</RootLayout>

@@ -1,0 +1,70 @@
+---
+/**
+ * Pagina HTML "Mappa del sito" — server-rendered (Astro puro).
+ * Elenca tutte le pagine pubbliche raggruppate, con link interni crawlabili.
+ */
+import type { Locale } from "@/i18n";
+import { MAPPA_DEL_SITO } from "@/lib/content/mappa-del-sito";
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const c = MAPPA_DEL_SITO[lang];
+const homeHref = lang === "it" ? "/" : `/${lang}/`;
+
+const resolve = (path: string, langAware: boolean) => {
+  if (!langAware) return path;
+  if (lang === "it") return path;
+  if (path === "/") return `/${lang}/`;
+  return `/${lang}${path}`;
+};
+---
+
+<article class="bg-black text-warm-white overflow-x-clip min-h-screen">
+  <section class="relative">
+    {/* Watermark editoriale */}
+    <span
+      aria-hidden="true"
+      class="absolute -top-2 right-2 md:right-8 text-display-alt text-[24vw] md:text-[13vw] text-warm-white/[0.04] leading-none pointer-events-none select-none"
+    >
+      Index
+    </span>
+
+    <nav
+      aria-label="Breadcrumb"
+      class="relative max-w-5xl w-full mx-auto px-6 md:px-10 pt-28 md:pt-32 text-[11px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold"
+    >
+      <a href={homeHref} class="hover:text-warm-white transition-colors">{c.breadcrumbHome}</a>
+      <span aria-hidden="true" class="mx-2 text-silver-dark/50">/</span>
+      <span class="text-accent-warm">{c.breadcrumbLabel}</span>
+    </nav>
+
+    <div class="relative max-w-5xl mx-auto px-6 md:px-10 py-12 md:py-16">
+      <p class="text-display-alt text-xl md:text-2xl text-accent-warm">{c.eyebrow}</p>
+      <h1 class="mt-1 text-display text-4xl md:text-6xl text-warm-white tracking-tight">{c.h1}</h1>
+      <p class="mt-4 text-warm-white-muted font-body leading-relaxed max-w-2xl">{c.intro}</p>
+
+      <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12">
+        {c.groups.map((g) => (
+          <div class="border-t border-line pt-6">
+            <h2 class="text-[11px] uppercase tracking-[0.3em] text-accent-warm font-body font-semibold">{g.title}</h2>
+            <ul class="mt-4 space-y-1.5">
+              {g.items.map((it) => (
+                <li>
+                  <a
+                    href={resolve(it.path, it.langAware)}
+                    class="group inline-flex items-center gap-2 text-warm-white hover:text-accent-warm font-body text-base md:text-lg transition-colors"
+                  >
+                    <span class="text-silver-dark/60 group-hover:text-accent-warm transition-colors" aria-hidden="true">—</span>
+                    {it.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</article>

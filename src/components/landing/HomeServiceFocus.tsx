@@ -13,9 +13,16 @@ import { useT } from "@/i18n/useLang";
  * storefront photo with strong overlay treatment.
  */
 export function HomeServiceFocus() {
-    const { t } = useT();
+    const { t, lang } = useT();
     const h = t.homeService;
     const phoneHref = "tel:+39" + SITE.phone.replace(/\s+/g, "");
+    const domicilioHref = lang === "it" ? "/taglio-a-domicilio" : `/${lang}/taglio-a-domicilio`;
+    const discoverLabel: Record<string, string> = {
+        it: "Scopri il barbiere a domicilio in Costa Smeralda",
+        en: "Discover the mobile barber in the Costa Smeralda",
+        fr: "Découvrez le barbier à domicile en Costa Smeralda",
+        de: "Entdecke den mobilen Barbier an der Costa Smeralda",
+    };
     return (
         <section
             id="taglio-a-domicilio"
@@ -25,11 +32,11 @@ export function HomeServiceFocus() {
             {/* Photo background */}
             <div className="absolute inset-0" aria-hidden="true">
                 <img
-                    src={assetImageUrl("taglio-domicilio-yacht.webp", { width: 1920, quality: 75, format: "webp" })}
-                    srcSet={assetImageSrcset("taglio-domicilio-yacht.webp", 75)}
+                    src={assetImageUrl("domicilio-action-2.webp", { width: 1920, quality: 75, format: "webp" })}
+                    srcSet={assetImageSrcset("domicilio-action-2.webp", 75)}
                     sizes="100vw"
-                    alt=""
-                    className="absolute inset-0 w-full h-full object-cover"
+                    alt="Barbiere a domicilio in villa a Porto Cervo — taglio in corso, Costa Smeralda"
+                    className="absolute inset-0 w-full h-full object-cover object-[center_30%]"
                     loading="lazy"
                     decoding="async"
                 />
@@ -115,6 +122,14 @@ export function HomeServiceFocus() {
                     <p className="mt-6 text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
                         {h.footer}
                     </p>
+
+                    <a
+                        href={domicilioHref}
+                        className="mt-5 inline-flex items-center gap-2 text-accent-warm/90 hover:text-accent-warm font-body text-sm transition-colors"
+                    >
+                        {discoverLabel[lang] ?? discoverLabel.it}
+                        <span aria-hidden="true">→</span>
+                    </a>
                 </motion.div>
             </div>
         </section>

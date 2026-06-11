@@ -28,6 +28,16 @@ const mapsEmbed =
   "https://www.google.com/maps?q=" + encodeURIComponent(SITE.address) + "&output=embed";
 const phoneHref = "tel:+39" + SITE.phone.replace(/\s+/g, "");
 
+// La pillar non possiede più il cluster "domicilio": teaser + link alla
+// landing canonica /taglio-a-domicilio (evita cannibalizzazione, passa autorità).
+const domicilioHref = lang === "it" ? "/taglio-a-domicilio" : `/${lang}/taglio-a-domicilio`;
+const domicilioCta: Record<string, string> = {
+  it: "Scopri il taglio a domicilio in Costa Smeralda",
+  en: "Discover the mobile barber in the Costa Smeralda",
+  fr: "Découvrez le barbier à domicile en Costa Smeralda",
+  de: "Entdecke den mobilen Barbier an der Costa Smeralda",
+};
+
 const homeWatermark: Record<string, string> = {
   it: "Domicilio",
   en: "At home",
@@ -245,10 +255,11 @@ const placeSrcset = assetImageSrcset("salone-vista-completa.webp", 78);
       <h2 id="po-area" class="text-display text-3xl md:text-5xl tracking-tight">{c.areaTitle}</h2>
       <p class="mt-5 text-black/80 font-body leading-relaxed text-lg max-w-2xl mx-auto">{c.area}</p>
       <a
-        href={phoneHref}
+        href={domicilioHref}
         class="mt-8 inline-flex items-center gap-2 px-8 py-4 rounded-full bg-black text-warm-white font-body font-semibold text-sm uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-95 transition-transform"
       >
-        {c.homeCta} · {SITE.phone}
+        {domicilioCta[lang] ?? domicilioCta.it}
+        <span aria-hidden="true">→</span>
       </a>
     </div>
   </section>

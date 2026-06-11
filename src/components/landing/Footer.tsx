@@ -97,6 +97,20 @@ export function Footer() {
         fr: "Coiffeur homme à Olbia",
         de: "Herrenfriseur in Olbia",
     };
+    const domicilioHref = lang === "it" ? "/taglio-a-domicilio" : `/${lang}/taglio-a-domicilio`;
+    const domicilioLabel: Record<string, string> = {
+        it: "Barbiere a domicilio in Costa Smeralda",
+        en: "Mobile barber in the Costa Smeralda",
+        fr: "Barbier à domicile en Costa Smeralda",
+        de: "Mobiler Barbier an der Costa Smeralda",
+    };
+    const sitemapHref = lang === "it" ? "/mappa-del-sito" : `/${lang}/mappa-del-sito`;
+    const sitemapLabel: Record<string, string> = {
+        it: "Mappa del sito",
+        en: "Sitemap",
+        fr: "Plan du site",
+        de: "Sitemap",
+    };
 
     // SSG: l'HTML è generato a build time. Calcolare data/giorno durante il
     // render produrrebbe un valore "congelato" alla build, diverso da quello
@@ -194,15 +208,26 @@ export function Footer() {
                                 {SITE.email}
                             </a>
                         </div>
-                        <p className="mt-5">
-                            <a
-                                href={parrucchiereHref}
-                                className="inline-flex items-center gap-1.5 text-accent-warm/80 hover:text-accent-warm text-sm font-body transition-colors"
-                            >
-                                {parrucchiereLabel[lang] ?? parrucchiereLabel.it}
-                                <span aria-hidden="true">→</span>
-                            </a>
-                        </p>
+                        <ul className="mt-5 space-y-2">
+                            <li>
+                                <a
+                                    href={parrucchiereHref}
+                                    className="inline-flex items-center gap-1.5 text-accent-warm/80 hover:text-accent-warm text-sm font-body transition-colors"
+                                >
+                                    {parrucchiereLabel[lang] ?? parrucchiereLabel.it}
+                                    <span aria-hidden="true">→</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href={domicilioHref}
+                                    className="inline-flex items-center gap-1.5 text-accent-warm/80 hover:text-accent-warm text-sm font-body transition-colors"
+                                >
+                                    {domicilioLabel[lang] ?? domicilioLabel.it}
+                                    <span aria-hidden="true">→</span>
+                                </a>
+                            </li>
+                        </ul>
                     </div>
 
                     {/* Orari */}
@@ -365,6 +390,12 @@ export function Footer() {
                     © {currentYear} Hair Rich Olbia · P.IVA 0000000000
                 </p>
                 <nav className="flex flex-wrap items-center gap-5 text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold" aria-label="Legal">
+                    <a
+                        href={sitemapHref}
+                        className="hover:text-warm-white transition-colors"
+                    >
+                        {sitemapLabel[lang] ?? sitemapLabel.it}
+                    </a>
                     {LEGAL_LINKS.map((l) => (
                         <a
                             key={l.href}

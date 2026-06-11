@@ -17,7 +17,7 @@ import { useT } from "@/i18n/useLang";
 
 const HIGHLIGHT_INDEX = 1;
 const DOMICILIO_INDEX = 2;
-const DOMICILIO_ASSET = "taglio-domicilio-yacht.webp";
+const DOMICILIO_ASSET = "domicilio-action-2.webp";
 
 export function ServicesSection() {
     const { t } = useT();

@@ -27,6 +27,15 @@ const META: Record<Locale, { title: string; description: string }> = {
   de: { title: "Produkte · Hair Rich Olbia", description: "Pomaden, Wachse, Bartöle, Werkzeuge und Zubehör, ausgewählt von Hair Rich Olbia. Online reservieren, im Salon zahlen und abholen." },
 };
 const m = META[lang];
+
+const domicilioHref = lang === "it" ? "/taglio-a-domicilio" : `/${lang}/taglio-a-domicilio`;
+const domNote: Record<Locale, { text: string; link: string }> = {
+  it: { text: "Gli stessi prodotti professionali li usiamo anche per il", link: "taglio a domicilio in Costa Smeralda" },
+  en: { text: "We use the same professional products for our", link: "mobile barber service in the Costa Smeralda" },
+  fr: { text: "Nous utilisons les mêmes produits professionnels pour le", link: "barbier à domicile en Costa Smeralda" },
+  de: { text: "Dieselben professionellen Produkte verwenden wir auch für den", link: "mobilen Barbier an der Costa Smeralda" },
+};
+const dn = domNote[lang];
 ---
 
 <RootLayout
@@ -47,6 +56,18 @@ const m = META[lang];
     <ProductsFaq client:idle />
 
     <MerchCTA client:visible />
+
+    <section class="bg-black border-t border-line">
+      <div class="max-w-6xl mx-auto px-6 md:px-10 py-10 md:py-12 text-center">
+        <p class="text-warm-white-muted font-body text-sm md:text-base">
+          {dn.text}{" "}
+          <a
+            href={domicilioHref}
+            class="text-accent-warm underline decoration-accent-warm/40 underline-offset-4 hover:decoration-accent-warm transition"
+          >{dn.link}</a>.
+        </p>
+      </div>
+    </section>
 
     <Footer client:idle />
   </main>

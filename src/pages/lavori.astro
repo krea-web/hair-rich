@@ -28,6 +28,15 @@ const META: Record<Locale, { title: string; description: string }> = {
   de: { title: "Portfolio · Hair Rich Olbia", description: "Vollständige Galerie von Schnitten, Fades, Bärten und Styling von Hair Rich Olbia. Vorher/Nachher-Transformationen, Kategorienfilter, redaktionelles Archiv." },
 };
 const m = META[lang];
+
+const domicilioHref = lang === "it" ? "/taglio-a-domicilio" : `/${lang}/taglio-a-domicilio`;
+const domNote: Record<Locale, { text: string; link: string }> = {
+  it: { text: "Molti di questi tagli nascono anche fuori dal salone, in villa e su yacht: scopri il", link: "barbiere a domicilio in Costa Smeralda" },
+  en: { text: "Many of these cuts also happen outside the salon, at villas and aboard yachts — discover the", link: "mobile barber in the Costa Smeralda" },
+  fr: { text: "Beaucoup de ces coupes naissent aussi hors du salon, en villa et sur yacht : découvrez le", link: "barbier à domicile en Costa Smeralda" },
+  de: { text: "Viele dieser Schnitte entstehen auch außerhalb des Salons, in Villen und auf Yachten — entdecke den", link: "mobilen Barbier an der Costa Smeralda" },
+};
+const dn = domNote[lang];
 ---
 
 <RootLayout
@@ -56,6 +65,18 @@ const m = META[lang];
       body={lp.featuredBody}
       meta={lp.featuredMeta}
     />
+
+    <section class="bg-black border-t border-line">
+      <div class="max-w-6xl mx-auto px-6 md:px-10 py-10 md:py-12 text-center">
+        <p class="text-warm-white-muted font-body text-sm md:text-base">
+          {dn.text}{" "}
+          <a
+            href={domicilioHref}
+            class="text-accent-warm underline decoration-accent-warm/40 underline-offset-4 hover:decoration-accent-warm transition"
+          >{dn.link}</a>.
+        </p>
+      </div>
+    </section>
 
     <Footer client:idle />
   </main>

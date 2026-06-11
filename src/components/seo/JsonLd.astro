@@ -171,14 +171,55 @@ const homeService = {
   name: "Taglio a domicilio (barbiere a domicilio)",
   serviceType: "Barbiere a domicilio · taglio capelli e barba",
   description:
-    "Barbiere a domicilio a Olbia e in Costa Smeralda: taglio capelli e barba a casa, in hotel, a bordo di yacht o per cerimonie. Solo su prenotazione telefonica.",
+    "Barbiere a domicilio a Olbia e in Costa Smeralda: taglio capelli e barba a casa, in hotel, a bordo di yacht o per cerimonie ed eventi. Solo su prenotazione telefonica.",
+  url: `${SITE.url}/taglio-a-domicilio/`,
   provider: { "@id": businessId },
   areaServed: [
     { "@type": "City", name: "Olbia" },
     { "@type": "City", name: "Porto Cervo" },
+    { "@type": "City", name: "Porto Rotondo" },
     { "@type": "City", name: "Golfo Aranci" },
+    { "@type": "City", name: "Arzachena" },
+    { "@type": "City", name: "Cannigione" },
+    { "@type": "City", name: "San Teodoro" },
     { "@type": "AdministrativeArea", name: "Costa Smeralda" },
   ],
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Servizio a domicilio Hair Rich",
+    itemListElement: [
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "Taglio capelli a domicilio",
+          serviceType: "Barbiere a domicilio · taglio capelli",
+          provider: { "@id": businessId },
+        },
+        priceCurrency: "EUR",
+        priceSpecification: {
+          "@type": "PriceSpecification",
+          priceCurrency: "EUR",
+          description: "Prezzo su preventivo telefonico in base a località, persone e orario.",
+        },
+      },
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "Taglio + Barba a domicilio",
+          serviceType: "Barbiere a domicilio · taglio capelli e barba",
+          provider: { "@id": businessId },
+        },
+        priceCurrency: "EUR",
+        priceSpecification: {
+          "@type": "PriceSpecification",
+          priceCurrency: "EUR",
+          description: "Prezzo su preventivo telefonico in base a località, persone e orario.",
+        },
+      },
+    ],
+  },
   availableChannel: {
     "@type": "ServiceChannel",
     servicePhone: {
