@@ -269,6 +269,101 @@ async function getExpiringPackages(sb: SB, args: { days_ahead?: number }) {
   return { count: items.length, window_days: days, packages: items };
 }
 
+// ── Tool di SCRITTURA (DML diretto: service-role bypassa RLS) ───────────────
+const EXPENSE_CATEGORIES = [
+  'attrezzatura', 'pulizia_detergenti', 'merce_rivendita', 'abbigliamento_personalizzato',
+  'stipendio_dipendente', 'utenze', 'affitto', 'marketing', 'straordinaria', 'altro',
+];
+const toCents = (eurVal: unknown): number | null => {
+  const n = Number(String(eurVal).replace(',', '.'));
+  return Number.isFinite(n) ? Math.round(n * 100) : null;
+};
+
+async function recordExpense(sb: SB, args: any) {
+  const cents = toCents(args.amount_eur);
+  if (cents === null || cents <= 0) return { error: 'importo non valido' };
+  const cat = EXPENSE_CATEGORIES.includes(args.category) ? args.category : 'altro';
+  const { error } = await sb.from('expenses').insert({
+    amount_cents: cents,
+    category: cat,
+    description: args.description ?? null,
+    payment_method: args.payment_method ?? null,
+    is_extraordinary: cat === 'straordinaria' || !!args.is_extraordinary,
+    source: 'telegram',
+  });
+  if (error) return { error: error.message };
+  return { ok: true, registrato: `${eur(cents)} · ${cat}` };
+}
+
+async function recordStockUse(sb: SB, args: any) {
+  const q = (args.product_name ?? '').trim();
+  if (!q) return { error: 'nome prodotto mancante' };
+  const { data: prods } = await sb
+    .from('products').select('id, name, brand, stock, cost_cents').ilike('name', `%${q}%`).limit(5);
+  if (!prods || prods.length === 0) return { error: `nessun prodotto per "${q}"` };
+  if (prods.length > 1) return { ambiguo: prods.map((p: any) => (p.brand ? `${p.brand} ${p.name}` : p.name)) };
+  const p: any = prods[0];
+  const qty = Number.isFinite(args.qty) && args.qty > 0 ? Math.floor(args.qty) : 1;
+  const newStock = Math.max(0, (p.stock ?? 0) - qty);
+  await sb.from('products').update({ stock: newStock }).eq('id', p.id);
+  const { error } = await sb.from('stock_movements').insert({
+    product_id: p.id, qty, delta: -qty, reason: 'internal_use',
+    unit_cost_cents: p.cost_cents ?? null, source: 'telegram',
+  });
+  if (error) return { error: error.message };
+  return { ok: true, prodotto: p.brand ? `${p.brand} ${p.name}` : p.name, nuovo_stock: newStock };
+}
+
+async function getDailyBrief(sb: SB, args: any) {
+  const date = args.date && /^\d{4}-\d{2}-\d{2}$/.test(args.date) ? args.date : romeTodayStr();
+  const { startISO, endISO } = romeDayRange(date);
+  const { data: appts } = await sb
+    .from('appointments').select('status, price_paid_cents, payment_method')
+    .gte('start_at', startISO).lt('start_at', endISO);
+  const rows = (appts ?? []) as any[];
+  const completed = rows.filter((a) => a.status === 'completed');
+  const sum = (f: (a: any) => number) => completed.reduce((s, a) => s + f(a), 0);
+  const cash = sum((a) => (a.payment_method === 'cash' ? a.price_paid_cents ?? 0 : 0));
+  const pos = sum((a) => (a.payment_method === 'pos' ? a.price_paid_cents ?? 0 : 0));
+  const total = sum((a) => a.price_paid_cents ?? 0);
+  const { data: exp } = await sb.from('expenses').select('amount_cents').eq('occurred_on', date);
+  const expenses = (exp ?? []).reduce((s: number, e: any) => s + (e.amount_cents ?? 0), 0);
+  return {
+    date,
+    appuntamenti: rows.filter((a) => a.status !== 'cancelled').length,
+    completati: completed.length,
+    no_show: rows.filter((a) => a.status === 'no_show').length,
+    incasso_totale: eur(total),
+    pos: eur(pos),
+    contanti: eur(cash),
+    spese: eur(expenses),
+    nota: 'POS/contanti sono calcolati dagli incassi registrati per appuntamento; se mancano, chiedi i totali al titolare.',
+  };
+}
+
+async function completeDailyBrief(sb: SB, args: any) {
+  const date = args.date && /^\d{4}-\d{2}-\d{2}$/.test(args.date) ? args.date : romeTodayStr();
+  const row: Record<string, unknown> = {
+    brief_date: date,
+    status: 'completed',
+    completed_at: new Date().toISOString(),
+    completed_via: 'telegram',
+    attendance_ok: typeof args.attendance_ok === 'boolean' ? args.attendance_ok : null,
+    hours_ok: typeof args.hours_ok === 'boolean' ? args.hours_ok : null,
+    sale_stock_used: typeof args.sale_stock_used === 'boolean' ? args.sale_stock_used : null,
+    sale_stock_notes: args.sale_stock_notes ?? null,
+    extraordinary_cents: toCents(args.extraordinary_eur) ?? 0,
+    extraordinary_notes: args.extraordinary_notes ?? null,
+    revenue_cash_cents: toCents(args.revenue_cash_eur) ?? 0,
+    revenue_pos_cents: toCents(args.revenue_pos_eur) ?? 0,
+    no_shows: Number.isFinite(args.no_shows) ? args.no_shows : null,
+    owner_notes: args.notes ?? null,
+  };
+  const { error } = await sb.from('daily_brief').upsert(row, { onConflict: 'brief_date' });
+  if (error) return { error: error.message };
+  return { ok: true, giornata_chiusa: date };
+}
+
 const TOOLS = [
   {
     type: 'function',
@@ -326,6 +421,70 @@ const TOOLS = [
       parameters: { type: 'object', properties: { days_ahead: { type: 'integer', description: 'Finestra giorni, default 30' } } },
     },
   },
+  {
+    type: 'function',
+    function: {
+      name: 'record_expense',
+      description: "Registra una SPESA dell'attività. Usa quando il titolare dice di aver speso qualcosa (es. 'oggi ho speso 120€ in attrezzatura', 'speso 45 in detergenti').",
+      parameters: {
+        type: 'object',
+        properties: {
+          amount_eur: { type: 'number', description: 'Importo in euro' },
+          category: { type: 'string', enum: EXPENSE_CATEGORIES, description: 'Categoria spesa' },
+          description: { type: 'string', description: 'Dettaglio opzionale' },
+          payment_method: { type: 'string', enum: ['cash', 'pos', 'bonifico', 'altro'] },
+          is_extraordinary: { type: 'boolean', description: 'true se spesa straordinaria' },
+        },
+        required: ['amount_eur', 'category'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'record_stock_use',
+      description: "Registra l'USO INTERNO di un prodotto in salone (consumo = spesa, NON vendita): scala lo stock di 1 (o qty). Es: 'ho finito una cera in polvere usandola in salone'.",
+      parameters: {
+        type: 'object',
+        properties: {
+          product_name: { type: 'string', description: 'Nome prodotto (anche parziale)' },
+          qty: { type: 'integer', description: 'Quantità, default 1' },
+        },
+        required: ['product_name'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_daily_brief',
+      description: "Riepilogo contabile del giorno: appuntamenti, completati, no-show, incasso totale, POS, contanti, spese. Usalo all'inizio del brief serale per mostrare i numeri.",
+      parameters: { type: 'object', properties: { date: { type: 'string', description: 'YYYY-MM-DD, default oggi' } } },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'complete_daily_brief',
+      description: 'Chiude la giornata salvando le risposte del brief serale (presenze, ore, materiale di vendita usato, spese straordinarie, incassi POS/contanti). Chiama SOLO dopo aver raccolto le risposte dal titolare.',
+      parameters: {
+        type: 'object',
+        properties: {
+          attendance_ok: { type: 'boolean', description: 'Si sono presentati tutti?' },
+          hours_ok: { type: 'boolean', description: 'Hanno lavorato tutte le ore di servizio?' },
+          sale_stock_used: { type: 'boolean', description: 'È stato usato in salone materiale che era in vendita?' },
+          sale_stock_notes: { type: 'string' },
+          extraordinary_eur: { type: 'number', description: 'Spese straordinarie del giorno in euro' },
+          extraordinary_notes: { type: 'string' },
+          revenue_cash_eur: { type: 'number', description: 'Incasso in contanti (euro)' },
+          revenue_pos_eur: { type: 'number', description: 'Incasso POS/carta (euro)' },
+          no_shows: { type: 'integer' },
+          notes: { type: 'string' },
+          date: { type: 'string', description: 'YYYY-MM-DD, default oggi' },
+        },
+      },
+    },
+  },
 ];
 
 async function execTool(sb: SB, name: string, args: any) {
@@ -337,17 +496,30 @@ async function execTool(sb: SB, name: string, args: any) {
     case 'get_stats': return getStats(sb, args);
     case 'get_customers_at_risk': return getCustomersAtRisk(sb);
     case 'get_expiring_packages': return getExpiringPackages(sb, args);
+    case 'record_expense': return recordExpense(sb, args);
+    case 'record_stock_use': return recordStockUse(sb, args);
+    case 'get_daily_brief': return getDailyBrief(sb, args);
+    case 'complete_daily_brief': return completeDailyBrief(sb, args);
     default: return { error: `tool sconosciuto: ${name}` };
   }
 }
 
-const SYSTEM_PROMPT = `Sei il segretario digitale di "Hair Rich Olbia", una barberia.
-Rispondi SOLO al titolare, in italiano, in modo conciso e diretto, con formattazione Telegram Markdown leggera (grassetto con *asterischi*, elenchi con trattini).
-Usa SEMPRE i tool per ottenere dati reali: non inventare numeri, nomi, prezzi o giacenze.
+const SYSTEM_PROMPT = `Sei il segretario e CONTABILE digitale di "Hair Rich Olbia", una barberia. Parli SOLO col titolare, in italiano, conciso e diretto, con Markdown Telegram leggero (grassetto *così*, elenchi con trattini).
 La data di oggi è __TODAY__ (fuso ${TZ}). Gli importi sono in euro.
-Se un cliente non viene trovato o un dato manca, dillo chiaramente.
-Se la domanda è ambigua (es. più clienti con lo stesso nome), elenca le opzioni e chiedi di precisare.
-Mantieni le risposte brevi: vai dritto al punto, niente preamboli.`;
+
+DATI: usa SEMPRE i tool per leggere/scrivere dati reali; non inventare numeri, nomi, prezzi o giacenze. Se un dato manca o un nome è ambiguo, dillo e chiedi di precisare.
+
+SCRITTURE (registri contabili): puoi REGISTRARE:
+- spese con record_expense (es. "speso 120€ in attrezzatura" → categoria 'attrezzatura");
+- uso interno prodotti con record_stock_use (es. "ho finito una cera usandola in salone" → scala 1 dallo stock come consumo/spesa, NON vendita).
+Prima di ogni scrittura di denaro o stock, RIEPILOGA cosa stai per registrare e procedi; dopo, conferma con il risultato del tool.
+
+BRIEF SERALE (chiusura giornata): se il titolare dice "chiudi la giornata", "facciamo il resoconto" o risponde al riepilogo serale, conduci tu il brief:
+1) chiama get_daily_brief e mostra i numeri (appuntamenti, completati, no-show, incasso, POS, contanti, spese);
+2) chiedi in modo naturale, una cosa alla volta: si sono presentati tutti? hanno lavorato tutte le ore? è stato usato in salone materiale che era in vendita? ci sono state spese straordinarie? Se POS/contanti non risultano dai dati, chiedi i totali;
+3) quando hai le risposte, chiama complete_daily_brief con i valori raccolti e conferma che la giornata è chiusa.
+
+Mantieni le risposte brevi: dritto al punto, niente preamboli.`;
 
 interface OpenAIMsg {
   role: string;
@@ -379,6 +551,26 @@ async function authorizedChatIds(sb: SB): Promise<Set<string>> {
   if (main) ids.add(String(main).trim());
   for (const x of ((data as any)?.owner_telegram_extra_chat_ids ?? [])) ids.add(String(x).trim());
   return ids;
+}
+
+// ── Memoria conversazionale (telegram_sessions) ─────────────────────────────
+async function loadHistory(sb: SB, chatId: number | string): Promise<OpenAIMsg[]> {
+  const { data } = await sb.from('telegram_sessions').select('state').eq('chat_id', String(chatId)).maybeSingle();
+  const h = (data?.state as any)?.history;
+  return Array.isArray(h) ? (h as OpenAIMsg[]).slice(-12) : [];
+}
+async function saveHistory(sb: SB, chatId: number | string, history: OpenAIMsg[]) {
+  const trimmed = history.filter((m) => (m.role === 'user' || m.role === 'assistant') && m.content).slice(-12);
+  await sb
+    .from('telegram_sessions')
+    .upsert({ chat_id: String(chatId), state: { history: trimmed }, updated_at: new Date().toISOString() }, { onConflict: 'chat_id' })
+    .then(() => {}, () => {});
+}
+async function clearHistory(sb: SB, chatId: number | string) {
+  await sb
+    .from('telegram_sessions')
+    .upsert({ chat_id: String(chatId), state: {}, updated_at: new Date().toISOString() }, { onConflict: 'chat_id' })
+    .then(() => {}, () => {});
 }
 
 serve(async (req) => {
@@ -424,16 +616,25 @@ serve(async (req) => {
     return new Response('ok', { status: 200 });
   }
 
+  if (text === '/reset' || text === '/nuovo') {
+    await clearHistory(sb, chatId);
+    await reply(chatId, '🧹 Conversazione azzerata. Ripartiamo da capo.');
+    return new Response('ok', { status: 200 });
+  }
+
   if (text === '/start' || text === '/aiuto' || text === '/help') {
+    await clearHistory(sb, chatId);
     await reply(
       chatId,
-      '👋 *Sono il tuo segretario Hair Rich.*\nChiedimi pure, ad esempio:\n\n' +
+      '👋 *Sono il tuo segretario e contabile Hair Rich.*\nChiedimi o dimmi pure, ad esempio:\n\n' +
         '• _Che appuntamenti ho oggi?_\n' +
         '• _Quanto ha speso Marco Rossi da noi?_\n' +
         '• _Quanti Slick Gorilla sono rimasti?_\n' +
-        '• _Chi deve ritirare un prodotto la prossima settimana?_\n' +
         '• _Quanto ho incassato questo mese?_\n' +
-        '• _Quali clienti sono a rischio?_',
+        '• _Speso 120€ in attrezzatura_ (registro la spesa)\n' +
+        '• _Ho finito una cera usandola in salone_ (scalo lo stock)\n' +
+        '• _Chiudi la giornata_ (facciamo il brief serale)\n\n' +
+        '_/reset_ per ricominciare la conversazione.',
     );
     return new Response('ok', { status: 200 });
   }
@@ -441,8 +642,10 @@ serve(async (req) => {
   await tg('sendChatAction', { chat_id: chatId, action: 'typing' });
 
   try {
+    const history = await loadHistory(sb, chatId);
     const messages: OpenAIMsg[] = [
       { role: 'system', content: SYSTEM_PROMPT.replace('__TODAY__', romeTodayStr()) },
+      ...history,
       { role: 'user', content: text },
     ];
 
@@ -470,6 +673,13 @@ serve(async (req) => {
     }
 
     await reply(chatId, answer || 'Non sono riuscito a rispondere, riprova a riformulare la domanda.');
+    if (answer) {
+      await saveHistory(sb, chatId, [
+        ...history,
+        { role: 'user', content: text },
+        { role: 'assistant', content: answer },
+      ]);
+    }
   } catch (err) {
     await reply(chatId, '⚠️ Errore temporaneo. Riprova tra poco.');
     console.error('telegram-assistant error', (err as Error).message);
