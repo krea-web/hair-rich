@@ -34,7 +34,7 @@ export function ReviewGate() {
                             onClick={() => {
                                 alert(`Rating ${star} stelle registrato tramite l'Edge Function review-gate!`);
                                 if (star >= 4) {
-                                    window.location.href = "https://g.page/r/fake-google-review-link";
+                                    window.location.href = "https://g.page/r/CW7L55AEqsREEBM/review";
                                 } else {
                                     alert("Aperto Modulo di Feedback Privato interno.");
                                     navigate("/");
