@@ -287,9 +287,10 @@ p {
   letter-spacing: 0.05em;
 }
 
-/* ── Intro sequence: hide every floating UI element until the user has
-   scrolled past the intro. IntroSequence sets body[data-intro-active]
-   on mount and clears it once the section is fully scrolled past. */
+/* ── Intro sequence: hide every floating UI element while the mobile intro
+   overlay is active. The pre-hydration inline script in HomeContent.astro
+   sets body[data-intro-active="true"] (mobile + first-session only); the
+   IntroSequence overlay clears it to "false" on dismiss. */
 body[data-intro-active="true"] [data-intro-hidden] {
   opacity: 0 !important;
   pointer-events: none !important;
@@ -298,6 +299,29 @@ body[data-intro-active="true"] [data-intro-hidden] {
 }
 [data-intro-hidden] {
   transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+/* Blocca lo scroll della pagina mentre l'overlay intro è attivo. Lock primario
+   iOS = preventDefault sul touchmove dell'overlay; questa è la fallback non-iOS.
+   `overflow-y` (non lo shorthand) per non collidere con l'inline
+   `overflow-x: clip !important` di RootLayout. */
+body[data-intro-active="true"] {
+  overflow-y: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
+}
+
+/* Backdrop nero server-rendered: copre la pagina dal primo paint finché
+   l'overlay React (z-95) non si idrata → niente flash della hero. */
+[data-intro-backdrop] {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 94;
+  display: none;
+}
+body[data-intro-active="true"] [data-intro-backdrop] {
+  display: block;
 }
 
 /* ── CTA shine animation. A diagonal highlight band sweeps across the

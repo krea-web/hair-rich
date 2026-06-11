@@ -52,12 +52,29 @@ const marqueeItems: Record<Locale, { headline: string[]; ribbon2: string[] }> = 
 const m = marqueeItems[lang];
 ---
 
+<script is:inline>
+  // Decide PRIMA dell'hydration se l'intro mobile verrà mostrata (stesse
+  // condizioni di IntroSequence.shouldShowIntro): solo allora nascondiamo la
+  // UI flottante via la regola CSS su [data-intro-hidden] e mostriamo il
+  // backdrop nero, azzerando il flash della hero prima che l'overlay React si
+  // idrati. ⚠️ `768` e "hr-intro-seen" devono combaciare con IntroSequence.tsx.
+  (function () {
+    try {
+      var isMobile = window.innerWidth < 768;
+      var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var seen = false;
+      try { seen = sessionStorage.getItem("hr-intro-seen") === "1"; } catch (e) {}
+      document.body.dataset.introActive = isMobile && !seen && !reduce ? "true" : "false";
+    } catch (e) {
+      document.body.dataset.introActive = "false";
+    }
+  })();
+</script>
+<div data-intro-backdrop aria-hidden="true"></div>
+
 <SiteHeader client:load />
 <MobileTopBar client:load />
 <main>
-  <div class="md:hidden">
-    <IntroSequence client:load />
-  </div>
   <HeroSection client:load />
   <StatsBanner client:idle />
 
@@ -75,6 +92,10 @@ const m = marqueeItems[lang];
   <Footer client:idle />
 </main>
 
+<!-- Intro mobile: overlay nero a tutto schermo (position:fixed), si auto-gata a
+     mobile + prima visita per sessione. Fuori da <main> perché non è in flusso. -->
+<IntroSequence client:load />
+
 <div data-intro-hidden style="display: contents">
   <CookieBanner client:idle />
   <InstallPrompt client:idle />
@@ -84,11 +105,3 @@ const m = marqueeItems[lang];
   <CartDrawer client:idle />
   <ProductDrawer client:idle />
 <ToastViewport client:load />
-
-<script is:inline>
-  // Sync: settiamo `data-intro-active` prima dell'hydration così gli
-  // island idle (SiteHeader, CookieBanner...) restano nascosti durante
-  // l'intro animation. IntroSequence togglerà su "false" quando la
-  // sezione esce dal viewport o l'utente clicca Skip.
-  document.body.dataset.introActive = "true";
-</script>

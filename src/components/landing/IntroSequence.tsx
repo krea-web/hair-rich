@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useMotionValueEvent, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { useLang } from "@/i18n/useLang";
 import type { Locale } from "@/i18n/types";
@@ -13,6 +13,11 @@ const FRAME_COUNT = 102;
 const FRAMES_VERSION = "v4";
 const framePath = (i: number) =>
     `/hero-seq/frame_${String(i).padStart(3, "0")}.webp?v=${FRAMES_VERSION}`;
+
+// ⚠️ Devono combaciare con lo script inline in HomeContent.astro che decide,
+// prima dell'hydration, se nascondere la UI flottante (data-intro-active).
+const SESSION_KEY = "hr-intro-seen";
+const MOBILE_MAX = 768; // breakpoint `md`
 
 const WELCOME: Record<Locale, string> = {
     it: "Benvenuto",
@@ -28,35 +33,63 @@ const WELCOME_BACK: Record<Locale, string> = {
     de: "Willkommen zurück",
 };
 
+const SWIPE_HINT: Record<Locale, string> = {
+    it: "Scorri verso l'alto",
+    en: "Swipe up",
+    fr: "Glissez vers le haut",
+    de: "Nach oben wischen",
+};
+
+function shouldShowIntro(): boolean {
+    if (typeof window === "undefined") return false; // SSR → niente
+    if (window.innerWidth >= MOBILE_MAX) return false; // desktop mai
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false; // a11y
+    try {
+        if (sessionStorage.getItem(SESSION_KEY) === "1") return false; // già vista in sessione
+    } catch {
+        /* sessionStorage bloccato → mostra comunque */
+    }
+    return true;
+}
 
 /**
- * Full-viewport scroll-driven intro sequence: the rose+scissors composition
- * lifts away as the user scrolls through 103 webp frames. Sits before
- * HeroSection. The subject is rendered with `contain` (no cropping) plus a
- * subtle inset margin so the composition is well framed on every viewport.
+ * Intro mobile: overlay nero a tutto schermo, SCOLLEGATO dallo scroll della
+ * pagina. Lo swipe verso l'alto fa avanzare i 102 frame seguendo il dito
+ * (ridisegno via requestAnimationFrame → mai uno schermo nero). Al rilascio
+ * del dito (o a fine sequenza) l'overlay si dissolve e rivela la hero già in
+ * cima allo schermo. Mostrato una sola volta per sessione, solo su mobile.
  */
 export function IntroSequence() {
-    const sectionRef = useRef<HTMLDivElement>(null);
+    const [show, setShow] = useState<boolean>(() => shouldShowIntro());
+    if (!show) return null;
+    return <IntroOverlay onDismissed={() => setShow(false)} />;
+}
+
+const DISMISS_THRESHOLD = 0.2; // rilascio oltre il 20% → completa; sotto → snap-back
+const FADE_MS = 480;
+
+function IntroOverlay({ onDismissed }: { onDismissed: () => void }) {
+    const overlayRef = useRef<HTMLDivElement>(null);
+    const surfaceRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [imagesReady, setImagesReady] = useState(false);
     const imagesRef = useRef<HTMLImageElement[]>([]);
+    const [imagesReady, setImagesReady] = useState(false);
+    const [dismissing, setDismissing] = useState(false);
+    const [interacted, setInteracted] = useState(false);
 
-    const { scrollYProgress } = useScroll({
-        target: sectionRef,
-        offset: ["start start", "end end"],
-    });
-
-    // Phase 1 — frames animate in the first ~half of the scroll budget.
-    // Phase 2 — welcome word reveals at scrollY 0.18 and STAYS until the
-    //           section ends, so when the user scrolls past, the welcome
-    //           is the last thing visible and the hero slides in
-    //           immediately behind it — no black tail.
-    const frameIndex = useTransform(scrollYProgress, [0, 1], [1, FRAME_COUNT]);
-    const hintOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
     const lang = useLang();
+    const onDismissedRef = useRef(onDismissed);
+    onDismissedRef.current = onDismissed;
 
-    // Auth detect: choose Benvenuto / Bentornato. Best-effort, defaults to
-    // Benvenuto if check fails or session not yet known.
+    const progressRef = useRef(0); // 0..1 — verità per il paint
+    const targetRef = useRef(0); // ease verso questo (snap-back / completamento)
+    const draggingRef = useRef(false);
+    const startYRef = useRef(0);
+    const startProgRef = useRef(0);
+    const dismissingRef = useRef(false);
+    const imagesReadyRef = useRef(false);
+
+    // Auth detect: Benvenuto / Bentornato. Best-effort, default Benvenuto.
     const [isReturning, setIsReturning] = useState(false);
     useEffect(() => {
         let alive = true;
@@ -78,11 +111,53 @@ export function IntroSequence() {
 
     const welcomeText = isReturning ? WELCOME_BACK[lang] : WELCOME[lang];
 
+    // Disegno: object-contain centrato orizzontalmente, subject spostato in
+    // alto del 15% e che ESCE dal bordo top man mano che progress→1. Frame ed
+    // exit-offset derivano dallo STESSO progress → nessuno stato incoerente,
+    // sempre un frame valido da dipingere.
+    const paint = (p: number) => {
+        const canvas = canvasRef.current;
+        const imgs = imagesRef.current;
+        if (!canvas || !imgs.length) return;
+        const idx = Math.min(Math.max(Math.round(p * (FRAME_COUNT - 1)), 0), FRAME_COUNT - 1);
+        const img = imgs[idx];
+        if (!img || !img.naturalWidth) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const scale = Math.min(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
+        const w = img.naturalWidth * scale;
+        const h = img.naturalHeight * scale;
+        const x = (canvas.width - w) / 2;
+        const baseY = (canvas.height - h) * 0.15;
+        ctx.drawImage(img, x, baseY - p * canvas.height * 0.6, w, h);
+    };
+
+    const triggerDismiss = () => {
+        if (dismissingRef.current) return;
+        dismissingRef.current = true;
+        setDismissing(true); // overlay opacity 1→0
+        try {
+            sessionStorage.setItem(SESSION_KEY, "1");
+        } catch {
+            /* noop */
+        }
+        window.scrollTo(0, 0); // difensivo: pagina in cima
+        document.body.dataset.introActive = "false"; // sblocca scroll + rivela UI sotto
+        window.setTimeout(() => onDismissedRef.current(), FADE_MS); // smonta dopo il fade
+    };
+
+    // Difensivo: lo script inline ha già messo data-intro-active="true", ma lo
+    // riaffermiamo al mount (l'overlay esiste solo quando l'intro va mostrata).
+    useEffect(() => {
+        document.body.dataset.introActive = "true";
+    }, []);
+
+    // Preload eager dei 102 frame.
     useEffect(() => {
         let cancelled = false;
         const imgs: HTMLImageElement[] = [];
         let loaded = 0;
-
         for (let i = 1; i <= FRAME_COUNT; i++) {
             const img = new Image();
             const done = () => {
@@ -90,8 +165,9 @@ export function IntroSequence() {
                 loaded++;
                 if (loaded === FRAME_COUNT) {
                     imagesRef.current = imgs;
+                    imagesReadyRef.current = true;
                     setImagesReady(true);
-                    drawFrame(imgs[0]);
+                    paint(0);
                 }
             };
             img.onload = done;
@@ -99,48 +175,12 @@ export function IntroSequence() {
             img.src = framePath(i);
             imgs.push(img);
         }
-
         return () => {
             cancelled = true;
         };
     }, []);
 
-    // Drawing strategy: scale ogni frame in modo che riempia ESATTAMENTE
-    // la dimensione più vincolante del canvas (object-contain), poi
-    // centra orizzontalmente E verticalmente. Cosi' la forbice/rosa sta
-    // sempre al centro del canvas con i bordi che toccano i lati del
-    // viewport intro a seconda dell'aspect — niente piu' offset
-    // asimmetrico, niente piu' subject pinned a top.
-    const drawFrame = (img?: HTMLImageElement, progress: number = 0) => {
-        if (!img || !img.naturalWidth || !canvasRef.current) return;
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const scaleX = canvas.width / img.naturalWidth;
-        const scaleY = canvas.height / img.naturalHeight;
-        const scale = Math.min(scaleX, scaleY);
-        const w = img.naturalWidth * scale;
-        const h = img.naturalHeight * scale;
-        const x = (canvas.width - w) / 2;
-        // Subject parte spostato verso l'ALTO (15% del canvas) per non
-        // coprire la welcome "Benvenuto" in basso. Durante l'animazione
-        // un offset negativo cresce con il progress -> il subject ESCE
-        // dal bordo top del canvas alla fine della sequenza.
-        const baseY = (canvas.height - h) * 0.15;
-        const exitOffset = progress * canvas.height * 0.6;
-        const y = baseY - exitOffset;
-        ctx.drawImage(img, x, y, w, h);
-    };
-
-    useMotionValueEvent(frameIndex, "change", (latest) => {
-        if (!imagesRef.current.length) return;
-        const idx = Math.min(Math.max(Math.floor(latest) - 1, 0), FRAME_COUNT - 1);
-        const progress = idx / (FRAME_COUNT - 1);
-        drawFrame(imagesRef.current[idx], progress);
-    });
-
+    // Canvas sizing (devicePixelRatio) + ridisegno del frame corrente.
     useEffect(() => {
         const resize = () => {
             const canvas = canvasRef.current;
@@ -153,170 +193,167 @@ export function IntroSequence() {
                 canvas.width = w;
                 canvas.height = h;
             }
-            const idx = Math.min(Math.max(Math.floor(frameIndex.get()) - 1, 0), FRAME_COUNT - 1);
-            const progress = idx / (FRAME_COUNT - 1);
-            drawFrame(imagesRef.current[idx], progress);
+            paint(progressRef.current);
         };
         resize();
         window.addEventListener("resize", resize);
         return () => window.removeEventListener("resize", resize);
-    }, [imagesReady, frameIndex]);
+    }, []);
 
-    // Toggle body[data-intro-active] based on whether the intro section is
-    // still in front of the user. While active, all floating UI is hidden
-    // via the CSS rule on [data-intro-hidden] (see globals.css). Cleared
-    // when the section has fully scrolled past the viewport top, and a
-    // permanent flag is stored so future visits skip the intro entirely.
+    // Loop rAF: dipinge SEMPRE il frame corrente (mai un buco nero). Durante il
+    // drag segue il dito 1:1; fuori dal drag fa ease verso target (snap-back o
+    // completamento) e, arrivato a fine, fa partire il dismiss.
     useEffect(() => {
-        document.body.dataset.introActive = "true";
-        const section = sectionRef.current;
-        if (!section) return;
-
-        const onScroll = () => {
-            const rect = section.getBoundingClientRect();
-            if (rect.bottom <= 0) {
-                document.body.dataset.introActive = "false";
-            } else {
-                document.body.dataset.introActive = "true";
+        let running = true;
+        const loop = () => {
+            if (!running) return;
+            if (!draggingRef.current) {
+                const cur = progressRef.current;
+                const diff = targetRef.current - cur;
+                progressRef.current = Math.abs(diff) > 0.001 ? cur + diff * 0.18 : targetRef.current;
             }
+            paint(progressRef.current);
+            if (!dismissingRef.current && progressRef.current >= 0.999 && targetRef.current >= 0.999) {
+                triggerDismiss();
+            }
+            rafId = requestAnimationFrame(loop);
         };
-        onScroll();
-        window.addEventListener("scroll", onScroll, { passive: true });
+        let rafId = requestAnimationFrame(loop);
         return () => {
-            window.removeEventListener("scroll", onScroll);
-            delete document.body.dataset.introActive;
+            running = false;
+            cancelAnimationFrame(rafId);
         };
     }, []);
 
-    // Auto-skip al primo input scroll: appena l'utente tocca rotellina o
-    // swipe verso il basso, scroll smooth fino a fine intro -> niente
-    // schermo nero durante la sequenza frame-by-frame.
+    // Touch scrubbing sulla superficie (il bottone "Salta" è fuori da questa
+    // superficie, così il suo tap non viene catturato dal preventDefault).
     useEffect(() => {
-        let triggered = false;
-        const onUserScroll = () => {
-            if (triggered) return;
-            const section = sectionRef.current;
-            if (!section) return;
-            // Solo se siamo ancora dentro la intro section
-            if (document.body.dataset.introActive !== "true") return;
-            const sectionTop = section.offsetTop;
-            const sectionEnd = sectionTop + section.offsetHeight;
-            if (window.scrollY >= sectionEnd) return;
-            triggered = true;
-            window.scrollTo({ top: sectionEnd, behavior: "smooth" });
-            // Lascia che il browser termini lo smooth scroll prima di
-            // marcare intro come terminata.
-            window.setTimeout(() => {
-                document.body.dataset.introActive = "false";
-            }, 800);
+        const el = surfaceRef.current;
+        if (!el) return;
+        const dist = () => window.innerHeight * 0.8; // swipe quasi-full per completare
+        const onStart = (e: TouchEvent) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            if (!imagesReadyRef.current || !touch) return;
+            draggingRef.current = true;
+            setInteracted(true);
+            startYRef.current = touch.clientY;
+            startProgRef.current = progressRef.current;
         };
-        const opts: AddEventListenerOptions = { passive: true };
-        window.addEventListener("wheel", onUserScroll, opts);
-        window.addEventListener("touchmove", onUserScroll, opts);
-        window.addEventListener("keydown", (e) => {
-            if (["ArrowDown", "PageDown", " ", "Spacebar"].includes(e.key)) onUserScroll();
-        });
+        const onMove = (e: TouchEvent) => {
+            if (!draggingRef.current) return;
+            e.preventDefault(); // blocca scroll pagina + gesture browser (anche iOS)
+            const touch = e.touches[0];
+            if (!touch) return;
+            const dy = startYRef.current - touch.clientY; // su = positivo
+            const p = Math.min(Math.max(startProgRef.current + dy / dist(), 0), 1);
+            progressRef.current = p;
+            if (p >= 1) {
+                draggingRef.current = false;
+                targetRef.current = 1;
+            }
+        };
+        const onEnd = (e: TouchEvent) => {
+            if (!draggingRef.current) return;
+            e.preventDefault();
+            draggingRef.current = false;
+            targetRef.current = progressRef.current >= DISMISS_THRESHOLD ? 1 : 0;
+        };
+        el.addEventListener("touchstart", onStart, { passive: false });
+        el.addEventListener("touchmove", onMove, { passive: false });
+        el.addEventListener("touchend", onEnd, { passive: false });
+        el.addEventListener("touchcancel", onEnd, { passive: false });
         return () => {
-            window.removeEventListener("wheel", onUserScroll);
-            window.removeEventListener("touchmove", onUserScroll);
+            el.removeEventListener("touchstart", onStart);
+            el.removeEventListener("touchmove", onMove);
+            el.removeEventListener("touchend", onEnd);
+            el.removeEventListener("touchcancel", onEnd);
         };
     }, []);
 
     const handleSkip = () => {
-        const section = sectionRef.current;
-        if (section) {
-            // Salta al fine sezione: scrollTo + nascondi flag intro
-            const bottom = section.offsetTop + section.offsetHeight;
-            window.scrollTo({ top: bottom, behavior: "auto" });
-        }
-        document.body.dataset.introActive = "false";
+        if (!imagesReadyRef.current) return;
+        draggingRef.current = false;
+        setInteracted(true);
+        targetRef.current = 1; // il loop fa ease fino a fine → dismiss
     };
 
     return (
-        <section
-            ref={sectionRef}
-            className="relative bg-black"
+        <div
+            ref={overlayRef}
+            className={`fixed inset-0 z-[95] bg-black overflow-hidden transition-opacity ease-out ${dismissing ? "opacity-0" : "opacity-100"}`}
+            style={{ touchAction: "none", transitionDuration: `${FADE_MS}ms` }}
             aria-label="Intro"
-            data-intro-sequence
+            aria-hidden={dismissing || undefined}
         >
-            <div className="h-[150vh] md:h-[160vh] lg:h-[150vh] xl:h-[145vh] 2xl:h-[140vh]">
-                <div className="sticky top-0 h-[100dvh] overflow-hidden bg-black">
-                    {/* Skip button — desktop only (mobile users just scroll past). */}
-                    <button
-                        onClick={handleSkip}
-                        className="hidden md:inline-flex absolute top-24 right-7 z-30 items-center gap-2 px-4 py-2 rounded-full bg-black/50 backdrop-blur-md border border-line text-warm-white text-[10px] uppercase tracking-[0.3em] font-body font-semibold hover:bg-warm-white hover:text-black transition-colors active:scale-95"
-                        aria-label="Salta intro"
-                    >
-                        Salta
-                        <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                        </svg>
-                    </button>
+            {/* Tap-to-skip (a11y / escape). Fuori dalla superficie touch così il
+               tap non viene mangiato dal preventDefault dello scrubbing. */}
+            <button
+                onClick={handleSkip}
+                disabled={!imagesReady}
+                className="absolute top-[max(env(safe-area-inset-top,0px),16px)] right-4 z-30 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/50 backdrop-blur-md border border-line text-warm-white text-[10px] uppercase tracking-[0.3em] font-body font-semibold transition-opacity duration-500 disabled:opacity-0 active:scale-95"
+                aria-label="Salta intro"
+            >
+                Salta
+                <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                </svg>
+            </button>
 
-                    {/* Inner padded wrapper: pushes the canvas (and the welcome
-                       overlay) below the fixed navbar so frame 1 is never
-                       clipped behind it. Mobile fills full width (subject is
-                       portrait, viewport is portrait — match). Desktop caps
-                       the canvas width so the subject doesn't bloat across a
-                       16:9 viewport. */}
-                    <div className="absolute inset-0 pt-[68px] md:pt-[80px]">
-                        <div className="w-full h-full mx-auto md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-3xl">
-                            <canvas
-                                ref={canvasRef}
-                                className="w-full h-full block"
-                                aria-hidden="true"
-                            />
-                        </div>
+            <div ref={surfaceRef} className="absolute inset-0 z-10" style={{ touchAction: "none" }}>
+                {/* Inner padded wrapper: tiene la composizione centrata come prima
+                   (clear dell'area dove c'era la top bar). */}
+                <div className="absolute inset-0 pt-[68px]">
+                    <canvas ref={canvasRef} className="w-full h-full block" aria-hidden="true" />
+                </div>
+
+                {!imagesReady && (
+                    <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-carbon to-carbon-2 flex items-center justify-center">
+                        <span className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
+                            Caricamento…
+                        </span>
                     </div>
+                )}
 
-                    {!imagesReady && (
-                        <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-carbon to-carbon-2 flex items-center justify-center">
-                            <span className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
-                                Caricamento…
-                            </span>
-                        </div>
-                    )}
-
-                    {/* Scroll hint */}
+                {/* Hint "swipe up" — sparisce alla prima interazione */}
+                {imagesReady && !interacted && (
                     <motion.div
-                        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 pointer-events-none"
-                        style={{ opacity: hintOpacity }}
+                        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 pointer-events-none flex flex-col items-center gap-2 text-silver-dark"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.8, delay: 0.4 }}
                     >
-                        <div className="flex flex-col items-center gap-2 text-silver-dark">
-                            <span className="text-[10px] tracking-[0.4em] uppercase font-body font-semibold">
-                                <span className="md:hidden">Scorri per scoprire</span>
-                                <span className="hidden md:inline">Scroll</span>
-                            </span>
-                            <motion.div
-                                className="w-px h-10 md:h-12 bg-gradient-to-b from-silver to-transparent"
-                                animate={{ scaleY: [1, 0.3, 1] }}
-                                transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-                                style={{ transformOrigin: "top" }}
-                            />
-                        </div>
-                    </motion.div>
-
-                    <span className="hidden md:inline absolute right-3 top-24 text-[10px] tracking-[0.5em] uppercase text-silver-dark font-body font-semibold rotate-180 [writing-mode:vertical-rl]">
-                        EST. 2017
-                    </span>
-
-                    {/* Welcome word — mobile only. On desktop the constrained
-                       canvas already breathes inside a wide viewport and the
-                       welcome text was competing with the subject + hero text
-                       below, so it's mobile-only by design. */}
-                    <motion.div
-                        className="md:hidden absolute inset-x-0 bottom-[15%] flex items-center justify-center pointer-events-none z-20 px-6"
-                        initial={{ opacity: 0, y: 40 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 1.2, delay: 0.9, ease: [0.25, 0.1, 0.25, 1] }}
-                        aria-hidden="true"
-                    >
-                        <span className="text-display-alt text-warm-white text-7xl sm:text-8xl md:text-9xl lg:text-[12rem] tracking-[0.02em] text-center whitespace-nowrap leading-none drop-shadow-[0_4px_40px_rgba(212,165,116,0.45)]">
-                            {welcomeText}
+                        <motion.svg
+                            viewBox="0 0 24 24"
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            aria-hidden="true"
+                            animate={{ y: [0, -6, 0] }}
+                            transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+                        >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 19V5m0 0-7 7m7-7 7 7" />
+                        </motion.svg>
+                        <span className="text-[10px] tracking-[0.4em] uppercase font-body font-semibold">
+                            {SWIPE_HINT[lang]}
                         </span>
                     </motion.div>
-                </div>
+                )}
+
+                {/* Welcome word */}
+                <motion.div
+                    className="absolute inset-x-0 bottom-[15%] flex items-center justify-center pointer-events-none z-20 px-6"
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1.2, delay: 0.9, ease: [0.25, 0.1, 0.25, 1] }}
+                    aria-hidden="true"
+                >
+                    <span className="text-display-alt text-warm-white text-7xl sm:text-8xl tracking-[0.02em] text-center whitespace-nowrap leading-none drop-shadow-[0_4px_40px_rgba(212,165,116,0.45)]">
+                        {welcomeText}
+                    </span>
+                </motion.div>
             </div>
-        </section>
+        </div>
     );
 }
