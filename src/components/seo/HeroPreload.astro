@@ -1,0 +1,17 @@
+---
+// Preload LCP della foto hero home — solo desktop (≥768px); su mobile l'LCP è
+// la sequenza intro, quindi non precarichiamo qui. `imagesrcset`/`imagesizes`
+// devono combaciare con l'<img> in HeroSection.tsx.
+import { assetImageUrlRatio, assetImageSrcsetRatio } from "@/lib/supabase/queries";
+---
+
+<link
+  rel="preload"
+  as="image"
+  type="image/webp"
+  media="(min-width: 768px)"
+  fetchpriority="high"
+  href={assetImageUrlRatio("hero-home.webp", 1280, 3 / 2, 80)}
+  imagesrcset={assetImageSrcsetRatio("hero-home.webp", 3 / 2, 80)}
+  imagesizes="(min-width:1280px) 50vw, (min-width:768px) 42vw, 100vw"
+/>

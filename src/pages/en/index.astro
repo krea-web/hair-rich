@@ -1,8 +1,10 @@
 ---
 import RootLayout from "../../layouts/RootLayout.astro";
 import HomeContent from "../../components/HomeContent.astro";
+import HeroPreload from "../../components/seo/HeroPreload.astro";
 ---
 
 <RootLayout>
+  <HeroPreload slot="head" />
   <HomeContent lang="en" />
 </RootLayout>

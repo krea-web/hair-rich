@@ -224,6 +224,9 @@ const localeKeywords: Record<string, string> = {
         }
       })();
     </script>
+
+    {/* Slot per <head> per-pagina (es. preload LCP della home) */}
+    <slot name="head" />
   </head>
   <body data-lang={lang}>
     <a

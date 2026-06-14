@@ -77,6 +77,27 @@ export function assetImageSrcset(path: string, quality = 78): string {
     return bucketImageSrcset("asset", path, quality);
 }
 
+/**
+ * Asset URL/srcset con aspect-ratio fissato (resize=cover). Necessario perché
+ * il render Supabase, se gli passi SOLO `width`, mantiene l'altezza ORIGINALE
+ * (output schiacciato); passando width+height ottieni un downscale corretto.
+ * `ratio` = larghezza/altezza (es. 3/2 = 1.5).
+ */
+export function assetImageUrlRatio(path: string, width: number, ratio: number, quality = 80): string {
+    return bucketImageUrl("asset", path, {
+        width,
+        height: Math.round(width / ratio),
+        resize: "cover",
+        quality,
+        format: "webp",
+    });
+}
+export function assetImageSrcsetRatio(path: string, ratio: number, quality = 80): string {
+    return [480, 800, 1280, 1920]
+        .map((w) => `${assetImageUrlRatio(path, w, ratio, quality)} ${w}w`)
+        .join(", ");
+}
+
 
 export async function fetchServices(): Promise<Service[]> {
     const supabase = createClient();
