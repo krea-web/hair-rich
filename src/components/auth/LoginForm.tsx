@@ -174,36 +174,12 @@ export function LoginForm() {
                                 className="space-y-8"
                             >
                                 <div>
-                                    <h2 className="text-display text-4xl text-warm-white mb-2">Bentornato</h2>
-                                    <p className="text-silver-dark text-sm">Scegli come vuoi accedere.</p>
+                                    <h2 className="text-display text-4xl text-warm-white mb-2">Accedi</h2>
+                                    <p className="text-silver-dark text-sm">Un solo passaggio. Se non hai ancora un account, lo creiamo al volo — niente registrazione separata.</p>
                                 </div>
 
                                 <div className="space-y-4">
-                                    <button
-                                        onClick={() => { setMethod("email"); setStep("input"); }}
-                                        className="w-full relative group overflow-hidden bg-carbon hover:bg-carbon-2 border border-line rounded-[var(--radius-md)] px-4 py-4 md:px-6 md:py-5 flex items-center justify-between transition-all duration-300"
-                                    >
-                                        <span className="font-body text-warm-white font-semibold">Continua con Email</span>
-                                        <svg viewBox="0 0 24 24" className="w-5 h-5 text-silver group-hover:text-warm-white group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                                        </svg>
-                                    </button>
-                                    <button
-                                        onClick={() => { setMethod("phone"); setStep("input"); }}
-                                        className="w-full relative group overflow-hidden bg-carbon hover:bg-carbon-2 border border-line rounded-[var(--radius-md)] px-4 py-4 md:px-6 md:py-5 flex items-center justify-between transition-all duration-300"
-                                    >
-                                        <span className="font-body text-warm-white font-semibold">Continua con Telefono</span>
-                                        <svg viewBox="0 0 24 24" className="w-5 h-5 text-silver group-hover:text-warm-white group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                                        </svg>
-                                    </button>
-
-                                    <div className="relative flex py-5 items-center">
-                                        <div className="flex-grow border-t border-line"></div>
-                                        <span className="flex-shrink-0 mx-4 text-silver-dark text-xs uppercase tracking-widest">Oppure</span>
-                                        <div className="flex-grow border-t border-line"></div>
-                                    </div>
-
+                                    {/* Google — metodo principale (un account Google È già un'email) */}
                                     <button
                                         type="button"
                                         onClick={onGoogleSignIn}
@@ -216,7 +192,27 @@ export function LoginForm() {
                                             <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
                                             <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                                         </svg>
-                                        Google
+                                        Continua con Google
+                                    </button>
+
+                                    {/* Telefono */}
+                                    <button
+                                        onClick={() => { setMethod("phone"); setStep("input"); }}
+                                        className="w-full relative group overflow-hidden bg-carbon hover:bg-carbon-2 border border-line rounded-[var(--radius-md)] px-4 py-4 md:px-6 md:py-5 flex items-center justify-between transition-all duration-300"
+                                    >
+                                        <span className="font-body text-warm-white font-semibold">Continua con il telefono</span>
+                                        <svg viewBox="0 0 24 24" className="w-5 h-5 text-silver group-hover:text-warm-white group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                                        </svg>
+                                    </button>
+
+                                    {/* Email — fallback discreto */}
+                                    <button
+                                        type="button"
+                                        onClick={() => { setMethod("email"); setStep("input"); }}
+                                        className="w-full text-center text-xs text-silver-dark hover:text-warm-white underline underline-offset-4 decoration-line hover:decoration-warm-white transition-colors pt-1"
+                                    >
+                                        Preferisci l'email? Accedi via email
                                     </button>
                                 </div>
                             </motion.div>
@@ -336,9 +332,9 @@ export function LoginForm() {
                     </AnimatePresence>
 
                     <p className="text-center text-xs text-silver-dark pt-8">
-                        Non hai ancora un account?{" "}
+                        Vuoi solo prenotare, senza account?{" "}
                         <a href="/registrazione" className="text-warm-white underline hover:text-accent-warm transition-colors">
-                            Registrati o Prenota come Ospedite
+                            Prenota come ospite
                         </a>
                     </p>
                 </div>

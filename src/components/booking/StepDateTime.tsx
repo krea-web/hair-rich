@@ -8,15 +8,17 @@ import type { AvailableSlot } from "@/lib/supabase/types";
 import { WaitlistOptIn } from "./WaitlistOptIn";
 
 const today = new Date();
-const dates = Array.from({ length: 21 })
+// Orizzonte di prenotazione esteso a ~2 mesi: consente sia il long-term sia le
+// ricorrenze settimanali (es. "ogni venerdì"). Il salone è aperto Lun–Sab e
+// chiuso SOLO la domenica (0) — il lunedì prima era escluso per errore.
+const dates = Array.from({ length: 63 })
     .map((_, i) => {
         const d = new Date(today);
         d.setDate(today.getDate() + i);
         return d;
     })
-    // Chiuso domenica (0) e lunedì (1)
-    .filter((d) => d.getDay() !== 0 && d.getDay() !== 1)
-    .slice(0, 12);
+    .filter((d) => d.getDay() !== 0)
+    .slice(0, 54);
 
 export function StepDateTime({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
     const { date, time, serviceId, staffId, setDate, setTime } = useBookingStore();
@@ -63,7 +65,10 @@ export function StepDateTime({ onNext, onBack }: { onNext: () => void; onBack: (
         if (!serviceId) return;
         let alive = true;
         Promise.all(
-            dates.map(async (d) => {
+            // Solo i primi giorni: con un orizzonte di ~2 mesi non ha senso (ed è
+            // pesante) chiamare l'RPC densità per ogni giorno. I pallini compaiono
+            // sui giorni vicini; i lontani mostrano solo la data.
+            dates.slice(0, 12).map(async (d) => {
                 const ds = d.toISOString().split("T")[0]!;
                 try {
                     const v = await fetchDayDensity(ds, serviceId);

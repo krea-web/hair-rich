@@ -42,6 +42,11 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
     const [referenceFiles, setReferenceFiles] = useState<File[]>([]);
     const [referencePreviews, setReferencePreviews] = useState<string[]>([]);
     const MAX_REFERENCES = 3;
+    // Ricorrenza settimanale: stesso giorno+ora per N settimane di fila.
+    const MAX_REPEAT = 8; // massimo 2 mesi alla volta (anti-dimenticanza)
+    const [repeatWeeks, setRepeatWeeks] = useState(1);
+    const [bookedCount, setBookedCount] = useState(0);
+    const [skippedDates, setSkippedDates] = useState<Date[]>([]);
 
     const handleAddReferences = (files: FileList | null) => {
         if (!files || files.length === 0) return;
@@ -86,8 +91,9 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
         setSubmitting(true);
         setSubmitError(null);
 
-        // Costruisci start_at in fuso Europe/Rome
-        const startAtISO = new Date(`${date}T${time}:00+02:00`).toISOString();
+        // Istante base in fuso Europe/Rome; le ricorrenze sono multipli di 7 giorni.
+        const baseMs = new Date(`${date}T${time}:00+02:00`).getTime();
+        const weeks = Math.min(Math.max(repeatWeeks, 1), MAX_REPEAT);
 
         try {
             // Upload reference photos in parallel, ignore individual failures
@@ -102,19 +108,35 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
                 }
             }
 
-            const result = await bookAppointment({
-                firstName: data.firstName,
-                lastName: data.lastName,
-                phone: data.phone,
-                email: data.email ?? "",
-                serviceId,
-                staffId: staffId ?? null,
-                startAtISO,
-                notes: data.notes ?? "",
-                isFirstVisit,
-                referenceImagePaths: refPaths,
-            });
+            // Crea un appuntamento per settimana. Se uno slot futuro è occupato,
+            // lo salta e continua; il PRIMO invece è obbligatorio (errore reale).
+            let result: Awaited<ReturnType<typeof bookAppointment>> | null = null;
+            let okCount = 0;
+            const skipped: Date[] = [];
+            for (let w = 0; w < weeks; w++) {
+                const startAtISO = new Date(baseMs + w * 7 * 86400000).toISOString();
+                try {
+                    const r = await bookAppointment({
+                        firstName: data.firstName,
+                        lastName: data.lastName,
+                        phone: data.phone,
+                        email: data.email ?? "",
+                        serviceId,
+                        staffId: staffId ?? null,
+                        startAtISO,
+                        notes: data.notes ?? "",
+                        isFirstVisit: w === 0 ? isFirstVisit : false,
+                        referenceImagePaths: w === 0 ? refPaths : [],
+                    });
+                    if (w === 0) result = r;
+                    okCount++;
+                } catch (e) {
+                    if (w === 0) throw e;
+                    skipped.push(new Date(baseMs + w * 7 * 86400000));
+                }
+            }
 
+            // Coupon / credito pacchetto: solo sul PRIMO appuntamento.
             if (appliedCoupon && result?.appointment_id && result?.customer_id) {
                 try {
                     await redeemCoupon({
@@ -142,6 +164,8 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
                 }
             }
 
+            setBookedCount(okCount);
+            setSkippedDates(skipped);
             setContact({
                 name: `${data.firstName} ${data.lastName}`,
                 phone: data.phone,
@@ -149,7 +173,7 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
             });
             setNotes(data.notes ?? "");
             setSubmitted(true);
-            addToast("Prenotazione confermata", "success");
+            addToast(weeks > 1 ? `${okCount} appuntamenti fissati` : "Prenotazione confermata", "success");
 
             if (typeof window !== "undefined" && (window as any).plausible) {
                 (window as any).plausible("booking_complete", {
@@ -264,6 +288,17 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
                             <span className="text-xs text-silver">con {staff.name} · {staff.role}</span>
                         )}
                     </div>
+                )}
+
+                {bookedCount > 1 && (
+                    <p className="text-sm text-accent-warm font-body max-w-md mx-auto leading-snug">
+                        Fissati <strong>{bookedCount} appuntamenti</strong>, uno a settimana fino a {new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "long" }).format(new Date((startDate?.getTime() ?? Date.now()) + (bookedCount - 1) * 7 * 86400000))}.
+                        {skippedDates.length > 0 && (
+                            <span className="block mt-1 text-warm-white-muted text-xs">
+                                {skippedDates.length === 1 ? "Saltata 1 settimana" : `Saltate ${skippedDates.length} settimane`} (slot già occupato): {skippedDates.map((d) => new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "short" }).format(d)).join(", ")}.
+                            </span>
+                        )}
+                    </p>
                 )}
 
                 {/* Share image — generates a 1080x1920 PNG with the booking
@@ -532,6 +567,40 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
                         subtotalCents={service?.price_cents ?? 0}
                         onChange={setAppliedCoupon}
                     />
+
+                    {/* Ricorrenza settimanale — stesso giorno+ora per N settimane.
+                       Vincolo scritto: max 2 mesi alla volta (anti-dimenticanza). */}
+                    <div className="rounded-[var(--radius-sm)] border border-line bg-black-2 px-4 py-3.5">
+                        <span className="text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
+                            Fissa lo stesso slot ogni settimana <span className="normal-case">(opzionale)</span>
+                        </span>
+                        <div className="mt-2.5 grid grid-cols-4 gap-2">
+                            {[1, 2, 4, 8].map((n) => {
+                                const active = repeatWeeks === n;
+                                return (
+                                    <button
+                                        key={n}
+                                        type="button"
+                                        onClick={() => setRepeatWeeks(n)}
+                                        aria-pressed={active}
+                                        className={`px-2 py-2.5 rounded-[var(--radius-sm)] border text-xs font-body font-semibold transition-colors ${
+                                            active
+                                                ? "bg-accent-warm border-accent-warm text-black"
+                                                : "bg-carbon border-line text-warm-white hover:border-silver-mid"
+                                        }`}
+                                    >
+                                        {n === 1 ? "Solo questo" : `${n} sett.`}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <p className="mt-2.5 text-[11px] text-warm-white-muted leading-snug">
+                            {repeatWeeks > 1 ? (
+                                <>Prenoti lo stesso giorno e ora per <strong className="text-warm-white">{repeatWeeks} settimane di fila</strong>. </>
+                            ) : null}
+                            Puoi prenotare al <strong className="text-warm-white">massimo 2 mesi (8 settimane) alla volta</strong> — così non rischi di dimenticartene. Riceverai un promemoria prima di ogni appuntamento. Eventuale coupon/credito vale solo sul primo.
+                        </p>
+                    </div>
 
                     {submitError && (
                         <div className="text-xs text-error bg-error/10 border border-error/30 rounded-[var(--radius-sm)] px-3 py-2">
