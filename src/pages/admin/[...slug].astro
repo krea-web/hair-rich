@@ -1,6 +1,8 @@
 ---
 import RootLayout from "../../layouts/RootLayout.astro";
 import { AdminApp } from "../../components/admin/AdminApp";
+import { BookingDrawer } from "../../components/booking/BookingDrawer";
+import { ToastViewport } from "../../components/ui/ToastViewport";
 
 export function getStaticPaths() {
   const routes = [
@@ -42,4 +44,6 @@ export function getStaticPaths() {
 
 <RootLayout title="Admin · Hair Rich Olbia" noindex={true}>
   <AdminApp client:only="react" />
+  <BookingDrawer client:idle />
+  <ToastViewport client:idle />
 </RootLayout>

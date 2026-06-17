@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { formatPrice } from "@/lib/format";
 import { handleClientLink } from "@/lib/clientRouter";
+import { useBookingDrawer } from "@/lib/store";
 
 interface Stats {
     revenueTodayCents: number;
@@ -99,11 +100,149 @@ function TodayRecap() {
     );
 }
 
+// Ruolo effettivo: base da `admins` + eventuale override "tablet" in localStorage
+// (stessa chiave di AdminApp). Usato per mostrare il cassetto posta solo al titolare.
+function useEffectiveRole(): "owner" | "manager" | "staff" | null {
+    const [role, setRole] = useState<"owner" | "manager" | "staff" | null>(null);
+    useEffect(() => {
+        let alive = true;
+        (async () => {
+            const sb = createClient();
+            let base: "owner" | "manager" | "staff" = "staff";
+            const { data: u } = await sb.auth.getUser();
+            if (u?.user?.id) {
+                const { data: a } = await sb.from("admins").select("role").eq("user_id", u.user.id).maybeSingle();
+                if (a?.role === "owner" || a?.role === "manager" || a?.role === "staff") base = a.role;
+            }
+            let override: string | null = null;
+            try { override = window.localStorage.getItem("hairrich:admin:role_override"); } catch { /* noop */ }
+            const eff = override === "owner" || override === "manager" || override === "staff" ? override : base;
+            if (alive) setRole(eff as "owner" | "manager" | "staff");
+        })();
+        return () => { alive = false; };
+    }, []);
+    return role;
+}
+
+// Cassetto posta del TITOLARE: feed di `admin_inbox_items` (eventi bot Telegram +
+// sistema) in tempo reale. Visibile solo in vista Titolare.
+function OwnerInbox() {
+    const [items, setItems] = useState<any[]>([]);
+    useEffect(() => {
+        const sb = createClient();
+        const load = () =>
+            sb.from("admin_inbox_items")
+                .select("id, title, icon, priority, created_at, read_at")
+                .is("archived_at", null)
+                .order("created_at", { ascending: false })
+                .limit(8)
+                .then(({ data }: { data: any }) => setItems(data ?? []));
+        load();
+        const ch = sb
+            .channel("dash-inbox")
+            .on("postgres_changes", { event: "INSERT", schema: "public", table: "admin_inbox_items" }, load)
+            .subscribe();
+        return () => { sb.removeChannel(ch); };
+    }, []);
+    const fmt = (iso: string) =>
+        new Date(iso).toLocaleString("it-IT", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+    return (
+        <div className="bg-[#111111] border border-line rounded-[var(--radius-md)] p-5">
+            <div className="flex items-center justify-between mb-3">
+                <h2 className="text-xs uppercase font-semibold text-silver-dark tracking-widest">📬 Cassetto posta</h2>
+                <a href="/admin/inbox" onClick={handleClientLink} className="text-[11px] text-silver hover:text-warm-white transition-colors">Tutto →</a>
+            </div>
+            {items.length === 0 ? (
+                <p className="text-xs text-silver-dark py-4 text-center">Nessuna notifica per ora.</p>
+            ) : (
+                <ul className="space-y-2.5">
+                    {items.map((it) => (
+                        <li key={it.id} className={`flex items-start gap-2.5 ${it.read_at ? "opacity-55" : ""}`}>
+                            <span aria-hidden="true" className="text-base leading-none mt-0.5">{it.icon ?? "•"}</span>
+                            <div className="min-w-0 flex-1">
+                                <p className="text-warm-white text-[13px] leading-snug">{it.title}</p>
+                                <p className="text-[10px] text-silver-dark mt-0.5">{fmt(it.created_at)}</p>
+                            </div>
+                            {!it.read_at && <span aria-label="non letto" className="shrink-0 w-2 h-2 rounded-full bg-accent-warm mt-1.5" />}
+                        </li>
+                    ))}
+                </ul>
+            )}
+        </div>
+    );
+}
+
+// Mini calendario settimanale (prossimi 7 giorni) con grafico a barre del picco
+// prenotazioni per giorno + media giornaliera del mese corrente.
+function WeekMini() {
+    const [days, setDays] = useState<{ iso: string; label: string; dayNum: string; count: number }[]>([]);
+    const [monthAvg, setMonthAvg] = useState<number | null>(null);
+    useEffect(() => {
+        const sb = createClient();
+        const start = new Date(); start.setHours(0, 0, 0, 0);
+        const end = new Date(start); end.setDate(end.getDate() + 7);
+        sb.from("appointments").select("start_at, status")
+            .gte("start_at", start.toISOString()).lt("start_at", end.toISOString())
+            .neq("status", "cancelled")
+            .then(({ data }: { data: any }) => {
+                const rows = data ?? [];
+                const out = [];
+                for (let i = 0; i < 7; i++) {
+                    const d = new Date(start); d.setDate(start.getDate() + i);
+                    const iso = d.toISOString().slice(0, 10);
+                    const count = rows.filter((r: any) => new Date(r.start_at).toISOString().slice(0, 10) === iso).length;
+                    out.push({ iso, label: d.toLocaleDateString("it-IT", { weekday: "short" }), dayNum: String(d.getDate()), count });
+                }
+                setDays(out);
+            });
+        // Media giornaliera del mese corrente (su giorni trascorsi).
+        const mStart = new Date(); mStart.setDate(1); mStart.setHours(0, 0, 0, 0);
+        const now = new Date();
+        sb.from("appointments").select("id", { count: "exact", head: true })
+            .gte("start_at", mStart.toISOString()).lte("start_at", now.toISOString())
+            .neq("status", "cancelled")
+            .then(({ count }: { count: number | null }) => {
+                const daysElapsed = Math.max(1, now.getDate());
+                setMonthAvg((count ?? 0) / daysElapsed);
+            });
+    }, []);
+    const max = Math.max(1, ...days.map((d) => d.count));
+    return (
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
+            className="bg-[#111111] border border-line rounded-[var(--radius-md)] p-5">
+            <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xs uppercase font-semibold text-silver-dark tracking-widest">Prossimi 7 giorni · picco prenotazioni</h2>
+                <div className="flex items-center gap-3">
+                    {monthAvg !== null && (
+                        <span className="text-[10px] uppercase tracking-[0.15em] text-silver-dark">media mese <span className="text-warm-white tabular-nums">{monthAvg.toFixed(1)}/g</span></span>
+                    )}
+                    <a href="/admin/agenda-week" onClick={handleClientLink} className="text-[11px] text-silver hover:text-warm-white transition-colors">Settimana →</a>
+                </div>
+            </div>
+            <div className="grid grid-cols-7 gap-2">
+                {days.map((d) => (
+                    <a key={d.iso} href="/admin/agenda" onClick={handleClientLink} className="flex flex-col items-center gap-1.5 group">
+                        <span className="text-[9px] uppercase tracking-wider text-silver-dark">{d.label}</span>
+                        <span className="text-sm font-display text-warm-white leading-none">{d.dayNum}</span>
+                        <span className="w-full h-12 flex items-end" aria-hidden="true">
+                            <span className="w-full rounded-sm bg-accent-warm/70 group-hover:bg-accent-warm transition-all" style={{ height: `${Math.max(6, (d.count / max) * 100)}%` }} />
+                        </span>
+                        <span className="text-[11px] tabular-nums text-silver">{d.count}</span>
+                    </a>
+                ))}
+            </div>
+        </motion.div>
+    );
+}
+
 export default function AdminDashboardPage() {
     const [stats, setStats] = useState<Stats | null>(null);
     const [next, setNext] = useState<UpcomingAppt[]>([]);
     const [atRisk, setAtRisk] = useState<AtRiskCustomer[]>([]);
     const [loading, setLoading] = useState(true);
+    const openBooking = useBookingDrawer((s) => s.open);
+    const role = useEffectiveRole();
+    const isOwner = role === "owner" || role === "manager";
 
     useEffect(() => {
         let alive = true;
@@ -240,15 +379,27 @@ export default function AdminDashboardPage() {
 
     return (
         <div className="p-6 md:p-10 max-w-6xl mx-auto space-y-8">
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                <span className="text-display-alt text-xl text-accent-warm">
-                    {new Date().toLocaleDateString("it-IT", {
-                        weekday: "long",
-                        day: "numeric",
-                        month: "long",
-                    })}
-                </span>
-                <h1 className="text-display text-4xl text-warm-white mt-1">Dashboard</h1>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-end justify-between gap-4 flex-wrap">
+                <div>
+                    <span className="text-display-alt text-xl text-accent-warm">
+                        {new Date().toLocaleDateString("it-IT", {
+                            weekday: "long",
+                            day: "numeric",
+                            month: "long",
+                        })}
+                    </span>
+                    <h1 className="text-display text-4xl text-warm-white mt-1">Dashboard</h1>
+                </div>
+                {/* Unico bottone per creare un appuntamento (apre il drawer prenotazione) */}
+                <button
+                    onClick={() => openBooking()}
+                    className="inline-flex items-center gap-2 px-5 py-3 bg-accent-warm text-black rounded-full text-xs uppercase tracking-[0.25em] font-body font-semibold hover:scale-[1.02] active:scale-95 transition-transform shadow-[0_14px_40px_-12px_rgba(212,165,116,0.6)]"
+                >
+                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14m-7-7h14" />
+                    </svg>
+                    Nuovo appuntamento
+                </button>
             </motion.div>
 
             {/* KPI Grid */}
@@ -283,6 +434,8 @@ export default function AdminDashboardPage() {
             </motion.div>
 
             <TodayRecap />
+
+            <WeekMini />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Prossimi appuntamenti */}
@@ -346,6 +499,9 @@ export default function AdminDashboardPage() {
                     transition={{ delay: 0.3 }}
                     className="space-y-6"
                 >
+                    {/* Cassetto posta — solo titolare (eventi bot Telegram + sistema) */}
+                    {isOwner && <OwnerInbox />}
+
                     <div className="bg-[#111111] border border-line rounded-[var(--radius-md)] p-6">
                         <h2 className="text-xs uppercase font-semibold text-silver-dark tracking-widest mb-4">
                             Azioni rapide
