@@ -27,11 +27,24 @@ export function InstagramSection() {
         fetchPortfolio()
             .then((rows) => {
                 if (!alive) return;
-                // Take 6: featured first, then most-recent fallback.
-                const featured = rows.filter((r) => r.is_featured).slice(0, 6);
-                const rest = rows.filter((r) => !r.is_featured);
-                const merged = [...featured, ...rest].slice(0, 6);
-                setShots(merged);
+                // One real shot per haircut style for a varied feed (rows are
+                // already active + sorted, so the "-01" of each style wins).
+                const family = (p: string) => p.replace(/-\d+\.[^.]+$/i, "");
+                const seen = new Set<string>();
+                const varied: PortfolioImage[] = [];
+                for (const r of rows) {
+                    const key = family(r.storage_path);
+                    if (seen.has(key)) continue;
+                    seen.add(key);
+                    varied.push(r);
+                    if (varied.length === 6) break;
+                }
+                // Top up if fewer than 6 distinct styles exist.
+                for (const r of rows) {
+                    if (varied.length === 6) break;
+                    if (!varied.includes(r)) varied.push(r);
+                }
+                setShots(varied);
             })
             .catch(() => undefined);
         return () => {

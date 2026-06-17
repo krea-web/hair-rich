@@ -5,6 +5,7 @@ import { StatsBanner } from "./landing/StatsBanner";
 import { ManifestoSection } from "./landing/ManifestoSection";
 import { ServicesSection } from "./landing/ServicesSection";
 import { WhyUsSection } from "./landing/WhyUsSection";
+import HomeDomicilioVilla from "./landing/HomeDomicilioVilla.astro";
 import { TeamSection } from "./landing/TeamSection";
 import { GallerySection } from "./landing/GallerySection";
 import { ReviewsSection } from "./landing/ReviewsSection";
@@ -83,6 +84,7 @@ const m = marqueeItems[lang];
   <ServicesSection client:visible />
   <ManifestoSection client:idle />
   <WhyUsSection client:idle />
+  <HomeDomicilioVilla lang={lang} />
   <TeamSection client:visible />
   <GallerySection client:visible />
   <ReviewsSection client:idle />

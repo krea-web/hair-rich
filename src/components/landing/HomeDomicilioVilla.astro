@@ -1,0 +1,172 @@
+---
+/**
+ * Sezione home dedicata al "taglio a domicilio" — collage di foto reali della
+ * sessione in villa (Costa Smeralda) + copy + CTA telefonica + link alla landing
+ * `/taglio-a-domicilio`. Astro puro (SSR, niente JS) per copy localizzata corretta
+ * su tutte le lingue e LCP leggero. Riusa le stringhe i18n `homeService`.
+ */
+import type { Locale } from "@/i18n";
+import { useTranslations } from "@/i18n";
+import { SITE } from "@/lib/constants";
+import { assetImageUrlRatio, assetImageSrcsetRatio } from "@/lib/supabase/queries";
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const h = t.homeService;
+
+const phoneHref = "tel:+39" + SITE.phone.replace(/\s+/g, "");
+const domicilioHref = lang === "it" ? "/taglio-a-domicilio" : `/${lang}/taglio-a-domicilio`;
+
+const discoverLabel: Record<Locale, string> = {
+  it: "Scopri il barbiere a domicilio in Costa Smeralda",
+  en: "Discover the mobile barber in the Costa Smeralda",
+  fr: "Découvrez le barbier à domicile en Costa Smeralda",
+  de: "Entdecke den mobilen Barbier an der Costa Smeralda",
+};
+const galleryAlt: Record<Locale, string[]> = {
+  it: [
+    "Taglio a domicilio in villa con vista mare in Costa Smeralda al tramonto",
+    "Dettaglio della mantellina durante il servizio a domicilio Hair Rich",
+    "Barbiere Hair Rich al lavoro a domicilio in Costa Smeralda",
+  ],
+  en: [
+    "Home haircut at a villa with sea view in the Costa Smeralda at sunset",
+    "Cape detail during the Hair Rich home barber service",
+    "Hair Rich barber working on location in the Costa Smeralda",
+  ],
+  fr: [
+    "Coupe à domicile dans une villa avec vue mer en Costa Smeralda au coucher du soleil",
+    "Détail de la cape pendant le service de barbier à domicile Hair Rich",
+    "Barbier Hair Rich au travail à domicile en Costa Smeralda",
+  ],
+  de: [
+    "Haarschnitt zu Hause in einer Villa mit Meerblick an der Costa Smeralda bei Sonnenuntergang",
+    "Umhang-Detail während des mobilen Barbier-Service von Hair Rich",
+    "Hair-Rich-Barbier bei der Arbeit vor Ort an der Costa Smeralda",
+  ],
+};
+const alts = galleryAlt[lang] ?? galleryAlt.it;
+
+const VILLA_HERO = "domicilio-villa-wide-1.webp";
+const VILLA_GALLERY = ["domicilio-result-goldenhour-1.webp", "domicilio-cape-detail.webp"];
+
+const wide = (name: string, w: number) => assetImageUrlRatio(name, w, 16 / 9, 76);
+const wideSet = (name: string) => assetImageSrcsetRatio(name, 16 / 9, 76);
+const sq = (name: string, w: number) => assetImageUrlRatio(name, w, 1, 76);
+const sqSet = (name: string) => assetImageSrcsetRatio(name, 1, 76);
+---
+
+<section
+  id="taglio-a-domicilio-home"
+  class="relative overflow-hidden border-y border-line bg-black-2"
+  aria-labelledby="home-domicilio-title"
+>
+  {/* Editorial watermark */}
+  <div
+    aria-hidden="true"
+    class="absolute -bottom-8 right-2 md:right-8 text-display-alt text-[24vw] md:text-[13vw] text-warm-white/[0.04] leading-none pointer-events-none select-none"
+  >
+    {h.watermark}
+  </div>
+
+  <div
+    class="relative max-w-5xl lg:max-w-6xl xl:max-w-7xl mx-auto px-6 md:px-12 lg:px-16 xl:px-20 py-12 md:py-16 lg:py-24 xl:py-28 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 xl:gap-20 items-center"
+  >
+    {/* Collage foto villa */}
+    <div class="grid grid-cols-2 gap-2 md:gap-3 order-1">
+      <div class="col-span-2 aspect-[16/9] overflow-hidden rounded-[var(--radius-md)] border border-line group">
+        <img
+          src={wide(VILLA_HERO, 1100)}
+          srcset={wideSet(VILLA_HERO)}
+          sizes="(min-width: 1024px) 45vw, 100vw"
+          alt={alts[0]}
+          loading="lazy"
+          decoding="async"
+          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+        />
+      </div>
+      {VILLA_GALLERY.map((name, i) => (
+        <div class="aspect-square overflow-hidden rounded-[var(--radius-md)] border border-line group">
+          <img
+            src={sq(name, 700)}
+            srcset={sqSet(name)}
+            sizes="(min-width: 1024px) 22vw, 50vw"
+            alt={alts[i + 1]}
+            loading="lazy"
+            decoding="async"
+            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+          />
+        </div>
+      ))}
+    </div>
+
+    {/* Copy */}
+    <div class="order-2 max-w-xl">
+      <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent-warm/15 border border-accent-warm/40">
+        <span class="w-1.5 h-1.5 rounded-full bg-accent-warm animate-pulse" aria-hidden="true"></span>
+        <span class="text-[10px] uppercase tracking-[0.3em] text-accent-warm font-body font-semibold">
+          {h.chip}
+        </span>
+      </span>
+
+      <h2
+        id="home-domicilio-title"
+        class="text-display text-4xl sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl text-warm-white tracking-tight mt-5 md:mt-7 leading-[0.95]"
+      >
+        {h.titleA}
+        <br />
+        <em class="text-display-alt not-italic text-silver">{h.titleB}</em>
+      </h2>
+
+      <p class="mt-6 text-warm-white-muted text-base md:text-lg leading-relaxed">
+        {h.body}
+      </p>
+
+      {/* Tre quick facts */}
+      <dl class="mt-8 grid grid-cols-3 gap-3 md:gap-6">
+        {h.facts.map((f) => (
+          <div class="border-l-2 border-accent-warm/60 pl-3">
+            <dt class="text-display text-xl md:text-2xl text-warm-white">{f.v}</dt>
+            <dd class="text-[9px] md:text-[10px] uppercase tracking-[0.25em] text-silver-dark font-body font-semibold mt-1">
+              {f.l}
+            </dd>
+          </div>
+        ))}
+      </dl>
+
+      {/* CTA telefono */}
+      <div class="mt-9 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <a
+          href={phoneHref}
+          class="cta-shine cta-pulse group inline-flex items-center justify-center gap-3 px-8 md:px-10 py-4 md:py-5 bg-accent-warm text-black rounded-full text-sm md:text-base uppercase tracking-[0.3em] font-body font-semibold active:scale-95 hover:scale-[1.02] transition-transform shadow-[0_22px_60px_-15px_rgba(212,165,116,0.6)]"
+        >
+          <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.91.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0122 16.92z" />
+          </svg>
+          {h.cta}
+        </a>
+        <a
+          href={phoneHref}
+          class="text-warm-white font-display text-2xl md:text-3xl tabular-nums hover:text-accent-warm transition-colors"
+        >
+          {SITE.phone}
+        </a>
+      </div>
+
+      <p class="mt-6 text-[10px] uppercase tracking-[0.3em] text-silver-dark font-body font-semibold">
+        {h.footer}
+      </p>
+
+      <a
+        href={domicilioHref}
+        class="mt-5 inline-flex items-center gap-2 text-accent-warm/90 hover:text-accent-warm font-body text-sm transition-colors"
+      >
+        {discoverLabel[lang] ?? discoverLabel.it}
+        <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
+</section>
