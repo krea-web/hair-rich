@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useToastStore } from "@/lib/store";
 
@@ -207,6 +207,16 @@ export default function AdminAgendaMonthView({ onJumpToDay, onAddAppointment }: 
         return cells.map((c) => ({ ...c, appts: byDate.get(c.iso) ?? [] }));
     }, [cells, appts]);
 
+    // Su mobile (e quando il mese corrente è visibile) la griglia mostrava prima
+    // le settimane vuote di inizio mese: portiamo "oggi" in vista all'apertura e
+    // a ogni cambio mese, così gli appuntamenti non restano nascosti sotto il fold.
+    const gridRef = useRef<HTMLDivElement>(null);
+    const todayRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        const g = gridRef.current, t = todayRef.current;
+        if (g && t) g.scrollTop = Math.max(0, t.offsetTop - g.clientHeight / 3);
+    }, [cursor]);
+
     const goPrev = () => {
         setCursor((c) => {
             const m = c.month - 1;
@@ -296,13 +306,14 @@ export default function AdminAgendaMonthView({ onJumpToDay, onAddAppointment }: 
             </div>
 
             {/* Grid 7×6 */}
-            <div className="flex-1 grid grid-cols-7 grid-rows-6 bg-[#0a0a0a] overflow-y-auto">
+            <div ref={gridRef} className="flex-1 grid grid-cols-7 grid-rows-6 bg-[#0a0a0a] overflow-y-auto">
                 {cellsWithAppts.map((cell) => {
                     const visible = cell.appts.slice(0, 3);
                     const extra = cell.appts.length - visible.length;
                     return (
                         <div
                             key={cell.iso}
+                            ref={cell.isToday ? todayRef : undefined}
                             className={`relative border-r border-b border-line p-1.5 md:p-2 flex flex-col gap-1 min-h-[80px] md:min-h-[110px] transition-colors hover:bg-carbon/30 cursor-pointer ${
                                 cell.inMonth ? "" : "bg-black/40 text-silver-dark"
                             }`}
