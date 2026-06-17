@@ -51,7 +51,7 @@ const businessId = `${SITE.url}/#hairsalon`;
 
 const localBusiness = {
   "@context": "https://schema.org",
-  "@type": "HairSalon",
+  "@type": "BarberShop",
   "@id": businessId,
   name: "Hair Rich Olbia",
   description:
@@ -101,10 +101,10 @@ const localBusiness = {
   ],
   aggregateRating: {
     "@type": "AggregateRating",
-    ratingValue: "4.6",
-    reviewCount: "37",
-    bestRating: "5",
-    worstRating: "1",
+    ratingValue: 4.6,
+    reviewCount: 37,
+    bestRating: 5,
+    worstRating: 1,
   },
   sameAs: [SITE.instagram, "https://maps.app.goo.gl/TCGSzjyUdSMtUVDj9"],
   hasOfferCatalog: {
@@ -120,8 +120,9 @@ const localBusiness = {
           provider: { "@id": businessId },
           serviceType: "Haircut",
         },
-        price: "20",
+        price: 20,
         priceCurrency: "EUR",
+        availability: "https://schema.org/InStock",
       },
       {
         "@type": "Offer",
@@ -132,8 +133,9 @@ const localBusiness = {
           provider: { "@id": businessId },
           serviceType: "BeardTrim",
         },
-        price: "10",
+        price: 10,
         priceCurrency: "EUR",
+        availability: "https://schema.org/InStock",
       },
       {
         "@type": "Offer",
@@ -144,8 +146,9 @@ const localBusiness = {
           provider: { "@id": businessId },
           serviceType: "HaircutAndBeardTrim",
         },
-        price: "30",
+        price: 30,
         priceCurrency: "EUR",
+        availability: "https://schema.org/InStock",
       },
     ],
   },
@@ -156,8 +159,8 @@ const localBusiness = {
       urlTemplate: `${SITE.url}/?action=book`,
       inLanguage: ["it", "en", "fr", "de"],
       actionPlatform: [
-        "http://schema.org/DesktopWebPlatform",
-        "http://schema.org/MobileWebPlatform",
+        "https://schema.org/DesktopWebPlatform",
+        "https://schema.org/MobileWebPlatform",
       ],
     },
     result: {
