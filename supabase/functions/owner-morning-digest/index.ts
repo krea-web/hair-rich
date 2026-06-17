@@ -14,7 +14,6 @@ import { getSupabase } from '../_shared/supabaseAdmin.ts';
 import { acquireCronLock, todayKey } from '../_shared/cronLock.ts';
 
 const TZ = 'Europe/Rome';
-const GAP_THRESHOLD = 6; // sotto questo numero di appuntamenti → suggerisci storia IG
 
 // Offset (minuti) di un fuso a una certa data, per calcolare i confini-giorno.
 function tzOffsetMin(date: Date, tz: string): number {
@@ -34,6 +33,37 @@ function romeDayBounds(now: Date): { startISO: string; endISO: string; dateStr: 
   const start = new Date(`${dateStr}T00:00:00Z`).getTime() - off * 60000;
   const end = start + 24 * 60 * 60 * 1000;
   return { startISO: new Date(start).toISOString(), endISO: new Date(end).toISOString(), dateStr };
+}
+
+// ── Fasce libere ────────────────────────────────────────────────────────────
+// Orari reali Hair Rich: Lun–Sab 09:00–13:00 · 15:00–20:00, Domenica chiuso.
+// Capacità = 2 poltrone (Federico + Cristian). Uno slot da 30' è "libero" se gli
+// appuntamenti che lo coprono sono meno della capacità.
+const CAPACITY = 2;
+const OPEN_BLOCKS: Array<[number, number]> = [[9 * 60, 13 * 60], [15 * 60, 20 * 60]];
+function romeMinutes(iso: string): number {
+  const p = new Intl.DateTimeFormat('en-GB', { timeZone: TZ, hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(iso));
+  const [h, m] = p.split(':').map(Number);
+  return h * 60 + m;
+}
+function isClosedRome(dateStr: string): boolean {
+  return new Date(`${dateStr}T12:00:00Z`).getUTCDay() === 0; // domenica
+}
+function freeSlotsToday(dateStr: string, appts: Array<{ start_at: string; end_at: string }>): string[] {
+  if (isClosedRome(dateStr)) return [];
+  const busy = appts
+    .filter((a) => a.start_at && a.end_at)
+    .map((a) => [romeMinutes(a.start_at), romeMinutes(a.end_at)] as [number, number]);
+  const out: string[] = [];
+  for (const [from, to] of OPEN_BLOCKS) {
+    for (let t = from; t + 30 <= to; t += 30) {
+      const occupied = busy.filter(([s, e]) => s < t + 30 && e > t).length;
+      if (occupied < CAPACITY) {
+        out.push(`${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`);
+      }
+    }
+  }
+  return out;
 }
 
 serve(async (req) => {
@@ -59,10 +89,10 @@ serve(async (req) => {
   }
 
   // (2) Appuntamenti di oggi (service role → bypassa RLS).
-  const { startISO, endISO } = romeDayBounds(new Date());
+  const { startISO, endISO, dateStr } = romeDayBounds(new Date());
   const { data: rows } = await supabase
     .from('appointments')
-    .select(`start_at, status, customer:customer_id ( first_name, last_name ), appointment_services ( service:service_id ( name ) )`)
+    .select(`start_at, end_at, status, customer:customer_id ( first_name, last_name ), appointment_services ( service:service_id ( name ) )`)
     .gte('start_at', startISO).lt('start_at', endISO)
     .neq('status', 'cancelled')
     .order('start_at', { ascending: true });
@@ -86,11 +116,20 @@ serve(async (req) => {
     }
   }
 
-  // (3) Suggerimento storia IG se agenda scarica.
-  const suggestIg = appts.length < GAP_THRESHOLD;
-  if (suggestIg) {
+  // (3) Fasce libere + spunto storia IG per riempire i posti last-minute.
+  const closed = isClosedRome(dateStr);
+  const free = freeSlotsToday(dateStr, appts);
+  const suggestIg = !closed && free.length > 0;
+  if (closed) {
     lines.push('');
-    lines.push('📲 *Agenda con spazi liberi* — fai una *storia su Instagram* per avvisare che oggi ci sono posti disponibili.');
+    lines.push('Oggi il salone è *chiuso* (domenica).');
+  } else if (free.length > 0) {
+    lines.push('');
+    lines.push(`🕓 *Fasce libere oggi:* ${free.slice(0, 16).join(' · ')}${free.length > 16 ? ' …' : ''}`);
+    lines.push('📲 Spunto: fai una *storia su Instagram* per riempire questi posti last-minute.');
+  } else {
+    lines.push('');
+    lines.push('✅ *Agenda piena* oggi — nessuna fascia libera.');
   }
 
   const text = lines.join('\n');

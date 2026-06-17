@@ -26,9 +26,12 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const getSupabase = () =>
   createClient(Deno.env.get('SUPABASE_URL') ?? '', Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '');
 
-const MODEL = 'gpt-4o-mini';
+const MODEL = 'gpt-4o';            // scrive prenotazioni + contabilita' reali → modello piu' affidabile
+const TRANSCRIBE_MODEL = 'whisper-1';
 const TZ = 'Europe/Rome';
-const MAX_TOOL_ROUNDS = 4;
+const MAX_TOOL_ROUNDS = 6;          // il questionario serale incatena piu' tool
+const CAPACITY = 2;                 // due poltrone (Federico + Cristian)
+const OPEN_BLOCKS: Array<[number, number]> = [[9 * 60, 13 * 60], [15 * 60, 20 * 60]]; // Lun–Sab
 
 // ── Telegram helpers ───────────────────────────────────────────────────────
 async function tg(method: string, payload: Record<string, unknown>) {
@@ -47,6 +50,27 @@ async function tg(method: string, payload: Record<string, unknown>) {
 
 function reply(chatId: number | string, text: string) {
   return tg('sendMessage', { chat_id: chatId, text, parse_mode: 'Markdown', disable_web_page_preview: true });
+}
+
+// Vocale Telegram → testo (OpenAI Whisper). Stringa vuota se fallisce.
+async function transcribeVoice(fileId: string): Promise<string> {
+  const token = Deno.env.get('TELEGRAM_BOT_TOKEN');
+  const apiKey = Deno.env.get('OPENAI_API_KEY');
+  if (!token || !apiKey) return '';
+  const fr = await fetch(`https://api.telegram.org/bot${token}/getFile?file_id=${encodeURIComponent(fileId)}`);
+  const filePath = (await fr.json())?.result?.file_path;
+  if (!filePath) return '';
+  const audioRes = await fetch(`https://api.telegram.org/file/bot${token}/${filePath}`);
+  const audioBuf = new Uint8Array(await audioRes.arrayBuffer());
+  const form = new FormData();
+  form.append('file', new Blob([audioBuf], { type: 'audio/ogg' }), 'voice.ogg');
+  form.append('model', TRANSCRIBE_MODEL);
+  form.append('language', 'it');
+  const tr = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+    method: 'POST', headers: { Authorization: `Bearer ${apiKey}` }, body: form,
+  });
+  if (!tr.ok) return '';
+  return ((await tr.json())?.text ?? '').toString();
 }
 
 // ── Time helpers (Europe/Rome) ─────────────────────────────────────────────
@@ -72,6 +96,51 @@ function hhmm(iso: string): string {
 }
 function dmy(iso: string): string {
   return new Date(iso).toLocaleDateString('it-IT', { timeZone: TZ, day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+// Offset (min) di Rome rispetto a UTC a un dato istante.
+function tzOffsetMin(at: Date): number {
+  const dtf = new Intl.DateTimeFormat('en-US', {
+    timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false,
+  });
+  const p: Record<string, string> = {};
+  for (const part of dtf.formatToParts(at)) p[part.type] = part.value;
+  const asUTC = Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute, +p.second);
+  return (asUTC - at.getTime()) / 60000;
+}
+// "YYYY-MM-DD" + "HH:MM" (ora di Rome) → ISO UTC.
+function romeToUTC(dateStr: string, hhmm: string): string {
+  const naive = new Date(`${dateStr}T${hhmm}:00Z`);
+  const off = tzOffsetMin(naive);
+  return new Date(naive.getTime() - off * 60000).toISOString();
+}
+function romeMinutesOfDay(iso: string): number {
+  const p = new Intl.DateTimeFormat('en-GB', { timeZone: TZ, hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(iso));
+  const [h, m] = p.split(':').map(Number);
+  return h * 60 + m;
+}
+function isClosedRome(dateStr: string): boolean {
+  return new Date(`${dateStr}T12:00:00Z`).getUTCDay() === 0; // domenica
+}
+// Slot liberi da 30' nelle fasce di apertura. capacity=1 se filtrato per operatore.
+function computeFreeSlots(dateStr: string, busy: Array<[number, number]>, capacity: number): string[] {
+  if (isClosedRome(dateStr)) return [];
+  const out: string[] = [];
+  for (const [from, to] of OPEN_BLOCKS) {
+    for (let t = from; t + 30 <= to; t += 30) {
+      const occ = busy.filter(([s, e]) => s < t + 30 && e > t).length;
+      if (occ < capacity) out.push(`${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`);
+    }
+  }
+  return out;
+}
+// Registra un evento owner-facing nell'inbox admin (alimenta il cassetto in Dashboard).
+async function logOwnerInbox(sb: SB, item: { event_type: string; title: string; body?: string; icon?: string; priority?: string; payload?: unknown }) {
+  await sb.from('admin_inbox_items').insert({
+    event_type: item.event_type, category: 'system', priority: item.priority ?? 'normal',
+    title: item.title, body: item.body ?? null, icon: item.icon ?? '🤖',
+    payload: item.payload ?? {}, source_skill: 'telegram_assistant',
+  }).then(() => {}, () => {});
 }
 
 // ── Tools (DB queries via service-role client) ─────────────────────────────
@@ -364,6 +433,172 @@ async function completeDailyBrief(sb: SB, args: any) {
   return { ok: true, giornata_chiusa: date };
 }
 
+// ── Risolutori staff / servizio ─────────────────────────────────────────────
+async function resolveStaff(sb: SB, name: string) {
+  const q = (name ?? '').trim().toLowerCase();
+  if (!q) return null;
+  const { data } = await sb.from('staff').select('id, name, slug, role_type').eq('is_active', true);
+  const rows = (data ?? []) as any[];
+  return (
+    rows.find((s) => (s.slug ?? '').toLowerCase() === q || (s.name ?? '').toLowerCase() === q) ??
+    rows.find((s) => (s.name ?? '').toLowerCase().includes(q) || (s.slug ?? '').toLowerCase().includes(q)) ??
+    null
+  );
+}
+async function resolveServiceByKind(sb: SB, kind: string) {
+  const k = (kind ?? 'taglio').toLowerCase();
+  const slug =
+    /combo|barba.*taglio|taglio.*barba|capelli.*barba/.test(k) ? 'taglio-barba' :
+    /^barba|solo barba/.test(k) ? 'barba-sartoriale' :
+    'taglio-classico';
+  const { data } = await sb.from('services').select('id, slug, name, duration_min, price_cents').eq('slug', slug).maybeSingle();
+  return (data as any) ?? null;
+}
+
+// ── Fasce libere ────────────────────────────────────────────────────────────
+async function getAvailableSlots(sb: SB, args: { date?: string; staff_name?: string }) {
+  const date = args.date && /^\d{4}-\d{2}-\d{2}$/.test(args.date) ? args.date : romeTodayStr();
+  if (isClosedRome(date)) return { date, chiuso: true, nota: 'Domenica: salone chiuso.' };
+  const { startISO, endISO } = romeDayRange(date);
+  let staff: any = null;
+  if (args.staff_name) {
+    staff = await resolveStaff(sb, args.staff_name);
+    if (!staff) return { error: `operatore non riconosciuto: "${args.staff_name}"` };
+  }
+  let query = sb.from('appointments').select('start_at, end_at, staff_id, status')
+    .gte('start_at', startISO).lt('start_at', endISO).neq('status', 'cancelled');
+  if (staff) query = query.eq('staff_id', staff.id);
+  const { data } = await query;
+  const busy = (data ?? []).map((a: any) => [romeMinutesOfDay(a.start_at), romeMinutesOfDay(a.end_at)] as [number, number]);
+  const free = computeFreeSlots(date, busy, staff ? 1 : CAPACITY);
+  return { date, operatore: staff?.name ?? 'salone (2 poltrone)', fasce_libere: free, totale_libere: free.length };
+}
+
+// ── Crea appuntamento (gate di conferma) ────────────────────────────────────
+async function createAppointment(sb: SB, args: any) {
+  const { customer_first_name, customer_last_name, service, staff_name, date, time } = args;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date ?? '')) return { error: 'data mancante o non valida (YYYY-MM-DD)' };
+  if (!/^\d{2}:\d{2}$/.test(time ?? '')) return { error: 'ora mancante o non valida (HH:MM)' };
+  if (!customer_first_name) return { error: 'nome cliente mancante' };
+  const staff = await resolveStaff(sb, staff_name ?? '');
+  if (!staff) return { error: `operatore non riconosciuto: "${staff_name}". Operatori: Federico, Cristian.` };
+  const svc = await resolveServiceByKind(sb, service ?? 'taglio');
+  if (!svc) return { error: 'servizio non riconosciuto' };
+  const startISO = romeToUTC(date, time);
+  const endISO = new Date(new Date(startISO).getTime() + svc.duration_min * 60000).toISOString();
+
+  // Conflitto stesso operatore?
+  const { data: clash } = await sb.from('appointments').select('id, start_at')
+    .eq('staff_id', staff.id).lt('start_at', endISO).gt('end_at', startISO)
+    .not('status', 'in', '("cancelled","no_show")').limit(1);
+  const summary = {
+    cliente: [customer_first_name, customer_last_name].filter(Boolean).join(' '),
+    servizio: svc.name, operatore: staff.name, giorno: dmy(startISO), ora: hhmm(startISO),
+    durata_min: svc.duration_min, prezzo: eur(svc.price_cents),
+  };
+  if (clash && clash.length > 0) {
+    return { conflict: true, messaggio: `${staff.name} ha gia' un appuntamento che si sovrappone alle ${hhmm(startISO)}.`, riepilogo: summary };
+  }
+  if (args.confirmed !== true) {
+    return { needs_confirmation: true, riepilogo: summary, istruzione: 'Mostra il riepilogo e CHIEDI conferma esplicita prima di salvare.' };
+  }
+
+  // Cliente: riusa se c'e' un solo match esatto nome+cognome, altrimenti nuovo.
+  let customerId: string | null = null;
+  if (customer_last_name) {
+    const { data: existing } = await sb.from('customers').select('id')
+      .ilike('first_name', customer_first_name).ilike('last_name', customer_last_name).limit(2);
+    if (existing && existing.length === 1) customerId = existing[0].id;
+  }
+  if (!customerId) {
+    const { data: cust, error: cErr } = await sb.from('customers')
+      .insert({ first_name: customer_first_name, last_name: customer_last_name ?? null, is_guest: true }).select('id').single();
+    if (cErr) return { error: `creazione cliente fallita: ${cErr.message}` };
+    customerId = cust.id;
+  }
+  const { data: appt, error: aErr } = await sb.from('appointments')
+    .insert({ customer_id: customerId, staff_id: staff.id, start_at: startISO, end_at: endISO, status: 'confirmed', source: 'phone', total_cents: svc.price_cents, notes: 'Inserito dal titolare via Telegram' })
+    .select('id').single();
+  if (aErr) return { error: `creazione appuntamento fallita: ${aErr.message}` };
+  await sb.from('appointment_services').insert({ appointment_id: appt.id, service_id: svc.id, price_cents: svc.price_cents, duration_min: svc.duration_min });
+  await logOwnerInbox(sb, { event_type: 'owner_new_booking', icon: '🟢', title: `Prenotazione · ${summary.cliente}`, body: `${summary.giorno} ${summary.ora} · ${summary.servizio} · ${summary.operatore}`, payload: summary });
+  return { ok: true, creato: summary };
+}
+
+// ── Chiusura presenze giornata (presenti = completed, assenti = no_show) ──────
+async function closeDayAttendance(sb: SB, args: { date?: string; no_show_names?: string[] }) {
+  const date = args.date && /^\d{4}-\d{2}-\d{2}$/.test(args.date) ? args.date : romeTodayStr();
+  const { startISO, endISO } = romeDayRange(date);
+  const { data: appts } = await sb.from('appointments')
+    .select('id, status, customer:customer_id ( first_name, last_name )')
+    .gte('start_at', startISO).lt('start_at', endISO).in('status', ['booked', 'confirmed']);
+  const rows = (appts ?? []) as any[];
+  const names = (args.no_show_names ?? []).map((n) => n.trim().toLowerCase()).filter(Boolean);
+  const matchedIds: string[] = [];
+  const usedNames = new Set<string>();
+  for (const r of rows) {
+    const full = `${r.customer?.first_name ?? ''} ${r.customer?.last_name ?? ''}`.toLowerCase();
+    const hit = names.find((n) => full.includes(n) || n.includes((r.customer?.first_name ?? '').toLowerCase()));
+    if (hit) { matchedIds.push(r.id); usedNames.add(hit); }
+  }
+  const completedIds = rows.filter((r) => !matchedIds.includes(r.id)).map((r) => r.id);
+  if (matchedIds.length) await sb.from('appointments').update({ status: 'no_show' }).in('id', matchedIds);
+  if (completedIds.length) await sb.from('appointments').update({ status: 'completed' }).in('id', completedIds);
+  const notFound = names.filter((n) => !usedNames.has(n));
+  await logOwnerInbox(sb, { event_type: 'owner_day_attendance', icon: '✅', title: `Presenze ${date}: ${completedIds.length} ok, ${matchedIds.length} no-show`, payload: { date, completed: completedIds.length, no_show: matchedIds.length } });
+  return { date, completati: completedIds.length, no_show: matchedIds.length, nomi_non_trovati: notFound };
+}
+
+// ── Vendita prodotto (incasso separato + scarico stock) ──────────────────────
+async function recordProductSale(sb: SB, args: any) {
+  const q = (args.product_name ?? '').trim();
+  if (!q) return { error: 'nome prodotto mancante' };
+  const { data: prods } = await sb.from('products').select('id, name, brand, stock, price_cents').ilike('name', `%${q}%`).limit(5);
+  if (!prods || prods.length === 0) return { error: `nessun prodotto per "${q}"` };
+  if (prods.length > 1) return { ambiguo: prods.map((p: any) => (p.brand ? `${p.brand} ${p.name}` : p.name)) };
+  const p: any = prods[0];
+  const qty = Number.isFinite(args.qty) && args.qty > 0 ? Math.floor(args.qty) : 1;
+  const { data: res, error } = await sb.rpc('fn_create_order', {
+    p_first_name: args.customer_first_name ?? 'Cliente', p_last_name: args.customer_last_name ?? null,
+    p_phone: null, p_email: null,
+    p_items: [{ product_id: p.id, quantity: qty }], p_notes: `Vendita in salone (telegram)${args.payment_method ? ' · ' + args.payment_method : ''}`,
+  });
+  if (error) return { error: `vendita non registrata: ${error.message}` };
+  const orderId = (res as any)?.order_id;
+  if (orderId) await sb.from('orders').update({ status: 'picked_up' }).eq('id', orderId).then(() => {}, () => {});
+  const incasso = (res as any)?.total_cents ?? p.price_cents * qty;
+  await logOwnerInbox(sb, { event_type: 'owner_product_sale', icon: '🛍️', title: `Vendita prodotto · ${p.brand ? p.brand + ' ' : ''}${p.name}`, body: `${qty}× · ${eur(incasso)}${args.customer_first_name ? ' · ' + args.customer_first_name : ''}`, payload: { product: p.name, qty, total_cents: incasso } });
+  return { ok: true, prodotto: p.brand ? `${p.brand} ${p.name}` : p.name, qty, incasso: eur(incasso), cliente: args.customer_first_name ?? null };
+}
+
+// ── Sconto / prezzo reale su un appuntamento ─────────────────────────────────
+async function setAppointmentDiscount(sb: SB, args: any) {
+  const date = args.date && /^\d{4}-\d{2}-\d{2}$/.test(args.date) ? args.date : romeTodayStr();
+  const who = (args.customer_name ?? '').trim().toLowerCase();
+  if (!who) return { error: 'nome cliente mancante' };
+  const { startISO, endISO } = romeDayRange(date);
+  const { data: appts } = await sb.from('appointments')
+    .select('id, start_at, total_cents, customer:customer_id ( first_name, last_name )')
+    .gte('start_at', startISO).lt('start_at', endISO).neq('status', 'cancelled');
+  const matches = (appts ?? []).filter((a: any) => {
+    const full = `${a.customer?.first_name ?? ''} ${a.customer?.last_name ?? ''}`.toLowerCase();
+    return full.includes(who);
+  });
+  if (matches.length === 0) return { error: `nessun appuntamento per "${args.customer_name}" il ${date}` };
+  if (matches.length > 1) return { ambiguo: matches.map((m: any) => `${[m.customer?.first_name, m.customer?.last_name].filter(Boolean).join(' ')} ${hhmm(m.start_at)}`) };
+  const a: any = matches[0];
+  const pricePaid = toCents(args.price_paid_eur);
+  const discount = toCents(args.discount_eur) ?? Math.max(0, (a.total_cents ?? 0) - (pricePaid ?? a.total_cents ?? 0));
+  const { error } = await sb.from('appointments').update({
+    price_paid_cents: pricePaid ?? a.total_cents, discount_cents: discount,
+    discount_reason: args.reason ?? 'manuale',
+    payment_method: ['cash', 'pos', 'package_credit', 'mixed', 'free'].includes(args.payment_method) ? args.payment_method : null,
+    paid_at: new Date().toISOString(),
+  }).eq('id', a.id);
+  if (error) return { error: error.message };
+  return { ok: true, cliente: [a.customer?.first_name, a.customer?.last_name].filter(Boolean).join(' '), prezzo_pagato: eur(pricePaid ?? a.total_cents), sconto: eur(discount) };
+}
+
 const TOOLS = [
   {
     type: 'function',
@@ -485,6 +720,79 @@ const TOOLS = [
       },
     },
   },
+  {
+    type: 'function',
+    function: {
+      name: 'get_available_slots',
+      description: 'Fasce libere da 30 minuti in un giorno (orari apertura Lun–Sab 09–13/15–20). Senza operatore: posti liberi sul salone (2 poltrone). Con operatore: fasce libere di quel barbiere. Usalo per prenotare o per suggerire una storia IG.',
+      parameters: { type: 'object', properties: { date: { type: 'string', description: 'YYYY-MM-DD, default oggi' }, staff_name: { type: 'string', description: 'Federico o Cristian (opzionale)' } } },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'create_appointment',
+      description: "Crea un appuntamento. PRIMA chiamala con confirmed=false per ottenere il riepilogo, MOSTRALO al titolare e attendi la sua conferma esplicita; SOLO dopo richiamala con confirmed=true per salvare. Non inventare: se mancano dati o un nome non è chiaro, chiedi.",
+      parameters: {
+        type: 'object',
+        properties: {
+          customer_first_name: { type: 'string', description: 'Nome cliente' },
+          customer_last_name: { type: 'string', description: 'Cognome (se noto)' },
+          service: { type: 'string', description: "taglio | barba | combo (taglio+barba)" },
+          staff_name: { type: 'string', description: 'Federico o Cristian' },
+          date: { type: 'string', description: 'YYYY-MM-DD' },
+          time: { type: 'string', description: 'HH:MM (ora di Rome)' },
+          confirmed: { type: 'boolean', description: 'true SOLO dopo conferma esplicita del titolare' },
+        },
+        required: ['customer_first_name', 'service', 'staff_name', 'date', 'time'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'close_day_attendance',
+      description: "Chiude le presenze del giorno: i clienti nominati come assenti diventano 'no_show', tutti gli altri appuntamenti del giorno diventano 'completed'. Usalo nel brief serale dopo aver chiesto chi non si è presentato.",
+      parameters: { type: 'object', properties: { date: { type: 'string', description: 'YYYY-MM-DD, default oggi' }, no_show_names: { type: 'array', items: { type: 'string' }, description: 'Nomi/cognomi di chi NON si è presentato (vuoto = tutti presenti)' } } },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'record_product_sale',
+      description: "Registra la VENDITA di un prodotto al cliente (incasso separato dai tagli + scarico stock). Diverso da record_stock_use (uso interno). Chiedi il nome del cliente se non lo sai.",
+      parameters: {
+        type: 'object',
+        properties: {
+          product_name: { type: 'string', description: 'Nome prodotto (anche parziale)' },
+          qty: { type: 'integer', description: 'Quantità, default 1' },
+          customer_first_name: { type: 'string' },
+          customer_last_name: { type: 'string' },
+          payment_method: { type: 'string', enum: ['cash', 'pos'] },
+        },
+        required: ['product_name'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'set_appointment_discount',
+      description: "Registra uno sconto / prezzo reale / cambio tariffa su un appuntamento di un cliente (per la contabilità). Trova l'appuntamento per nome cliente nel giorno indicato.",
+      parameters: {
+        type: 'object',
+        properties: {
+          customer_name: { type: 'string', description: 'Nome o cognome del cliente' },
+          date: { type: 'string', description: 'YYYY-MM-DD, default oggi' },
+          price_paid_eur: { type: 'number', description: 'Prezzo effettivamente pagato (euro)' },
+          discount_eur: { type: 'number', description: "Sconto applicato (euro); se assente lo calcolo da listino-pagato" },
+          payment_method: { type: 'string', enum: ['cash', 'pos', 'package_credit', 'mixed', 'free'] },
+          reason: { type: 'string', description: 'Motivo sconto' },
+        },
+        required: ['customer_name'],
+      },
+    },
+  },
 ];
 
 async function execTool(sb: SB, name: string, args: any) {
@@ -500,26 +808,37 @@ async function execTool(sb: SB, name: string, args: any) {
     case 'record_stock_use': return recordStockUse(sb, args);
     case 'get_daily_brief': return getDailyBrief(sb, args);
     case 'complete_daily_brief': return completeDailyBrief(sb, args);
+    case 'get_available_slots': return getAvailableSlots(sb, args);
+    case 'create_appointment': return createAppointment(sb, args);
+    case 'close_day_attendance': return closeDayAttendance(sb, args);
+    case 'record_product_sale': return recordProductSale(sb, args);
+    case 'set_appointment_discount': return setAppointmentDiscount(sb, args);
     default: return { error: `tool sconosciuto: ${name}` };
   }
 }
 
-const SYSTEM_PROMPT = `Sei il segretario e CONTABILE digitale di "Hair Rich Olbia", una barberia. Parli SOLO col titolare, in italiano, conciso e diretto, con Markdown Telegram leggero (grassetto *così*, elenchi con trattini).
-La data di oggi è __TODAY__ (fuso ${TZ}). Gli importi sono in euro.
+const SYSTEM_PROMPT = `Sei il segretario e CONTABILE digitale di "Hair Rich Olbia", una barberia. Parli SOLO col titolare, in italiano, naturale e diretto come un dipendente fidato (niente comandi rigidi: chat libera). Markdown Telegram leggero (grassetto *così*, trattini per elenchi).
+Oggi è __TODAY__ (fuso ${TZ}). Operatori: *Federico* e *Cristian*. Servizi: taglio (30', €20), barba, combo taglio+barba (60', €30). Importi in euro.
 
-DATI: usa SEMPRE i tool per leggere/scrivere dati reali; non inventare numeri, nomi, prezzi o giacenze. Se un dato manca o un nome è ambiguo, dillo e chiedi di precisare.
+REGOLA D'ORO: usa SEMPRE i tool per leggere/scrivere dati reali. NON inventare MAI numeri, nomi, prezzi, giacenze, orari. Se non hai capito bene un nome o una parola (specie da un messaggio vocale), CHIEDI di ripetere — non tirare a indovinare.
 
-SCRITTURE (registri contabili): puoi REGISTRARE:
-- spese con record_expense (es. "speso 120€ in attrezzatura" → categoria 'attrezzatura");
-- uso interno prodotti con record_stock_use (es. "ho finito una cera usandola in salone" → scala 1 dallo stock come consumo/spesa, NON vendita).
-Prima di ogni scrittura di denaro o stock, RIEPILOGA cosa stai per registrare e procedi; dopo, conferma con il risultato del tool.
+PRENOTARE UN APPUNTAMENTO (anche da vocale):
+1) Estrai: cliente (nome ed eventuale cognome), servizio, operatore, giorno, ora.
+2) Chiama create_appointment con confirmed=false: ricevi un riepilogo. MOSTRALO e chiedi: "Confermi: *cliente X · servizio · operatore · giorno · ora*?".
+3) SOLO quando il titolare conferma esplicitamente (es. "conferma", "sì", "ok"), richiama create_appointment con gli stessi dati e confirmed=true. Mai salvare senza conferma.
+Se l'operatore è già occupato (conflict) o un dato manca, dillo e proponi un'alternativa (usa get_available_slots).
 
-BRIEF SERALE (chiusura giornata): se il titolare dice "chiudi la giornata", "facciamo il resoconto" o risponde al riepilogo serale, conduci tu il brief:
-1) chiama get_daily_brief e mostra i numeri (appuntamenti, completati, no-show, incasso, POS, contanti, spese);
-2) chiedi in modo naturale, una cosa alla volta: si sono presentati tutti? hanno lavorato tutte le ore? è stato usato in salone materiale che era in vendita? ci sono state spese straordinarie? Se POS/contanti non risultano dai dati, chiedi i totali;
-3) quando hai le risposte, chiama complete_daily_brief con i valori raccolti e conferma che la giornata è chiusa.
+REGISTRARE (contabilità): record_expense (spese), record_stock_use (prodotto usato in salone = costo, non vendita), record_product_sale (prodotto venduto = incasso + scarico stock), set_appointment_discount (sconto/prezzo reale). Prima di scrivere, riepiloga in una riga; dopo, conferma con l'esito.
 
-Mantieni le risposte brevi: dritto al punto, niente preamboli.`;
+BRIEF SERALE (quando il titolare dice "chiudo la giornata", "buonanotte", "resoconto", o risponde al promemoria delle 20:00). Conducilo TU, UNA domanda alla volta, aspettando la risposta prima della successiva, senza essere invadente:
+1) Chiama get_daily_brief e mostra i numeri (appuntamenti, completati, no-show, incasso, POS, contanti, spese).
+2) "Confermi che *tutti* gli appuntamenti di oggi sono venuti in salone?" — se NO: "Dimmi nomi e cognomi di chi non si è presentato, li metto nei no-show" → chiama close_day_attendance con no_show_names. Se SÌ: chiama close_day_attendance con no_show_names vuoto (segna tutti completati).
+3) "Hai *venduto* o *usato in salone* qualche prodotto da scalare?" — se USATO: record_stock_use. Se VENDUTO: chiedi quale prodotto e il *nome del cliente* → record_product_sale.
+4) "Hai fatto *sconti* o cambi di tariffa a qualcuno?" — se sì: chiedi nome cliente e importo → set_appointment_discount.
+5) "Quanti pagamenti con *POS* e quanti in *contanti*?" — raccogli i due totali.
+6) Chiama complete_daily_brief con tutto (attendance_ok, sale_stock_used, revenue_pos_eur, revenue_cash_eur, no_shows, note). Poi chiudi col *brief finale*: "Hai fatto *N* tagli, incassato *€X*; domani ti aspettano *M* appuntamenti" (M = get_today_appointments di domani).
+
+Risposte brevi, niente preamboli.`;
 
 interface OpenAIMsg {
   role: string;
@@ -592,8 +911,7 @@ serve(async (req) => {
 
   const message = update?.message ?? update?.edited_message;
   const chatId: number | undefined = message?.chat?.id;
-  const text: string = (message?.text ?? '').trim();
-  if (!chatId || !text) return new Response('ok', { status: 200 });
+  if (!chatId) return new Response('ok', { status: 200 });
 
   const sb = getSupabase();
 
@@ -616,6 +934,20 @@ serve(async (req) => {
     return new Response('ok', { status: 200 });
   }
 
+  // Messaggio: testo, oppure VOCALE trascritto con Whisper.
+  let text: string = (message?.text ?? '').trim();
+  const voiceFileId: string | undefined = message?.voice?.file_id ?? message?.audio?.file_id;
+  if (!text && voiceFileId) {
+    await tg('sendChatAction', { chat_id: chatId, action: 'typing' });
+    try { text = (await transcribeVoice(voiceFileId)).trim(); } catch { text = ''; }
+    if (!text) {
+      await reply(chatId, "🎙️ Non sono riuscito a capire l'audio, puoi ripetere?");
+      return new Response('ok', { status: 200 });
+    }
+    await reply(chatId, `🎙️ _"${text}"_`);
+  }
+  if (!text) return new Response('ok', { status: 200 });
+
   if (text === '/reset' || text === '/nuovo') {
     await clearHistory(sb, chatId);
     await reply(chatId, '🧹 Conversazione azzerata. Ripartiamo da capo.');
@@ -626,14 +958,15 @@ serve(async (req) => {
     await clearHistory(sb, chatId);
     await reply(
       chatId,
-      '👋 *Sono il tuo segretario e contabile Hair Rich.*\nChiedimi o dimmi pure, ad esempio:\n\n' +
+      '👋 *Sono il tuo segretario Hair Rich.* Scrivimi o mandami un *vocale*, ad esempio:\n\n' +
+        '• _Prenota domani alle 10 un taglio per Luca Sanna con Federico_ (ti chiedo conferma)\n' +
+        '• _Che fasce ho libere venerdì?_\n' +
         '• _Che appuntamenti ho oggi?_\n' +
         '• _Quanto ha speso Marco Rossi da noi?_\n' +
         '• _Quanti Slick Gorilla sono rimasti?_\n' +
-        '• _Quanto ho incassato questo mese?_\n' +
         '• _Speso 120€ in attrezzatura_ (registro la spesa)\n' +
-        '• _Ho finito una cera usandola in salone_ (scalo lo stock)\n' +
-        '• _Chiudi la giornata_ (facciamo il brief serale)\n\n' +
+        '• _Ho venduto una cera a Luca_ (incasso + scarico stock)\n' +
+        '• _Chiudo la giornata_ (facciamo il resoconto serale)\n\n' +
         '_/reset_ per ricominciare la conversazione.',
     );
     return new Response('ok', { status: 200 });
