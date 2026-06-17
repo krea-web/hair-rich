@@ -14,7 +14,12 @@ function readSavedView(): AgendaView {
     if (typeof window === "undefined") return "month";
     const v = window.localStorage.getItem(VIEW_KEY);
     if (v === "month" || v === "week" || v === "day") return v;
-    return "month"; // default mensile come richiesto
+    // Default responsive: su MOBILE parte la vista "Giorno" (lista ottimizzata,
+    // si vedono subito gli appuntamenti); su DESKTOP "Mese" (visione macro). La
+    // griglia mese su telefono mostrava prima le settimane vuote e i pill erano
+    // minuscoli → sembrava vuota.
+    if (window.innerWidth < 768) return "day";
+    return "month";
 }
 
 /**
