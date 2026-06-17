@@ -16,6 +16,81 @@ Cliente reale: barbiere a Olbia. Sito in italiano, multilingua (it/en/fr/de).
 
 ---
 
+## 🔄 Aggiornamento 17 giugno 2026 — sessione "go-live operativo" (TUTTO su `main`)
+
+> Sessione lunga, tutto pushato su `main` (deploy Vercel automatico) e/o deployato su
+> Supabase via **Personal Access Token del titolare** (l'MCP di sessione è read-only).
+> Domani (18 giu) è il lancio ufficiale: il gestionale diventa lo strumento reale.
+
+### Gestionale / dati
+- **108 prenotazioni storiche** (agenda cartacea, 18 giu→31 lug) caricate via
+  `scripts/seed_legacy_appointments.mjs` (service-role): Federico 102, Cristian 6, 7 combo.
+  Servizi/prezzi **live confermati**: Taglio €20/30min, Combo €30/60min. **Una scheda cliente
+  per prenotazione** (scelta del titolare, niente dedup). Trovate e gestite 3 prenotazioni
+  ONLINE preesistenti (Simone Cocco ×2 doppione → eliminato 1; Marco Delogu 19 giu 10:00 →
+  **sovrapposto** a "Jordan" della cartacea, il titolare ha scelto di tenere entrambi).
+- **PIN titolare = `2026`** impostato in `salon_settings.owner_unlock_pin` (era NULL). Gate in
+  `AdminApp.tsx` verificato: da vista Dipendente, salire a Titolare ora chiede `2026`.
+  ⚠️ **Falla nota (E3 da fare)**: i due livelli sono SOLO-UI, il PIN è client-side, `is_admin()`
+  dà pieno accesso DB a chiunque sia in `admins`. Hardening RLS per-ruolo da pianificare.
+- **Account owner `rfsrls2025@gmail.com`** creato (role owner, pwd `federico2026`, email confermata).
+
+### Bot Telegram (deployato, `gpt-4o`)
+- **owner-morning-digest**: ora calcola e mostra le **fasce libere** (Lun–Sab 09–13/15–20,
+  capacità 2 poltrone) + spunto storia IG legato ai buchi reali. Cron 08:00 attivo.
+- **telegram-assistant** potenziato: **voce→testo (Whisper)**, **prenotazione in chat con gate
+  di conferma obbligatorio** (`create_appointment` confirmed=false → riepilogo → "conferma" →
+  confirmed=true), `get_available_slots`, **questionario serale completo** (`close_day_attendance`,
+  `record_product_sale`, `set_appointment_discount` + brief finale). Eventi loggati in
+  `admin_inbox_items` (alimentano il cassetto posta in dashboard). Modello → `gpt-4o`.
+- Scritture dirette su tabella (service-role bypassa RLS) perché gli RPC sono `is_admin()`-gated.
+- Skill accese: `telegram_assistant`, `owner_morning_digest`, `owner_daily_brief`,
+  `expense_tracking`, `stock_consumption`, **`web_push`**.
+
+### Sito (Fase C — parziale)
+- **Audit SEO/GEO/AEO** (5 specialisti). Esito: il **codice è messo bene**, gran parte degli
+  "allarmi critici" erano **falsi positivi** del WebFetch (H1 ok, meta description presenti su
+  tutte le pagine, footer linka le pillar, FAQ /servizi presente in JSON-LD). Le vere leve sono
+  **owner-side** (GSC, GBP, recensioni, NAP social, directory).
+- **Fix schema** (`JsonLd.astro`): `@type` → **`BarberShop`**, `aggregateRating`/prezzi come
+  Number + `availability:InStock`, `actionPlatform` http→**https**.
+- **Console pulita**: audit Playwright → 8/10 pagine 0 errori. **Risolto React #418** su
+  home/pagine localizzate: `IntroSequence` decide mobile+prima-visita in `useEffect` (no mismatch
+  SSR), `useLang` inizializza a "it" come l'SSR e applica la lingua dopo il mount.
+- ⏳ Restano: Lighthouse (quota PSI esaurita), report sicurezza E3, SEO opzionali
+  (WhatsApp domicilio, 3 FAQ parrucchiere-olbia, llms.txt aeroporto+recensioni).
+
+### Feedback cliente implementato
+- **Login semplificato** (`LoginForm`): **Google primario** (in cima) + telefono + **email come
+  fallback discreto** (un account Google È già un'email → niente ridondanza). Framing unificato
+  login=registrazione. Email auth **brandizzate "Hair Rich"** (oggetto+corpo via Management API;
+  from-address piena richiede SMTP Gmail). **Google OAuth in produzione** ✅.
+- **Prenotazioni**: orizzonte da ~2,5 settimane → **~2 mesi**. **Fix bug**: il lunedì era escluso
+  per errore (aperti Lun–Sab). **Ricorrenza settimanale** 1/2/4/8 settimane con **vincolo scritto
+  "massimo 2 mesi alla volta"** anti-dimenticanza (crea N appuntamenti, salta gli slot occupati,
+  coupon/credito solo sul 1°). File: `StepDateTime.tsx`, `StepConfirm.tsx`.
+- **Web push ATTIVE**: VAPID generate + secret su Supabase, `push_enabled=true`, skill ON, e
+  **priorità canali `whatsapp→email→push→sms`** (email PRIMA di push → l'email non viene mai
+  sostituita). Opt-in cliente da `/profilo`.
+
+### Dashboard gestionale (Fase D)
+- `dashboard.tsx`: **unico bottone "Nuovo appuntamento"** (apre il drawer), **mini calendario
+  prossimi 7 giorni con grafico a barre del picco** + media giornaliera del mese, **cassetto posta
+  SOLO titolare** (feed `admin_inbox_items` realtime, gate su ruolo effettivo).
+- **Fix**: `BookingDrawer` + `ToastViewport` non erano montati in `/admin` → il "Nuovo
+  appuntamento" (anche in agenda) ora funziona e i toast si vedono.
+
+### 🔑 Azioni TITOLARE ancora aperte (ricordate al cliente)
+1. **Google Search Console**: verifica dominio + sitemap + reindex (risolve la versione http vecchia).
+2. **Google Business Profile**: categoria "Barbiere", orari, sito, 10+ foto, rispondi alle 37 recensioni.
+3. **Numero vecchio su Instagram/TikTok** (`0789 374828`) → `0789 1891049`.
+4. **Directory**: PagineGialle, TripAdvisor, Apple Business Connect, Foursquare.
+5. **Gmail App Password** (in arrivo) → email clienti + mittente "Hair Rich" + reviews_harvester.
+6. **Twilio** → login telefono + SMS (finché off, login telefono dà errore; ok Google+email).
+7. **Test bot Telegram** (vocale prenotazione + "chiudo la giornata").
+
+---
+
 ## 🔄 Aggiornamento 6-8 giugno 2026 — sessione SEO/GEO/AEO (PUSHATA su main)
 
 > **STATO: pushato su `main` l'8 giugno 2026** → deploy Vercel automatico.
