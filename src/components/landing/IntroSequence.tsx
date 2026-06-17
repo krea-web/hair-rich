@@ -60,7 +60,13 @@ function shouldShowIntro(): boolean {
  * cima allo schermo. Mostrato una sola volta per sessione, solo su mobile.
  */
 export function IntroSequence() {
-    const [show, setShow] = useState<boolean>(() => shouldShowIntro());
+    // SSR e primo render client devono coincidere (niente overlay) per evitare
+    // il mismatch di hydration React #418: la decisione (mobile + prima visita)
+    // dipende da window/sessionStorage, quindi la prendiamo DOPO il mount.
+    const [show, setShow] = useState(false);
+    useEffect(() => {
+        if (shouldShowIntro()) setShow(true);
+    }, []);
     if (!show) return null;
     return <IntroOverlay onDismissed={() => setShow(false)} />;
 }

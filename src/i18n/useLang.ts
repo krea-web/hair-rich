@@ -14,11 +14,11 @@ const isLocale = (v: string | undefined): v is Locale =>
  * In SSR (Astro server render) ritorna "it" come fallback sicuro.
  */
 export function useLang(): Locale {
-    const [lang, setLang] = useState<Locale>(() => {
-        if (typeof document === "undefined") return "it";
-        const v = document.body?.dataset.lang;
-        return isLocale(v) ? v : "it";
-    });
+    // Inizializza a "it" come fa l'SSR (a build time non c'è `document`): il primo
+    // render client DEVE combaciare con l'HTML server-render, altrimenti gli island
+    // localizzati su /en /fr /de generano il mismatch di hydration React #418. La
+    // lingua reale viene applicata subito dopo il mount nell'useEffect qui sotto.
+    const [lang, setLang] = useState<Locale>("it");
 
     useEffect(() => {
         const update = () => {
