@@ -16,6 +16,47 @@ Cliente reale: barbiere a Olbia. Sito in italiano, multilingua (it/en/fr/de).
 
 ---
 
+## 🔄 Aggiornamento 18 giugno 2026 — BUG CRITICI trovati post-lancio (piano pronto, NON ancora eseguito)
+
+> Il giorno dopo il lancio il titolare ha segnalato **bug critici** su prenotazione/auth/agenda.
+> È stato **investigato il root-cause di ognuno** (3 agenti) e scritto un **piano completo** in
+> `~/.claude/plans/swift-marinating-pizza.md` + handoff in **`docs/HANDOFF-2026-06-18.md`**.
+> ⚠️ **I FIX NON SONO ANCORA STATI ESEGUITI**: vanno fatti (da una chat nuova con contesto fresco).
+
+### Bug critici (root-cause tracciato)
+- **A · Doppia prenotazione** 🔴: `fn_check_slot_availability` (`20260524_0030_waitlist.sql`) salta il
+  controllo conflitti quando `p_staff_id IS NULL` ("qualsiasi barbiere") → slot occupati prenotabili e
+  nessun barbiere assegnato. Fix: migration che, con staff null, **smista al primo barbiere libero**
+  (mai null) o nega se tutti occupati.
+- **B · Fuso orario venerdì→giovedì + DST** 🔴: `StepDateTime.tsx` usa `toISOString().split("T")[0]`
+  (UTC) per la stringa-giorno; `StepConfirm.tsx` hardcoda `+02:00`. Fix: helper TZ centrale
+  `src/lib/time.ts` (`romeDateStr`, `romeToUTC`) usato ovunque.
+- **C · Wizard bloccato allo step 3** 🟠: `BookingWizard.tsx` salva lo step in
+  `localStorage["hr-booking-draft"]` e lo ripristina. Fix: reset a step 1 a ogni apertura del drawer.
+- **D · Eliminare appuntamenti sbagliati** 🔴: in agenda manca il delete (solo cambio stato). Fix: RPC
+  `fn_admin_delete_appointment` (hard delete) + tasto in `agenda-day.tsx`.
+- **E · Cancel/sposta cliente** 🟠: le RPC esistono e sono wired in `profilo/views/appuntamenti.tsx`, ma
+  falliscono per il bug TZ/conflitto (B/A) + gate lead-time. Fix: `cancel_min_hours=24` + TZ corretto.
+- **F · Registrazione finta** 🔴: `RegisterForm.tsx` è uno **STUB** (non crea l'account). Fix:
+  `/registrazione` **unificata col login** (Google/telefono/email, account al volo; extra via onboarding).
+- **G · Eliminazione account** 🔴: oggi solo un `mailto:`. Fix: Edge Function `delete-account` (service
+  role, `auth.admin.deleteUser`) + FK `appointments.customer_id` → `ON DELETE CASCADE`; titolare
+  (`/admin/clienti`) **e** cliente (`/profilo`).
+- **H · Pulizia doppioni** 🟠: il bug A ha già accumulato doppie prenotazioni → script
+  `scripts/fix_double_bookings.mjs` che le smista al barbiere libero.
+
+### Decisioni titolare (per i fix)
+- Appuntamenti sbagliati → **hard delete**. · Limite cancel/sposta → **24 ore**. · Registrazione →
+  **unificata col login**. · Eliminazione account → **titolare + cliente**.
+
+### Note esecuzione
+- Migration + Edge Function via **Supabase CLI + PAT** (l'MCP è read-only). Il PAT della sessione
+  precedente potrebbe essere **scaduto/revocato** → chiederne uno nuovo.
+- Falle proattive ancora aperte: **sicurezza admin E3** (due livelli solo-UI, PIN client-side),
+  guest duplicati, Lighthouse, SEO opzionali.
+
+---
+
 ## 🔄 Aggiornamento 17 giugno 2026 — sessione "go-live operativo" (TUTTO su `main`)
 
 > Sessione lunga, tutto pushato su `main` (deploy Vercel automatico) e/o deployato su
