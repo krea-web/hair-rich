@@ -26,8 +26,29 @@ export default function ProfiloImpostazioniPage() {
     const [consents, setConsents] = useState<Map<ConsentType, ConsentSnapshot>>(new Map());
     const [loading, setLoading] = useState(true);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [deletingBusy, setDeletingBusy] = useState(false);
     const [savingKey, setSavingKey] = useState<ConsentType | null>(null);
     const addToast = useToastStore((s) => s.addToast);
+
+    // Eliminazione account reale (GDPR): Edge Function service-role che cancella
+    // la scheda cliente (cascade) + l'auth user, poi logout.
+    const handleDeleteAccount = async () => {
+        if (deletingBusy) return;
+        setDeletingBusy(true);
+        try {
+            const supabase = createClient();
+            const { error } = await supabase.functions.invoke("delete-account", {
+                body: {},
+            });
+            if (error) throw error;
+            await supabase.auth.signOut();
+            addToast("Account eliminato. Ci dispiace vederti andare.", "success");
+            window.location.href = "/";
+        } catch (e: any) {
+            addToast(`Errore eliminazione: ${e?.message ?? "riprova"}`, "error");
+            setDeletingBusy(false);
+        }
+    };
 
     const load = useCallback(async () => {
         setLoading(true);
@@ -394,23 +415,25 @@ export default function ProfiloImpostazioniPage() {
                                 Elimino l'account?
                             </h3>
                             <p className="text-warm-white-muted text-sm mt-3 leading-relaxed">
-                                Tutti gli appuntamenti futuri, lo storico e i crediti saranno persi
-                                per sempre. Per procedere contattaci direttamente al salone — il
-                                titolare conferma la richiesta entro 30 giorni come previsto da GDPR.
+                                Tutti gli appuntamenti futuri, lo storico e i crediti saranno
+                                cancellati per sempre e in modo immediato. L'azione è
+                                irreversibile (diritto all'oblio · GDPR).
                             </p>
                             <div className="mt-6 flex gap-3">
                                 <button
                                     onClick={() => setIsDeleting(false)}
-                                    className="flex-1 px-5 py-3 border border-line text-warm-white rounded-full text-[10px] uppercase tracking-[0.3em] font-body font-semibold"
+                                    disabled={deletingBusy}
+                                    className="flex-1 px-5 py-3 border border-line text-warm-white rounded-full text-[10px] uppercase tracking-[0.3em] font-body font-semibold disabled:opacity-50"
                                 >
                                     Chiudi
                                 </button>
-                                <a
-                                    href="mailto:info@hairrich.it?subject=Richiesta cancellazione account"
-                                    className="flex-1 px-5 py-3 bg-error text-white rounded-full text-[10px] uppercase tracking-[0.3em] font-body font-semibold text-center"
+                                <button
+                                    onClick={handleDeleteAccount}
+                                    disabled={deletingBusy}
+                                    className="flex-1 px-5 py-3 bg-error text-white rounded-full text-[10px] uppercase tracking-[0.3em] font-body font-semibold text-center disabled:opacity-50"
                                 >
-                                    Contatta il salone
-                                </a>
+                                    {deletingBusy ? "Elimino…" : "Elimina per sempre"}
+                                </button>
                             </div>
                         </motion.div>
                     </motion.div>

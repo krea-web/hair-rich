@@ -100,6 +100,29 @@ export default function AdminClientiPage() {
         load();
     }, [load]);
 
+    // Eliminazione account cliente (GDPR hard delete) lato titolare.
+    const handleDeleteCustomer = async (id: string, name: string) => {
+        if (
+            typeof window !== "undefined" &&
+            !window.confirm(
+                `Eliminare DEFINITIVAMENTE l'account di ${name}? Spariscono appuntamenti, storico e dati collegati. Azione irreversibile.`
+            )
+        ) {
+            return;
+        }
+        try {
+            const supabase = createClient();
+            const { error } = await supabase.functions.invoke("delete-account", {
+                body: { customer_id: id },
+            });
+            if (error) throw error;
+            addToast("Account cliente eliminato", "success");
+            load();
+        } catch (e: any) {
+            addToast(`Errore eliminazione: ${e?.message ?? "riprova"}`, "error");
+        }
+    };
+
     const filtered = useMemo(() => {
         const q = search.trim().toLowerCase();
         const list = q
@@ -347,6 +370,12 @@ export default function AdminClientiPage() {
                                                 className="inline-flex items-center gap-2 px-4 py-2 border border-accent-warm/40 text-accent-warm rounded-full text-[10px] uppercase tracking-[0.25em] font-body font-semibold hover:bg-accent-warm hover:text-black transition-colors"
                                             >
                                                 Vendi pacchetto
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeleteCustomer(c.id, name)}
+                                                className="inline-flex items-center gap-2 px-4 py-2 border border-error/40 text-error rounded-full text-[10px] uppercase tracking-[0.25em] font-body font-semibold hover:bg-error hover:text-black transition-colors ml-auto"
+                                            >
+                                                Elimina account
                                             </button>
                                         </div>
                                     </div>
