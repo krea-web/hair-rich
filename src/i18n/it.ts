@@ -358,7 +358,7 @@ export const it: Dict = {
     },
     sticky: { cta: "Prenota Ora" },
     badges: {
-        rating: "★ 4,6 · 37 recensioni Google",
+        rating: "★ 4,7 · 43 recensioni Google",
         certified: "Master Barber Certificato",
         premium: "Premium products only",
     },
@@ -678,7 +678,7 @@ export const it: Dict = {
         metrics: [
             { v: "da 20€", l: "Listino" },
             { v: "60s", l: "Prenoti online" },
-            { v: "4,6★", l: "37 recensioni" },
+            { v: "4,7★", l: "43 recensioni" },
         ],
         footerLeft: "Conferma immediata",
         footerRight: "01 / Servizi",
@@ -718,7 +718,7 @@ export const it: Dict = {
         body:
             "Ogni foto è un cliente vero, scattata a fine servizio. Niente stock, niente IA, niente catalogo riciclato. Solo quello che facciamo davvero.",
         metrics: [
-            { value: "4,6★", label: "37 recensioni" },
+            { value: "4,7★", label: "43 recensioni" },
             { value: "dal 2017", label: "A Olbia" },
             { value: "3", label: "Servizi" },
         ],

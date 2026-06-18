@@ -348,7 +348,7 @@ export const fr: Dict = {
     },
     sticky: { cta: "Réserver" },
     badges: {
-        rating: "★ 4,6 · 37 avis Google",
+        rating: "★ 4,7 · 43 avis Google",
         certified: "Master Barber certifié",
         premium: "Produits premium uniquement",
     },
@@ -656,7 +656,7 @@ export const fr: Dict = {
         metrics: [
             { v: "dès 20€", l: "Tarifs" },
             { v: "60s", l: "Réservation en ligne" },
-            { v: "4,6★", l: "37 avis" },
+            { v: "4,7★", l: "43 avis" },
         ],
         footerLeft: "Confirmation immédiate",
         footerRight: "01 / Services",
@@ -696,7 +696,7 @@ export const fr: Dict = {
         body:
             "Chaque photo est un vrai client, prise en fin de service. Pas de banque d'images, pas d'IA, pas de catalogue recyclé. Juste ce qu'on fait vraiment.",
         metrics: [
-            { value: "4,6★", label: "37 avis" },
+            { value: "4,7★", label: "43 avis" },
             { value: "depuis 2017", label: "À Olbia" },
             { value: "3", label: "Services" },
         ],

@@ -85,7 +85,7 @@ export const PARRUCCHIERE_OLBIA: Record<Locale, PoContent> = {
       "Cerchi un parrucchiere uomo a Olbia che tratti i capelli come un sarto tratta un tessuto? Hair Rich è un barber studio nel centro di Olbia, in Via Regina Elena 33/A, specializzato nel taglio maschile e nella barba.",
       "Lavoriamo solo su prenotazione, una persona alla volta, senza fretta. Ogni taglio parte da un consulto — forma del viso, stile di vita, quanto tempo dedichi ai capelli — e da lì costruiamo un look che funziona davvero anche dopo una settimana.",
     ],
-    trust: ["Dal 2017", "★ 4,6 · 37 recensioni Google", "Solo su prenotazione", "Centro di Olbia"],
+    trust: ["Dal 2017", "★ 4,7 · 43 recensioni Google", "Solo su prenotazione", "Centro di Olbia"],
     servicesTitle: "I nostri servizi",
     servicesIntro:
       "Tre servizi essenziali, fatti bene. Listino chiaro, nessun sovrapprezzo nel weekend, lavaggio e styling sempre inclusi.",
@@ -192,7 +192,7 @@ export const PARRUCCHIERE_OLBIA: Record<Locale, PoContent> = {
       "Looking for a men's hairdresser in Olbia who treats hair the way a tailor treats cloth? Hair Rich is a barber studio in central Olbia, at Via Regina Elena 33/A, focused on men's cuts and beard work.",
       "We work by appointment only, one client at a time, no rush. Every cut starts with a consultation — face shape, lifestyle, how much time you give your hair — and from there we build a look that still works a week later.",
     ],
-    trust: ["Since 2017", "★ 4.6 · 37 Google reviews", "By appointment only", "Central Olbia"],
+    trust: ["Since 2017", "★ 4.7 · 43 Google reviews", "By appointment only", "Central Olbia"],
     servicesTitle: "Our services",
     servicesIntro:
       "Three essential services, done well. Clear pricing, no weekend surcharge, wash and styling always included.",
@@ -272,7 +272,7 @@ export const PARRUCCHIERE_OLBIA: Record<Locale, PoContent> = {
       "Vous cherchez un coiffeur homme à Olbia qui traite les cheveux comme un tailleur traite un tissu ? Hair Rich est un barber studio au centre d'Olbia, Via Regina Elena 33/A, spécialisé dans la coupe masculine et la barbe.",
       "Nous travaillons uniquement sur rendez-vous, un client à la fois, sans précipitation. Chaque coupe commence par une consultation — forme du visage, mode de vie, temps consacré aux cheveux — et nous construisons un look qui tient vraiment, même une semaine plus tard.",
     ],
-    trust: ["Depuis 2017", "★ 4,6 · 37 avis Google", "Sur rendez-vous", "Centre d'Olbia"],
+    trust: ["Depuis 2017", "★ 4,7 · 43 avis Google", "Sur rendez-vous", "Centre d'Olbia"],
     servicesTitle: "Nos services",
     servicesIntro:
       "Trois services essentiels, bien faits. Tarifs clairs, jamais de supplément le week-end, lavage et coiffage toujours inclus.",
@@ -352,7 +352,7 @@ export const PARRUCCHIERE_OLBIA: Record<Locale, PoContent> = {
       "Suchst du einen Herrenfriseur in Olbia, der Haare behandelt wie ein Schneider den Stoff? Hair Rich ist ein Barber Studio im Zentrum von Olbia, in der Via Regina Elena 33/A, spezialisiert auf Herrenschnitt und Bart.",
       "Wir arbeiten nur auf Termin, ein Kunde nach dem anderen, ohne Hektik. Jeder Schnitt beginnt mit einer Beratung — Gesichtsform, Lebensstil, wie viel Zeit du für die Haare hast — und daraus bauen wir einen Look, der auch nach einer Woche noch sitzt.",
     ],
-    trust: ["Seit 2017", "★ 4,6 · 37 Google-Bewertungen", "Nur auf Termin", "Zentrum Olbia"],
+    trust: ["Seit 2017", "★ 4,7 · 43 Google-Bewertungen", "Nur auf Termin", "Zentrum Olbia"],
     servicesTitle: "Unsere Leistungen",
     servicesIntro:
       "Drei wesentliche Leistungen, gut gemacht. Klare Preise, kein Wochenendzuschlag, Waschen und Styling immer inklusive.",

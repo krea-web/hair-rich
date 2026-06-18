@@ -7,7 +7,7 @@ const STATS = [
     { value: 8, suffix: "+", label: "Anni di Attività" },
     { value: 5000, suffix: "+", label: "Clienti Soddisfatti" },
     { value: 150, suffix: "+", label: "Stili Realizzati" },
-    { value: 4.6, suffix: "/5", label: "Recensioni Medie", isFloat: true },
+    { value: 4.7, suffix: "/5", label: "Recensioni Medie", isFloat: true },
 ];
 
 function CountUp({
