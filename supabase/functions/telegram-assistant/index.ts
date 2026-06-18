@@ -599,6 +599,135 @@ async function setAppointmentDiscount(sb: SB, args: any) {
   return { ok: true, cliente: [a.customer?.first_name, a.customer?.last_name].filter(Boolean).join(' '), prezzo_pagato: eur(pricePaid ?? a.total_cents), sconto: eur(discount) };
 }
 
+// ── Trova appuntamento per nome cliente in un giorno ────────────────────────
+async function findApptByName(sb: SB, date: string, who: string) {
+  const { startISO, endISO } = romeDayRange(date);
+  const { data } = await sb.from('appointments')
+    .select('id, start_at, end_at, staff_id, total_cents, status, customer:customer_id ( first_name, last_name ), staff:staff_id ( name )')
+    .gte('start_at', startISO).lt('start_at', endISO).not('status', 'in', '("cancelled","no_show")');
+  const q = who.trim().toLowerCase();
+  return ((data ?? []) as any[]).filter((a) =>
+    `${a.customer?.first_name ?? ''} ${a.customer?.last_name ?? ''}`.toLowerCase().includes(q));
+}
+const apptLabel = (m: any) =>
+  `${[m.customer?.first_name, m.customer?.last_name].filter(Boolean).join(' ')} ${hhmm(m.start_at)} (${m.staff?.name ?? '—'})`;
+
+// ── Sposta un appuntamento (gate di conferma) ───────────────────────────────
+async function rescheduleAppointment(sb: SB, args: any) {
+  const date = args.date && /^\d{4}-\d{2}-\d{2}$/.test(args.date) ? args.date : romeTodayStr();
+  const who = (args.customer_name ?? '').trim();
+  if (!who) return { error: 'nome cliente mancante' };
+  if (!/^\d{2}:\d{2}$/.test(args.new_time ?? '')) return { error: 'nuova ora mancante (HH:MM)' };
+  const newDate = args.new_date && /^\d{4}-\d{2}-\d{2}$/.test(args.new_date) ? args.new_date : date;
+  const matches = await findApptByName(sb, date, who);
+  if (matches.length === 0) return { error: `nessun appuntamento per "${who}" il ${date}` };
+  if (matches.length > 1) return { ambiguo: matches.map(apptLabel) };
+  const a: any = matches[0];
+  let staff: any = a.staff_id ? { id: a.staff_id, name: a.staff?.name } : null;
+  if (args.new_staff_name) { staff = await resolveStaff(sb, args.new_staff_name); if (!staff) return { error: `operatore non riconosciuto: "${args.new_staff_name}"` }; }
+  if (!staff?.id) return { error: 'appuntamento senza operatore: specifica con quale barbiere spostarlo' };
+  const dur = new Date(a.end_at).getTime() - new Date(a.start_at).getTime();
+  const startISO = romeToUTC(newDate, args.new_time);
+  const endISO = new Date(new Date(startISO).getTime() + dur).toISOString();
+
+  const { data: off } = await sb.from('time_off').select('id, reason')
+    .or(`staff_id.is.null,staff_id.eq.${staff.id}`).lt('starts_at', endISO).gt('ends_at', startISO).limit(1);
+  if (off && off.length) return { error: `in quell'orario c'è un'indisponibilità${off[0].reason ? ' (' + off[0].reason + ')' : ''}.` };
+  const { data: clash } = await sb.from('appointments').select('id')
+    .eq('staff_id', staff.id).neq('id', a.id).lt('start_at', endISO).gt('end_at', startISO)
+    .not('status', 'in', '("cancelled","no_show")').limit(1);
+  const riepilogo = { cliente: who, da: `${dmy(a.start_at)} ${hhmm(a.start_at)} (${a.staff?.name ?? '—'})`, a: `${dmy(startISO)} ${hhmm(startISO)} (${staff.name})` };
+  if (clash && clash.length) return { conflict: true, messaggio: `${staff.name} è già occupato alle ${hhmm(startISO)}.`, riepilogo };
+  if (args.confirmed !== true) return { needs_confirmation: true, riepilogo, istruzione: 'Mostra il riepilogo e chiedi conferma esplicita prima di spostare.' };
+  const { error } = await sb.from('appointments').update({ start_at: startISO, end_at: endISO, staff_id: staff.id }).eq('id', a.id);
+  if (error) return { error: error.message };
+  await logOwnerInbox(sb, { event_type: 'owner_appt_moved', icon: '↪️', title: `Spostato · ${who}`, body: `${riepilogo.da} → ${riepilogo.a}`, payload: riepilogo });
+  return { ok: true, spostato: riepilogo };
+}
+
+// ── Annulla / elimina un appuntamento (gate di conferma) ─────────────────────
+async function cancelAppointment(sb: SB, args: any) {
+  const date = args.date && /^\d{4}-\d{2}-\d{2}$/.test(args.date) ? args.date : romeTodayStr();
+  const who = (args.customer_name ?? '').trim();
+  if (!who) return { error: 'nome cliente mancante' };
+  const matches = await findApptByName(sb, date, who);
+  if (matches.length === 0) return { error: `nessun appuntamento per "${who}" il ${date}` };
+  if (matches.length > 1) return { ambiguo: matches.map(apptLabel) };
+  const a: any = matches[0];
+  const hard = args.mode === 'delete';
+  const riepilogo = { cliente: who, quando: `${dmy(a.start_at)} ${hhmm(a.start_at)}`, operatore: a.staff?.name ?? '—', azione: hard ? 'ELIMINA definitivamente' : 'annulla' };
+  if (args.confirmed !== true) return { needs_confirmation: true, riepilogo, istruzione: 'Chiedi conferma esplicita prima di procedere.' };
+  const { error } = hard
+    ? await sb.from('appointments').delete().eq('id', a.id)
+    : await sb.from('appointments').update({ status: 'cancelled' }).eq('id', a.id);
+  if (error) return { error: error.message };
+  await logOwnerInbox(sb, { event_type: 'owner_appt_cancelled', icon: '🗑️', title: `${hard ? 'Eliminato' : 'Annullato'} · ${who}`, body: `${riepilogo.quando} · ${riepilogo.operatore}`, payload: riepilogo });
+  return { ok: true, esito: hard ? 'eliminato' : 'annullato', riepilogo };
+}
+
+// ── Blocca orari per ESIGENZA (impegno/ferie) = time_off, NON prenotazione ────
+async function blockTime(sb: SB, args: any) {
+  const date = args.date && /^\d{4}-\d{2}-\d{2}$/.test(args.date) ? args.date : romeTodayStr();
+  const endDate = args.end_date && /^\d{4}-\d{2}-\d{2}$/.test(args.end_date) ? args.end_date : date;
+  let staff: any = null;
+  if (args.staff_name) { staff = await resolveStaff(sb, args.staff_name); if (!staff) return { error: `operatore non riconosciuto: "${args.staff_name}"` }; }
+  let startISO: string, endISO: string, fascia: string;
+  if (/^\d{2}:\d{2}$/.test(args.start_time ?? '') && /^\d{2}:\d{2}$/.test(args.end_time ?? '')) {
+    startISO = romeToUTC(date, args.start_time);
+    endISO = romeToUTC(endDate, args.end_time);
+    fascia = `${date} ${args.start_time}–${args.end_time}`;
+  } else {
+    startISO = romeDayRange(date).startISO;
+    endISO = romeDayRange(endDate).endISO;
+    fascia = endDate === date ? `${date} (tutto il giorno)` : `${date} → ${endDate} (giorni interi)`;
+  }
+  if (new Date(endISO) <= new Date(startISO)) return { error: 'intervallo non valido (fine ≤ inizio)' };
+  const riepilogo = { chi: staff?.name ?? 'tutto il salone', quando: fascia, motivo: args.reason ?? '—' };
+  if (args.confirmed !== true) return { needs_confirmation: true, riepilogo, istruzione: "Conferma prima di bloccare: è un'INDISPONIBILITÀ (impegno/ferie), non una prenotazione." };
+  const { error } = await sb.from('time_off').insert({ staff_id: staff?.id ?? null, starts_at: startISO, ends_at: endISO, reason: args.reason ?? null, source: 'admin' });
+  if (error) return { error: error.message };
+  await logOwnerInbox(sb, { event_type: 'owner_time_blocked', icon: '⛔', title: `Orari bloccati · ${riepilogo.chi}`, body: `${riepilogo.quando}${args.reason ? ' · ' + args.reason : ''}`, payload: riepilogo });
+  return { ok: true, bloccato: riepilogo };
+}
+
+// ── Elenca le indisponibilità (time_off) ─────────────────────────────────────
+async function listTimeOff(sb: SB, args: any) {
+  const date = args.date && /^\d{4}-\d{2}-\d{2}$/.test(args.date) ? args.date : romeTodayStr();
+  const days = Number.isFinite(args.days_ahead) && args.days_ahead > 0 ? Math.floor(args.days_ahead) : 14;
+  const startISO = romeDayRange(date).startISO;
+  const endISO = new Date(new Date(startISO).getTime() + days * 86400000).toISOString();
+  const { data } = await sb.from('time_off')
+    .select('id, staff_id, starts_at, ends_at, reason, staff:staff_id ( name )')
+    .lt('starts_at', endISO).gt('ends_at', startISO).order('starts_at');
+  const blocchi = ((data ?? []) as any[]).map((t) => ({
+    chi: t.staff?.name ?? 'tutto il salone',
+    dal: `${dmy(t.starts_at)} ${hhmm(t.starts_at)}`, al: `${dmy(t.ends_at)} ${hhmm(t.ends_at)}`,
+    motivo: t.reason ?? null,
+  }));
+  return { da: date, giorni: days, blocchi, totale: blocchi.length };
+}
+
+// ── Rimuove un'indisponibilità (sblocca orari) ───────────────────────────────
+async function removeTimeOff(sb: SB, args: any) {
+  const date = args.date && /^\d{4}-\d{2}-\d{2}$/.test(args.date) ? args.date : romeTodayStr();
+  const { startISO, endISO } = romeDayRange(date);
+  let staff: any = null;
+  if (args.staff_name) { staff = await resolveStaff(sb, args.staff_name); if (!staff) return { error: `operatore non riconosciuto: "${args.staff_name}"` }; }
+  const { data } = await sb.from('time_off')
+    .select('id, staff_id, starts_at, ends_at, reason, staff:staff_id ( name )')
+    .lt('starts_at', endISO).gt('ends_at', startISO);
+  let rows = (data ?? []) as any[];
+  if (staff) rows = rows.filter((r) => r.staff_id === staff.id);
+  if (args.reason) rows = rows.filter((r) => (r.reason ?? '').toLowerCase().includes(String(args.reason).toLowerCase()));
+  if (rows.length === 0) return { error: `nessuna indisponibilità trovata il ${date}` };
+  if (rows.length > 1 && args.confirmed !== true) {
+    return { ambiguo: rows.map((r) => `${r.staff?.name ?? 'salone'} ${hhmm(r.starts_at)}–${hhmm(r.ends_at)}${r.reason ? ' (' + r.reason + ')' : ''}`), istruzione: 'Specifica operatore/motivo, oppure conferma per rimuoverle tutte.' };
+  }
+  const { error } = await sb.from('time_off').delete().in('id', rows.map((r) => r.id));
+  if (error) return { error: error.message };
+  return { ok: true, rimossi: rows.length, giorno: date };
+}
+
 const TOOLS = [
   {
     type: 'function',
@@ -793,6 +922,86 @@ const TOOLS = [
       },
     },
   },
+  {
+    type: 'function',
+    function: {
+      name: 'reschedule_appointment',
+      description: "SPOSTA un appuntamento esistente a un nuovo orario (e/o nuovo operatore). Trova l'appuntamento per nome cliente nel giorno indicato. PRIMA con confirmed=false per il riepilogo, mostralo e chiedi conferma, POI confirmed=true per salvare.",
+      parameters: {
+        type: 'object',
+        properties: {
+          customer_name: { type: 'string', description: 'Nome o cognome del cliente da spostare' },
+          date: { type: 'string', description: "Giorno ATTUALE dell'appuntamento (YYYY-MM-DD), default oggi" },
+          new_date: { type: 'string', description: 'Nuovo giorno (YYYY-MM-DD); se assente resta lo stesso' },
+          new_time: { type: 'string', description: 'Nuova ora HH:MM (ora di Rome)' },
+          new_staff_name: { type: 'string', description: 'Nuovo operatore (Federico/Cristian), opzionale' },
+          confirmed: { type: 'boolean', description: 'true SOLO dopo conferma esplicita' },
+        },
+        required: ['customer_name', 'new_time'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'cancel_appointment',
+      description: "Annulla (status cancelled) o ELIMINA definitivamente un appuntamento. Trova per nome cliente nel giorno. PRIMA confirmed=false per il riepilogo, poi confirmed=true. Usa mode='delete' solo se il titolare vuole cancellarlo del tutto (es. inserito per sbaglio).",
+      parameters: {
+        type: 'object',
+        properties: {
+          customer_name: { type: 'string', description: 'Nome o cognome del cliente' },
+          date: { type: 'string', description: 'YYYY-MM-DD, default oggi' },
+          mode: { type: 'string', enum: ['cancel', 'delete'], description: "cancel = annulla (default), delete = elimina definitivamente" },
+          confirmed: { type: 'boolean', description: 'true SOLO dopo conferma esplicita' },
+        },
+        required: ['customer_name'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'block_time',
+      description: "Blocca degli orari come INDISPONIBILITÀ per un'esigenza (impegno, dentista, commissioni) o FERIE — NON è una prenotazione. Quegli slot risultano occupati e non prenotabili. Per un singolo operatore (es. 'domani 16-17 Federico ha il dentista') o per tutto il salone (staff_name vuoto). Con start_time+end_time = fascia oraria; senza = giorno/i interi (ferie). PRIMA confirmed=false per il riepilogo, poi confirmed=true.",
+      parameters: {
+        type: 'object',
+        properties: {
+          staff_name: { type: 'string', description: 'Federico o Cristian; vuoto = tutto il salone' },
+          date: { type: 'string', description: 'Giorno (YYYY-MM-DD), default oggi' },
+          end_date: { type: 'string', description: 'Per ferie su più giorni: ultimo giorno (YYYY-MM-DD)' },
+          start_time: { type: 'string', description: 'Ora inizio HH:MM (se è una fascia)' },
+          end_time: { type: 'string', description: 'Ora fine HH:MM (se è una fascia)' },
+          reason: { type: 'string', description: 'Motivo (dentista, ferie, commissioni, ...)' },
+          confirmed: { type: 'boolean', description: 'true SOLO dopo conferma esplicita' },
+        },
+        required: ['date'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'list_time_off',
+      description: 'Elenca le indisponibilità/ferie (time_off) a partire da un giorno per i prossimi N giorni: chi, quando, motivo.',
+      parameters: { type: 'object', properties: { date: { type: 'string', description: 'YYYY-MM-DD, default oggi' }, days_ahead: { type: 'integer', description: 'Finestra giorni, default 14' } } },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'remove_time_off',
+      description: "Rimuove un'indisponibilità (sblocca gli orari) in un giorno. Filtra per operatore e/o motivo. Se ce n'è più di una e non è chiaro, chiede quale.",
+      parameters: {
+        type: 'object',
+        properties: {
+          date: { type: 'string', description: 'YYYY-MM-DD, default oggi' },
+          staff_name: { type: 'string', description: 'Operatore (opzionale)' },
+          reason: { type: 'string', description: 'Filtro per motivo (opzionale)' },
+          confirmed: { type: 'boolean', description: 'true per rimuovere tutte le corrispondenze' },
+        },
+      },
+    },
+  },
 ];
 
 async function execTool(sb: SB, name: string, args: any) {
@@ -813,6 +1022,11 @@ async function execTool(sb: SB, name: string, args: any) {
     case 'close_day_attendance': return closeDayAttendance(sb, args);
     case 'record_product_sale': return recordProductSale(sb, args);
     case 'set_appointment_discount': return setAppointmentDiscount(sb, args);
+    case 'reschedule_appointment': return rescheduleAppointment(sb, args);
+    case 'cancel_appointment': return cancelAppointment(sb, args);
+    case 'block_time': return blockTime(sb, args);
+    case 'list_time_off': return listTimeOff(sb, args);
+    case 'remove_time_off': return removeTimeOff(sb, args);
     default: return { error: `tool sconosciuto: ${name}` };
   }
 }
@@ -827,6 +1041,10 @@ PRENOTARE UN APPUNTAMENTO (anche da vocale):
 2) Chiama create_appointment con confirmed=false: ricevi un riepilogo. MOSTRALO e chiedi: "Confermi: *cliente X · servizio · operatore · giorno · ora*?".
 3) SOLO quando il titolare conferma esplicitamente (es. "conferma", "sì", "ok"), richiama create_appointment con gli stessi dati e confirmed=true. Mai salvare senza conferma.
 Se l'operatore è già occupato (conflict) o un dato manca, dillo e proponi un'alternativa (usa get_available_slots).
+
+SPOSTARE / ANNULLARE UN APPUNTAMENTO: per spostare usa reschedule_appointment (trova per nome nel giorno, proponi il nuovo orario, conferma, poi salva). Per annullare/eliminare usa cancel_appointment (mode='delete' SOLO se inserito per sbaglio). Sempre col gate di conferma (confirmed=false → riepilogo → confirmed=true).
+
+BLOCCARE ORARI PER ESIGENZA / FERIE: quando il titolare dice che un operatore non c'è per un impegno (es. "domani dalle 16 alle 17 Federico ha il dentista", "Cristian è in ferie da lunedì a mercoledì"), usa block_time: NON è una prenotazione, è un'INDISPONIBILITÀ (time_off) — quegli slot diventano occupati/non prenotabili, col motivo. Fascia oraria → start_time/end_time; giorni interi (ferie) → date + end_date. Vuoto staff_name = tutto il salone chiuso. Usa list_time_off per vedere i blocchi e remove_time_off per sbloccare. Sempre col gate di conferma.
 
 REGISTRARE (contabilità): record_expense (spese), record_stock_use (prodotto usato in salone = costo, non vendita), record_product_sale (prodotto venduto = incasso + scarico stock), set_appointment_discount (sconto/prezzo reale). Prima di scrivere, riepiloga in una riga; dopo, conferma con l'esito.
 
