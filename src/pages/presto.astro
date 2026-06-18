@@ -1,0 +1,289 @@
+---
+// Teaser "presto" — pagina AUTONOMA (CSS inline + font Google + logo da
+// /public). Sfondo oro animato che cambia nel tempo + flash tipo fulmini +
+// forbici 3D dorate che sfrecciano + scintille d'oro che salgono. Solo
+// transform/opacity/background-position (GPU), nessuna libreria. Vedi vercel.json.
+const r = (a: number, b: number) => a + Math.random() * (b - a);
+
+const N_SCISSORS = 18;
+const SCISSORS = Array.from({ length: N_SCISSORS }, () => {
+    const dx = (Math.random() < 0.5 ? -1 : 1) * r(16, 50);
+    const dy = (Math.random() < 0.5 ? -1 : 1) * r(16, 50);
+    return {
+        top: r(-8, 100).toFixed(1),
+        left: r(-8, 100).toFixed(1),
+        size: r(30, 78).toFixed(0),
+        op: r(0.4, 0.95).toFixed(2),
+        dx: dx.toFixed(1),
+        dy: dy.toFixed(1),
+        flyDur: r(2.2, 5.6).toFixed(2),
+        flyDelay: (-r(0, 6)).toFixed(2),
+        spinDur: r(1.1, 3.0).toFixed(2),
+        spinDelay: (-r(0, 4)).toFixed(2),
+        rev: Math.random() < 0.5,
+        rx: r(0, 1).toFixed(2),
+        ry: r(0.25, 1).toFixed(2),
+        rz: r(0, 1).toFixed(2),
+    };
+});
+
+const N_SPARKS = 16;
+const SPARKS = Array.from({ length: N_SPARKS }, () => ({
+    left: r(0, 100).toFixed(1),
+    size: r(3, 8).toFixed(1),
+    dur: r(6, 13).toFixed(2),
+    delay: (-r(0, 13)).toFixed(2),
+    drift: (r(-1, 1) * 8).toFixed(1),
+}));
+---
+
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hair Rich Olbia — Presto</title>
+    <meta name="robots" content="noindex" />
+    <meta name="description" content="Hair Rich Olbia — barbiere dal 2017. Presto online." />
+    <link rel="icon" href="/favicon-32x32.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root { --gold: #d4a574; --warm: #f4efe6; }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { height: 100%; }
+      body {
+        background: #0a0a0a;
+        color: var(--warm);
+        font-family: "Cinzel", serif;
+        min-height: 100dvh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ── Sfondo oro che cambia nel tempo ─────────────────────── */
+      .bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background: linear-gradient(
+          125deg,
+          #0a0a0a 0%,
+          #2a1d08 18%,
+          #6b4d14 36%,
+          #1a1206 52%,
+          #8a6418 68%,
+          #2a1d08 84%,
+          #0a0a0a 100%
+        );
+        background-size: 300% 300%;
+        animation: drift 22s ease-in-out infinite alternate;
+      }
+      @keyframes drift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 50% 100%; }
+      }
+
+      /* ── Fulmini: flash d'oro irregolari (più layer = ritmo casuale) ── */
+      .bolt {
+        position: fixed;
+        inset: 0;
+        z-index: 2;
+        pointer-events: none;
+        mix-blend-mode: screen;
+        opacity: 0;
+        background: radial-gradient(
+          72% 62% at 50% 22%,
+          rgba(255, 231, 179, 0.95),
+          rgba(212, 165, 116, 0.25) 48%,
+          transparent 74%
+        );
+      }
+      .bolt.b1 { animation: flash 6.5s steps(1, end) infinite; }
+      .bolt.b2 { animation: flash 9.5s steps(1, end) 2.4s infinite; background-position: 30% 0; }
+      .bolt.b3 { animation: flash 5.3s steps(1, end) 4.1s infinite; background-position: 70% 0; }
+      @keyframes flash {
+        0%, 46%, 100% { opacity: 0; }
+        47% { opacity: 0.9; }
+        48% { opacity: 0.12; }
+        49.5% { opacity: 0.75; }
+        51% { opacity: 0; }
+      }
+
+      /* ── Forbici 3D dorate ───────────────────────────────────── */
+      .field { position: fixed; inset: 0; overflow: hidden; z-index: 1; pointer-events: none; }
+      .fly {
+        position: absolute;
+        perspective: 600px;
+        animation-name: fly;
+        animation-timing-function: ease-in-out;
+        animation-iteration-count: infinite;
+        animation-direction: alternate;
+      }
+      .spin { animation-name: spin; animation-timing-function: linear; animation-iteration-count: infinite; }
+      .ico { display: block; filter: drop-shadow(0 0 7px rgba(212, 165, 116, 0.35)); }
+      @keyframes fly {
+        from { transform: translate3d(0, 0, 0); }
+        to { transform: translate3d(var(--dx), var(--dy), 0); }
+      }
+      @keyframes spin {
+        to { transform: rotate3d(var(--rx, 0), var(--ry, 1), var(--rz, 0), 1turn); }
+      }
+
+      /* ── Scintille d'oro che salgono ─────────────────────────── */
+      .sparks { position: fixed; inset: 0; overflow: hidden; z-index: 1; pointer-events: none; }
+      .spark {
+        position: absolute;
+        bottom: -6%;
+        border-radius: 50%;
+        background: radial-gradient(circle, #fff0c4 0%, #e8c074 38%, rgba(212, 165, 116, 0) 72%);
+        opacity: 0;
+        animation-name: rise;
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
+      }
+      @keyframes rise {
+        0% { transform: translateY(0) translateX(0) scale(0.5); opacity: 0; }
+        12% { opacity: 1; }
+        85% { opacity: 0.7; }
+        100% { transform: translateY(-112vh) translateX(var(--drift, 0vw)) scale(1.05); opacity: 0; }
+      }
+
+      /* ── Scrim leggero per far staccare il logo ──────────────── */
+      .scrim {
+        position: fixed;
+        inset: 0;
+        z-index: 3;
+        pointer-events: none;
+        background: radial-gradient(
+          58% 46% at 50% 50%,
+          rgba(10, 10, 10, 0.5) 0%,
+          rgba(10, 10, 10, 0.14) 56%,
+          rgba(10, 10, 10, 0.4) 100%
+        );
+      }
+
+      /* ── Logo gigante + "presto" ─────────────────────────────── */
+      .wrap {
+        position: relative;
+        z-index: 4;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 32px;
+      }
+      .logo-big {
+        width: min(92vw, 1040px);
+        height: auto;
+        filter: drop-shadow(0 10px 54px rgba(0, 0, 0, 0.7))
+          drop-shadow(0 0 34px rgba(212, 165, 116, 0.3));
+        animation: enter 1.3s cubic-bezier(0.25, 0.1, 0.25, 1) both;
+      }
+      @keyframes enter {
+        from { opacity: 0; transform: scale(0.94); filter: blur(8px) drop-shadow(0 0 0 transparent); }
+        to { opacity: 1; transform: scale(1); }
+      }
+      .presto {
+        margin-top: clamp(10px, 2vw, 26px);
+        font-weight: 600;
+        font-size: clamp(15px, 4.5vw, 30px);
+        letter-spacing: 0.62em;
+        text-transform: uppercase;
+        color: var(--gold);
+        text-indent: 0.62em;
+        text-shadow: 0 2px 24px rgba(0, 0, 0, 0.7), 0 0 22px rgba(212, 165, 116, 0.35);
+        animation: enter 1.1s cubic-bezier(0.25, 0.1, 0.25, 1) 0.5s both, glow 2.8s ease-in-out 1.6s infinite;
+      }
+      @keyframes glow {
+        0%, 100% { opacity: 0.78; }
+        50% { opacity: 1; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .bg, .bolt, .fly, .spin, .spark, .logo-big, .presto { animation: none !important; }
+        .bolt { opacity: 0; }
+        .spark { opacity: 0.5; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Definizione forbici (oro) -->
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <defs>
+        <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#fff4d6" />
+          <stop offset="0.3" stop-color="#f0cd86" />
+          <stop offset="0.5" stop-color="#c79237" />
+          <stop offset="0.72" stop-color="#ffe9b0" />
+          <stop offset="1" stop-color="#9a6f24" />
+        </linearGradient>
+        <symbol id="sciss" viewBox="0 0 100 100">
+          <g fill="none" stroke="url(#gold)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M28 12 L50 49 L69 77" />
+            <path d="M72 12 L50 49 L31 77" />
+          </g>
+          <g fill="none" stroke="url(#gold)" stroke-width="5">
+            <circle cx="29" cy="84" r="8" />
+            <circle cx="71" cy="84" r="8" />
+          </g>
+          <circle cx="50" cy="49" r="3.6" fill="#7a5a1e" />
+        </symbol>
+      </defs>
+    </svg>
+
+    <div class="bg" aria-hidden="true"></div>
+
+    <!-- Forbici -->
+    <div class="field" aria-hidden="true">
+      {
+        SCISSORS.map((s) => (
+          <div
+            class="fly"
+            style={`top:${s.top}%;left:${s.left}%;--dx:${s.dx}vw;--dy:${s.dy}vh;animation-duration:${s.flyDur}s;animation-delay:${s.flyDelay}s`}
+          >
+            <div
+              class="spin"
+              style={`animation-duration:${s.spinDur}s;animation-delay:${s.spinDelay}s;${s.rev ? "animation-direction:reverse;" : ""}--rx:${s.rx};--ry:${s.ry};--rz:${s.rz}`}
+            >
+              <svg class="ico" style={`width:${s.size}px;height:${s.size}px;opacity:${s.op}`}>
+                <use href="#sciss" />
+              </svg>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- Scintille -->
+    <div class="sparks" aria-hidden="true">
+      {
+        SPARKS.map((s) => (
+          <span
+            class="spark"
+            style={`left:${s.left}%;width:${s.size}px;height:${s.size}px;animation-duration:${s.dur}s;animation-delay:${s.delay}s;--drift:${s.drift}vw`}
+          />
+        ))
+      }
+    </div>
+
+    <!-- Fulmini -->
+    <div class="bolt b1" aria-hidden="true"></div>
+    <div class="bolt b2" aria-hidden="true"></div>
+    <div class="bolt b3" aria-hidden="true"></div>
+
+    <div class="scrim" aria-hidden="true"></div>
+
+    <main class="wrap">
+      <img class="logo-big" src="/hairrich-logoesteso.png" alt="Hair Rich" width="1040" height="360" />
+      <span class="presto">Presto</span>
+    </main>
+  </body>
+</html>
