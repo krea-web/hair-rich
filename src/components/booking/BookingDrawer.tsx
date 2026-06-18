@@ -2,7 +2,7 @@
 
 import { Drawer } from "vaul";
 import { BookingWizard } from "./BookingWizard";
-import { useBookingDrawer } from "@/lib/store";
+import { useBookingDrawer, useBookingStore } from "@/lib/store";
 
 /**
  * Global bottom-sheet drawer hosting the BookingWizard. Mount once per page
@@ -15,9 +15,25 @@ import { useBookingDrawer } from "@/lib/store";
 export function BookingDrawer() {
     const isOpen = useBookingDrawer((s) => s.isOpen);
     const setOpen = useBookingDrawer((s) => s.setOpen);
+    const resetBooking = useBookingStore((s) => s.reset);
+
+    // Alla chiusura del drawer azzera lo stato del wizard: la prossima apertura
+    // riparte sempre dallo step 1. La pre-selezione di servizio/slot fatta dalle
+    // CTA avviene subito PRIMA dell'apertura, quindi non viene toccata.
+    const handleOpenChange = (open: boolean) => {
+        setOpen(open);
+        if (!open) {
+            resetBooking();
+            try {
+                localStorage.removeItem("hr-booking-draft");
+            } catch {
+                /* ignore */
+            }
+        }
+    };
 
     return (
-        <Drawer.Root open={isOpen} onOpenChange={setOpen} shouldScaleBackground>
+        <Drawer.Root open={isOpen} onOpenChange={handleOpenChange} shouldScaleBackground>
             <Drawer.Portal>
                 <Drawer.Overlay className="fixed inset-0 z-[90] bg-black/70 backdrop-blur-sm" />
                 <Drawer.Content

@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useBookingStore, useToastStore } from "@/lib/store";
+import { useBookingStore } from "@/lib/store";
 import { StepServiceStaff } from "./StepServiceStaff";
 import { StepDateTime } from "./StepDateTime";
 import { StepConfirm } from "./StepConfirm";
@@ -13,114 +12,16 @@ const STEPS = [
     { id: 2, label: "Conferma" },
 ];
 
-const STORAGE_KEY = "hr-booking-draft";
-
-interface PersistedDraft {
-    serviceId: string | null;
-    staffId: string | null;
-    date: string | null;
-    time: string | null;
-    contactName: string;
-    contactPhone: string;
-    contactEmail: string;
-    notes: string;
-    step: number;
-    savedAt: number;
-}
-
 export function BookingWizard() {
-    const store = useBookingStore();
-    const addToast = useToastStore((s) => s.addToast);
-    const { step, setStep, reset } = store;
+    const { step, setStep, reset } = useBookingStore();
 
-    // Autosave (Wave 3.17): persiste lo stato a ogni cambio
-    useEffect(() => {
-        if (typeof window === "undefined") return;
-        const draft: PersistedDraft = {
-            serviceId: store.serviceId,
-            staffId: store.staffId,
-            date: store.date,
-            time: store.time,
-            contactName: store.contactName,
-            contactPhone: store.contactPhone,
-            contactEmail: store.contactEmail,
-            notes: store.notes,
-            step: store.step,
-            savedAt: Date.now(),
-        };
-        // Salva solo se l'utente ha iniziato (step > 0 o serviceId)
-        const hasContent = !!(draft.serviceId || draft.date || draft.contactPhone);
-        if (hasContent) {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
-            } catch {
-                /* ignore */
-            }
-        }
-    }, [
-        store.serviceId,
-        store.staffId,
-        store.date,
-        store.time,
-        store.contactName,
-        store.contactPhone,
-        store.contactEmail,
-        store.notes,
-        store.step,
-    ]);
-
-    // Restore draft on mount (se < 24h)
-    useEffect(() => {
-        if (typeof window === "undefined") return;
-        try {
-            const raw = localStorage.getItem(STORAGE_KEY);
-            if (!raw) return;
-            const draft: PersistedDraft = JSON.parse(raw);
-            const valid =
-                draft &&
-                typeof draft.savedAt === "number" &&
-                Number.isFinite(draft.savedAt) &&
-                Date.now() - draft.savedAt < 24 * 60 * 60 * 1000;
-            if (!valid) {
-                localStorage.removeItem(STORAGE_KEY);
-                return;
-            }
-            // Restore solo se store ancora vuoto (evita conflitti hydration multi-island)
-            if (!store.serviceId && draft.serviceId) {
-                store.setService(draft.serviceId);
-                if (draft.staffId) store.setStaff(draft.staffId);
-                if (draft.date) store.setDate(draft.date);
-                if (draft.time) store.setTime(draft.time);
-                if (draft.contactName || draft.contactPhone)
-                    store.setContact({
-                        name: draft.contactName ?? "",
-                        phone: draft.contactPhone ?? "",
-                        email: draft.contactEmail ?? "",
-                    });
-                if (draft.notes) store.setNotes(draft.notes);
-                if (typeof draft.step === "number") {
-                    store.setStep(Math.max(0, Math.min(2, draft.step)));
-                }
-                addToast("Bozza ripresa", "info");
-            }
-        } catch {
-            // Draft corrotto: pulisci e prosegui
-            try {
-                localStorage.removeItem(STORAGE_KEY);
-            } catch {
-                /* ignore */
-            }
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
+    // Niente persistenza/ripristino del wizard in localStorage: ogni apertura
+    // del drawer parte pulita. Il reset dello store avviene alla CHIUSURA del
+    // drawer (BookingDrawer), così l'eventuale pre-selezione di servizio/slot
+    // fatta dalle CTA subito prima dell'apertura resta valida. Questo elimina
+    // il bug "chiudo il sito → riapro → resto bloccato allo step 3".
     const handleReset = () => {
         reset();
-        try {
-            localStorage.removeItem(STORAGE_KEY);
-        } catch {
-            /* ignore */
-        }
     };
 
     const stepIdx = Math.min(step, 2);
