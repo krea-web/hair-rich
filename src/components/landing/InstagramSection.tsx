@@ -106,7 +106,7 @@ export function InstagramSection() {
                             href={SITE.instagram}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="group relative aspect-[4/5] overflow-hidden rounded-[var(--radius-sm)] border border-line bg-carbon focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-warm"
+                            className="group relative aspect-square overflow-hidden rounded-[var(--radius-sm)] border border-line bg-carbon focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-warm"
                             initial={{ opacity: 0, scale: 0.95 }}
                             whileInView={{ opacity: 1, scale: 1 }}
                             viewport={{ once: true, margin: "-50px" }}
@@ -125,7 +125,7 @@ export function InstagramSection() {
                                     alt={shot.alt_text ?? ""}
                                     loading="lazy"
                                     decoding="async"
-                                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-[var(--ease-cinema)] group-hover:scale-105"
+                                    className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 ease-[var(--ease-cinema)] group-hover:scale-105"
                                 />
                             ) : (
                                 <div className="absolute inset-0 bg-gradient-to-br from-carbon to-black-2" />
