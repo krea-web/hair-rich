@@ -6,6 +6,7 @@ import { fetchMyAppointmentsWithDetails, fetchServices, type AppointmentWithDeta
 import { createClient } from "@/lib/supabase/client";
 import { useBookingDrawer, useBookingStore, useToastStore } from "@/lib/store";
 import { formatPrice } from "@/lib/format";
+import { romeDateStr, romeToUTC, formatRome } from "@/lib/time";
 import { AppointmentPhotos } from "../_shared/AppointmentPhotos";
 
 type DisplayStatus = "upcoming" | "completed" | "cancelled";
@@ -492,15 +493,18 @@ function RescheduleModal({
     onClose: () => void;
 }) {
     const cur = new Date(apt.date);
-    const [date, setDate] = useState(cur.toISOString().slice(0, 10));
-    const [time, setTime] = useState(cur.toTimeString().slice(0, 5));
+    // Giorno e ora SEMPRE letti in fuso Europe/Rome (no shift UTC, no DST bug).
+    const [date, setDate] = useState(romeDateStr(cur));
+    const [time, setTime] = useState(
+        formatRome(cur, { hour: "2-digit", minute: "2-digit", hour12: false })
+    );
 
     const submit = () => {
         if (!date || !time) return;
-        // Construct ISO string in the user's local zone, then send.
-        const combined = new Date(`${date}T${time}:00`);
-        if (isNaN(combined.getTime())) return;
-        onConfirm(combined.toISOString());
+        // L'istante esatto si costruisce in ora di Rome, poi va al RPC in UTC.
+        const iso = romeToUTC(date, time);
+        if (!iso) return;
+        onConfirm(iso);
     };
 
     return (
