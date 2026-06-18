@@ -12,7 +12,7 @@ import {
     type DragEndEvent,
 } from "@dnd-kit/core";
 import { createClient } from "@/lib/supabase/client";
-import { fetchStaff } from "@/lib/supabase/queries";
+import { fetchBookableStaff } from "@/lib/supabase/queries";
 import type { Staff } from "@/lib/supabase/types";
 import { useToastStore } from "@/lib/store";
 import { romeDateStr } from "@/lib/time";
@@ -191,7 +191,9 @@ export default function AdminAgendaDayView() {
     const load = useCallback(async () => {
         setLoading(true);
         try {
-            const [staffRows] = await Promise.all([fetchStaff()]);
+            // Solo barbieri in poltrona (esclude founder/receptionist es. Riccardo):
+            // niente più colonna vuota che sballava la griglia.
+            const [staffRows] = await Promise.all([fetchBookableStaff()]);
             setStaff(staffRows);
 
             const supabase = createClient();
