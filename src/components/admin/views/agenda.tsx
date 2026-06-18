@@ -65,34 +65,41 @@ export default function AdminAgendaPage() {
     };
 
     return (
-        <div className="relative flex flex-col h-[100dvh] overflow-hidden">
-            {/* View switcher tab — overlay sticky in alto */}
-            <div className="absolute top-2 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1 p-1 bg-black/90 backdrop-blur-md border border-line rounded-full">
-                {(["month", "week", "day"] as AgendaView[]).map((v) => (
-                    <button
-                        key={v}
-                        type="button"
-                        onClick={() => setView(v)}
-                        className={`px-3 md:px-4 py-1 md:py-1.5 rounded-full text-[10px] md:text-xs uppercase tracking-[0.2em] font-body font-semibold transition-all ${
-                            view === v
-                                ? "bg-accent-warm text-black"
-                                : "text-silver hover:text-warm-white"
-                        }`}
-                        aria-pressed={view === v}
-                    >
-                        {v === "month" ? "Mese" : v === "week" ? "Settimana" : "Giorno"}
-                    </button>
-                ))}
+        <div className="flex flex-col h-full overflow-hidden">
+            {/* Barra switcher dedicata: riga propria in cima (niente più overlay
+                assoluto che si sovrapponeva alla toolbar della vista su PC). */}
+            <div className="shrink-0 flex items-center justify-center border-b border-line bg-black px-3 py-2">
+                <div className="flex items-center gap-1 p-1 bg-black-2 border border-line rounded-full">
+                    {(["month", "week", "day"] as AgendaView[]).map((v) => (
+                        <button
+                            key={v}
+                            type="button"
+                            onClick={() => setView(v)}
+                            className={`px-4 md:px-5 py-1.5 rounded-full text-[10px] md:text-xs uppercase tracking-[0.2em] font-body font-semibold transition-all ${
+                                view === v
+                                    ? "bg-accent-warm text-black"
+                                    : "text-silver hover:text-warm-white"
+                            }`}
+                            aria-pressed={view === v}
+                        >
+                            {v === "month" ? "Mese" : v === "week" ? "Settimana" : "Giorno"}
+                        </button>
+                    ))}
+                </div>
             </div>
 
-            {view === "month" && (
-                <AdminAgendaMonthView
-                    onJumpToDay={handleJumpToDay}
-                    onAddAppointment={handleAddAppointment}
-                />
-            )}
-            {view === "week" && <AdminAgendaWeekView />}
-            {view === "day" && <AdminAgendaDayView />}
+            {/* La vista riempie lo spazio rimanente. Giorno/Mese gestiscono lo
+                scroll internamente (h-full); Settimana è un blocco che scorre qui. */}
+            <div className="flex-1 min-h-0 overflow-y-auto">
+                {view === "month" && (
+                    <AdminAgendaMonthView
+                        onJumpToDay={handleJumpToDay}
+                        onAddAppointment={handleAddAppointment}
+                    />
+                )}
+                {view === "week" && <AdminAgendaWeekView />}
+                {view === "day" && <AdminAgendaDayView />}
+            </div>
         </div>
     );
 }

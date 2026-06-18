@@ -240,7 +240,7 @@ export default function AdminAgendaMonthView({ onJumpToDay, onAddAppointment }: 
     const totalAppts = appts.length;
 
     return (
-        <div className="flex flex-col h-[100dvh] overflow-hidden">
+        <div className="flex flex-col h-full overflow-hidden">
             {/* Toolbar */}
             <div className="h-16 border-b border-line px-3 md:px-6 flex items-center justify-between shrink-0 bg-black gap-2">
                 <div className="flex items-center gap-2 md:gap-4">

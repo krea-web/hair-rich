@@ -15,6 +15,7 @@ import { createClient } from "@/lib/supabase/client";
 import { fetchStaff } from "@/lib/supabase/queries";
 import type { Staff } from "@/lib/supabase/types";
 import { useToastStore } from "@/lib/store";
+import { romeDateStr } from "@/lib/time";
 
 const HOURS = Array.from({ length: 22 }, (_, i) => {
     const hour = Math.floor(i / 2) + 9;
@@ -112,7 +113,9 @@ function formatDayHeading(d: Date): string {
 }
 
 function isoDate(d: Date): string {
-    return d.toISOString().split("T")[0]!;
+    // Giorno in fuso Europe/Rome (NON UTC): altrimenti la mezzanotte locale
+    // veniva letta come il giorno prima → "oggi" e la linea-ora sballavano.
+    return romeDateStr(d);
 }
 
 function makeDropId(hour: string, staffId: string): string {
@@ -247,6 +250,28 @@ export default function AdminAgendaDayView() {
         load();
     };
 
+    // Hard delete (appuntamento sbagliato): RPC admin-gated. Conferma esplicita.
+    const deleteAppointment = async (apptId: string) => {
+        if (
+            typeof window !== "undefined" &&
+            !window.confirm(
+                "Eliminare DEFINITIVAMENTE questo appuntamento? L'azione non si può annullare."
+            )
+        ) {
+            return;
+        }
+        const supabase = createClient();
+        const { error } = await supabase.rpc("fn_admin_delete_appointment", {
+            p_id: apptId,
+        });
+        if (error) {
+            addToast(`Errore eliminazione: ${error.message}`, "error");
+            return;
+        }
+        addToast("Appuntamento eliminato", "success");
+        load();
+    };
+
     // Completamento con incasso: registra metodo (POS/contanti/credito) + prezzo
     // reale + sconto, poi segna completato. Alimenta il recap POS vs contanti.
     const [payFor, setPayFor] = useState<AgendaAppt | null>(null);
@@ -351,7 +376,7 @@ export default function AdminAgendaDayView() {
         : -1;
 
     return (
-        <div className="flex flex-col h-[100dvh] overflow-hidden">
+        <div className="flex flex-col h-full overflow-hidden">
             {/* Toolbar */}
             <div className="h-16 border-b border-line px-3 md:px-6 flex items-center justify-between shrink-0 bg-black gap-2">
                 <div className="flex items-center gap-2 md:gap-4">
@@ -443,11 +468,22 @@ export default function AdminAgendaDayView() {
                                                     {ev.customerPhone && <a href={`tel:${ev.customerPhone.replace(/\s+/g, "")}`} className="underline">{ev.customerPhone}</a>}
                                                 </div>
                                             </div>
-                                            {ev.isFirstVisit && (
-                                                <span className="flex-shrink-0 inline-flex items-center px-2 py-1 rounded bg-accent-warm/30 text-accent-warm text-[9px] uppercase tracking-wider font-bold">
-                                                    1° visita
-                                                </span>
-                                            )}
+                                            <div className="flex items-center gap-2 shrink-0">
+                                                {ev.isFirstVisit && (
+                                                    <span className="inline-flex items-center px-2 py-1 rounded bg-accent-warm/30 text-accent-warm text-[9px] uppercase tracking-wider font-bold">
+                                                        1° visita
+                                                    </span>
+                                                )}
+                                                <button
+                                                    onClick={() => deleteAppointment(ev.id)}
+                                                    aria-label="Elimina appuntamento"
+                                                    className="w-8 h-8 inline-flex items-center justify-center rounded-full border border-error/40 text-error hover:bg-error hover:text-black transition-colors"
+                                                >
+                                                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 7h12M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m-7 0v12a1 1 0 001 1h6a1 1 0 001-1V7" />
+                                                    </svg>
+                                                </button>
+                                            </div>
                                         </div>
 
                                         {open && (
@@ -539,11 +575,22 @@ export default function AdminAgendaDayView() {
                                                 right: `12px`,
                                                 marginTop: "2px",
                                             }}
-                                            className="absolute z-10 px-3 py-2 rounded shadow-md cursor-pointer overflow-hidden bg-warning/10 border-l-4 border-warning text-warning"
+                                            className="absolute z-10 px-3 py-2 rounded shadow-md overflow-hidden group bg-warning/10 border-l-4 border-warning text-warning"
                                         >
-                                            <p className="text-xs font-semibold leading-tight">
-                                                {ev.title} · da assegnare
-                                            </p>
+                                            <div className="flex items-start justify-between gap-2">
+                                                <p className="text-xs font-semibold leading-tight flex-1">
+                                                    {ev.title} · da assegnare
+                                                </p>
+                                                <button
+                                                    onClick={() => deleteAppointment(ev.id)}
+                                                    aria-label="Elimina appuntamento"
+                                                    className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded text-error hover:bg-error hover:text-black"
+                                                >
+                                                    <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 7h12M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m-7 0v12a1 1 0 001 1h6a1 1 0 001-1V7" />
+                                                    </svg>
+                                                </button>
+                                            </div>
                                             <p className="text-[10px] mt-1 opacity-70 uppercase tracking-wider">
                                                 {startHHMM}
                                             </p>
@@ -570,11 +617,26 @@ export default function AdminAgendaDayView() {
                                             <p className="text-xs font-semibold leading-tight line-clamp-2 flex-1">
                                                 {ev.title}
                                             </p>
-                                            {ev.isFirstVisit && (
-                                                <span className="flex-shrink-0 inline-flex items-center px-1.5 py-0.5 rounded bg-accent-warm/30 text-accent-warm text-[8px] uppercase tracking-wider font-bold">
-                                                    1° visita
-                                                </span>
-                                            )}
+                                            <div className="flex items-center gap-1 shrink-0">
+                                                {ev.isFirstVisit && (
+                                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-accent-warm/30 text-accent-warm text-[8px] uppercase tracking-wider font-bold">
+                                                        1° visita
+                                                    </span>
+                                                )}
+                                                <button
+                                                    onPointerDown={(e) => e.stopPropagation()}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        deleteAppointment(ev.id);
+                                                    }}
+                                                    aria-label="Elimina appuntamento"
+                                                    className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded text-error hover:bg-error hover:text-black"
+                                                >
+                                                    <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 7h12M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m-7 0v12a1 1 0 001 1h6a1 1 0 001-1V7" />
+                                                    </svg>
+                                                </button>
+                                            </div>
                                         </div>
                                         <p className="text-[10px] mt-1 opacity-70 uppercase tracking-wider">
                                             {startHHMM}
