@@ -22,8 +22,8 @@ DECLARE
 BEGIN
   SELECT * INTO v_appt FROM appointments WHERE id = NEW.appointment_id;
   IF v_appt.id IS NULL THEN RETURN NEW; END IF;
-  IF v_appt.status NOT IN ('booked','confirmed') THEN RETURN NEW; END IF;
-  IF COALESCE(v_appt.source, '') = 'admin' THEN RETURN NEW; END IF; -- import/seed bulk
+  IF v_appt.status::text NOT IN ('booked','confirmed') THEN RETURN NEW; END IF;
+  IF v_appt.source::text = 'admin' THEN RETURN NEW; END IF; -- import/seed bulk
 
   SELECT first_name, last_name, phone INTO v_first, v_last, v_phone
     FROM customers WHERE id = v_appt.customer_id;
