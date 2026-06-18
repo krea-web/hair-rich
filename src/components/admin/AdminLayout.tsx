@@ -46,6 +46,7 @@ const EMPLOYEE_VOICES: ReadonlySet<string> = new Set([
 const SETTINGS_MENU = [
     { href: "/admin/servizi", label: "Servizi" },
     { href: "/admin/prodotti", label: "Prodotti" },
+    { href: "/admin/portfolio", label: "Portfolio (lavori)" },
     { href: "/admin/staff", label: "Staff" },
     { href: "/admin/orari", label: "Orari staff" },
     { href: "/admin/marketing", label: "Recensioni" },

@@ -37,6 +37,7 @@ import AdminSpesePage from "./views/spese";
 import AdminQrPromoPage from "./views/qr-promo";
 import AdminSalutePage from "./views/salute";
 import AdminHardwarePage from "./views/hardware";
+import AdminPortfolioPage from "./views/portfolio";
 // Staff-portal views surfaced as /admin/* routes (cantiere 8): impiegati
 // e titolare entrano da uno stesso URL space, niente più portal separato.
 import StaffTimbraturaPage from "../staff/views/timbratura";
@@ -130,6 +131,8 @@ function pickView(pathname: string) {
             return <AdminSalutePage />;
         case "/admin/hardware":
             return <AdminHardwarePage />;
+        case "/admin/portfolio":
+            return <AdminPortfolioPage />;
         case "/admin/timbratura":
             return <StaffTimbraturaPage />;
         case "/admin/ferie":

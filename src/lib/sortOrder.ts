@@ -11,7 +11,7 @@ import { createClient } from "@/lib/supabase/client";
  * for optimistic UI update before calling and for surfacing errors.
  */
 export async function persistSortOrder(
-    table: "services" | "products" | "staff",
+    table: "services" | "products" | "staff" | "portfolio_images",
     ids: string[]
 ): Promise<void> {
     const supabase = createClient();
