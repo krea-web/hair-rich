@@ -15,7 +15,7 @@ import { createClient } from "@/lib/supabase/client";
 import { fetchBookableStaff } from "@/lib/supabase/queries";
 import type { Staff } from "@/lib/supabase/types";
 import { useToastStore } from "@/lib/store";
-import { romeDateStr } from "@/lib/time";
+import { romeDateStr, romeToUTC, formatRome } from "@/lib/time";
 
 const HOURS = Array.from({ length: 22 }, (_, i) => {
     const hour = Math.floor(i / 2) + 9;
@@ -100,6 +100,64 @@ function PaymentModal({
                 <button type="button" onClick={onClose} className="mt-3 w-full text-silver-dark text-xs uppercase tracking-[0.2em] hover:text-warm-white transition-colors">
                     Annulla
                 </button>
+            </div>
+        </div>
+    );
+}
+
+function MoveModal({
+    appt,
+    staff,
+    onConfirm,
+    onClose,
+}: {
+    appt: AgendaAppt;
+    staff: Staff[];
+    onConfirm: (date: string, time: string, staffId: string) => Promise<void>;
+    onClose: () => void;
+}) {
+    const cur = new Date(appt.startISO);
+    const [date, setDate] = useState(romeDateStr(cur));
+    const [time, setTime] = useState(formatRome(cur, { hour: "2-digit", minute: "2-digit", hour12: false }));
+    const [staffId, setStaffId] = useState(appt.staffId ?? staff[0]?.id ?? "");
+    const [busy, setBusy] = useState(false);
+    const submit = async () => {
+        if (!date || !time || !staffId) return;
+        setBusy(true);
+        await onConfirm(date, time, staffId);
+        setBusy(false);
+    };
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" onClick={onClose}>
+            <div className="bg-black-2 border border-line rounded-[var(--radius-md)] p-6 max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
+                <h3 className="text-display text-xl text-warm-white tracking-tight">Sposta appuntamento</h3>
+                <p className="text-warm-white-muted text-sm mt-1">{appt.title}</p>
+                <p className="text-[11px] text-silver-dark mt-1">Puoi spostarlo a un altro giorno, orario o barbiere.</p>
+                <label className="block mt-4">
+                    <span className="text-[10px] uppercase tracking-[0.2em] text-silver-dark font-body font-semibold">Giorno</span>
+                    <input type="date" value={date} onChange={(e) => setDate(e.target.value)}
+                        className="mt-1 w-full bg-black border border-line rounded-md px-3 py-2 text-warm-white text-base [color-scheme:dark]" />
+                </label>
+                <label className="block mt-3">
+                    <span className="text-[10px] uppercase tracking-[0.2em] text-silver-dark font-body font-semibold">Ora</span>
+                    <input type="time" step={1800} value={time} onChange={(e) => setTime(e.target.value)}
+                        className="mt-1 w-full bg-black border border-line rounded-md px-3 py-2 text-warm-white text-base [color-scheme:dark]" />
+                </label>
+                <label className="block mt-3">
+                    <span className="text-[10px] uppercase tracking-[0.2em] text-silver-dark font-body font-semibold">Barbiere</span>
+                    <select value={staffId} onChange={(e) => setStaffId(e.target.value)}
+                        className="mt-1 w-full bg-black border border-line rounded-md px-3 py-2 text-warm-white text-base">
+                        {staff.map((s) => (<option key={s.id} value={s.id}>{s.name}</option>))}
+                    </select>
+                </label>
+                <div className="mt-5 flex gap-3">
+                    <button type="button" onClick={onClose} disabled={busy} className="flex-1 px-5 py-3 border border-line text-warm-white rounded-full text-[10px] uppercase tracking-[0.3em] font-body font-semibold disabled:opacity-50">
+                        Annulla
+                    </button>
+                    <button type="button" onClick={submit} disabled={busy} className="flex-1 px-5 py-3 bg-accent-warm text-black rounded-full text-[10px] uppercase tracking-[0.3em] font-body font-semibold disabled:opacity-50">
+                        {busy ? "…" : "Sposta"}
+                    </button>
+                </div>
             </div>
         </div>
     );
@@ -300,6 +358,25 @@ export default function AdminAgendaDayView() {
             return;
         }
         addToast("Appuntamento eliminato", "success");
+        load();
+    };
+
+    // Sposta appuntamento (anche di GIORNO, non solo ora): modale con
+    // giorno+ora+barbiere → RPC reschedule conflict-checked (qualsiasi data).
+    const [moveFor, setMoveFor] = useState<AgendaAppt | null>(null);
+    const moveAppointment = async (appt: AgendaAppt, newDate: string, newTime: string, newStaffId: string) => {
+        const startISO = romeToUTC(newDate, newTime);
+        const { error } = await createClient().rpc("fn_admin_reschedule_appointment", {
+            p_id: appt.id,
+            p_start_at: startISO,
+            p_staff_id: newStaffId,
+        });
+        if (error) {
+            addToast(`Errore spostamento: ${error.message}`, "error");
+            return;
+        }
+        addToast("Appuntamento spostato", "success");
+        setMoveFor(null);
         load();
     };
 
@@ -530,10 +607,16 @@ export default function AdminAgendaDayView() {
                                         </div>
 
                                         {open && (
-                                            <div className="mt-3 flex gap-2">
+                                            <div className="mt-3 flex flex-wrap gap-2">
+                                                <button
+                                                    onClick={() => setMoveFor(ev)}
+                                                    className="flex-1 min-w-[72px] text-[10px] uppercase tracking-[0.25em] py-2 rounded-full bg-accent-warm/15 text-accent-warm border border-accent-warm/40 hover:bg-accent-warm hover:text-black transition-colors"
+                                                >
+                                                    Sposta
+                                                </button>
                                                 <button
                                                     onClick={() => setPayFor(ev)}
-                                                    className="flex-1 text-[10px] uppercase tracking-[0.25em] py-2 rounded-full bg-success/15 text-success border border-success/40 hover:bg-success hover:text-black transition-colors"
+                                                    className="flex-1 min-w-[72px] text-[10px] uppercase tracking-[0.25em] py-2 rounded-full bg-success/15 text-success border border-success/40 hover:bg-success hover:text-black transition-colors"
                                                 >
                                                     Completa
                                                 </button>
@@ -692,6 +775,16 @@ export default function AdminAgendaDayView() {
                                                     onPointerDown={(e) => e.stopPropagation()}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
+                                                        setMoveFor(ev);
+                                                    }}
+                                                    className="text-[10px] uppercase tracking-wide px-2 py-1 rounded bg-accent-warm/20 text-accent-warm hover:bg-accent-warm hover:text-black transition-colors"
+                                                >
+                                                    Sposta
+                                                </button>
+                                                <button
+                                                    onPointerDown={(e) => e.stopPropagation()}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
                                                         setPayFor(ev);
                                                     }}
                                                     className="text-[10px] uppercase tracking-wide px-2 py-1 rounded bg-success/20 text-success hover:bg-success hover:text-black transition-colors"
@@ -785,6 +878,14 @@ export default function AdminAgendaDayView() {
                     appt={payFor}
                     onConfirm={(method, cents) => completeWithPayment(payFor, method, cents)}
                     onClose={() => setPayFor(null)}
+                />
+            )}
+            {moveFor && (
+                <MoveModal
+                    appt={moveFor}
+                    staff={staff}
+                    onConfirm={(date, time, staffId) => moveAppointment(moveFor, date, time, staffId)}
+                    onClose={() => setMoveFor(null)}
                 />
             )}
         </div>
