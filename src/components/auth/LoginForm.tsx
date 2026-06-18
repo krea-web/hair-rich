@@ -333,7 +333,7 @@ export function LoginForm() {
 
                     <p className="text-center text-xs text-silver-dark pt-8">
                         Vuoi solo prenotare, senza account?{" "}
-                        <a href="/registrazione" className="text-warm-white underline hover:text-accent-warm transition-colors">
+                        <a href="/" className="text-warm-white underline hover:text-accent-warm transition-colors">
                             Prenota come ospite
                         </a>
                     </p>

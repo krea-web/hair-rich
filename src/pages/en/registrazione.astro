@@ -1,6 +1,6 @@
 ---
 import RootLayout from "../../layouts/RootLayout.astro";
-import { RegisterForm } from "../../components/auth/RegisterForm";
+import { LoginForm } from "../../components/auth/LoginForm";
 import { useTranslations, getLangFromUrl } from "@/i18n";
 
 const lang = getLangFromUrl(Astro.url);
@@ -8,5 +8,5 @@ const t = useTranslations(lang);
 ---
 
 <RootLayout title={`${t.auth.register.title} · Hair Rich Olbia`}>
-  <RegisterForm client:load />
+  <LoginForm client:load />
 </RootLayout>

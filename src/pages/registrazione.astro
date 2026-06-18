@@ -1,8 +1,8 @@
 ---
 import RootLayout from "../layouts/RootLayout.astro";
-import { RegisterForm } from "../components/auth/RegisterForm";
+import { LoginForm } from "../components/auth/LoginForm";
 ---
 
-<RootLayout title="Registrati · Hair Rich Olbia" description="Crea il tuo profilo Hair Rich Olbia.">
-  <RegisterForm client:load />
+<RootLayout title="Registrati o accedi · Hair Rich Olbia" description="Crea il tuo profilo Hair Rich Olbia: niente registrazione separata, l'account si crea al volo.">
+  <LoginForm client:load />
 </RootLayout>
