@@ -35,6 +35,14 @@ interface AgendaAppt {
     totalCents: number;
 }
 
+interface TimeBlock {
+    id: string;
+    staffId: string | null; // null = tutto il salone
+    startISO: string;
+    endISO: string;
+    reason: string | null;
+}
+
 function toLocalHHMM(iso: string): string {
     const d = new Date(iso);
     return `${d.getHours().toString().padStart(2, "0")}:${d.getMinutes().toString().padStart(2, "0")}`;
@@ -183,6 +191,7 @@ export default function AdminAgendaDayView() {
     });
     const [staff, setStaff] = useState<Staff[]>([]);
     const [appts, setAppts] = useState<AgendaAppt[]>([]);
+    const [blocks, setBlocks] = useState<TimeBlock[]>([]);
     const [loading, setLoading] = useState(true);
     const addToast = useToastStore((s) => s.addToast);
 
@@ -227,6 +236,22 @@ export default function AdminAgendaDayView() {
                 totalCents: r.total_cents ?? 0,
             }));
             setAppts(mapped);
+
+            // Indisponibilità (time_off): impegni/ferie. Distinte dalle prenotazioni.
+            const { data: offData } = await supabase
+                .from("time_off")
+                .select("id, staff_id, starts_at, ends_at, reason")
+                .lt("starts_at", dayEnd.toISOString())
+                .gt("ends_at", dayStart.toISOString());
+            setBlocks(
+                (offData ?? []).map((r: any) => ({
+                    id: r.id,
+                    staffId: r.staff_id ?? null,
+                    startISO: r.starts_at,
+                    endISO: r.ends_at,
+                    reason: r.reason ?? null,
+                }))
+            );
         } catch (e: any) {
             addToast(`Errore agenda: ${e?.message ?? "?"}`, "error");
         } finally {
@@ -430,6 +455,18 @@ export default function AdminAgendaDayView() {
 
             {/* Mobile list view (touch-friendly fallback for the desktop drag grid) */}
             <div className="md:hidden flex-1 overflow-y-auto bg-[#111111]">
+                {blocks.length > 0 && (
+                    <div className="p-3 pb-0 space-y-2">
+                        {blocks.map((b) => (
+                            <div key={b.id} className="rounded-[var(--radius-md)] p-3 border border-dashed border-silver/40 bg-silver/5 text-silver">
+                                <div className="text-sm font-body font-semibold">⛔ {b.reason ?? "Non disponibile"}</div>
+                                <div className="text-[10px] uppercase tracking-[0.2em] opacity-70 mt-0.5">
+                                    {toLocalHHMM(b.startISO)}–{toLocalHHMM(b.endISO)} · {b.staffId ? (staff.find((s) => s.id === b.staffId)?.name ?? "operatore") : "tutto il salone"}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
                 {loading ? (
                     <div className="p-4 space-y-2">
                         {[0, 1, 2, 3].map((i) => (
@@ -682,6 +719,43 @@ export default function AdminAgendaDayView() {
                                     </DraggableWrapper>
                                 );
                             })}
+
+                        {/* Indisponibilità (impegni/ferie): blocchi tratteggiati,
+                           distinti dalle prenotazioni. staff null = tutto il salone. */}
+                        {blocks.map((b) => {
+                            const dayMid = new Date(currentDate); dayMid.setHours(0, 0, 0, 0);
+                            const GRID_START = 9 * 60, GRID_END = 20 * 60;
+                            const topMin = Math.max(GRID_START, Math.min(GRID_END, (new Date(b.startISO).getTime() - dayMid.getTime()) / 60000));
+                            const botMin = Math.max(GRID_START, Math.min(GRID_END, (new Date(b.endISO).getTime() - dayMid.getTime()) / 60000));
+                            if (botMin <= topMin) return null;
+                            const top = (topMin - GRID_START) / 30 * 60;
+                            const height = (botMin - topMin) / 30 * 60;
+                            const colCount = Math.max(staff.length, 1);
+                            const colIdx = b.staffId ? staff.findIndex((st) => st.id === b.staffId) : -1;
+                            const pos: React.CSSProperties = b.staffId && colIdx >= 0
+                                ? { left: `calc(5rem + ${colIdx * (100 / colCount)}%)`, width: `calc(${100 / colCount}% - 12px)`, marginLeft: "6px" }
+                                : { left: "calc(5rem + 6px)", right: "12px" };
+                            return (
+                                <div
+                                    key={b.id}
+                                    style={{
+                                        position: "absolute",
+                                        top: `${top}px`,
+                                        height: `${Math.max(height - 4, 18)}px`,
+                                        marginTop: "2px",
+                                        backgroundImage:
+                                            "repeating-linear-gradient(45deg, rgba(160,160,160,0.20) 0, rgba(160,160,160,0.20) 8px, rgba(160,160,160,0.07) 8px, rgba(160,160,160,0.07) 16px)",
+                                        ...pos,
+                                    }}
+                                    className="z-[5] rounded border border-dashed border-silver/50 text-silver overflow-hidden px-2 py-1 pointer-events-none"
+                                >
+                                    <p className="text-[11px] font-semibold leading-tight">⛔ {b.reason ?? "Non disponibile"}</p>
+                                    <p className="text-[9px] uppercase tracking-wider opacity-70">
+                                        {toLocalHHMM(b.startISO)}–{toLocalHHMM(b.endISO)}{!b.staffId ? " · salone" : ""}
+                                    </p>
+                                </div>
+                            );
+                        })}
 
                         {/* Now line (red) only if viewing today */}
                         {isToday && nowOffsetPx >= 0 && nowOffsetPx < HOURS.length * 60 && (
