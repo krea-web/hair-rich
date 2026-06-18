@@ -16,6 +16,7 @@ import { CouponField, type AppliedCoupon } from "./CouponField";
 import { PackageCreditField, type ActivePackage } from "./PackageCreditField";
 import { UpsellBanner } from "./UpsellBanner";
 import { createClient } from "@/lib/supabase/client";
+import { romeToUTC, romeToUTCDate, addDaysStr } from "@/lib/time";
 
 export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: () => void }) {
     const {
@@ -91,8 +92,7 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
         setSubmitting(true);
         setSubmitError(null);
 
-        // Istante base in fuso Europe/Rome; le ricorrenze sono multipli di 7 giorni.
-        const baseMs = new Date(`${date}T${time}:00+02:00`).getTime();
+        // Le ricorrenze sono multipli di 7 giorni a partire dal giorno scelto.
         const weeks = Math.min(Math.max(repeatWeeks, 1), MAX_REPEAT);
 
         try {
@@ -114,7 +114,10 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
             let okCount = 0;
             const skipped: Date[] = [];
             for (let w = 0; w < weeks; w++) {
-                const startAtISO = new Date(baseMs + w * 7 * 86400000).toISOString();
+                // Stesso giorno+ora ogni settimana, in ora-muro Europe/Rome:
+                // romeToUTC preserva le 15:00 anche a cavallo dei cambi DST.
+                const weekDate = addDaysStr(date, w * 7);
+                const startAtISO = romeToUTC(weekDate, time);
                 try {
                     const r = await bookAppointment({
                         firstName: data.firstName,
@@ -132,7 +135,7 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
                     okCount++;
                 } catch (e) {
                     if (w === 0) throw e;
-                    skipped.push(new Date(baseMs + w * 7 * 86400000));
+                    skipped.push(romeToUTCDate(weekDate, time));
                 }
             }
 
@@ -193,8 +196,8 @@ export function StepConfirm({ onBack, onDone }: { onBack: () => void; onDone: ()
         }
     };
 
-    // Calendar export helpers
-    const startDate = date && time ? new Date(`${date}T${time}:00`) : null;
+    // Calendar export helpers — istante esatto in ora di Rome (no offset fisso).
+    const startDate = date && time ? romeToUTCDate(date, time) : null;
     const buildBooking = () => ({
         title: `${service?.name ?? "Hair Rich"} · Hair Rich Olbia`,
         description: `Prenotazione presso Hair Rich Olbia${staff ? ` con ${staff.name}` : ""}.${notes ? `\n\nNote: ${notes}` : ""}`,

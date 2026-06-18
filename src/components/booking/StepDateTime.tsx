@@ -5,9 +5,13 @@ import { useEffect, useState } from "react";
 import { useBookingStore } from "@/lib/store";
 import { fetchAvailableSlots, fetchDayDensity } from "@/lib/supabase/queries";
 import type { AvailableSlot } from "@/lib/supabase/types";
+import { romeDateStr } from "@/lib/time";
 import { WaitlistOptIn } from "./WaitlistOptIn";
 
+// Mezzogiorno locale: stabilizza il giorno della settimana ed evita gli edge
+// di DST/mezzanotte quando si genera la lista date.
 const today = new Date();
+today.setHours(12, 0, 0, 0);
 // Orizzonte di prenotazione esteso a ~2 mesi: consente sia il long-term sia le
 // ricorrenze settimanali (es. "ogni venerdì"). Il salone è aperto Lun–Sab e
 // chiuso SOLO la domenica (0) — il lunedì prima era escluso per errore.
@@ -69,7 +73,7 @@ export function StepDateTime({ onNext, onBack }: { onNext: () => void; onBack: (
             // pesante) chiamare l'RPC densità per ogni giorno. I pallini compaiono
             // sui giorni vicini; i lontani mostrano solo la data.
             dates.slice(0, 12).map(async (d) => {
-                const ds = d.toISOString().split("T")[0]!;
+                const ds = romeDateStr(d);
                 try {
                     const v = await fetchDayDensity(ds, serviceId);
                     return [ds, v] as const;
@@ -123,7 +127,7 @@ export function StepDateTime({ onNext, onBack }: { onNext: () => void; onBack: (
                     </h4>
                     <div className="md:max-h-[400px] md:overflow-y-auto md:pr-2 grid grid-cols-2 md:grid-cols-1 gap-2 scrollbar-hide">
                         {dates.map((d, i) => {
-                            const dayStr = d.toISOString().split("T")[0]!;
+                            const dayStr = romeDateStr(d);
                             const active = selectedDateStr === dayStr;
                             return (
                                 <motion.button

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { useBookingStore, useToastStore } from "@/lib/store";
+import { addDaysStr } from "@/lib/time";
 
 interface Props {
     /** ISO date (yyyy-mm-dd) the user was looking at when no slots showed up. */
@@ -26,11 +27,7 @@ export function WaitlistOptIn({ fallbackDate }: Props) {
 
     const [enabled, setEnabled] = useState<boolean | null>(null);
     const [expanded, setExpanded] = useState(false);
-    const [dateTo, setDateTo] = useState<string>(() => {
-        const d = new Date(fallbackDate);
-        d.setDate(d.getDate() + 14);
-        return d.toISOString().split("T")[0]!;
-    });
+    const [dateTo, setDateTo] = useState<string>(() => addDaysStr(fallbackDate, 14));
     const [preferredStart, setPreferredStart] = useState<string>("");
     const [preferredEnd, setPreferredEnd] = useState<string>("");
     const [submitting, setSubmitting] = useState(false);
