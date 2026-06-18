@@ -23,6 +23,10 @@ const HOURS = Array.from({ length: 22 }, (_, i) => {
     return `${hour.toString().padStart(2, "0")}:${min}`;
 });
 
+// Altezza in px di uno slot da 30 minuti. Più alto = eventi più leggibili e
+// spazio per i bottoni azione sempre visibili.
+const SLOT_H = 84;
+
 interface AgendaAppt {
     id: string;
     title: string;
@@ -399,7 +403,7 @@ export default function AdminAgendaDayView() {
     const now = new Date();
     const isToday = isoDate(now) === dateStr;
     const nowOffsetPx = isToday
-        ? ((now.getHours() - 9) * 2 + (now.getMinutes() >= 30 ? 1 : 0) + (now.getMinutes() % 30) / 30) * 60
+        ? ((now.getHours() - 9) * 2 + (now.getMinutes() >= 30 ? 1 : 0) + (now.getMinutes() % 30) / 30) * SLOT_H
         : -1;
 
     return (
@@ -578,7 +582,7 @@ export default function AdminAgendaDayView() {
 
                     <div className="flex-1 relative">
                         {HOURS.map((hour) => (
-                            <div key={hour} className="flex border-b border-line/50 min-h-[60px]">
+                            <div key={hour} className="flex border-b border-line/50" style={{ minHeight: SLOT_H }}>
                                 <div className="w-20 shrink-0 border-r border-line flex items-start justify-center pt-2">
                                     <span className="text-xs text-silver-dark font-mono">{hour}</span>
                                 </div>
@@ -596,8 +600,8 @@ export default function AdminAgendaDayView() {
                                 const colIdx = ev.staffId ? staff.findIndex((s) => s.id === ev.staffId) : -1;
                                 if (startIdx === -1) return null;
 
-                                const top = startIdx * 60;
-                                const height = durationSlots(ev.startISO, ev.endISO) * 60;
+                                const top = startIdx * SLOT_H;
+                                const height = durationSlots(ev.startISO, ev.endISO) * SLOT_H;
                                 const colCount = Math.max(staff.length, 1);
 
                                 // Unassigned staff → spans across all columns (warning style)
@@ -623,7 +627,7 @@ export default function AdminAgendaDayView() {
                                                 <button
                                                     onClick={() => deleteAppointment(ev.id)}
                                                     aria-label="Elimina appuntamento"
-                                                    className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded text-error hover:bg-error hover:text-black"
+                                                    className="shrink-0 p-0.5 rounded text-error hover:bg-error hover:text-black"
                                                 >
                                                     <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2">
                                                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 7h12M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m-7 0v12a1 1 0 001 1h6a1 1 0 001-1V7" />
@@ -669,7 +673,7 @@ export default function AdminAgendaDayView() {
                                                         deleteAppointment(ev.id);
                                                     }}
                                                     aria-label="Elimina appuntamento"
-                                                    className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded text-error hover:bg-error hover:text-black"
+                                                    className="p-0.5 rounded text-error hover:bg-error hover:text-black"
                                                 >
                                                     <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2">
                                                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 7h12M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m-7 0v12a1 1 0 001 1h6a1 1 0 001-1V7" />
@@ -683,14 +687,14 @@ export default function AdminAgendaDayView() {
                                         </p>
 
                                         {ev.status !== "completed" && ev.status !== "cancelled" && ev.status !== "no_show" && (
-                                            <div className="mt-1.5 flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                                            <div className="mt-1.5 flex flex-wrap gap-1">
                                                 <button
                                                     onPointerDown={(e) => e.stopPropagation()}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         setPayFor(ev);
                                                     }}
-                                                    className="text-[9px] uppercase tracking-wide px-1.5 py-0.5 rounded bg-success/20 text-success hover:bg-success hover:text-black transition-colors"
+                                                    className="text-[10px] uppercase tracking-wide px-2 py-1 rounded bg-success/20 text-success hover:bg-success hover:text-black transition-colors"
                                                 >
                                                     Completa
                                                 </button>
@@ -700,7 +704,7 @@ export default function AdminAgendaDayView() {
                                                         e.stopPropagation();
                                                         changeStatus(ev.id, "no_show");
                                                     }}
-                                                    className="text-[9px] uppercase tracking-wide px-1.5 py-0.5 rounded bg-warning/20 text-warning hover:bg-warning hover:text-black transition-colors"
+                                                    className="text-[10px] uppercase tracking-wide px-2 py-1 rounded bg-warning/20 text-warning hover:bg-warning hover:text-black transition-colors"
                                                 >
                                                     No-show
                                                 </button>
@@ -710,7 +714,7 @@ export default function AdminAgendaDayView() {
                                                         e.stopPropagation();
                                                         changeStatus(ev.id, "cancelled");
                                                     }}
-                                                    className="text-[9px] uppercase tracking-wide px-1.5 py-0.5 rounded bg-error/20 text-error hover:bg-error hover:text-black transition-colors"
+                                                    className="text-[10px] uppercase tracking-wide px-2 py-1 rounded bg-error/20 text-error hover:bg-error hover:text-black transition-colors"
                                                 >
                                                     Annulla
                                                 </button>
@@ -728,8 +732,8 @@ export default function AdminAgendaDayView() {
                             const topMin = Math.max(GRID_START, Math.min(GRID_END, (new Date(b.startISO).getTime() - dayMid.getTime()) / 60000));
                             const botMin = Math.max(GRID_START, Math.min(GRID_END, (new Date(b.endISO).getTime() - dayMid.getTime()) / 60000));
                             if (botMin <= topMin) return null;
-                            const top = (topMin - GRID_START) / 30 * 60;
-                            const height = (botMin - topMin) / 30 * 60;
+                            const top = (topMin - GRID_START) / 30 * SLOT_H;
+                            const height = (botMin - topMin) / 30 * SLOT_H;
                             const colCount = Math.max(staff.length, 1);
                             const colIdx = b.staffId ? staff.findIndex((st) => st.id === b.staffId) : -1;
                             const pos: React.CSSProperties = b.staffId && colIdx >= 0
@@ -758,7 +762,7 @@ export default function AdminAgendaDayView() {
                         })}
 
                         {/* Now line (red) only if viewing today */}
-                        {isToday && nowOffsetPx >= 0 && nowOffsetPx < HOURS.length * 60 && (
+                        {isToday && nowOffsetPx >= 0 && nowOffsetPx < HOURS.length * SLOT_H && (
                             <div
                                 className="absolute left-20 right-0 h-px bg-error z-10 pointer-events-none"
                                 style={{ top: `${nowOffsetPx}px` }}
